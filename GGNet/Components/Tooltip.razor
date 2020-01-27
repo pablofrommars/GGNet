@@ -1,0 +1,16 @@
+﻿@typeparam T
+@typeparam TX
+@typeparam TY
+
+@if (visibility)
+{
+    <path d="@path" style="fill: @(color ?? Panel.Plot.Data.Theme.Tooltip.Fill); pointer-events: none;" clip-path="url(#@(Panel.Plot.Id)-@(Panel.Data.Id).area)" />
+    <g style="pointer-events: none;" clip-path="url(#@(Panel.Plot.Id)-@(Panel.Data.Id).area)">
+        <text x="@text.x" y="@text.y" style="font-size: @Panel.Plot.Data.Theme.Tooltip.Size; fill: @Panel.Plot.Data.Theme.Tooltip.Color; text-anchor: @anchor; pointer-events: none;">
+            @for (var i = 0; i < content?.Length; i++)
+            {
+                <tspan x="@text.x" dy="1em" style="pointer-events: none;">@content[i]</tspan>
+            }
+        </text>
+    </g>
+}

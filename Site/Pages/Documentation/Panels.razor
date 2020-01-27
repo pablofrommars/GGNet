@@ -1,0 +1,38 @@
+﻿@namespace Site.Pages
+@layout DocumentationLayout
+@page "/documentation/panels"
+
+<h1>Panels</h1>
+
+<p>
+    Panels allow stacking vertically plots sharing common axis.
+</p>
+
+<div class="border rounded-lg bg-light p-3 m-3">
+<pre class="csharp">
+<span class="pl-smi">Plot</span>.<span class="pl-en">New</span>(...)
+    .<span class="pl-en">Panel</span>(<span class="pl-smi">panelFactory</span> <span class="pl-k">=&gt;</span> ..., <span class="pl-smi">height</span>: <span class="pl-smi">h1</span>) <span class="pl-c"><span class="pl-c">//</span>Panel 1 occupies h1% of the height</span>
+    .<span class="pl-en">Panel</span>(<span class="pl-smi">panelFactory</span> <span class="pl-k">=&gt;</span> ..., <span class="pl-smi">height</span>: <span class="pl-smi">h2</span>) <span class="pl-c"><span class="pl-c">//</span>Panel 2 occupies h2% of the height</span>
+    ...
+</pre>
+</div>
+
+<h1>Facetting</h1>
+
+<p>
+    Facetting generates sub-plots displaying a different subset of the data. Parameters <i>freeX</i> and <i>freeY</i> control whether the axis are allowed to scale freely or not.
+</p>
+
+<div class="row ml-auto mr-auto">
+
+    <div class="col-md-3">
+        <span class="func">Facet_Wrap</span>
+    </div>
+    <div class="col-md-9">1-dimensional partitioning of the data.</div>
+
+    <div class="col-md-3">
+        <span class="func">Facet_Grid</span>
+    </div>
+    <div class="col-md-9">2-dimensional partitioning of the data.</div>
+
+</div>

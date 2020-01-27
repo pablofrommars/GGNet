@@ -1,0 +1,76 @@
+﻿@layout DocumentationLayout
+@page "/documentation"
+
+<h1>Basics</h1>
+
+<p>A plot is a combination of data, mappings, geometric objects (geoms), scales and theme.</p>
+
+<dl class="row ml-auto mr-auto">
+
+    <dt class="col-sm-2">Data</dt>
+    <dd class="col-sm-10">A source can operate directly on your business objects. Optionally handles how your plots refresh on data updates.</dd>
+
+    <dt class="col-sm-2">Mappings</dt>
+    <dd class="col-sm-10">Specify how variables relate to visual properties with lambda expressions.</dd>
+
+    <dt class="col-sm-2">Geoms</dt>
+    <dd class="col-sm-10">Instruct the choice of graphical objects that best describe your data.</dd>
+
+    <dt class="col-sm-2">Scales</dt>
+    <dd class="col-sm-10">Control how variables get translated to positional and aesthetic visual properties.</dd>
+
+    <dt class="col-sm-2">Theme</dt>
+    <dd class="col-sm-10">Controls how elements are styled allowing seamless integration with your designs and brand.</dd>
+
+</dl>
+
+    <h5>Blazor template</h5>
+
+    <div class="border rounded-lg bg-light p-3 m-3">
+        <pre>
+&#64;using GGNet 
+&#64;using GGNet.Components
+</pre>
+<pre class="html">
+<span class="pl-kos">&lt;</span><span class="pl-ent">Plot</span> <span class="pl-c1">Data</span>=<span class="pl-s">&#64;data</span> <span class="pl-c1">T</span>="<span class="pl-s">T</span>" <span class="pl-c1">TX</span>="<span class="pl-s">TX</span>" <span class="pl-c1">TY</span>="<span class="pl-s">TY</span>" /&gt;
+</pre>
+
+<pre class="csharp">
+<span class="pl-smi">&#64;code</span> {
+
+   <span class="pl-en">Data</span>&lt;<span class="pl-en">T</span>, <span class="pl-en">TX</span>, <span class="pl-en">TY</span>&gt; <span class="pl-smi">data</span>;
+
+   <span class="pl-smi">protected</span> <span class="pl-smi">override</span> <span class="pl-smi">void</span> <span class="pl-en">OnInitialized</span>()
+   {
+      <span class="pl-k">var</span> <span class="pl-smi">source</span> <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Source</span>&lt;<span class="pl-en">T</span>&gt;(...);
+        
+      <span class="pl-smi">data</span> <span class="pl-k">=</span> <span class="pl-smi">Plot</span>.<span class="pl-en">New</span>(<span class="pl-smi">source</span>, <span class="pl-smi">x</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>..., <span class="pl-smi">y</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>...)
+        .<span class="pl-en">Geom_...</span>(...)
+        .<span class="pl-en">Scale_...</span>(...)
+        .<span class="pl-en">Theme</span>(...);
+   }
+}
+</pre>
+    </div>
+
+<h5>Typography</h5>
+
+<dl class="row ml-auto mr-auto">
+
+    <dt class="col-sm-2">Title</dt>
+    <dd class="col-sm-10">Plot title</dd>
+
+    <dt class="col-sm-2">SubTitle</dt>
+    <dd class="col-sm-10">Plot sub title displayed below title</dd>
+
+    <dt class="col-sm-2">XLab</dt>
+    <dd class="col-sm-10">X axis title</dd>
+
+    <dt class="col-sm-2">YLab</dt>
+    <dd class="col-sm-10">Y axis title</dd>
+
+    <dt class="col-sm-2">Caption</dt>
+    <dd class="col-sm-10">Bottom text</dd>
+
+</dl>
+

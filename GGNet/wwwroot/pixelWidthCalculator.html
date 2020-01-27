@@ -1,0 +1,97 @@
+﻿<!-- https://github.com/adambisek/string-pixel-width/edit/master/src/pixelWidthCalculator.html -->
+<html>
+<head>
+</head>
+<body>
+    <span id="h1" style="font-family: Quantify; font-size: 100;">test string</span>
+    <div id="h1-info">433</div>
+
+    <div class="sandbox"><span style="font-family: Quantify; font-size: 100;">~<span></span></span></div>
+    <textarea id="elFinal" style="width: 100%; height: 400px"></textarea>
+
+    <script>
+    var websafe = [
+            'Andale Mono',
+            'Arial',
+            'Avenir',
+            'Avenir Next',
+            'Comic Sans MS',
+            'Courier New',
+            'Georgia',
+            'Helvetica',
+            'Impact',
+            'Times New Roman',
+            'Trebuchet MS',
+            'Verdana',
+            'Webdings',
+            'Open Sans',
+            'Tahoma',
+            'Quantify'
+        ]
+
+        function checkFont(name) {
+            var h1 = document.getElementById('h1');
+            h1.style.fontFamily = name;
+            var info = document.getElementById('h1-info');
+            info.innerHTML = h1.offsetWidth;
+
+            var widths = "";
+            var sandbox = document.getElementsByClassName('sandbox')[0];
+            for (var i = 0; i <= 127; i++) {
+                if (i < 32) continue; // non-printable chars
+                if (i === 127) continue; // DELETE char
+                var letter1 = String.fromCharCode(i);
+                var printableLetter1 = (letter1);
+                if (printableLetter1 === ' ') {
+                    printableLetter1 = '&nbsp';
+                }
+                var value = getWidthOf(sandbox, printableLetter1, name, 'normal', 'normal');
+                var outputLetter1 = (printableLetter1); 
+                if (printableLetter1 === '"') {
+                    outputLetter1 = '\\"';
+                }
+                    if (printableLetter1 === '\\') {
+                    outputLetter1 = '\\\\';
+                }
+
+                //widths = widths + '"' + outputLetter1 + '"' + " => " + value + ",\n";
+                widths = widths + "'" + outputLetter1 + "'" + " => " + value + ",\n";
+     for (var j = 0; j <= 127; j++) {
+                if (j < 32) continue; // non-printable chars
+                if (j === 127) continue; // DELETE char
+                var letter2 = String.fromCharCode(j);
+                var printableLetter2 = (letter2);
+                if (printableLetter2 === ' ') {
+                    printableLetter2 = '&nbsp';
+                }
+                
+                var value = getWidthOf(sandbox, printableLetter1+printableLetter2, name, 'normal', 'normal'); 
+
+     var outputLetter2 = (printableLetter2); 
+                if (printableLetter2 === '"') {
+                    outputLetter2 = '\\"';
+                }
+                    if (printableLetter2 === '\\') {
+                    outputLetter2 = '\\\\';
+                }
+                //widths = widths + '"' + outputLetter1 + outputLetter2 + '"' + " => " + value + ",\n";
+    }
+            }
+            return widths;
+        }
+
+        function getWidthOf(sandbox, printableLetter, name, weight, style) {
+            sandbox.innerHTML = `<span style="font-family: ${name}; font-size: 100; font-weight: ${weight}; font-style: ${style};">${printableLetter}<span>`;
+            var el = sandbox.children[0];
+            //return el.getBoundingClientRect().width;
+            return el.offsetWidth;
+        }
+
+        var widths = checkFont(`-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"`);
+
+        var elFinal = document.getElementById('elFinal');
+        elFinal.innerHTML = widths;
+        document.body.appendChild(elFinal);
+        elFinal.select();</script>
+</body>
+</html>

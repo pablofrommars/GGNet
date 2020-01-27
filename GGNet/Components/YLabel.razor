@@ -1,0 +1,11 @@
+﻿@typeparam T
+@typeparam TX
+@typeparam TY
+
+@if (visibility)
+{
+    <g clip-path="url(#@(Panel.Plot.Id)-@(Panel.Data.Id)">
+        <rect x="@rect.x" y="@rect.y" width="@rect.width" height="@rect.height" rx="2.5" ry="2.5" style="fill: #FFF;" />
+        <text x="@label.x" y="@label.y" class="css-@(Panel.Plot.Id)-yLabel">@label.text</text>
+    </g>
+}

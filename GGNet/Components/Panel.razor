@@ -1,0 +1,318 @@
+﻿@typeparam T
+@typeparam TX
+@typeparam TY
+
+@using GGNet.Shapes
+
+@if (First)
+{
+    if (Plot.Title.Width > 0)
+    {
+        <g clip-path="url(#@(Plot.Id)-plot)">
+            <text x="@(Plot.Title.X + Area.X)" y="@Plot.Title.Y" class="css-@(Plot.Id)-title">@Plot.Data.Title</text>
+        </g>
+    }
+
+    if (Plot.SubTitle.Width > 0)
+    {
+        <g clip-path="url(#@(Plot.Id)-plot)">
+            <text x="@(Plot.SubTitle.X + Area.X)" y="@Plot.SubTitle.Y" class="css-@(Plot.Id)-SubTitle">@Plot.Data.SubTitle</text>
+        </g>
+    }
+}
+
+<defs>
+    <clipPath id="@(Plot.Id)-@Data.Id">
+        <rect x="@X" y="@Y" width="@Width" height="@Height" />
+    </clipPath>
+
+    <clipPath id="@(Plot.Id)-@(Data.Id).area">
+        <rect x="@Area.X" y="@Area.Y" width="@Area.Width" height="@Area.Height" />
+    </clipPath>
+</defs>
+
+@if (!string.IsNullOrEmpty(Data.Strip.x))
+{
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text x="@xStrip.X" y="@xStrip.Y" class="css-@(Plot.Id)-stripTextX">@Data.Strip.x</text>
+    </g>
+}
+
+@if (!string.IsNullOrEmpty(Data.Strip.y))
+{
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text style="transform: translate(@(yStrip.X)px, @(yStrip.Y)px) rotate(@(Data.Data.Theme.Strip.Text.Y.Angle)deg);" class="css-@(Plot.Id)-stripTextY">@Data.Strip.y</text>
+    </g>
+}
+
+@{
+    var y1 = Area.Y;
+    var y2 = Area.Y + Area.Height;
+
+    foreach (var b in xscale.Breaks)
+    {
+        var x = CoordX(b);
+        <line x1="@x" x2="@x" y1="@y1" y2="@y2" class="css-@(Plot.Id)-gridMajor" clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
+    }
+
+    foreach (var b in xscale.MinorBreaks)
+    {
+        var x = CoordX(b);
+        <line x1="@x" x2="@x" y1="@y1" y2="@y2" class="css-@(Plot.Id)-gridMinor" clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
+    }
+
+    if (Data.Axis.x)
+    {
+        foreach (var (value, label) in xscale.Labels)
+        {
+            var x = CoordX(value);
+
+            if (Area.X < x && x < (Area.X + Area.Width))
+            {
+                <g clip-path="url(#@(Plot.Id)-@Data.Id)">
+                    <text x="@x" y="@xAxisText.Y" class="css-@(Plot.Id)-axisTextX">@label</text>
+                </g>
+            }
+        }
+
+        foreach (var (value, label) in xscale.Titles)
+        {
+            var x = CoordX(value);
+
+            if (Area.X < x && x < (Area.X + Area.Width))
+            {
+                <g clip-path="url(#@(Plot.Id)-plot)">
+                    <text x="@x" y="@xAxisTitle.Y" class="css-@(Plot.Id)-axisTitleX" style="text-anchor: middle;">@label</text>
+                </g>
+            }
+        }
+    }
+}
+
+@{
+    var x1 = Area.X;
+    var x2 = Area.X + Area.Width;
+
+    foreach (var b in yscale.Breaks)
+    {
+        var y = CoordY(b);
+        <line x1="@x1" x2="@x2" y1="@y" y2="@y" class="css-@(Plot.Id)-gridMajor" clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
+    }
+
+    foreach (var b in yscale.MinorBreaks)
+    {
+        var y = CoordY(b);
+        <line x1="@x1" x2="@x2" y1="@y" y2="@y" class="css-@(Plot.Id)-gridMinor" clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
+    }
+
+    if (Data.Axis.y)
+    {
+        var height = Data.Data.Theme.Axis.Text.Y.Size.Height();
+        var offset = height / 4.0;
+
+        foreach (var (value, label) in yscale.Labels)
+        {
+            var y = CoordY(value) + offset;
+
+            if (Area.Y < (y - height / 2.0) && (y + offset) < (Area.Y + Area.Height))
+            {
+                <g clip-path="url(#@(Plot.Id)-@Data.Id)">
+                    <text x="@yAxisText.X" y="@y" class="css-@(Plot.Id)-axisTextY">@label</text>
+                </g>
+            }
+        }
+    }
+}
+
+@for (var g = 0; g < Data.Geoms.Count; g++)
+{
+    var geom = Data.Geoms[g];
+
+    for (var i = 0; i < geom.Layer.Count; i++)
+    {
+        var shape = geom.Layer[i];
+
+        if (shape is Shapes.Line l)
+        {
+            <line x1="@CoordX(l.X1)"
+                  y1="@CoordY(l.Y1)"
+                  x2="@CoordX(l.X2)"
+                  y2="@CoordY(l.Y2)"
+                  class="@l.Css()"
+                  style="stroke-width: @l.Aesthetic.Width; stroke: @l.Aesthetic.Color; stroke-opacity: @l.Aesthetic.Alpha; stroke-dasharray: @(l.Aesthetic.LineType.DashArray());"
+                  clip-path="url(#@(Plot.Id)-@(Data.Id).area)"
+                  @onclick=@(async e => await l.OnClickHandler(e))
+                  @onmouseover=@(async e => await l.OnMouseOverHandler(e))
+                  @onmouseout=@(async e => await l.OnMouseOutHandler(e)) />
+        }
+        else if (shape is Shapes.Rectangle r)
+        {
+            var x = CoordX(r.X);
+            var y = CoordY(r.Y + r.Height);
+            var width = CoordX(r.X + r.Width) - x;
+            var height = CoordY(r.Y) - y;
+
+            <rect x="@x"
+                  y="@y"
+                  width="@width"
+                  height="@height"
+                  class="@r.Css()"
+                  style="fill: @r.Aesthetic.Fill; fill-opacity: @r.Aesthetic.Alpha;"
+                  clip-path="url(#@(Plot.Id)-@(Data.Id).area)"
+                  @onclick=@(async e => await r.OnClickHandler(e))
+                  @onmouseover=@(async e => await r.OnMouseOverHandler(e))
+                  @onmouseout=@(async e => await r.OnMouseOutHandler(e)) />
+        }
+        else if (shape is Shapes.Circle c)
+        {
+            <circle cx="@CoordX(c.X)"
+                    cy="@CoordY(c.Y)"
+                    r="@c.Aesthetic.Radius"
+                    class="@c.Css()"
+                    style="stroke-width: 0.71; stroke: @c.Aesthetic.Fill; stroke-opacity: @c.Aesthetic.Alpha; fill: @c.Aesthetic.Fill; fill-opacity: @c.Aesthetic.Alpha;"
+                    clip-path="url(#@(Plot.Id)-@(Data.Id).area)"
+                    @onclick=@(async e => await c.OnClickHandler(e))
+                    @onmouseover=@(async e => await c.OnMouseOverHandler(e))
+                    @onmouseout=@(async e => await c.OnMouseOutHandler(e)) />
+        }
+        else if (shape is Shapes.VStrip v)
+        {
+            var x = CoordX(v.X);
+            var width = CoordY(v.X + v.Width) - x;
+
+            <rect x="@x"
+                  y="@Y"
+                  width="@width"
+                  height="@Height"
+                  style="fill: transparent"
+                  clip-path="url(#@(Plot.Id)-@(Data.Id).area)"
+                  @onclick=@(async e => await v.OnClickHandler(e))
+                  @onmouseover=@(async e => await v.OnMouseOverHandler(e))
+                  @onmouseout=@(async e => await v.OnMouseOutHandler(e)) />
+        }
+        else if (shape is Shapes.Path p)
+        {
+            if (p.Points.Count > 0)
+            {
+                sb.Clear();
+
+                var (x, y) = p.Points[0];
+
+                sb.Append("M ");
+                sb.Append(CoordX(x));
+                sb.Append(" ");
+                sb.Append(CoordY(y));
+
+                for (var j = 1; j < p.Points.Count; j++)
+                {
+                    (x, y) = p.Points[j];
+
+                    sb.Append(" L ");
+                    sb.Append(CoordX(x));
+                    sb.Append(" ");
+                    sb.Append(CoordY(y));
+                }
+
+                <path d="@sb.ToString()"
+                      style="stroke-width: @p.Aesthetic.Width; stroke: @p.Aesthetic.Color; stroke-opacity: @p.Aesthetic.Alpha; stroke-dasharray: @(p.Aesthetic.LineType.DashArray());"
+                      clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
+            }
+        }
+        else if (shape is Shapes.Area a)
+        {
+            if (a.Points.Count > 0)
+            {
+                sb.Clear();
+
+                var (x, ymin, ymax) = a.Points[0];
+
+                sb.Append("M ");
+                sb.Append(CoordX(x));
+                sb.Append(" ");
+                sb.Append(CoordY(ymax));
+
+                for (var j = 1; j < a.Points.Count; j++)
+                {
+                    (x, ymin, ymax) = a.Points[j];
+
+                    sb.Append(" L ");
+                    sb.Append(CoordX(x));
+                    sb.Append(" ");
+                    sb.Append(CoordY(ymax));
+                }
+
+                for (var j = 0; j < a.Points.Count; j++)
+                {
+                    (x, ymin, ymax) = a.Points[a.Points.Count - j - 1];
+
+                    sb.Append(" L ");
+                    sb.Append(CoordX(x));
+                    sb.Append(" ");
+                    sb.Append(CoordY(ymin));
+                }
+
+                sb.Append(" Z");
+
+                <path d="@sb.ToString()"
+                      style="fill: @a.Aesthetic.Fill; fill-opacity: @a.Aesthetic.Alpha;"
+                      clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
+            }
+        }
+        else if (shape is Shapes.Text text)
+        {
+            <g style="pointer-events: none;" clip-path="url(#@(Plot.Id)-@(Data.Id).area)">
+                <text x="@CoordX(text.X)" y="@CoordY(text.Y)" style="font-size: @text.Aesthetic.Size; fill: @text.Aesthetic.Color; text-anchor: @text.Aesthetic.Anchor; font-weigth: @text.Aesthetic.Weight; font-style: @text.Aesthetic.Style;">
+                    @text.Value
+                </text>
+            </g>
+        }
+        else if (shape is Shapes.VLine vline)
+        {
+            var x = CoordX(vline.X);
+
+            <line x1="@x"
+                  y1="@Area.Y"
+                  x2="@x"
+                  y2="@(Area.Y + Area.Height)"
+                  style="stroke-width: @vline.Aesthetic.Width; stroke: @vline.Aesthetic.Color; stroke-opacity: @vline.Aesthetic.Alpha; stroke-dasharray: @(vline.Aesthetic.LineType.DashArray());"
+                  clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
+        }
+        else if (shape is Shapes.HLine hline)
+        {
+            var y = CoordY(hline.Y);
+
+            <line x1="@Area.X"
+                  y1="@y"
+                  x2="@(Area.X + Area.Width)"
+                  y2="@y"
+                  style="stroke-width: @hline.Aesthetic.Width; stroke: @hline.Aesthetic.Color; stroke-opacity: @hline.Aesthetic.Alpha; stroke-dasharray: @(hline.Aesthetic.LineType.DashArray());"
+                  clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
+        }
+    }
+}
+
+@if (!string.IsNullOrEmpty(Data.XLab.text))
+{
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text x="@xAxisTitle.X" y="@xAxisTitle.Y" class="css-@(Plot.Id)-axisTitleX">@Data.XLab.text</text>
+    </g>
+}
+
+@if (!string.IsNullOrEmpty(@Data.YLab.text))
+{
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text style="transform: translate(@(yAxisTitle.X)px, @(yAxisTitle.Y)px) rotate(@(Data.Data.Theme.Axis.Title.Y.Angle)deg);" class="css-@(Plot.Id)-axisTitleY">@Data.YLab.text</text>
+    </g>
+}
+
+@if (Last && Plot.Caption.Width > 0)
+{
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text x="@(Area.X + Area.Width - Plot.Data.Theme.Plot.Caption.Margin.Right)" y="@Plot.Caption.Y" class="css-@(Plot.Id)-caption">@Plot.Data.Caption</text>
+    </g>
+}
+
+<CascadingValue Value=@this>
+    <Tooltip @ref=@tooltip T="T" TX="TX" TY="TY" />
+    <YLabel @ref=@ylabel T="T" TX="TX" TY="TY" />
+</CascadingValue>

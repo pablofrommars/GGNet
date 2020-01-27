@@ -1,0 +1,59 @@
+﻿@namespace Site.Pages
+@page "/examples/barchart"
+
+@using NodaTime
+
+@using GGNet
+
+    <div class="container-fluid mt-4">
+
+        
+        <div class="row m-4">
+            <div class="col-md-6">
+                <h2 class="text-center">Bar Chart</h2>
+                <p>Display the time serie of financial instruments market data</p>
+                <div class="border rounded-lg bg-light p-3">
+<pre class="csharp">
+<span class="pl-smi ">Plot</span>.<span class="pl-en ">New</span>(<span class="pl-smi ">source</span>, <span class="pl-smi ">x</span>: <span class="pl-smi ">o</span> <span class="pl-k ">=&gt;</span> <span class="pl-smi ">o</span>.<span class="pl-smi ">date</span>)
+    .<span class="pl-en ">Title</span>(<span class="pl-s "><span class="pl-pds">"</span>SPY US Equity<span class="pl-pds">"</span></span>)
+    .<span class="pl-en ">Scale_X_Discrete_Date</span>()
+    .<span class="pl-en ">Panel</span>(<span class="pl-smi ">pf</span> <span class="pl-k ">=&gt;</span> <span class="pl-smi ">pf</span>.<span class="pl-en ">Geom_OHCL</span>(<span class="pl-smi ">open</span>: <span class="pl-smi ">o</span> <span class="pl-k ">=&gt;</span> <span class="pl-smi ">o</span>.<span class="pl-smi ">open</span>, <span class="pl-smi ">high</span>: <span class="pl-smi ">o</span> <span class="pl-k ">=&gt;</span> <span class="pl-smi ">o</span>.<span class="pl-smi ">high</span>, <span class="pl-smi ">low</span>: <span class="pl-smi ">o</span> <span class="pl-k ">=&gt;</span> <span class="pl-smi ">o</span>.<span class="pl-smi ">low</span>, <span class="pl-smi ">close</span>: <span class="pl-smi ">o</span> <span class="pl-k ">=&gt;</span> <span class="pl-smi ">o</span>.<span class="pl-smi ">close</span>)
+        .<span class="pl-en ">YLab</span>(<span class="pl-s "><span class="pl-pds">"</span>Price<span class="pl-pds">"</span></span>), <span class="pl-smi ">height</span>: <span class="pl-c1 ">0.8</span>)
+    .<span class="pl-en ">Panel</span>(<span class="pl-smi ">pf</span> <span class="pl-k ">=&gt;</span> <span class="pl-smi ">pf</span>.<span class="pl-en ">Geom_Volume</span>(<span class="pl-smi ">volume</span>: <span class="pl-smi ">o</span> <span class="pl-k ">=&gt;</span> <span class="pl-smi ">o</span>.<span class="pl-smi ">volume</span> <span class="pl-k ">/</span> <span class="pl-c1 ">1000.0</span>)
+        .<span class="pl-en ">Scale_Y_Continuous</span>(<span class="pl-smi ">expand</span>: (<span class="pl-c1 ">0</span>, <span class="pl-c1 ">0</span>, <span class="pl-c1 ">0.05</span>, <span class="pl-c1 ">0</span>))
+        .<span class="pl-en ">YLim</span>(<span class="pl-c1 ">0</span>)
+        .<span class="pl-en ">YLab</span>(<span class="pl-s "><span class="pl-pds">"</span>Volume(K)<span class="pl-pds">"</span></span>), <span class="pl-smi ">height</span>: <span class="pl-c1 ">0.2</span>)
+    .<span class="pl-en ">Caption</span>(<span class="pl-s "><span class="pl-pds">"</span>Source: Bloomberg<span class="pl-pds">"</span></span>)
+    .<span class="pl-en ">Theme</span>(<span class="pl-smi ">axisY</span>: <span class="pl-smi ">Position</span>.<span class="pl-smi ">Right</span>);
+</pre>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="border rounded-lg p-1" style="background-color: #252A32;">
+                    <GGNet.Components.Plot Data=@spy T="GGNet.Datasets.SPY.Bar" TX="LocalDate" TY="Double" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+@code {
+
+    Data<GGNet.Datasets.SPY.Bar, LocalDate, double> spy;
+
+    protected override void OnInitialized()
+    {
+        var source = new GGNet.Source<GGNet.Datasets.SPY.Bar>(GGNet.Datasets.SPY.Load().Where(o => o.date.Year >= 2019));
+
+        spy = GGNet.Plot.New(source, x: o => o.date)
+            .Title("SPY US Equity")
+            .Scale_X_Discrete_Date()
+            .Panel(pf => pf.Geom_OHCL(open: o => o.open, high: o => o.high, low: o => o.low, close: o => o.close)
+            .YLab("Price"), height: 0.8)
+            .Panel(pf => pf.Geom_Volume(volume: o => o.volume / 1000.0)
+            .Scale_Y_Continuous(expand: (0, 0, 0.05, 0))
+            .YLim(0)
+            .YLab("Volume(K)"), height: 0.2)
+            .Caption("Source: Bloomberg")
+            .Theme(axisY: GGNet.Position.Right);
+    }
+}

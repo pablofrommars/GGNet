@@ -1,0 +1,26 @@
+﻿@inherits LayoutComponentBase
+
+<header>
+    <nav class="navbar fixed-top navbar-expand navbar-dark bg-dark flex-column flex-md-row">
+        <a class="navbar-brand mr-0 mr-md-2" href="/">GG.NET</a>
+            <ul class="navbar-nav bd-navbar-nav flex-row">
+                <li class="nav-item"><NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Home</NavLink></li>
+                <li class="nav-item"><NavLink class="nav-link" href="/documentation" Match="NavLinkMatch.Prefix">Documentation</NavLink></li>
+                <li class="nav-item"><NavLink class="nav-link" href="/examples" Match="NavLinkMatch.Prefix">Examples</NavLink></li>
+            </ul>
+
+        <ul class="navbar-nav ml-md-auto">
+            <li class="nav-item"><a class="nav-link" href="https://github.com/pablofrommars"><i class="fab fa-github"></i></a></li>
+            <li class="nav-item"><a class="nav-link" href="https://www.nuget.org/"><i class="fas fa-download"></i></a></li>
+        </ul>
+    </nav>
+</header>
+
+<div class="layout-wrapper">
+    <div class="layout-content">
+        @Body
+    </div>
+    <div class="layout-footer border-top p-2">
+        <span class="text-muted">&copy; Pablo Belin 2020</span>
+    </div>
+</div>

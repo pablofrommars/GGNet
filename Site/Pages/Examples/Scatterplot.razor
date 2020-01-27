@@ -1,0 +1,52 @@
+﻿@namespace Site.Pages
+@page "/examples/scatterplot"
+
+@using GGNet
+
+    <div class="container-fluid mt-4">
+
+        <div class="row m-4">
+
+            <div class="col-md-6">
+                <h2 class="text-alcentergn">Scatterplot</h2>
+                <p>Display the relationship between 2 variables grouped by category</p>
+                <div class="border rounded-lg bg-light p-3 mt-5">
+
+<pre class="csharp">
+<span class="pl-smi">Plot</span>.<span class="pl-en">New</span>(<span class="pl-smi">source</span>, <span class="pl-smi">x</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">SepalLength</span>, <span class="pl-smi">y</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">SepalWidth</span>)
+    .<span class="pl-en">Title</span>(<span class="pl-s"><span class="pl-pds">"</span>Fisher's Iris<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">Geom_Point</span>()
+    .<span class="pl-en">XLab</span>(<span class="pl-s"><span class="pl-pds">"</span>Sepal Lenght (cm)<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">Scale_Color_Discrete</span>(<span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Species</span>, <span class="pl-smi">Colors</span>.<span class="pl-smi">Viridis</span>, <span class="pl-smi">name</span>: <span class="pl-s"><span class="pl-pds">"</span>Species<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">YLab</span>(<span class="pl-s"><span class="pl-pds">"</span>Sepal Width (cm)<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">Theme</span>(<span class="pl-smi">dark</span>: <span class="pl-c1">false</span>);
+</pre>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="border rounded-lg p-1">
+                    <GGNet.Components.Plot Data=@iris T="GGNet.Datasets.Iris.Point" TX="Double" TY="Double" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+@code {
+
+    Data<GGNet.Datasets.Iris.Point, double, double> iris;
+
+    protected override void OnInitialized()
+    {
+        var source = new GGNet.Source<GGNet.Datasets.Iris.Point>(GGNet.Datasets.Iris.Load());
+
+        iris = GGNet.Plot.New(source, x: o => o.SepalLength, y: o => o.SepalWidth)
+            .Title("Fisher's Iris")
+            .Geom_Point()
+            .XLab("Sepal Lenght (cm)")
+            .Scale_Color_Discrete(o => o.Species, GGNet.Colors.Viridis, name: "Species")
+            .YLab("Sepal Width (cm)")
+            .Theme(dark: false);
+    }
+}

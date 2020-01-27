@@ -1,0 +1,60 @@
+﻿@namespace Site.Pages
+@layout DocumentationLayout
+@page "/documentation/scales"
+
+<h1>Scales</h1>
+
+<p>Control how variables get translated to coordinates and aesthetic visual properties.</p>
+
+<h3>Positional Scales</h3>
+
+<p>
+    The X and Y coordinates are handled by positional scales.
+    Limits can be set to display a subset of the data. 
+    Expand vector is used to tweak space between the data and the axis. 
+    Optionally, data transformations can be applied prior to plotting for more meaningful visualization.
+</p>
+
+<div class="row ml-auto mr-auto">
+
+    <div class="col-md-3">
+        <span class="func">Scale_X_Continuous</span>
+        <span class="func">Scale_Y_Continuous</span>
+        <span class="func">Scale_X_Sqrt</span>
+        <span class="func">Scale_Y_Sqrt</span>
+        <span class="func">Scale_X_Log10</span>
+        <span class="func">Scale_Y_Log10</span>
+    </div>
+    <div class="col-md-9">Continuous data</div>
+
+    <div class="col-md-3">
+        <span class="func">Scale_X_Discrete</span>
+        <span class="func">Scale_Y_Discrete</span>
+    </div>
+    <div class="col-md-9">Discrete data</div>
+
+    <div class="col-md-3">
+        <span class="func">Scale_X_Discrete_Date</span>
+    </div>
+    <div class="col-md-9">Date/time data</div>
+
+</div>
+
+<h3>Aesthetic Scales</h3>
+
+<p>
+    Geom's visual properties (color, fill, alpha, size, ...) are handled by aesthetic scales.
+</p>
+
+<ul class="list-unstyled">
+    <li><span class="func">Scale_Color_Discrete</span></li>
+    <li><span class="func">Scale_Color_Identity</span></li>
+    <li><span class="func">Scale_Fill_Discrete</span></li>
+    <li><span class="func">Scale_Fill_Identity</span></li>
+    <li><span class="func">Scale_Size_Continuous</span></li>
+    <li><span class="func">Scale_Size_Identity</span></li>
+    <li><span class="func">Scale_LineType_Discrete</span></li>
+    <li><span class="func">Scale_LineType_Identity</span></li>
+</ul>
+
+

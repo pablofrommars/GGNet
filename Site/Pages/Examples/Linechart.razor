@@ -1,0 +1,54 @@
+﻿@namespace Site.Pages
+@page "/examples/linechart"
+
+@using GGNet
+
+    <div class="container-fluid mt-4">
+
+        <div class="row m-4">
+
+            <div class="col-md-6">
+                <h2 class="text-alcentergn">Line Chart</h2>
+                <p>Display the evolution of numerical variables</p>
+                <div class="border rounded-lg bg-light p-3 mt-5">
+
+                    <pre class="csharp">
+<span class="pl-smi">Plot</span>.<span class="pl-en">New</span>(<span class="pl-smi">source</span>, <span class="pl-smi">x</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Year</span>, <span class="pl-smi">y</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">N</span>)
+    .<span class="pl-en">Geom_Line</span>(<span class="pl-smi">width</span>: <span class="pl-c1">2.0</span>)
+    .<span class="pl-en">Scale_Color_Discrete</span>(<span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Name</span>, <span class="pl-smi">Colors</span>.<span class="pl-smi">Ipsum</span>, <span class="pl-smi">guide</span>: <span class="pl-c1">true</span>)
+    .<span class="pl-en">Scale_LineType_Discrete</span>(<span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Name</span>, <span class="pl-smi">guide</span>: <span class="pl-c1">false</span>)
+    .<span class="pl-en">Title</span>(<span class="pl-s"><span class="pl-pds">"</span>Popularity of Beatles Names Since 1984<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">YLab</span>(<span class="pl-s"><span class="pl-pds">"</span>#<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">XLab</span>(<span class="pl-s"><span class="pl-pds">"</span>Year<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">Theme</span>(<span class="pl-smi">dark</span>: <span class="pl-c1">false</span>, <span class="pl-smi">legend</span>: <span class="pl-smi">Position</span>.<span class="pl-smi">Bottom</span>);
+</pre>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="border rounded-lg p-1">
+                    <GGNet.Components.Plot Data=@beatles2 T="GGNet.Datasets.Beatles.Point" TX="Double" TY="Double" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+@code {
+
+    Data<GGNet.Datasets.Beatles.Point, double, double> beatles2;
+
+    protected override void OnInitialized()
+    {
+        var source = new GGNet.Source<GGNet.Datasets.Beatles.Point>(GGNet.Datasets.Beatles.Load().Where(o => o.Year >= 1984));
+
+        beatles2 = Plot.New(source, x: o => o.Year, y: o => o.N)
+            .Geom_Line(width: 2.0)
+            .Scale_Color_Discrete(o => o.Name, GGNet.Colors.Ipsum, guide: true)
+            .Scale_LineType_Discrete(o => o.Name, guide: false)
+            .Title("Popularity of Beatles Names Since 1984")
+            .YLab("#")
+            .XLab("Year")
+            .Theme(dark: false, legend: Position.Bottom);
+    }
+}

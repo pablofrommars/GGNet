@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RazorLangVersion>3.0</RazorLangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Components\Panel.cs" />
+    <Compile Remove="Components\Plot.cs" />
+    <Compile Remove="Components\Tooltip.cs" />
+    <Compile Remove="Components\VTrack.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Components\VTrack.razor" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.1" />
+    <PackageReference Include="NodaTime" Version="3.0.0-beta01" />
+    <PackageReference Include="System.Threading.Channels" Version="4.7.0" />
+  </ItemGroup>
+
+
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
+</Project>

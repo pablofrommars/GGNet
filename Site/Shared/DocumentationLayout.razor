@@ -1,0 +1,19 @@
+﻿@layout MainLayout
+@inherits LayoutComponentBase
+
+<div class="row m-0 flex-fill">
+    <div class="documentation-sidebar col-md-2 bg-light border-right">
+        <nav class="nav flex-column">
+            <NavLink class="nav-link" href="/documentation" Match="NavLinkMatch.All">Basics</NavLink>
+            <NavLink class="nav-link" href="/documentation/geoms" Match="NavLinkMatch.Prefix">Geoms</NavLink>
+            <NavLink class="nav-link" href="/documentation/scales" Match="NavLinkMatch.Prefix">Scales</NavLink>
+            <NavLink class="nav-link" href="/documentation/panels" Match="NavLinkMatch.Prefix">Panels and Facetting</NavLink>
+            <NavLink class="nav-link" href="/documentation/interactivity" Match="NavLinkMatch.Prefix">Interactivity</NavLink>
+            <NavLink class="nav-link" href="/documentation/themes" Match="NavLinkMatch.Prefix">Themes</NavLink>
+        </nav>
+    </div>
+
+    <div class="col-md-10 pt-3 pl-5 pr-5">
+        @Body
+    </div>
+</div>
