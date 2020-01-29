@@ -9,7 +9,7 @@
             <div class="col-md-6">
                 <h2 class="text-center">Errorbar</h2>
                 <p>Display dispersion of numerical variables</p>
-                <div class="border rounded-lg bg-light p-3">
+                <div class="border rounded-lg bg-light p-3 mt-3">
 <pre class="csharp">
 <span class="pl-smi">Plot</span>.<span class="pl-en">New</span>(<span class="pl-smi">source</span>, <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Day</span>, <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Avg</span>)
     .<span class="pl-en">Geom_ErrorBar</span>(<span class="pl-smi">ymin</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Lower</span>, <span class="pl-smi">ymax</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Upper</span>, <span class="pl-smi">position</span>: <span class="pl-smi">PositionAdjustment</span>.<span class="pl-smi">Dodge</span>)

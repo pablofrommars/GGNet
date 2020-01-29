@@ -258,6 +258,36 @@
                       clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
             }
         }
+        else if (shape is Shapes.Polygon poly)
+        {
+            if (poly.Points.Count > 0)
+            {
+                sb.Clear();
+
+                var (x, y) = poly.Points[0];
+
+                sb.Append("M ");
+                sb.Append(CoordX(x));
+                sb.Append(" ");
+                sb.Append(CoordY(y));
+
+                for (var j = 1; j < poly.Points.Count; j++)
+                {
+                    (x, y) = poly.Points[j];
+
+                    sb.Append(" L ");
+                    sb.Append(CoordX(x));
+                    sb.Append(" ");
+                    sb.Append(CoordY(y));
+                }
+
+                sb.Append(" Z");
+
+                <path d="@sb.ToString()"
+                      style="fill: @poly.Aesthetic.Fill; fill-opacity: @poly.Aesthetic.Alpha;"
+                      clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
+            }
+        }
         else if (shape is Shapes.Text text)
         {
             <g style="pointer-events: none;" clip-path="url(#@(Plot.Id)-@(Data.Id).area)">

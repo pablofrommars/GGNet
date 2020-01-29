@@ -1348,6 +1348,90 @@ namespace GGNet
             return data;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            Source<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, TX2> dx = null,
+            Func<T2, TY2> dy = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            panel.Add_Geom(() =>
+            {
+                var geom = new Hex<T2, TX2, TY2>(source, x, y, dx, dy, _fill, inherit)
+                {
+                    Aesthetic = new Rectangle
+                    {
+                        Fill = fill,
+                        Alpha = alpha
+                    }
+                };
+
+                return geom;
+            });
+
+            return panel;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            Source<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, TX2> dx = null,
+            Func<T2, TY2> dy = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            data.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, fill, alpha, inherit);
+
+            return data;
+        }
+
+        public static Data<T, TX, TY>.PanelFactory Geom_Hex<T, TX, TY>(
+            this Data<T, TX, TY>.PanelFactory panel,
+            Func<T, TX> x = null,
+            Func<T, TY> y = null,
+            Func<T, TX> dx = null,
+            Func<T, TY> dy = null,
+            IAestheticMapping<T, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            return Geom_Hex(panel, panel.Data.Source, x, y, dx, dy, _fill, fill, alpha, inherit);
+        }
+
+        public static Data<T, TX, TY> Geom_Hex<T, TX, TY>(
+            this Data<T, TX, TY> data,
+            Func<T, TX> x = null,
+            Func<T, TY> y = null,
+            Func<T, TX> dx = null,
+            Func<T, TY> dy = null,
+            IAestheticMapping<T, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            data.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, fill, alpha, inherit);
+
+            return data;
+        }
+
         public static Data<T, TX, TY> Scale_Color_Discrete<T, TX, TY, TKey>(
             this Data<T, TX, TY> data,
             Func<T, TKey> selector,
@@ -1431,6 +1515,25 @@ namespace GGNet
             data.Aesthetics.Scales.Add(scale);
 
             data.Aesthetics.Fill = new Aesthetic<T, TKey, string>(selector, scale, guide, name);
+
+            return data;
+        }
+
+        public static Data<T, TX, TY> Scale_Fill_Continuous<T, TX, TY>(this Data<T, TX, TY> data,
+            Func<T, double> selector,
+            string[] palette,
+            int m = 5,
+            string format = "0.##",
+            bool guide = true,
+            string name = null)
+            where TX : struct
+            where TY : struct
+        {
+            var scale = new FillContinuous(palette, m, format);
+
+            data.Aesthetics.Scales.Add(scale);
+
+            data.Aesthetics.Fill = new Aesthetic<T, double, string>(selector, scale, guide, name);
 
             return data;
         }

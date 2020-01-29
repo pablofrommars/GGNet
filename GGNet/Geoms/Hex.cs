@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 using GGNet.Scales;
@@ -8,16 +7,16 @@ using GGNet.Shapes;
 
 namespace GGNet.Geoms
 {
-    public class Area<T, TX, TY> : Geom<T, TX, TY>
+    public class Hex<T, TX, TY> : Geom<T, TX, TY>
         where TX : struct
         where TY : struct
     {
-        private readonly Dictionary<object, Area> areas = new Dictionary<object, Area>();
-
-        public Area(
+        public Hex(
             Source<T> source,
             Func<T, TX> x,
             Func<T, TY> y,
+            Func<T, TX> Dx,
+            Func<T, TY> Dy,
             IAestheticMapping<T, string> fill = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
@@ -26,7 +25,9 @@ namespace GGNet.Geoms
             Selectors = new _Selectors
             {
                 X = x,
-                Y = y
+                Y = y,
+                Dx = Dx,
+                Dy = Dy
             };
 
             Aesthetics = new _Aesthetics
@@ -40,6 +41,10 @@ namespace GGNet.Geoms
             public Func<T, TX> X { get; set; }
 
             public Func<T, TY> Y { get; set; }
+
+            public Func<T, TX> Dx { get; set; }
+
+            public Func<T, TY> Dy { get; set; }
         }
 
         public _Selectors Selectors { get; }
@@ -56,6 +61,10 @@ namespace GGNet.Geoms
             public IPositionMapping<T> X { get; set; }
 
             public IPositionMapping<T> Y { get; set; }
+
+            public IPositionMapping<T> Dx { get; set; }
+
+            public IPositionMapping<T> Dy { get; set; }
         }
 
         public _Positions Positions { get; } = new _Positions();
@@ -84,6 +93,9 @@ namespace GGNet.Geoms
                 Positions.Y = YMapping(Selectors.Y, panel.Y);
             }
 
+            Positions.Dx = XMapping(Selectors.Dx, panel.X);
+            Positions.Dy = YMapping(Selectors.Dy, panel.Y);
+
             if (!inherit)
             {
                 return;
@@ -96,6 +108,8 @@ namespace GGNet.Geoms
         {
             Positions.X.Train(item);
             Positions.Y.Train(item);
+            Positions.Dx.Train(item);
+            Positions.Dy.Train(item);
 
             Aesthetics.Fill?.Train(item);
         }
@@ -123,63 +137,45 @@ namespace GGNet.Geoms
             }
         }
 
-        private Area _area = null;
-
         protected override void Shape(T item, bool flip)
         {
-            Area area;
+            var fill = Aesthetic.Fill;
 
-            if (Aesthetics.Fill == null)
+            if (Aesthetics.Fill != null)
             {
-                if (_area == null)
-                {
-                    _area = new Area { Aesthetic = Aesthetic };
-
-                    Layer.Add(_area);
-                }
-
-                area = _area;
-            }
-            else
-            {
-                var fill = Aesthetics.Fill.Map(item);
+                fill = Aesthetics.Fill.Map(item);
                 if (string.IsNullOrEmpty(fill))
                 {
                     return;
                 }
-
-                if (!areas.TryGetValue(fill, out area))
-                {
-                    area = new Area
-                    {
-                        Aesthetic = new Elements.Rectangle
-                        {
-                            Fill = fill,
-                            Alpha = Aesthetic.Alpha
-                        }
-                    };
-
-                    Layer.Add(area);
-
-                    areas[fill] = area;
-                }
             }
+
 
             var x = Positions.X.Map(item);
             var y = Positions.Y.Map(item);
+            var dx = Positions.Dx.Map(item) / 2.0;
+            var dy = Positions.Dy.Map(item) / Math.Sqrt(3.0) / 2.0 * 1.15;
 
-            area.Points.Add((x, 0, y));
+            var hex = new Polygon
+            {
+                Aesthetic = new Elements.Rectangle
+                {
+                    Fill = fill,
+                    Alpha = Aesthetic.Alpha
+                }
+            };
 
-            Positions.X.Position.Shape(x, x);
-            Positions.Y.Position.Shape(y, y);
-        }
+            Layer.Add(hex);
 
-        public override void Clear()
-        {
-            base.Clear();
+            hex.Points.Add((x + dx, y + dy));
+            hex.Points.Add((x + dx, y - dy));
+            hex.Points.Add((x, y - 2.0 * dy));
+            hex.Points.Add((x - dx, y - dy));
+            hex.Points.Add((x - dx, y + dy));
+            hex.Points.Add((x, y + 2 * dy));
 
-            _area = null;
-            areas.Clear();
+            Positions.X.Position.Shape(x - dx, x + dx);
+            Positions.Y.Position.Shape(y - 2.0 * dy, y + 2.0 * dy);
         }
     }
 }
