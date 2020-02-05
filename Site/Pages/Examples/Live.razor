@@ -16,12 +16,12 @@
             <p>Refresh plots on data updates. Wherever possible, internal objects are pooled to increase throughput and decrease garbage collection pressure.</p>
             <div class="border rounded-lg bg-light p-3 mt-3">
 <pre class="html">
-<span class="pl-kos">&lt;</span><span class="pl-ent">Plot</span> <span class="pl-c1">Data</span>=<span class="pl-s">&#64;source</span> <span class="pl-c1">T</span>="<span class="pl-s">Datasets.SPY.Bar</span>" <span class="pl-c1">TX</span>="<span class="pl-s">LocalDate</span>" <span class="pl-c1">TY</span>="<span class="pl-s">Double</span>" <span class="pl-c1">&#64;ref</span>="<span class="pl-s">plot</span>" /&gt;
+<span class="pl-kos">&lt;</span><span class="pl-ent">Plot</span> <span class="pl-c1">Data</span>=<span class="pl-s">&#64;data</span> <span class="pl-c1">T</span>="<span class="pl-s">Datasets.SPY.Bar</span>" <span class="pl-c1">TX</span>="<span class="pl-s">LocalDate</span>" <span class="pl-c1">TY</span>="<span class="pl-s">Double</span>" <span class="pl-c1">&#64;ref</span>="<span class="pl-s">plot</span>" /&gt;
 </pre>
 <pre class="csharp">
 <span class="pl-smi">&#64;code</span> {
    ...
-   <span class="pl-smi">source</span>.<span class="pl-en">Render</span>(<span class="pl-smi">first</span>: <span class="pl-c1">false</span>);
+   <span class="pl-smi">data</span>.<span class="pl-en">Render</span>(<span class="pl-smi">first</span>: <span class="pl-c1">false</span>);
    <span class="pl-smi">plot</span>.<span class="pl-en">Render</span>();
    ...
 }

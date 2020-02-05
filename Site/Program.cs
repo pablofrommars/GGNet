@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Blazor.Hosting;
+using System.Globalization;
 
 namespace Site
 {
@@ -6,6 +7,8 @@ namespace Site
     {
         public static void Main(string[] args)
         {
+            CultureInfo.CurrentCulture = new CultureInfo("en-GB");
+            //CultureInfo.CurrentCulture = new CultureInfo("sv-SE");
             CreateHostBuilder(args).Build().Run();
         }
 
