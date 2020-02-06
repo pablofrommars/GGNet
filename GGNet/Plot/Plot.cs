@@ -1179,7 +1179,7 @@ namespace GGNet
             return data;
         }
 
-        public static Data<T1, TX1, TY1>.PanelFactory Geom_OHCL<T1, TX1, TY1, T2, TX2, TY2>(
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_OHLC<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1>.PanelFactory panel,
             Source<T2> source,
             Func<T2, TX2> x = null,
@@ -1197,7 +1197,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new OHCL<T2, TX2, TY2>(source, x, open, high, low, close, vtrack, ylabel)
+                var geom = new OHLC<T2, TX2, TY2>(source, x, open, high, low, close, vtrack, ylabel)
                 {
                     OnClick = onclick,
                     Aesthetic = new Line
@@ -1216,7 +1216,7 @@ namespace GGNet
             return panel;
         }
 
-        public static Data<T1, TX1, TY1> Geom_OHCL<T1, TX1, TY1, T2, TX2, TY2>(
+        public static Data<T1, TX1, TY1> Geom_OHLC<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
             Func<T2, TX2> x = null,
@@ -1232,12 +1232,12 @@ namespace GGNet
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_OHCL(source, x, open, high, low, close, onclick, width, color, alpha, lineType, vtrack, ylabel);
+            data.Default_Panel().Geom_OHLC(source, x, open, high, low, close, onclick, width, color, alpha, lineType, vtrack, ylabel);
 
             return data;
         }
 
-        public static Data<T, TX, TY>.PanelFactory Geom_OHCL<T, TX, TY>(
+        public static Data<T, TX, TY>.PanelFactory Geom_OHLC<T, TX, TY>(
             this Data<T, TX, TY>.PanelFactory panel,
             Func<T, TX> x = null,
             Func<T, TY> open = null,
@@ -1250,10 +1250,10 @@ namespace GGNet
             where TX : struct
             where TY : struct
         {
-            return Geom_OHCL(panel, panel.Data.Source, x, open, high, low, close, onclick, width, color, alpha, lineType, vtrack, ylabel);
+            return Geom_OHLC(panel, panel.Data.Source, x, open, high, low, close, onclick, width, color, alpha, lineType, vtrack, ylabel);
         }
 
-        public static Data<T, TX, TY> Geom_OHCL<T, TX, TY>(
+        public static Data<T, TX, TY> Geom_OHLC<T, TX, TY>(
             this Data<T, TX, TY> data,
             Func<T, TX> x = null,
             Func<T, TY> open = null,
@@ -1266,7 +1266,94 @@ namespace GGNet
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_OHCL(x, open, high, low, close, onclick, width, color, alpha, lineType, vtrack, ylabel);
+            data.Default_Panel().Geom_OHLC(x, open, high, low, close, onclick, width, color, alpha, lineType, vtrack, ylabel);
+
+            return data;
+        }
+
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Candlestick<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            Source<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> open = null,
+            Func<T2, TY2> high = null,
+            Func<T2, TY2> low = null,
+            Func<T2, TY2> close = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            panel.Add_Geom(() =>
+            {
+                var geom = new Candlestick<T2, TX2, TY2>(source, x, open, high, low, close)
+                {
+                    Line = new Line
+                    {
+                        Width = width,
+                        Color = color,
+                        Alpha = alpha,
+                        LineType = lineType
+                    },
+                    Rectangle = new Rectangle
+                    {
+                        Fill = color,
+                        Alpha = alpha
+                    }
+                };
+
+                return geom;
+            });
+
+            return panel;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            Source<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> open = null,
+            Func<T2, TY2> high = null,
+            Func<T2, TY2> low = null,
+            Func<T2, TY2> close = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            data.Default_Panel().Geom_Candlestick(source, x, open, high, low, close, width, color, alpha, lineType);
+
+            return data;
+        }
+
+        public static Data<T, TX, TY>.PanelFactory Geom_Candlestick<T, TX, TY>(
+            this Data<T, TX, TY>.PanelFactory panel,
+            Func<T, TX> x = null,
+            Func<T, TY> open = null,
+            Func<T, TY> high = null,
+            Func<T, TY> low = null,
+            Func<T, TY> close = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            where TX : struct
+            where TY : struct
+        {
+            return Geom_Candlestick(panel, panel.Data.Source, x, open, high, low, close, width, color, alpha, lineType);
+        }
+
+        public static Data<T, TX, TY> Geom_Candlestick<T, TX, TY>(
+            this Data<T, TX, TY> data,
+            Func<T, TX> x = null,
+            Func<T, TY> open = null,
+            Func<T, TY> high = null,
+            Func<T, TY> low = null,
+            Func<T, TY> close = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            where TX : struct
+            where TY : struct
+        {
+            data.Default_Panel().Geom_Candlestick(x, open, high, low, close, width, color, alpha, lineType);
 
             return data;
         }

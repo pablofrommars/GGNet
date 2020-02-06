@@ -9,7 +9,7 @@ using GGNet.Shapes;
 
 namespace GGNet.Geoms
 {
-    public class OHCL<T, TX, TY> : Geom<T, TX, TY>
+    public class OHLC<T, TX, TY> : Geom<T, TX, TY>
         where TX : struct
         where TY : struct
     {
@@ -17,7 +17,7 @@ namespace GGNet.Geoms
 
         private readonly bool ylabel; 
 
-        public OHCL(
+        public OHLC(
             Source<T> source,
             Func<T, TX> x,
             Func<T, TY> open,
