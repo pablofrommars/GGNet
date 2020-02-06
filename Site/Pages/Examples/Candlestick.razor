@@ -15,10 +15,9 @@
 <pre class="csharp">
 <span class="pl-smi">Plot</span>.<span class="pl-en">New</span>(<span class="pl-smi">source</span>, <span class="pl-smi">x</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">date</span>)
    .<span class="pl-en">Title</span>(<span class="pl-s"><span class="pl-pds">"</span>SPY US Equity<span class="pl-pds">"</span></span>)
-   .<span class="pl-en">Scale_X_Discrete_Date</span>()
+   .<span class="pl-en">Scale_X_Discrete_DateTime</span>()
    .<span class="pl-en">Geom_Candlestick</span>(<span class="pl-smi">open</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">open</span>, <span class="pl-smi">high</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">high</span>, <span class="pl-smi">low</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">low</span>, <span class="pl-smi">close</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">close</span>)
-   .<span class="pl-en">Geom_Line</span>(<span class="pl-smi">ma</span>, <span class="pl-smi">x</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">date</span>, <span class="pl-smi">y</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">close</span>, <span class="pl-smi">color</span>: <span class="pl-s"><span class="pl-pds">"</span>#ff0055<span class="pl-pds">"</span></span>)
-   .<span class="pl-en">YLab</span>(<span class="pl-s"><span class="pl-pds">"</span>Price<span class="pl-pds">"</span></span>)
+   .<span class="pl-en">Geom_Line</span>(<span class="pl-smi">vwap</span>, <span class="pl-smi">x</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">date</span>, <span class="pl-smi">y</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">close</span>, <span class="pl-smi">color</span>: <span class="pl-s"><span class="pl-pds">"</span>#ff0055<span class="pl-pds">"</span></span>)
    .<span class="pl-en">Caption</span>(<span class="pl-s"><span class="pl-pds">"</span>Source: Bloomberg<span class="pl-pds">"</span></span>)
    .<span class="pl-en">Theme</span>(<span class="pl-smi">axisY</span>: <span class="pl-smi">GGNet</span>.<span class="pl-smi">Position</span>.<span class="pl-smi">Right</span>);
 </pre>
@@ -26,7 +25,7 @@
             </div>
             <div class="col-md-6">
                 <div class="border rounded-lg p-1" style="background-color: #252A32;">
-                    <GGNet.Components.Plot Data=@spy T="GGNet.Datasets.SPY.Bar" TX="LocalDate" TY="Double" />
+                    <GGNet.Components.Plot Data=@spy T="GGNet.Datasets.IntraDay.Bar" TX="LocalDateTime" TY="Double" />
                 </div>
             </div>
         </div>
@@ -34,38 +33,35 @@
 
 @code {
 
-    Data<GGNet.Datasets.SPY.Bar, LocalDate, double> spy;
+    Data<GGNet.Datasets.IntraDay.Bar, LocalDateTime, double> spy;
 
     protected override void OnInitialized()
     {
-        var source = new GGNet.Source<GGNet.Datasets.SPY.Bar>(GGNet.Datasets.SPY.Load().Where(o => o.date.Year >= 2019 && o.date.Month >= 6));
-        var ma = new GGNet.Source<GGNet.Datasets.SPY.Bar>();
+        var source = new GGNet.Source<GGNet.Datasets.IntraDay.Bar>(GGNet.Datasets.IntraDay.Load().Where(o => o.Date.Hour < 12));
+        var vwap = new GGNet.Source<GGNet.Datasets.IntraDay.Bar>();
 
-        var n = 10;
-        var sum = 0.0;
+        var value = 0.0;
+        var volume = 0.0;
 
         for (var i = 0; i < source.Count; i++)
         {
-            sum += source[i].close;
+            var bar = source[i];
 
-            if (i >= 10)
+            value += bar.Close * bar.Volume;
+            volume += bar.Volume;
+
+            vwap.Add(new GGNet.Datasets.IntraDay.Bar
             {
-                sum -= source[i - n].close;
-
-                ma.Add(new GGNet.Datasets.SPY.Bar
-                {
-                    date = source[i].date,
-                    close = sum / n
-                });
-            }
+                Date = bar.Date,
+                Close = value / volume
+            });
         }
 
-        spy = GGNet.Plot.New(source, x: o => o.date)
+        spy = GGNet.Plot.New(source, x: o => o.Date)
             .Title("SPY US Equity")
-            .Scale_X_Discrete_Date()
-            .Geom_Candlestick(open: o => o.open, high: o => o.high, low: o => o.low, close: o => o.close)
-            .Geom_Line(ma, x: o => o.date, y: o => o.close, color: "#ffec1b", width: 2)
-            .YLab("Price")
+            .Scale_X_Discrete_DateTime()
+            .Geom_Candlestick(open: o => o.Open, high: o => o.High, low: o => o.Low, close: o => o.Close)
+            .Geom_Line(vwap, x: o => o.Date, y: o => o.Close, color: "#ffec1b", width: 2)
             .Caption("Source: Bloomberg")
             .Theme(axisY: GGNet.Position.Right);
     }

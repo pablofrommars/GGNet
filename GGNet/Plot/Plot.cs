@@ -35,6 +35,8 @@ namespace GGNet
 
         public static Data<T, LocalDate, double> New<T>(Source<T> source, Func<T, LocalDate> x, Func<T, double> y = null) => _New(source, x, y);
 
+        public static Data<T, LocalDateTime, double> New<T>(Source<T> source, Func<T, LocalDateTime> x, Func<T, double> y = null) => _New(source, x, y);
+
         public static Data<T, TX, double> New<T, TX>(Source<T> source, Func<T, TX> x, Func<T, double> y = null)
             where TX : struct, Enum
         {
@@ -65,6 +67,17 @@ namespace GGNet
             where TY : struct
         {
             data.Positions.X.Factory = () => new DiscretDates(null, limits, expand);
+
+            return data;
+        }
+
+        public static Data<T, LocalDateTime, TY> Scale_X_Discrete_DateTime<T, TY>(
+            this Data<T, LocalDateTime, TY> data,
+            (LocalDateTime? min, LocalDateTime? max)? limits = null,
+            (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
+            where TY : struct
+        {
+            data.Positions.X.Factory = () => new DateTimePosition(null, limits, expand);
 
             return data;
         }
