@@ -1532,6 +1532,86 @@ namespace GGNet
             return data;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            Source<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, double> height = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            panel.Add_Geom(() =>
+            {
+                var geom = new RidgeLine<T2, TX2, TY2>(source, x, y, height, _fill, inherit)
+                {
+                    Aesthetic = new Rectangle
+                    {
+                        Fill = fill,
+                        Alpha = alpha
+                    }
+                };
+
+                return geom;
+            });
+
+            return panel;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            Source<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, double> height = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            data.Default_Panel().Geom_RidgeLine(source, x, y, height, _fill, fill, alpha, inherit);
+
+            return data;
+        }
+
+        public static Data<T, TX, TY>.PanelFactory Geom_RidgeLine<T, TX, TY>(
+            this Data<T, TX, TY>.PanelFactory panel,
+            Func<T, TX> x = null,
+            Func<T, TY> y = null,
+            Func<T, double> height = null,
+            IAestheticMapping<T, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            return Geom_RidgeLine(panel, panel.Data.Source, x, y, height, _fill, fill, alpha, inherit);
+        }
+
+        public static Data<T, TX, TY> Geom_RidgeLine<T, TX, TY>(
+            this Data<T, TX, TY> data,
+            Func<T, TX> x = null,
+            Func<T, TY> y = null,
+            Func<T, double> height = null,
+            IAestheticMapping<T, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            data.Default_Panel().Geom_RidgeLine(x, y, height, _fill, fill, alpha, inherit);
+
+            return data;
+        }
+
         public static Data<T, TX, TY> Scale_Color_Discrete<T, TX, TY, TKey>(
             this Data<T, TX, TY> data,
             Func<T, TKey> selector,
