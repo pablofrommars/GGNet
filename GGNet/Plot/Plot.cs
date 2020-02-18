@@ -1612,6 +1612,90 @@ namespace GGNet
             return data;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            Source<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, double> width = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            PositionAdjustment position = PositionAdjustment.Identity,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            panel.Add_Geom(() =>
+            {
+                var geom = new Violin<T2, TX2, TY2>(source, x, y, width, _fill, position, inherit)
+                {
+                    Aesthetic = new Rectangle
+                    {
+                        Fill = fill,
+                        Alpha = alpha
+                    }
+                };
+
+                return geom;
+            });
+
+            return panel;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            Source<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, double> width = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            PositionAdjustment position = PositionAdjustment.Identity,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            data.Default_Panel().Geom_Violin(source, x, y, width, _fill, fill, alpha, position, inherit);
+
+            return data;
+        }
+
+        public static Data<T, TX, TY>.PanelFactory Geom_Violin<T, TX, TY>(
+            this Data<T, TX, TY>.PanelFactory panel,
+            Func<T, TX> x = null,
+            Func<T, TY> y = null,
+            Func<T, double> width = null,
+            IAestheticMapping<T, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            PositionAdjustment position = PositionAdjustment.Identity,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            return Geom_Violin(panel, panel.Data.Source, x, y, width, _fill, fill, alpha, position, inherit);
+        }
+
+        public static Data<T, TX, TY> Geom_Violin<T, TX, TY>(
+            this Data<T, TX, TY> data,
+            Func<T, TX> x = null,
+            Func<T, TY> y = null,
+            Func<T, double> width = null,
+            IAestheticMapping<T, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            PositionAdjustment position = PositionAdjustment.Identity,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            data.Default_Panel().Geom_Violin(x, y, width, _fill, fill, alpha, position, inherit);
+
+            return data;
+        }
+
         public static Data<T, TX, TY> Scale_Color_Discrete<T, TX, TY, TKey>(
             this Data<T, TX, TY> data,
             Func<T, TKey> selector,
