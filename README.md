@@ -15,4 +15,5 @@ Taking its inspiration from the highly popular [ggpplot2](https://ggplot2.tidyve
 ![](Site/wwwroot/img/barplot.png) | ![](Site/wwwroot/img/stacked.png) | ![](Site/wwwroot/img/hbarplot.png)
 ![](Site/wwwroot/img/lolipop.png) | ![](Site/wwwroot/img/errorbar.png) | ![](Site/wwwroot/img/violin.png)
 ![](Site/wwwroot/img/hex.png) | ![](Site/wwwroot/img/ridgeline.png) | ![](Site/wwwroot/img/choropleth.png)
-<td colspan=3>![](Site/wwwroot/img/bubblemap.png)
+ 
+![](Site/wwwroot/img/bubblemap.png)
