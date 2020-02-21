@@ -77,7 +77,7 @@ namespace GGNet.Scales
         {
             if (limits.max > limits.min)
             {
-                return colors[Max(Min((int)(((key * limits.min) / (limits.max - limits.min)) * (colors.Length - 1)), colors.Length - 1), 0)];
+                return colors[Max(Min((int)(((key - limits.min) / (limits.max - limits.min)) * (colors.Length - 1)), colors.Length - 1), 0)];
             }
             else
             {

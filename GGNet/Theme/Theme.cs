@@ -55,6 +55,6 @@
 
         public Text YLabel { get; set; }
 
-        public static Theme Default(bool dark = true, Position axisY = Right, Position legend = Right) => new Theme(dark, axisY, legend);
+        public static Theme Default(bool dark = true, Position axisY = Left, Position legend = Right) => new Theme(dark, axisY, legend);
     }
 }

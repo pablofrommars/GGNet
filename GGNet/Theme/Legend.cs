@@ -68,7 +68,7 @@
 
                 if (Direction == Horizontal)
                 {
-                    Title.Margin.Right = 8;
+                    Title.Margin.Right = 16;
                     Labels.Margin.Right = 8;
                 }
                 else

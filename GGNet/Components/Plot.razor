@@ -57,11 +57,14 @@
             @(".css-" + Id + "-gridMajor") {
                 stroke-width: @(Data.Theme.Panel.Grid.Major.X.Width);
                 stroke: @(Data.Theme.Panel.Grid.Major.X.Color);
+                stroke-opacity: @(Data.Theme.Panel.Grid.Major.X.Alpha);
             }
 
-            @(".css-" + Id + "-gridMinor") {
+            @(".css-" + Id + "-gridMinor")
+            {
                 stroke-width: @(Data.Theme.Panel.Grid.Minor.X.Width);
                 stroke: @(Data.Theme.Panel.Grid.Minor.X.Color);
+                stroke-opacity: @(Data.Theme.Panel.Grid.Minor.X.Alpha);
             }
 
             @(".css-" + Id + "-axisTextX") {

@@ -1,6 +1,7 @@
 ﻿using System;
 
 using GGNet.Transformations;
+using GGNet.Formats;
 
 using static System.Math;
 
@@ -12,17 +13,17 @@ namespace GGNet.Scales
 {
     public class Extended : Position<double>
     {
-        private readonly string format;
+        private readonly IFormatter<double> formatter;
 
         public Extended(ITransformation<double> transformation = null,
             (double? min, double? max)? limits = null,
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-            string format = null)
+            IFormatter<double> formatter = null)
             : base(transformation, expand ?? (0.05, 0, 0.05, 0))
         {
             Limits = limits ?? (null, null);
 
-            this.format = format ?? "0.##";
+            this.formatter = formatter ?? Standard<double>.Instance;
         }
 
         public override void Set()
@@ -43,7 +44,7 @@ namespace GGNet.Scales
             {
                 var inv = transformation.Inverse(breaks[i]);
 
-                labels[i] = (inv, breaks[i].ToString(format));
+                labels[i] = (inv, formatter.Format(breaks[i]));
 
                 breaks[i] = inv;
             }

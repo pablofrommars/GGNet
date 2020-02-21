@@ -10,8 +10,9 @@ Taking its inspiration from the highly popular [ggpplot2](https://ggplot2.tidyve
 
 | | | |
 |-|-|-|
-![](Site/wwwroot/img/scatterplot.png) | ![](Site/wwwroot/img/bubbleplot.png) | ![](Site/wwwroot/img/barchart.png)
-![](Site/wwwroot/img/candlestick.png) | ![](Site/wwwroot/img/linechart.png) | ![](Site/wwwroot/img/areachart.png)
-![](Site/wwwroot/img/barplot.png) | ![](Site/wwwroot/img/stacked.png) | ![](Site/wwwroot/img/hbarplot.png)
-![](Site/wwwroot/img/lolipop.png) | ![](Site/wwwroot/img/errorbar.png) | ![](Site/wwwroot/img/violin.png)
-![](Site/wwwroot/img/hex.png) | ![](Site/wwwroot/img/ridgeline.png) |
+! [](Site/wwwroot/img/scatterplot.png) | ![](Site/wwwroot/img/bubbleplot.png) | ![](Site/wwwroot/img/barchart.png)
+! [](Site/wwwroot/img/candlestick.png) | ![](Site/wwwroot/img/linechart.png) | ![](Site/wwwroot/img/areachart.png)
+! [](Site/wwwroot/img/barplot.png) | ![](Site/wwwroot/img/stacked.png) | ![](Site/wwwroot/img/hbarplot.png)
+! [](Site/wwwroot/img/lolipop.png) | ![](Site/wwwroot/img/errorbar.png) | ![](Site/wwwroot/img/violin.png)
+! [](Site/wwwroot/img/hex.png) | ![](Site/wwwroot/img/ridgeline.png) | ![](Site/wwwroot/img/choropleth.png)
+! [](Site/wwwroot/img/bubblemap.png) | | 

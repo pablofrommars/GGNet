@@ -1,0 +1,71 @@
+﻿@namespace Site.Pages
+@page "/examples/choropleth"
+
+@using GGNet
+
+    <div class="container-fluid mt-4">
+
+        <div class="row m-4">
+
+            <div class="col-md-6">
+                <h2>Choropleth Map</h2>
+                <p>Display geographical zones with colour scale for continuous variable</p>
+                <div class="border rounded-lg bg-light p-3 mt-3">
+<pre class="csharp">
+<span class="pl-smi">Plot</span>.<span class="pl-en">New</span>(<span class="pl-smi">source</span>)
+    .<span class="pl-en">Geom_Map</span>(<span class="pl-smi">latitude</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Latitude</span>, <span class="pl-smi">longitude</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Longitude</span>, <span class="pl-smi">alpha</span>: <span class="pl-c1">0.7</span>)
+    .<span class="pl-en">Scale_X_Continuous</span>(<span class="pl-smi">limits</span>: (<span class="pl-k">-</span><span class="pl-c1">15</span>, <span class="pl-c1">30</span>), <span class="pl-smi">formatter</span>: <span class="pl-smi">Latitude</span>.<span class="pl-smi">Instance</span>)
+    .<span class="pl-en">Scale_Y_Continuous</span>(<span class="pl-smi">limits</span>: (<span class="pl-c1">30</span>, <span class="pl-c1">70</span>), <span class="pl-smi">formatter</span>: <span class="pl-smi">Longitude</span>.<span class="pl-smi">Instance</span>)
+    .<span class="pl-en">Scale_Fill_Continuous</span>(<span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Pop</span> <span class="pl-k">/</span> <span class="pl-c1">1000000</span>, <span class="pl-smi">Colors</span>.<span class="pl-smi">Viridis</span>, <span class="pl-smi">name</span>: <span class="pl-s"><span class="pl-pds">"</span>Population (M)<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">Theme</span>(<span class="pl-smi">dark</span>: <span class="pl-c1">false</span>, <span class="pl-smi">legend</span>: <span class="pl-smi">Position</span>.<span class="pl-smi">Top</span>);
+</pre>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="border rounded-lg p-1" style="width: 720px; height: 670px;">
+                    <GGNet.Components.Plot Data=@map T="Point" TX="Double" TY="Double" Width="720" Height="670" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+@code {
+
+    Data<Point, double, double> map;
+
+    protected override void OnInitialized()
+    {
+        var population = GGNet.Datasets.GapMinder.Load().Where(o => o.continent == GGNet.Datasets.GapMinder.Continent.Europe);
+        var world = GGNet.Datasets.World.Load();
+
+        var data = population.Join(world, o => o.country, o => o.Region, (x, y) => new Point
+        {
+            Name = x.country,
+            Pop = x.pop,
+            Longitude = y.Longitude,
+            Latitude = y.Latitude
+        });
+
+        var source = new GGNet.Source<Point>(data);
+
+        map = Plot.New(source)
+            .Geom_Map(latitude: o => o.Latitude, longitude: o => o.Longitude, alpha: 0.7)
+            .Scale_X_Continuous(limits: (-15, 30), formatter: GGNet.Formats.Latitude.Instance)
+            .Scale_Y_Continuous(limits: (30, 70), formatter: GGNet.Formats.Longitude.Instance)
+            .Scale_Fill_Continuous(o => o.Pop / 1000000, Colors.Viridis, name: "Population (M)")
+            .Theme(dark: false, legend: Position.Top);
+    }
+
+    public class Point
+    {
+        public string Name { get; set; }
+
+        public double Pop { get; set; }
+
+        public double[] Latitude { get; set; }
+
+        public double[] Longitude { get; set; }
+    }
+}

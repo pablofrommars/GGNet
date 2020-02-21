@@ -1,0 +1,73 @@
+﻿@namespace Site.Pages
+@page "/examples/bubblemap"
+
+@using GGNet
+
+    <div class="container-fluid mt-4">
+
+        <div class="row m-4 w-75 mx-auto">
+            <div class="col">
+                <h2>Bubble Map</h2>
+                <p>Display spatial data overlays</p>
+            </div>
+        </div>
+
+    <div class="row m-4">
+        <div class="col">
+            <div class="border rounded-lg p-1 w-75 mx-auto" style="">
+                <GGNet.Components.Plot Data=@map T="GGNet.Datasets.Surf.Point" TX="Double" TY="Double" Width="720" Height="360" />
+            </div>
+        </div>
+    </div>
+
+
+        <div class="row m-4 w-75 mx-auto">
+
+            <div class="col">
+                <div class="border rounded-lg bg-light p-3 mt-3">
+<pre class="csharp">
+<span class="pl-smi">Plot</span>.<span class="pl-en">New</span>(<span class="pl-smi">surf</span>, <span class="pl-smi">x</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Latitude</span>, <span class="pl-smi">y</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Longitude</span>)
+    .<span class="pl-en">Geom_Map</span>(<span class="pl-smi">world</span>, <span class="pl-smi">latitude</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Latitude</span>, <span class="pl-smi">longitude</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Longitude</span>, <span class="pl-smi">fill</span>: <span class="pl-s"><span class="pl-pds">"</span>grey<span class="pl-pds">"</span></span>, <span class="pl-smi">alpha</span>: <span class="pl-c1">0.1</span>)
+    .<span class="pl-en">Geom_Point</span>(<span class="pl-smi">color</span>: <span class="pl-s"><span class="pl-pds">"</span>#000000<span class="pl-pds">"</span></span>, <span class="pl-smi">alpha</span>: <span class="pl-c1">0.5</span>)
+    .<span class="pl-en">Scale_X_Continuous</span>(<span class="pl-smi">limits</span>: (<span class="pl-k">-</span><span class="pl-c1">180</span>, <span class="pl-c1">180</span>), <span class="pl-smi">expand</span>: (<span class="pl-c1">0</span>, <span class="pl-c1">0</span> , <span class="pl-c1">0</span>, <span class="pl-c1">0</span>), <span class="pl-smi">formatter</span>: <span class="pl-smi">Latitude</span>.<span class="pl-smi">Instance</span>)
+    .<span class="pl-en">Scale_Y_Continuous</span>(<span class="pl-smi">limits</span>: (<span class="pl-k">-</span><span class="pl-c1">90</span>, <span class="pl-c1">90</span>), <span class="pl-smi">expand</span>: (<span class="pl-c1">0</span>, <span class="pl-c1">0</span>, <span class="pl-c1">0</span>, <span class="pl-c1">0</span>), <span class="pl-smi">formatter</span>: <span class="pl-smi">Longitude</span>.<span class="pl-smi">Instance</span>)
+    .<span class="pl-en">Scale_Color_Discrete</span>(<span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Continent</span>, <span class="pl-smi">Colors</span>.<span class="pl-smi">Viridis</span>, <span class="pl-smi">guide</span>: <span class="pl-c1">false</span>)
+    .<span class="pl-en">Scale_Size_Continuous</span>(<span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Count</span>, <span class="pl-smi">range</span>: (<span class="pl-c1">1</span>, <span class="pl-c1">20</span>), <span class="pl-smi">guide</span>: <span class="pl-c1">false</span>)
+    .<span class="pl-en">Title</span>(<span class="pl-s"><span class="pl-pds">"</span>Where do surfers live?<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">Caption</span>(<span class="pl-s"><span class="pl-pds">"</span>source: data-to-viz.com<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">Theme</span>(<span class="pl-smi">dark</span>: <span class="pl-c1">false</span>);
+</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@code {
+
+    Data<GGNet.Datasets.Surf.Point, double, double> map;
+
+    protected override void OnInitialized()
+    {
+        var surf = new GGNet.Source<GGNet.Datasets.Surf.Point>(GGNet.Datasets.Surf.Load());
+
+        var world = new GGNet.Source<GGNet.Datasets.World.Polygon>(GGNet.Datasets.World.Load());
+
+        var theme = Theme.Default(dark: false);
+
+        theme.Panel.Grid.Major.X.Alpha = 0.25;
+        theme.Panel.Grid.Minor.X.Alpha = 0.25;
+        theme.Panel.Grid.Major.Y.Alpha = 0.25;
+        theme.Panel.Grid.Minor.Y.Alpha = 0.25;
+
+        map = Plot.New(surf, x: o => o.Latitude, y: o => o.Longitude)
+            .Geom_Map(world, latitude: o => o.Latitude, longitude: o => o.Longitude, fill: "grey", alpha: 0.1)
+            .Geom_Point(color: "#000000", alpha: 0.5)
+            .Scale_X_Continuous(limits: (-180, 180), expand: (0, 0 , 0, 0), formatter: GGNet.Formats.Latitude.Instance)
+            .Scale_Y_Continuous(limits: (-90, 90), expand: (0, 0, 0, 0), formatter: GGNet.Formats.Longitude.Instance)
+            .Scale_Color_Discrete(o => o.Continent, Colors.Viridis, guide: false)
+            .Scale_Size_Continuous(o => o.Count, range: (1, 20), guide: false)
+            .Title("Where do surfers live?")
+            .Caption("source: data-to-viz.com")
+            .Theme(theme);
+    }
+}

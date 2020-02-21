@@ -87,10 +87,23 @@ namespace GGNet
             ITransformation<double> transformation = null,
             (double? min, double? max)? limits = null,
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-            string format = null)
+            IFormatter<double> formatter = null)
             where TY : struct
         {
-            data.Positions.X.Factory = () => new Extended(transformation, limits, expand, format);
+            data.Positions.X.Factory = () => new Extended(transformation, limits, expand, formatter);
+
+            return data;
+        }
+
+        public static Data<T, double, TY> Scale_X_Continuous<T, TY>(
+            this Data<T, double, TY> data,
+            string format,
+            ITransformation<double> transformation = null,
+            (double? min, double? max)? limits = null,
+            (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
+            where TY : struct
+        {
+            data.Scale_X_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
 
             return data;
         }
@@ -157,10 +170,23 @@ namespace GGNet
             ITransformation<double> transformation = null,
             (double? min, double? max)? limits = null,
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-            string format = null)
+            IFormatter<double> formatter = null)
             where TX : struct
         {
-            data.Positions.Y.Factory = () => new Extended(transformation, limits, expand, format);
+            data.Positions.Y.Factory = () => new Extended(transformation, limits, expand, formatter);
+
+            return data;
+        }
+
+        public static Data<T, TX, double> Scale_Y_Continuous<T, TX>(
+           this Data<T, TX, double> data,
+           string format,
+           ITransformation<double> transformation = null,
+           (double? min, double? max)? limits = null,
+           (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
+           where TX : struct
+        {
+            data.Positions.Y.Factory = () => new Extended(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
 
             return data;
         }
@@ -170,10 +196,23 @@ namespace GGNet
              ITransformation<double> transformation = null,
             (double? min, double? max)? limits = null,
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-            string format = null)
+            IFormatter<double> formatter = null)
             where TX : struct
         {
-            panel.Y = () => new Extended(transformation, limits, expand, format);
+            panel.Y = () => new Extended(transformation, limits, expand, formatter);
+
+            return panel;
+        }
+
+        public static Data<T, TX, double>.PanelFactory Scale_Y_Continuous<T, TX>(
+           this Data<T, TX, double>.PanelFactory panel,
+           string format,
+            ITransformation<double> transformation = null,
+           (double? min, double? max)? limits = null,
+           (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
+           where TX : struct
+        {
+            panel.Scale_Y_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
 
             return panel;
         }
@@ -184,7 +223,7 @@ namespace GGNet
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
             string format = null)
             where TY : struct
-            => data.Scale_X_Continuous(Sqrt.Instance, limits, expand, format);
+            => data.Scale_X_Continuous(format, Sqrt.Instance, limits, expand);
 
         public static Data<T, TX, double>.PanelFactory Scale_Y_Sqrt<T, TX>(
             this Data<T, TX, double>.PanelFactory panel,
@@ -192,7 +231,7 @@ namespace GGNet
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
             string format = null)
             where TX : struct
-            => panel.Scale_Y_Continuous(Sqrt.Instance, limits, expand, format);
+            => panel.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand);
 
         public static Data<T, TX, double> Scale_Y_Sqrt<T, TX>(
             this Data<T, TX, double> data,
@@ -200,7 +239,7 @@ namespace GGNet
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
             string format = null)
             where TX : struct
-            => data.Scale_Y_Continuous(Sqrt.Instance, limits, expand, format);
+            => data.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand);
 
         public static Data<T, TX, double>.PanelFactory Scale_Y_Log10<T, TX>(
             this Data<T, TX, double>.PanelFactory panel,
@@ -208,7 +247,7 @@ namespace GGNet
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
             string format = null)
             where TX : struct
-            => panel.Scale_Y_Continuous(Log10.Instance, limits, expand, format);
+            => panel.Scale_Y_Continuous(format, Log10.Instance, limits, expand);
 
         public static Data<T, TX, double> Scale_Y_Log10<T, TX>(
             this Data<T, TX, double> data,
@@ -216,7 +255,7 @@ namespace GGNet
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
             string format = null)
             where TX : struct
-            => data.Scale_Y_Continuous(Log10.Instance, limits, expand, format);
+            => data.Scale_Y_Continuous(format, Log10.Instance, limits, expand);
 
         public static Data<T, TX, TY> Scale_Y_Discrete<T, TX, TY>(
            this Data<T, TX, TY> data,
@@ -1692,6 +1731,78 @@ namespace GGNet
             where TY : struct
         {
             data.Default_Panel().Geom_Violin(x, y, width, _fill, fill, alpha, position, inherit);
+
+            return data;
+        }
+
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Map<T1, TX1, TY1, T2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            Source<T2> source,
+            Func<T2, double[]> latitude,
+            Func<T2, double[]> longitude,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TY1 : struct
+        {
+            panel.Add_Geom(() =>
+            {
+                var geom = new Map<T2>(source, latitude, longitude, _fill, inherit)
+                {
+                    Aesthetic = new Rectangle
+                    {
+                        Fill = fill,
+                        Alpha = alpha
+                    }
+                };
+
+                return geom;
+            });
+
+            return panel;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
+            this Data<T1, TX1, TY1> data,
+            Source<T2> source,
+            Func<T2, double[]> latitude,
+            Func<T2, double[]> longitude,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TY1 : struct
+        {
+            data.Default_Panel().Geom_Map(source, latitude, longitude, _fill, fill, alpha, inherit);
+
+            return data;
+        }
+
+        public static Data<T, TX, TY>.PanelFactory Geom_Map<T, TX, TY>(
+            this Data<T, TX, TY>.PanelFactory panel,
+            Func<T, double[]> latitude,
+            Func<T, double[]> longitude,
+            IAestheticMapping<T, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            return Geom_Map(panel, panel.Data.Source, latitude, longitude, _fill, fill, alpha, inherit);
+        }
+
+        public static Data<T, TX, TY> Geom_Map<T, TX, TY>(
+            this Data<T, TX, TY> data,
+            Func<T, double[]> latitude,
+            Func<T, double[]> longitude,
+            IAestheticMapping<T, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            data.Default_Panel().Geom_Map(latitude, longitude, _fill, fill, alpha, inherit);
 
             return data;
         }

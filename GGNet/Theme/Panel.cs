@@ -15,12 +15,14 @@
                     X = new Line
                     {
                         Width = 0.43,
-                        Color = color
+                        Color = color,
+                        Alpha = 1.0
                     },
                     Y = new Line
                     {
                         Width = 0.43,
-                        Color = color
+                        Color = color,
+                        Alpha = 1.0
                     }
                 },
                 Minor = new _Grid._GridXY
@@ -28,12 +30,14 @@
                     X = new Line
                     {
                         Width = 0.32,
-                        Color = color
+                        Color = color,
+                        Alpha = 1.0
                     },
                     Y = new Line
                     {
                         Width = 0.32,
-                        Color = color
+                        Color = color,
+                        Alpha = 1.0
                     }
                 },
             };
