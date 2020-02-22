@@ -284,7 +284,7 @@
                 sb.Append(" Z");
 
                 <path d="@sb.ToString()"
-                      style="fill: @poly.Aesthetic.Fill; fill-opacity: @poly.Aesthetic.Alpha;"
+                      style="fill: @poly.Aesthetic.Fill; fill-opacity: @poly.Aesthetic.Alpha; stroke: @poly.Aesthetic.Color; stroke-width: @poly.Aesthetic.Width;"
                       clip-path="url(#@(Plot.Id)-@(Data.Id).area)" />
             }
         }

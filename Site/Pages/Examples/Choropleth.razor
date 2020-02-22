@@ -11,12 +11,12 @@
                 <h2>Choropleth Map</h2>
                 <p>Display geographical zones with colour scale for continuous variable</p>
                 <div class="border rounded-lg bg-light p-3 mt-3">
-<pre class="csharp">
+                    <pre class="csharp">
 <span class="pl-smi">Plot</span>.<span class="pl-en">New</span>(<span class="pl-smi">source</span>)
     .<span class="pl-en">Geom_Map</span>(<span class="pl-smi">latitude</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Latitude</span>, <span class="pl-smi">longitude</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Longitude</span>, <span class="pl-smi">alpha</span>: <span class="pl-c1">0.7</span>)
     .<span class="pl-en">Scale_X_Continuous</span>(<span class="pl-smi">limits</span>: (<span class="pl-k">-</span><span class="pl-c1">15</span>, <span class="pl-c1">30</span>), <span class="pl-smi">formatter</span>: <span class="pl-smi">Latitude</span>.<span class="pl-smi">Instance</span>)
     .<span class="pl-en">Scale_Y_Continuous</span>(<span class="pl-smi">limits</span>: (<span class="pl-c1">30</span>, <span class="pl-c1">70</span>), <span class="pl-smi">formatter</span>: <span class="pl-smi">Longitude</span>.<span class="pl-smi">Instance</span>)
-    .<span class="pl-en">Scale_Fill_Continuous</span>(<span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Pop</span> <span class="pl-k">/</span> <span class="pl-c1">1000000</span>, <span class="pl-smi">Colors</span>.<span class="pl-smi">Viridis</span>, <span class="pl-smi">name</span>: <span class="pl-s"><span class="pl-pds">"</span>Population (M)<span class="pl-pds">"</span></span>)
+    .<span class="pl-en">Scale_Fill_Continuous</span>(<span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Pop</span> <span class="pl-k">/</span> <span class="pl-c1">1000000</span>, <span class="pl-smi">Colors</span>.<span class="pl-smi">Brewer</span>.<span class="pl-smi">Blues</span>[<span class="pl-c1">4</span>], <span class="pl-smi">name</span>: <span class="pl-s"><span class="pl-pds">"</span>Population (M)<span class="pl-pds">"</span></span>)
     .<span class="pl-en">Theme</span>(<span class="pl-smi">dark</span>: <span class="pl-c1">false</span>, <span class="pl-smi">legend</span>: <span class="pl-smi">Position</span>.<span class="pl-smi">Top</span>);
 </pre>
                 </div>
@@ -51,10 +51,10 @@
         var source = new GGNet.Source<Point>(data);
 
         map = Plot.New(source)
-            .Geom_Map(latitude: o => o.Latitude, longitude: o => o.Longitude, alpha: 0.7)
+            .Geom_Map(latitude: o => o.Latitude, longitude: o => o.Longitude, alpha: 0.7, width: 0.2)
             .Scale_X_Continuous(limits: (-15, 30), formatter: GGNet.Formats.Latitude.Instance)
             .Scale_Y_Continuous(limits: (30, 70), formatter: GGNet.Formats.Longitude.Instance)
-            .Scale_Fill_Continuous(o => o.Pop / 1000000, Colors.Viridis, name: "Population (M)")
+            .Scale_Fill_Continuous(o => o.Pop / 1000000, GGNet.Colors.Brewer.Blues[9], name: "Population (M)")
             .Theme(dark: false, legend: Position.Top);
     }
 

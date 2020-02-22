@@ -1741,7 +1741,7 @@ namespace GGNet
             Func<T2, double[]> latitude,
             Func<T2, double[]> longitude,
             IAestheticMapping<T2, string> _fill = null,
-            string fill = "#23d0fc", double alpha = 1.0,
+            string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX1 : struct
             where TY1 : struct
@@ -1753,7 +1753,9 @@ namespace GGNet
                     Aesthetic = new Rectangle
                     {
                         Fill = fill,
-                        Alpha = alpha
+                        Alpha = alpha,
+                        Color = color,
+                        Width = width
                     }
                 };
 
@@ -1769,12 +1771,12 @@ namespace GGNet
             Func<T2, double[]> latitude,
             Func<T2, double[]> longitude,
             IAestheticMapping<T2, string> _fill = null,
-            string fill = "#23d0fc", double alpha = 1.0,
+            string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
-            data.Default_Panel().Geom_Map(source, latitude, longitude, _fill, fill, alpha, inherit);
+            data.Default_Panel().Geom_Map(source, latitude, longitude, _fill, fill, alpha, color, width, inherit);
 
             return data;
         }
@@ -1784,12 +1786,12 @@ namespace GGNet
             Func<T, double[]> latitude,
             Func<T, double[]> longitude,
             IAestheticMapping<T, string> _fill = null,
-            string fill = "#23d0fc", double alpha = 1.0,
+            string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Map(panel, panel.Data.Source, latitude, longitude, _fill, fill, alpha, inherit);
+            return Geom_Map(panel, panel.Data.Source, latitude, longitude, _fill, fill, alpha, color, width, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Map<T, TX, TY>(
@@ -1797,12 +1799,12 @@ namespace GGNet
             Func<T, double[]> latitude,
             Func<T, double[]> longitude,
             IAestheticMapping<T, string> _fill = null,
-            string fill = "#23d0fc", double alpha = 1.0,
+            string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Map(latitude, longitude, _fill, fill, alpha, inherit);
+            data.Default_Panel().Geom_Map(latitude, longitude, _fill, fill, alpha, color, width, inherit);
 
             return data;
         }
