@@ -11,9 +11,9 @@
                 <h2>Violin Plot</h2>
                 <p>Display the distribution of numerical variables</p>
                 <div class="border rounded-lg bg-light p-3 mt-3">
-<pre class="csharp">
+                    <pre class="csharp">
 <span class="pl-smi">Plot</span>.<span class="pl-en">New</span>(<span class="pl-smi">source</span>, <span class="pl-smi">x</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Day</span>, <span class="pl-smi">y</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">X</span>)
-    .<span class="pl-en">Geom_Violin</span>(<span class="pl-smi">width</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Y</span>, <span class="pl-smi">alpha</span>: <span class="pl-c1">0.7</span>, <span class="pl-smi">position</span>: <span class="pl-smi">PositionAdjustment</span>.<span class="pl-smi">Dodge</span>)
+    .<span class="pl-en">Geom_Violin</span>(<span class="pl-smi">width</span>: <span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Y</span>, <span class="pl-smi">alpha</span>: <span class="pl-c1">0.7</span>, <span class="pl-smi">color</span>: "#000000", <span class="pl-smi">position</span>: <span class="pl-smi">PositionAdjustment</span>.<span class="pl-smi">Dodge</span>)
     .<span class="pl-en">Scale_Fill_Discrete</span>(<span class="pl-smi">o</span> <span class="pl-k">=&gt;</span> <span class="pl-smi">o</span>.<span class="pl-smi">Sex</span>, <span class="pl-k">new</span>[] { <span class="pl-s"><span class="pl-pds">"</span>#ef8697<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>#5fa1b9<span class="pl-pds">"</span></span> })
     .<span class="pl-en">YLim</span>(<span class="pl-c1">0</span>, <span class="pl-c1">40</span>)
     .<span class="pl-en">YLab</span>(<span class="pl-s"><span class="pl-pds">"</span>Tip (%)<span class="pl-pds">"</span></span>)
@@ -40,7 +40,7 @@
         var source = new GGNet.Source<GGNet.Datasets.TipDistribution.Point>(GGNet.Datasets.TipDistribution.Load().OrderBy(o => o.Day).ThenBy(o => o.Sex));
 
         tip = Plot.New(source, x: o => o.Day, y: o => o.X)
-            .Geom_Violin(width: o => o.Y, alpha: 0.7, position: PositionAdjustment.Dodge)
+            .Geom_Violin(width: o => o.Y, alpha: 0.7, color: "#000000", position: PositionAdjustment.Dodge)
             .Scale_Fill_Discrete(o => o.Sex, new[] { "#ef8697", "#5fa1b9" })
             .YLim(0, 40)
             .YLab("Tip (%)")

@@ -133,7 +133,9 @@ namespace GGNet.Geoms
                     legend.Add(label, new Elements.Rectangle
                     {
                         Fill = value,
-                        Alpha = Aesthetic.Alpha
+                        Alpha = Aesthetic.Alpha,
+                        Color = Aesthetic.Color,
+                        Width = Aesthetic.Width
                     });
                 }
             }
@@ -194,7 +196,9 @@ namespace GGNet.Geoms
                         Aesthetic = new Elements.Rectangle
                         {
                             Fill = violin.Key,
-                            Alpha = Aesthetic.Alpha
+                            Alpha = Aesthetic.Alpha,
+                            Color = Aesthetic.Color,
+                            Width = Aesthetic.Width
                         }
                     };
 
@@ -265,7 +269,9 @@ namespace GGNet.Geoms
                         Aesthetic = new Elements.Rectangle
                         {
                             Fill = violin.Key,
-                            Alpha = Aesthetic.Alpha
+                            Alpha = Aesthetic.Alpha,
+                            Color = Aesthetic.Color,
+                            Width = Aesthetic.Width
                         }
                     };
 
