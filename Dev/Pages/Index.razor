@@ -1,0 +1,80 @@
+﻿@page "/"
+
+@using GGNet
+
+<div class="border rounded-lg m-5 p-1" style="width: 720px; height: 670px;">
+    <GGNet.Components.Plot Data=@map T="Point" TX="Double" TY="Double" Width="720" Height="670" />
+</div>
+
+<div class="border rounded-lg m-5 p-1" style="width: 720px;">
+    <GGNet.Components.Plot Data=@diamond T="GGNet.Datasets.Diamond.Point" TX="Double" TY="Double" />
+</div>
+
+<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #252A32;">
+    <GGNet.Components.Plot Data=@tip T="GGNet.Datasets.Tip.Point" TX="GGNet.Datasets.Tip.Day" TY="Double" />
+</div>
+
+@code {
+
+    Data<Point, double, double> map;
+    Data<GGNet.Datasets.Diamond.Point, double, double> diamond;
+    Data<GGNet.Datasets.Tip.Point, GGNet.Datasets.Tip.Day, double> tip;
+
+    protected override void OnInitialized()
+    {
+        {
+            var population = GGNet.Datasets.GapMinder.Load().Where(o => o.continent == GGNet.Datasets.GapMinder.Continent.Europe);
+            var world = GGNet.Datasets.World.Load();
+
+            var data = population.Join(world, o => o.country, o => o.Region, (x, y) => new Point
+            {
+                Name = x.country,
+                Pop = x.pop,
+                Longitude = y.Longitude,
+                Latitude = y.Latitude
+            });
+
+            var source = new GGNet.Source<Point>(data);
+
+            map = Plot.New(source)
+                .Geom_Map(latitude: o => o.Latitude, longitude: o => o.Longitude, alpha: 0.7, width: 0.2)
+                .Scale_X_Continuous(limits: (-15, 30), formatter: GGNet.Formats.Latitude.Instance)
+                .Scale_Y_Continuous(limits: (30, 70), formatter: GGNet.Formats.Longitude.Instance)
+                .Scale_Fill_Continuous(o => o.Pop / 1000000, GGNet.Colors.Brewer.Blues[9], name: "Population (M)")
+                .Theme(dark: false, legend: Position.Top);
+        }
+
+        {
+            var source = new Source<GGNet.Datasets.Diamond.Point>(GGNet.Datasets.Diamond.Load());
+
+            diamond = Plot.New(source, x: o => o.Carat, y: o => o.Price)
+                .Geom_Hex(dx: o => o.Dx, dy: o => o.Dy)
+                .Title("Prices of 50,000 round cut diamonds")
+                .XLab("Carat")
+                .YLab("Price($)")
+                .Scale_Fill_Continuous(o => o.Count, GGNet.Colors.Viridis, m: 10, name: "Count")
+                .Theme(dark: false);
+        }
+
+        {
+            var source = new GGNet.Source<GGNet.Datasets.Tip.Point>(GGNet.Datasets.Tip.Load());
+
+            tip = Plot.New(source, o => o.Day, o => o.Avg)
+                .Geom_ErrorBar(ymin: o => o.Lower, ymax: o => o.Upper, position: PositionAdjustment.Dodge)
+                .Scale_Color_Discrete(o => o.Sex, new[] { "#69b3a2", "#404080" })
+                .YLab("Tip (%)")
+                .Theme();
+        }
+    }
+
+    public class Point
+    {
+        public string Name { get; set; }
+
+        public double Pop { get; set; }
+
+        public double[] Latitude { get; set; }
+
+        public double[] Longitude { get; set; }
+    }
+}

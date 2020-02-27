@@ -537,7 +537,7 @@ namespace GGNet
                     Aesthetic = new Line
                     {
                         Width = width,
-                        Color = color,
+                        Fill = color,
                         Alpha = alpha,
                         LineType = lineType
                     }
@@ -703,7 +703,7 @@ namespace GGNet
                     Aesthetic = new Line
                     {
                         Width = width,
-                        Color = color,
+                        Fill = color,
                         Alpha = alpha,
                         LineType = lineType
                     }
@@ -944,7 +944,7 @@ namespace GGNet
                     Line = new Line
                     {
                         Width = width,
-                        Color = color,
+                        Fill = color,
                         Alpha = alpha,
                         LineType = lineType
                     },
@@ -1119,7 +1119,7 @@ namespace GGNet
                     Aesthetic = new Line
                     {
                         Width = width,
-                        Color = color,
+                        Fill = color,
                         Alpha = alpha,
                         LineType = lineType
                     }
@@ -1183,7 +1183,7 @@ namespace GGNet
                     Aesthetic = new Line
                     {
                         Width = width,
-                        Color = color,
+                        Fill = color,
                         Alpha = alpha,
                         LineType = lineType
                     }
@@ -1255,7 +1255,7 @@ namespace GGNet
                     Aesthetic = new Line
                     {
                         Width = width,
-                        Color = color,
+                        Fill = color,
                         Alpha = alpha,
                         LineType = lineType
 
@@ -1344,7 +1344,7 @@ namespace GGNet
                     Line = new Line
                     {
                         Width = width,
-                        Color = color,
+                        Fill = color,
                         Alpha = alpha,
                         LineType = lineType
                     },

@@ -2,397 +2,491 @@
 @typeparam TX
 @typeparam TY
 
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
-    <defs>
-        <style type="text/css">
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
+        <defs>
+            <style type="text/css">
 
-            line, polyline, polygon, path, rect, circle {
-                fill: none;
-                stroke-linecap: butt;
-                stroke-linejoin: round;
-                stroke-miterlimit: 10.00;
-            }
+                line, polyline, polygon, path, rect, circle {
+                    fill: none;
+                    stroke-linecap: butt;
+                    stroke-linejoin: round;
+                    stroke-miterlimit: 10.00;
+                }
 
-            text {
-                font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
-                fill: #929299;
-            }
+                text {
+                    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+                    fill: #929299;
+                }
 
-            .anchor-middle {
-                text-anchor: middle;
-            }
+                .anchor-middle {
+                    text-anchor: middle;
+                }
 
-            .cursor-pointer {
-                cursor: pointer;
-            }
+                .cursor-pointer {
+                    cursor: pointer;
+                }
 
-            @(".css-" + Id + "-plot") {
-                fill: @(Data.Theme.Plot.Background.Fill);
-            }
+                @(".css-" + Id + "-plot") {
+                    fill: @(Data.Theme.Plot.Background.Fill);
+                }
 
-            @(".css-" + Id + "-title") {
-                text-anchor: @(Data.Theme.Plot.Title.Anchor);
-                font-size: @(Data.Theme.Plot.Title.Size);
-                font-weight: @(Data.Theme.Plot.Title.Weight);
-                font-style: @(Data.Theme.Plot.Title.Style);
-                fill: @(Data.Theme.Plot.Title.Color);
-            }
+                @(".css-" + Id + "-title") {
+                    text-anchor: @(Data.Theme.Plot.Title.Anchor);
+                    font-size: @(Data.Theme.Plot.Title.Size);
+                    font-weight: @(Data.Theme.Plot.Title.Weight);
+                    font-style: @(Data.Theme.Plot.Title.Style);
+                    fill: @(Data.Theme.Plot.Title.Color);
+                }
 
-            @(".css-" + Id + "-SubTitle") {
-                text-anchor: @(Data.Theme.Plot.SubTitle.Anchor);
-                font-size: @(Data.Theme.Plot.SubTitle.Size);
-                font-weight: @(Data.Theme.Plot.SubTitle.Weight);
-                font-style: @(Data.Theme.Plot.SubTitle.Style);
-                fill: @(Data.Theme.Plot.SubTitle.Color);
-            }
+                @(".css-" + Id + "-SubTitle") {
+                    text-anchor: @(Data.Theme.Plot.SubTitle.Anchor);
+                    font-size: @(Data.Theme.Plot.SubTitle.Size);
+                    font-weight: @(Data.Theme.Plot.SubTitle.Weight);
+                    font-style: @(Data.Theme.Plot.SubTitle.Style);
+                    fill: @(Data.Theme.Plot.SubTitle.Color);
+                }
 
-            @(".css-" + Id + "-caption") {
-                text-anchor: @(Data.Theme.Plot.Caption.Anchor);
-                font-size: @(Data.Theme.Plot.Caption.Size);
-                font-weight: @(Data.Theme.Plot.Caption.Weight);
-                font-style: @(Data.Theme.Plot.Caption.Style);
-                fill: @(Data.Theme.Plot.Caption.Color);
-            }
+                @(".css-" + Id + "-caption") {
+                    text-anchor: @(Data.Theme.Plot.Caption.Anchor);
+                    font-size: @(Data.Theme.Plot.Caption.Size);
+                    font-weight: @(Data.Theme.Plot.Caption.Weight);
+                    font-style: @(Data.Theme.Plot.Caption.Style);
+                    fill: @(Data.Theme.Plot.Caption.Color);
+                }
 
-            @(".css-" + Id + "-gridMajor") {
-                stroke-width: @(Data.Theme.Panel.Grid.Major.X.Width);
-                stroke: @(Data.Theme.Panel.Grid.Major.X.Color);
-                stroke-opacity: @(Data.Theme.Panel.Grid.Major.X.Alpha);
-            }
+                @(".css-" + Id + "-gridMajor") {
+                    stroke-width: @(Data.Theme.Panel.Grid.Major.X.Width);
+                    stroke: @(Data.Theme.Panel.Grid.Major.X.Fill);
+                    stroke-opacity: @(Data.Theme.Panel.Grid.Major.X.Alpha);
+                }
 
-            @(".css-" + Id + "-gridMinor")
-            {
-                stroke-width: @(Data.Theme.Panel.Grid.Minor.X.Width);
-                stroke: @(Data.Theme.Panel.Grid.Minor.X.Color);
-                stroke-opacity: @(Data.Theme.Panel.Grid.Minor.X.Alpha);
-            }
+                @(".css-" + Id + "-gridMinor")
+                {
+                    stroke-width: @(Data.Theme.Panel.Grid.Minor.X.Width);
+                    stroke: @(Data.Theme.Panel.Grid.Minor.X.Fill);
+                    stroke-opacity: @(Data.Theme.Panel.Grid.Minor.X.Alpha);
+                }
 
-            @(".css-" + Id + "-axisTextX") {
-                text-anchor: @(Data.Theme.Axis.Text.X.Anchor);
-                font-size: @(Data.Theme.Axis.Text.X.Size);
-                font-weight: @(Data.Theme.Axis.Text.X.Weight);
-                font-style: @(Data.Theme.Axis.Text.X.Style);
-                fill: @(Data.Theme.Axis.Text.X.Color);
-            }
+                @(".css-" + Id + "-axisTextX") {
+                    text-anchor: @(Data.Theme.Axis.Text.X.Anchor);
+                    font-size: @(Data.Theme.Axis.Text.X.Size);
+                    font-weight: @(Data.Theme.Axis.Text.X.Weight);
+                    font-style: @(Data.Theme.Axis.Text.X.Style);
+                    fill: @(Data.Theme.Axis.Text.X.Color);
+                }
 
-            @(".css-" + Id + "-axisTextY") {
-                text-anchor: @(Data.Theme.Axis.Text.Y.Anchor);
-                font-size: @(Data.Theme.Axis.Text.Y.Size);
-                font-weight: @(Data.Theme.Axis.Text.Y.Weight);
-                font-style: @(Data.Theme.Axis.Text.Y.Style);
-                fill: @(Data.Theme.Axis.Text.Y.Color);
-            }
+                @(".css-" + Id + "-axisTextY") {
+                    text-anchor: @(Data.Theme.Axis.Text.Y.Anchor);
+                    font-size: @(Data.Theme.Axis.Text.Y.Size);
+                    font-weight: @(Data.Theme.Axis.Text.Y.Weight);
+                    font-style: @(Data.Theme.Axis.Text.Y.Style);
+                    fill: @(Data.Theme.Axis.Text.Y.Color);
+                }
 
-            @(".css-" + Id + "-axisTitleX") {
-                text-anchor: @(Data.Theme.Axis.Title.X.Anchor);
-                font-size: @(Data.Theme.Axis.Title.X.Size);
-                font-weight: @(Data.Theme.Axis.Title.X.Weight);
-                font-style: @(Data.Theme.Axis.Title.X.Style);
-                fill: @(Data.Theme.Axis.Title.X.Color);
-            }
+                @(".css-" + Id + "-axisTitleX") {
+                    text-anchor: @(Data.Theme.Axis.Title.X.Anchor);
+                    font-size: @(Data.Theme.Axis.Title.X.Size);
+                    font-weight: @(Data.Theme.Axis.Title.X.Weight);
+                    font-style: @(Data.Theme.Axis.Title.X.Style);
+                    fill: @(Data.Theme.Axis.Title.X.Color);
+                }
 
-            @(".css-" + Id + "-axisTitleY") {
-                text-anchor: @(Data.Theme.Axis.Title.Y.Anchor);
-                font-size: @(Data.Theme.Axis.Title.Y.Size);
-                font-weight: @(Data.Theme.Axis.Title.Y.Weight);
-                font-style: @(Data.Theme.Axis.Title.Y.Style);
-                fill: @(Data.Theme.Axis.Title.Y.Color);
-            }
+                @(".css-" + Id + "-axisTitleY") {
+                    text-anchor: @(Data.Theme.Axis.Title.Y.Anchor);
+                    font-size: @(Data.Theme.Axis.Title.Y.Size);
+                    font-weight: @(Data.Theme.Axis.Title.Y.Weight);
+                    font-style: @(Data.Theme.Axis.Title.Y.Style);
+                    fill: @(Data.Theme.Axis.Title.Y.Color);
+                }
 
-            @(".css-" + Id + "-yLabel") {
-                text-anchor: @(Data.Theme.YLabel.Anchor);
-                font-size: @(Data.Theme.YLabel.Size);
-                font-weight: @(Data.Theme.YLabel.Weight);
-                font-style: @(Data.Theme.YLabel.Style);
-                fill: @(Data.Theme.YLabel.Color);
-            }
+                @(".css-" + Id + "-yLabel") {
+                    text-anchor: @(Data.Theme.YLabel.Anchor);
+                    font-size: @(Data.Theme.YLabel.Size);
+                    font-weight: @(Data.Theme.YLabel.Weight);
+                    font-style: @(Data.Theme.YLabel.Style);
+                    fill: @(Data.Theme.YLabel.Color);
+                }
 
-            @(".css-" + Id + "-legendTitle") {
-                text-anchor: @(Data.Theme.Legend.Title.Anchor);
-                font-size: @(Data.Theme.Legend.Title.Size);
-                font-weight: @(Data.Theme.Legend.Title.Weight);
-                font-style: @(Data.Theme.Legend.Title.Style);
-                fill: @(Data.Theme.Legend.Title.Color);
-            }
+                @(".css-" + Id + "-legendTitle") {
+                    text-anchor: @(Data.Theme.Legend.Title.Anchor);
+                    font-size: @(Data.Theme.Legend.Title.Size);
+                    font-weight: @(Data.Theme.Legend.Title.Weight);
+                    font-style: @(Data.Theme.Legend.Title.Style);
+                    fill: @(Data.Theme.Legend.Title.Color);
+                }
 
-            @(".css-" + Id + "-legendLabels") {
-                text-anchor: @(Data.Theme.Legend.Labels.Anchor);
-                font-size: @(Data.Theme.Legend.Labels.Size);
-                font-weight: @(Data.Theme.Legend.Labels.Weight);
-                font-style: @(Data.Theme.Legend.Labels.Style);
-                fill: @(Data.Theme.Legend.Labels.Color);
-            }
+                @(".css-" + Id + "-legendLabels") {
+                    text-anchor: @(Data.Theme.Legend.Labels.Anchor);
+                    font-size: @(Data.Theme.Legend.Labels.Size);
+                    font-weight: @(Data.Theme.Legend.Labels.Weight);
+                    font-style: @(Data.Theme.Legend.Labels.Style);
+                    fill: @(Data.Theme.Legend.Labels.Color);
+                }
 
-            @(".css-" + Id + "-stripTextX") {
-                text-anchor: @(Data.Theme.Strip.Text.X.Anchor);
-                font-size: @(Data.Theme.Strip.Text.X.Size);
-                font-weight: @(Data.Theme.Strip.Text.X.Weight);
-                font-style: @(Data.Theme.Strip.Text.X.Style);
-                fill: @(Data.Theme.Strip.Text.X.Color);
-            }
+                @(".css-" + Id + "-stripTextX") {
+                    text-anchor: @(Data.Theme.Strip.Text.X.Anchor);
+                    font-size: @(Data.Theme.Strip.Text.X.Size);
+                    font-weight: @(Data.Theme.Strip.Text.X.Weight);
+                    font-style: @(Data.Theme.Strip.Text.X.Style);
+                    fill: @(Data.Theme.Strip.Text.X.Color);
+                }
 
-            @(".css-" + Id + "-stripTextY") {
-                text-anchor: @(Data.Theme.Strip.Text.Y.Anchor);
-                font-size: @(Data.Theme.Strip.Text.Y.Size);
-                font-weight: @(Data.Theme.Strip.Text.Y.Weight);
-                font-style: @(Data.Theme.Strip.Text.Y.Style);
-                fill: @(Data.Theme.Strip.Text.Y.Color);
-            }
+                @(".css-" + Id + "-stripTextY") {
+                    text-anchor: @(Data.Theme.Strip.Text.Y.Anchor);
+                    font-size: @(Data.Theme.Strip.Text.Y.Size);
+                    font-weight: @(Data.Theme.Strip.Text.Y.Weight);
+                    font-style: @(Data.Theme.Strip.Text.Y.Style);
+                    fill: @(Data.Theme.Strip.Text.Y.Color);
+                }
 
-        </style>
-    </defs>
+            </style>
 
-    <clipPath id="@(Id)-plot">
-        <rect x="0" y="0" width="@Width" height="@Height" />
-    </clipPath>
-
-    <rect width="100%" height="100%" class="css-@(Id)-plot" />
-
-    @if (Legend.Width > 0)
-    {
-        if (Data.Theme.Legend.Direction == Direction.Vertical)
-        {
-            var offset = Legend.Y;
-
-            for (int i = 0; i < Data.Legends.Count; i++)
+            @for (int i = 0; i < Data.Legends.Count; i++)
             {
                 var l = Data.Legends[i];
 
-                if (l.Title?.Width > 0)
+                @if (l.Aes.Type != Guide.ColorBar)
                 {
-                    offset += Data.Theme.Legend.Title.Margin.Top;
-
-                    <g clip-path="url(#@(Id)-plot)">
-                        <text x="@Legend.X" y="@(offset + l.Title.Height)" class="css-@(Id)-legendTitle">@l.Title.Value</text>
-                    </g>
-
-                    offset += l.Title.Height + Data.Theme.Legend.Title.Margin.Bottom;
+                    continue;
                 }
 
-                for (int j = 0; j < l.Items.Count; j++)
+                var n = l.Items.Count;
+
+                @if (n < 2)
                 {
-                    var (label, elements) = l.Items[j];
+                    continue;
+                }
 
-                    offset += Data.Theme.Legend.Labels.Margin.Top;
+                <linearGradient id="gadient-@(Id)-@i" 
+                                x1="0%" 
+                                y1="0%" 
+                                x2=@(Data.Theme.Legend.Direction == Direction.Vertical ? "0%" : "100%") 
+                                y2="@(Data.Theme.Legend.Direction == Direction.Vertical ? "100%" : "0%")">
 
-                    for (int k = 0; k < elements.Count; k++)
+                    <stop offset="0%" stop-color="@l.Items[0].elements[0].Value.Fill" stop-opacity="@l.Items[0].elements[0].Value.Alpha" />
+
+                    @if (n > 2)
                     {
-                        var element = elements[k];
+                        var delta = 100.0 / (n - 2.0);
 
-                        if (element.Value is Elements.HLine hline)
+                        @for (var j = 0; j < n - 1; j++)
                         {
-                            <line x1="@Legend.Y"
-                                  x2="@(Legend.X + l.Width)"
-                                  y1="@(offset + elements.Height / 2.0)"
-                                  y2="@(offset + elements.Height / 2.0)"
-                                  clip-path="url(#@(Id)-plot)"
-                                  style="stroke-width: @hline.Width; stroke: @hline.Color; stroke-opacity: @hline.Alpha;" />
-
-                        }
-                        else if (element.Value is Elements.VLine vline)
-                        {
-                            <line x1="@(Legend.X + l.Width / 2.0)"
-                                  x2="@(Legend.X + l.Width / 2.0)"
-                                  y1="@offset"
-                                  y2="@(offset + elements.Height)"
-                                  clip-path="url(#@(Id)-plot)"
-                                  style="stroke-width: @vline.Width; stroke: @vline.Color; stroke-opacity: @vline.Alpha;" />
-
-                        }
-                        else if (element.Value is Elements.Circle circle)
-                        {
-                            <circle cx="@(Legend.X + l.Width / 2.0)"
-                                    cy="@(offset + elements.Height / 2.0)"
-                                    r="@circle.Radius"
-                                    clip-path="url(#@(Id)-plot)"
-                                    style="stroke-width: 0.71; stroke: @circle.Fill; stroke-opacity: @circle.Alpha; fill: @circle.Fill; fill-opacity: @circle.Alpha;" />
-                        }
-                        else if (element.Value is Elements.Rectangle rect)
-                        {
-                            <rect x="@Legend.X"
-                                  y="@offset"
-                                  width="@l.Width"
-                                  height="@elements.Height"
-                                  clip-path="url(#@(Id)-plot)"
-                                  style="fill: @rect.Fill; fill-opacity: @rect.Alpha; stroke: @rect.Color; stroke-width: @rect.Width;" />
+                            <stop offset="@(j * delta)%" stop-color="@l.Items[j].elements[0].Value.Fill" stop-opacity="@l.Items[j].elements[0].Value.Alpha" />
                         }
                     }
 
-                    <g clip-path="url(#@(Id)-legend)">
-                        <text x="@(Legend.X + l.Width + Data.Theme.Legend.Labels.Margin.Left)" y="@(offset + elements.Height / 2.0 + label.Height / 4.0)" class="css-@(Id)-legendLabels">@label.Value</text>
-                    </g>
+                    <stop offset="100%" stop-color="@l.Items[n - 1].elements[0].Value.Fill" stop-opacity="@l.Items[n - 1].elements[0].Value.Alpha" />
 
-                    offset += Math.Max(elements.Height, label.Height) + Data.Theme.Legend.Labels.Margin.Bottom;
+                </linearGradient>
+            }
+
+        </defs>
+
+        <clipPath id="@(Id)-plot">
+            <rect x="0" y="0" width="@Width" height="@Height" />
+        </clipPath>
+
+        <rect width="100%" height="100%" class="css-@(Id)-plot" />
+
+        @if (Legend.Width > 0)
+        {
+            if (Data.Theme.Legend.Direction == Direction.Vertical)
+            {
+                var offset = Legend.Y;
+
+                for (int i = 0; i < Data.Legends.Count; i++)
+                {
+                    var l = Data.Legends[i];
+
+                    if (l.Title?.Width > 0)
+                    {
+                        offset += Data.Theme.Legend.Title.Margin.Top;
+
+                        <g clip-path="url(#@(Id)-plot)">
+                            <text x="@Legend.X" y="@(offset + l.Title.Height)" class="css-@(Id)-legendTitle">@l.Title.Value</text>
+                        </g>
+
+                        offset += l.Title.Height + Data.Theme.Legend.Title.Margin.Bottom;
+                    }
+
+                    if (l.Aes.Type == Guide.Items)
+                    {
+                        for (int j = 0; j < l.Items.Count; j++)
+                        {
+                            var (label, elements) = l.Items[j];
+
+                            offset += Data.Theme.Legend.Labels.Margin.Top;
+
+                            for (int k = 0; k < elements.Count; k++)
+                            {
+                                var element = elements[k];
+
+                                if (element.Value is Elements.HLine hline)
+                                {
+                                    <line x1="@Legend.Y"
+                                          x2="@(Legend.X + l.Width)"
+                                          y1="@(offset + elements.Height / 2.0)"
+                                          y2="@(offset + elements.Height / 2.0)"
+                                          clip-path="url(#@(Id)-plot)"
+                                          style="stroke-width: @hline.Width; stroke: @hline.Fill; stroke-opacity: @hline.Alpha;" />
+
+                                }
+                                else if (element.Value is Elements.VLine vline)
+                                {
+                                    <line x1="@(Legend.X + l.Width / 2.0)"
+                                          x2="@(Legend.X + l.Width / 2.0)"
+                                          y1="@offset"
+                                          y2="@(offset + elements.Height)"
+                                          clip-path="url(#@(Id)-plot)"
+                                          style="stroke-width: @vline.Width; stroke: @vline.Fill; stroke-opacity: @vline.Alpha;" />
+
+                                }
+                                else if (element.Value is Elements.Circle circle)
+                                {
+                                    <circle cx="@(Legend.X + l.Width / 2.0)"
+                                            cy="@(offset + elements.Height / 2.0)"
+                                            r="@circle.Radius"
+                                            clip-path="url(#@(Id)-plot)"
+                                            style="stroke-width: 0.71; stroke: @circle.Fill; stroke-opacity: @circle.Alpha; fill: @circle.Fill; fill-opacity: @circle.Alpha;" />
+                                }
+                                else if (element.Value is Elements.Rectangle rect)
+                                {
+                                    <rect x="@Legend.X"
+                                          y="@offset"
+                                          width="@l.Width"
+                                          height="@elements.Height"
+                                          clip-path="url(#@(Id)-plot)"
+                                          style="fill: @rect.Fill; fill-opacity: @rect.Alpha; stroke: @rect.Color; stroke-width: @rect.Width;" />
+                                }
+                            }
+
+                            <g clip-path="url(#@(Id)-legend)">
+                                <text x="@(Legend.X + l.Width + Data.Theme.Legend.Labels.Margin.Left)" y="@(offset + elements.Height / 2.0 + label.Height / 4.0)" class="css-@(Id)-legendLabels">@label.Value</text>
+                            </g>
+
+                            offset += Math.Max(elements.Height, label.Height) + Data.Theme.Legend.Labels.Margin.Bottom;
+                        }
+                    }
+                    else if (l.Aes.Type == Guide.ColorBar)
+                    {
+                        var xOffset = Legend.X + l.Width + Data.Theme.Legend.Labels.Margin.Left;
+                        offset += Data.Theme.Legend.Labels.Margin.Top;
+
+                        var n = l.Items.Count;
+
+                        for (int j = 0; j < n; j++)
+                        {
+                            var (label, _) = l.Items[j];
+
+                            <g clip-path="url(#@(Id)-legend)">
+                                <text x="@xOffset" y="@(offset + (j + 1.0) * 3.0 * l.Height + label.Height / 4.0)" class="css-@(Id)-legendLabels">@label.Value</text>
+                            </g>
+                        }
+
+                        <rect x="@Legend.X"
+                              y="@offset"
+                              width="@l.Width"
+                              height="@(3.0 * n * l.Height)"
+                              clip-path="url(#@(Id)-plot)"
+                              style="fill: url(#gadient-@(Id)-@i); stroke: @Data.Theme.Legend.Labels.Color; stroke-width: 0.2;" />
+                    }
                 }
             }
-        }
-        else
-        {
-            var offset = Legend.X;
-            var middle = Legend.Y + Legend.Height / 2.0;
-
-            for (int i = 0; i < Data.Legends.Count; i++)
+            else
             {
-                var l = Data.Legends[i];
+                var offset = Legend.X;
+                var middle = Legend.Y + Legend.Height / 2.0;
 
-                if (l.Title?.Height > 0)
+                for (int i = 0; i < Data.Legends.Count; i++)
                 {
-                    offset += Data.Theme.Legend.Title.Margin.Left;
+                    var l = Data.Legends[i];
 
-                    <g clip-path="url(#@(Id)-plot)">
-                        <text x="@offset" y="@(middle + l.Title.Height / 4.0)" class="css-@(Id)-legendTitle">@l.Title.Value</text>
-                    </g>
-
-                    offset += l.Title.Width + Data.Theme.Legend.Title.Margin.Right;
-                }
-
-                for (int j = 0; j < l.Items.Count; j++)
-                {
-                    var (label, elements) = l.Items[j];
-
-                    for (int k = 0; k < elements.Count; k++)
+                    if (l.Title?.Height > 0)
                     {
-                        var element = elements[k];
+                        offset += Data.Theme.Legend.Title.Margin.Left;
 
-                        if (element.Value is Elements.HLine hline)
-                        {
-                            <line x1="@offset"
-                                  x2="@(offset + elements.Width)"
-                                  y1="@(middle)"
-                                  y2="@(middle)"
-                                  clip-path="url(#@(Id)-plot)"
-                                  style="stroke-width: @hline.Width; stroke: @hline.Color; stroke-opacity: @hline.Alpha; stroke-dasharray: @(hline.LineType.DashArray());" />
+                            <g clip-path="url(#@(Id)-plot)">
+                                <text x="@offset" y="@(middle + l.Title.Height / 4.0)" class="css-@(Id)-legendTitle">@l.Title.Value</text>
+                            </g>
 
+                            offset += l.Title.Width + Data.Theme.Legend.Title.Margin.Right;
                         }
-                        else if (element.Value is Elements.VLine vline)
-                        {
-                            <line x1="@(offset + elements.Width / 2.0)"
-                                  x2="@(offset + elements.Width / 2.0)"
-                                  y1="@Legend.Y"
-                                  y2="@(Legend.Y + Legend.Height)"
-                                  clip-path="url(#@(Id)-plot)"
-                                  style="stroke-width: @vline.Width; stroke: @vline.Color; stroke-opacity: @vline.Alpha; stroke-dasharray: @(vline.LineType.DashArray());" />
 
-                        }
-                        else if (element.Value is Elements.Circle circle)
+                        if (l.Aes.Type == Guide.Items)
                         {
-                            <circle cx="@(offset + elements.Width / 2.0)"
-                                    cy="@middle"
-                                    r="@circle.Radius"
-                                    clip-path="url(#@(Id)-plot)"
-                                    style="stroke-width: 0.71; stroke: @circle.Fill; stroke-opacity: @circle.Alpha; fill: @circle.Fill; fill-opacity: @circle.Alpha;" />
+                            for (int j = 0; j < l.Items.Count; j++)
+                            {
+                                var (label, elements) = l.Items[j];
+
+                                for (int k = 0; k < elements.Count; k++)
+                                {
+                                    var element = elements[k];
+
+                                    if (element.Value is Elements.HLine hline)
+                                    {
+                                        <line x1="@offset"
+                                              x2="@(offset + elements.Width)"
+                                              y1="@(middle)"
+                                              y2="@(middle)"
+                                              clip-path="url(#@(Id)-plot)"
+                                              style="stroke-width: @hline.Width; stroke: @hline.Fill; stroke-opacity: @hline.Alpha; stroke-dasharray: @(hline.LineType.DashArray());" />
+
+                                    }
+                                    else if (element.Value is Elements.VLine vline)
+                                    {
+                                        <line x1="@(offset + elements.Width / 2.0)"
+                                              x2="@(offset + elements.Width / 2.0)"
+                                              y1="@Legend.Y"
+                                              y2="@(Legend.Y + Legend.Height)"
+                                              clip-path="url(#@(Id)-plot)"
+                                              style="stroke-width: @vline.Width; stroke: @vline.Fill; stroke-opacity: @vline.Alpha; stroke-dasharray: @(vline.LineType.DashArray());" />
+
+                                    }
+                                    else if (element.Value is Elements.Circle circle)
+                                    {
+                                        <circle cx="@(offset + elements.Width / 2.0)"
+                                                cy="@middle"
+                                                r="@circle.Radius"
+                                                clip-path="url(#@(Id)-plot)"
+                                                style="stroke-width: 0.71; stroke: @circle.Fill; stroke-opacity: @circle.Alpha; fill: @circle.Fill; fill-opacity: @circle.Alpha;" />
+                                    }
+                                    else if (element.Value is Elements.Rectangle rect)
+                                    {
+                                        <rect x="@offset"
+                                              y="@(middle - elements.Height / 2.0)"
+                                              width="@elements.Width"
+                                              height="@elements.Height"
+                                              clip-path="url(#@(Id)-plot)"
+                                              style="fill: @rect.Fill; fill-opacity: @rect.Alpha; stroke: @rect.Color; stroke-width: @rect.Width;" />
+                                    }
+                                }
+
+                                offset += elements.Width;
+
+                                offset += Data.Theme.Legend.Labels.Margin.Left;
+
+                                <g clip-path="url(#@(Id)-legend)">
+                                    <text x="@offset" y="@(middle + label.Height / 4.0)" class="css-@(Id)-legendLabels">@label.Value</text>
+                                </g>
+
+                                offset += label.Width + Data.Theme.Legend.Labels.Margin.Right;
+                            }
                         }
-                        else if (element.Value is Elements.Rectangle rect)
+                        else if (l.Aes.Type == Guide.ColorBar)
                         {
+                            offset += Data.Theme.Legend.Labels.Margin.Left;
+
+                            var yOffset = Legend.Y + l.Items[0].label.Height;
+
+                            for (int j = 0; j < l.Items.Count; j++)
+                            {
+                                var (label, _) = l.Items[j];
+
+                                <g clip-path="url(#@(Id)-legend)">
+                                    <text x="@(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0)" y="@yOffset" class="css-@(Id)-legendLabels">@label.Value</text>
+                                </g>
+                            }
+
+                            yOffset += Data.Theme.Legend.Labels.Margin.Bottom;
+
                             <rect x="@offset"
-                                  y="@(middle - elements.Height / 2.0)"
-                                  width="@elements.Width"
-                                  height="@elements.Height"
+                                  y="@yOffset"
+                                  width="@(3.0 * l.Width * l.Items.Count)"
+                                  height="@l.Height"
                                   clip-path="url(#@(Id)-plot)"
-                                  style="fill: @rect.Fill; fill-opacity: @rect.Alpha; stroke: @rect.Color; stroke-width: @rect.Width;" />
+                                  style="fill: url(#gadient-@(Id)-@i); stroke: @Data.Theme.Legend.Labels.Color; stroke-width: 0.2;" />
                         }
                     }
-
-                    offset += elements.Width;
-
-                    offset += Data.Theme.Legend.Labels.Margin.Left;
-
-                    <g clip-path="url(#@(Id)-legend)">
-                        <text x="@offset" y="@(middle + label.Height / 4.0)" class="css-@(Id)-legendLabels">@label.Value</text>
-                    </g>
-
-                    offset += label.Width + Data.Theme.Legend.Labels.Margin.Right;
                 }
-            }
         }
-    }
-    <CascadingValue Value=@this>
-        @{
-            var width = wrapper.Width - Data.Strip - (Data.N.cols - 1.0) * Data.Theme.Panel.Spacing.X;
 
-            if (!Data.AxisVisibility.y)
-            {
-                width -= Data.Axis.width;
-            }
+        <CascadingValue Value=@this>
+            @{
+                var width = wrapper.Width - Data.Strip - (Data.N.cols - 1.0) * Data.Theme.Panel.Spacing.X;
 
-            var height = wrapper.Height - Data.Strip - (Data.N.rows - 1.0) * Data.Theme.Panel.Spacing.Y;
-
-            if (!Data.AxisVisibility.x)
-            {
-                height -= Data.Axis.height;
-            }
-
-            if (!Data.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Data.XLab))
-            {
-                height -= Data.AxisTitles.x;
-            }
-
-            var xOffsetReset = wrapper.X;
-
-            var xOffset = xOffsetReset;
-            var yOffset = wrapper.Y;
-
-            for (var i = 0; i < Data.Panels.Count; i++)
-            {
-                var panel = Data.Panels[i];
-
-                var x = xOffset;
-                var y = yOffset;
-
-                var w = panel.Width * width;
-                var h = panel.Height * height;
-
-                if (panel.Coord.row == 0)
+                if (!Data.AxisVisibility.y)
                 {
-                    h += Data.Strip;
+                    width -= Data.Axis.width;
                 }
 
-                if (panel.Coord.col == 0 && !Data.AxisVisibility.y && Data.Theme.Axis.Y == Position.Left)
+                var height = wrapper.Height - Data.Strip - (Data.N.rows - 1.0) * Data.Theme.Panel.Spacing.Y;
+
+                if (!Data.AxisVisibility.x)
                 {
-                    w += Data.Axis.width;
+                    height -= Data.Axis.height;
                 }
 
-                if (panel.Coord.row == (Data.N.rows - 1))
+                if (!Data.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Data.XLab))
                 {
-                    if (!Data.AxisVisibility.x)
+                    height -= Data.AxisTitles.x;
+                }
+
+                var xOffsetReset = wrapper.X;
+
+                var xOffset = xOffsetReset;
+                var yOffset = wrapper.Y;
+
+                for (var i = 0; i < Data.Panels.Count; i++)
+                {
+                    var panel = Data.Panels[i];
+
+                    var x = xOffset;
+                    var y = yOffset;
+
+                    var w = panel.Width * width;
+                    var h = panel.Height * height;
+
+                    if (panel.Coord.row == 0)
                     {
-                        h += Data.Axis.height;
+                        h += Data.Strip;
                     }
 
-                    if (!Data.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Data.XLab))
-                    {
-                        h += Data.AxisTitles.x;
-                    }
-                }
-
-                if (panel.Coord.col == (Data.N.cols - 1))
-                {
-                    w += Data.Strip;
-
-                    if (!Data.AxisVisibility.y && Data.Theme.Axis.Y == Position.Right)
+                    if (panel.Coord.col == 0 && !Data.AxisVisibility.y && Data.Theme.Axis.Y == Position.Left)
                     {
                         w += Data.Axis.width;
                     }
 
-                    xOffset = xOffsetReset;
-                    yOffset += h + Data.Theme.Panel.Spacing.Y;
-                }
-                else
-                {
-                    xOffset += w + Data.Theme.Panel.Spacing.X;
-                }
+                    if (panel.Coord.row == (Data.N.rows - 1))
+                    {
+                        if (!Data.AxisVisibility.x)
+                        {
+                            h += Data.Axis.height;
+                        }
 
-                <Panel Data="@panel"
-                       X="@x"
-                       Y="@y"
-                       Width="@w"
-                       Height="@h"
-                       First="@(i == 0)"
-                       Last="@(i == (Data.Panels.Count - 1))"
-                       T="T" TX="TX" TY="TY"
-                       @key="@panel.Id" />
+                        if (!Data.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Data.XLab))
+                        {
+                            h += Data.AxisTitles.x;
+                        }
+                    }
+
+                    if (panel.Coord.col == (Data.N.cols - 1))
+                    {
+                        w += Data.Strip;
+
+                        if (!Data.AxisVisibility.y && Data.Theme.Axis.Y == Position.Right)
+                        {
+                            w += Data.Axis.width;
+                        }
+
+                        xOffset = xOffsetReset;
+                        yOffset += h + Data.Theme.Panel.Spacing.Y;
+                    }
+                    else
+                    {
+                        xOffset += w + Data.Theme.Panel.Spacing.X;
+                    }
+
+                    <Panel Data="@panel"
+                           X="@x"
+                           Y="@y"
+                           Width="@w"
+                           Height="@h"
+                           First="@(i == 0)"
+                           Last="@(i == (Data.Panels.Count - 1))"
+                           T="T" TX="TX" TY="TY"
+                           @key="@panel.Id" />
+                }
             }
-        }
-    </CascadingValue>
+        </CascadingValue>
 
-</svg>
+    </svg>

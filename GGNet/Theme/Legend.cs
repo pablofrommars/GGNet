@@ -70,6 +70,7 @@
                 {
                     Title.Margin.Right = 16;
                     Labels.Margin.Right = 8;
+                    Labels.Margin.Bottom = 4;
                 }
                 else
                 {

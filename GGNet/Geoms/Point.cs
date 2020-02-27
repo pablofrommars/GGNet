@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Components.Web;
@@ -139,47 +138,19 @@ namespace GGNet.Geoms
 
         public override void Legend()
         {
-            if (Aesthetics.Color != null && Aesthetics.Color.Guide)
+            Legend(Aesthetics.Color, value => new Elements.Circle
             {
-                var legend = legends.GetOrAdd(Aesthetics.Color);
+                Fill = value,
+                Alpha = Aesthetic.Alpha,
+                Radius = Aesthetic.Radius
+            });
 
-                var labels = Aesthetics.Color.Labels;
-
-                var n = labels.Count();
-
-                for (int i = 0; i < n; i++)
-                {
-                    var (value, label) = labels.ElementAt(i);
-
-                    legend.Add(label, new Elements.Circle
-                    {
-                        Fill = value,
-                        Alpha = Aesthetic.Alpha,
-                        Radius = Aesthetic.Radius
-                    });
-                }
-            }
-
-            if (Aesthetics.Size != null && Aesthetics.Size.Guide)
+            Legend(Aesthetics.Size, value => new Elements.Circle
             {
-                var legend = legends.GetOrAdd(Aesthetics.Size);
-
-                var labels = Aesthetics.Size.Labels;
-
-                var n = labels.Count();
-
-                for (int i = 0; i < n; i++)
-                {
-                    var (value, label) = labels.ElementAt(i);
-
-                    legend.Add(label, new Elements.Circle
-                    {
-                        Fill = Aesthetic.Fill,
-                        Alpha = Aesthetic.Alpha,
-                        Radius = value
-                    });
-                }
-            }
+                Fill = Aesthetic.Fill,
+                Alpha = Aesthetic.Alpha,
+                Radius = value
+            });
         }
 
         protected override void Shape(T item, bool flip)

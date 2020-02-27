@@ -26,6 +26,8 @@ namespace GGNet.Scales
             Titles = Enumerable.Empty<(TValue value, string text)>();
         }
 
+        public abstract Guide Guide { get; }
+
         public IEnumerable<TValue> Breaks { get; protected set; }
 
         public IEnumerable<TValue> MinorBreaks { get; protected set; }

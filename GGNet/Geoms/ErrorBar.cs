@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 using GGNet.Scales;
 using GGNet.Facets;
@@ -135,40 +134,28 @@ namespace GGNet.Geoms
 
         public override void Legend()
         {
-            if (Aesthetics.Color != null && Aesthetics.Color.Guide)
+            Legend(Aesthetics.Color, value => new Elements.IElement[]
             {
-                var legend = legends.GetOrAdd(Aesthetics.Color);
-
-                var labels = Aesthetics.Color.Labels;
-
-                var n = labels.Count();
-
-                for (int i = 0; i < n; i++)
+                new Elements.VLine
                 {
-                    var (value, label) = labels.ElementAt(i);
-
-                    legend.Add(label, new Elements.VLine
-                    {
-                        Width = Line.Width,
-                        Color = value,
-                        Alpha = Line.Alpha,
-                        LineType = Line.LineType
-                    });
-
-                    legend.Add(label, new Elements.Circle
-                    {
-                        Fill = value,
-                        Alpha = Circle.Alpha,
-                        //Radius = Circle.Radius
-                        Radius = 2
-                    });
+                    Width = Line.Width,
+                    Fill = value,
+                    Alpha = Line.Alpha,
+                    LineType = Line.LineType
+                },
+                new Elements.Circle
+                {
+                    Fill = value,
+                    Alpha = Circle.Alpha,
+                    //Radius = Circle.Radius
+                    Radius = 2
                 }
-            }
+            });
         }
 
         protected override void Shape(T item, bool flip)
         {
-            var color = Line.Color;
+            var color = Line.Fill;
 
             if (Aesthetics.Color != null)
             {
@@ -224,7 +211,7 @@ namespace GGNet.Geoms
                         Aesthetic = new Elements.Line
                         {
                             Width = Line.Width,
-                            Color = color,
+                            Fill = color,
                             Alpha = Line.Alpha,
                             LineType = Line.LineType
                         }
@@ -287,7 +274,7 @@ namespace GGNet.Geoms
                         Aesthetic = new Elements.Line
                         {
                             Width = Line.Width,
-                            Color = color,
+                            Fill = color,
                             Alpha = Line.Alpha,
                             LineType = Line.LineType
                         }

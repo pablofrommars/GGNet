@@ -3,6 +3,7 @@
 using GGNet.Scales;
 using GGNet.Facets;
 using GGNet.Shapes;
+using System.Linq;
 
 namespace GGNet.Geoms
 {
@@ -143,6 +144,49 @@ namespace GGNet.Geoms
                 }
 
                 Train(item);
+            }
+        }
+
+        protected void Legend<TV>(IAestheticMapping<T, TV> aes, Func<TV, Elements.IElement> element)
+        {
+            if (aes == null || !aes.Guide)
+            {
+                return;
+            }
+
+            var legend = legends.GetOrAdd(aes);
+
+            var n = aes.Labels.Count();
+
+            for (int i = 0; i < n; i++)
+            {
+                var (value, label) = aes.Labels.ElementAt(i);
+
+                legend.Add(label, element(value));
+            }
+        }
+
+        protected void Legend<TV>(IAestheticMapping<T, TV> aes, Func<TV, Elements.IElement[]> elements)
+        {
+            if (aes == null || !aes.Guide)
+            {
+                return;
+            }
+
+            var legend = legends.GetOrAdd(aes);
+
+            var n = aes.Labels.Count();
+
+            for (int i = 0; i < n; i++)
+            {
+                var (value, label) = aes.Labels.ElementAt(i);
+
+                var array = elements(value);
+
+                for (int j = 0; j < array.Length; j++)
+                {
+                    legend.Add(label, array[j]);
+                }
             }
         }
 

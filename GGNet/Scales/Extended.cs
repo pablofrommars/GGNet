@@ -26,6 +26,8 @@ namespace GGNet.Scales
             this.formatter = formatter ?? Standard<double>.Instance;
         }
 
+        public override Guide Guide => Guide.None;
+
         public override void Set()
         {
             SetRange(Limits.min ?? _min ?? 0.0, Limits.max ?? _max ?? 0.0);

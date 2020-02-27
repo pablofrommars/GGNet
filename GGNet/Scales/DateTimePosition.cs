@@ -23,6 +23,8 @@ namespace GGNet.Scales
             Limits = limits ?? (null, null);
         }
 
+        public override Guide Guide => Guide.None;
+
         private LocalDate? first = null;
         private LocalDate? last = null;
 

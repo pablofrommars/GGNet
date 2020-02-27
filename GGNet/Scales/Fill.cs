@@ -20,6 +20,8 @@ namespace GGNet.Scales
             : base(palette, direction, default, transformation)
         {
         }
+
+        public override Guide Guide => Guide.Items;
     }
 
     public class FillContinuous : Scale<double, string>
@@ -40,6 +42,8 @@ namespace GGNet.Scales
             this.m = m;
             this.format = format;
         }
+
+        public override Guide Guide => Guide.ColorBar;
 
         public override void Train(double key)
         {

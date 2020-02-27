@@ -18,5 +18,7 @@ namespace GGNet.Scales
             : base(palette, direction, default, transformation)
         {
         }
+
+        public override Guide Guide => Guide.Items;
     }
 }

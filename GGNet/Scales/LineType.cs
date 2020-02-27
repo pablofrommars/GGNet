@@ -22,5 +22,7 @@ namespace GGNet.Scales
             : base(palette ?? lineTypes, direction, default, transformation)
         {
         }
+
+        public override Guide Guide => Guide.None;
     }
 }

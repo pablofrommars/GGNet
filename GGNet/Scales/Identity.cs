@@ -4,6 +4,8 @@
     {
         public Identity() : base(null) { }
 
+        public override Guide Guide => Guide.Items;
+
         public override void Train(T key) { }
 
         public override void Set() { }

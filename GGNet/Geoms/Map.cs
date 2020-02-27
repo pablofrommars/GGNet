@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 using GGNet.Scales;
 using GGNet.Facets;
@@ -79,27 +78,13 @@ namespace GGNet.Geoms
 
         public override void Legend()
         {
-            if (Aesthetics.Fill != null && Aesthetics.Fill.Guide)
+            Legend(Aesthetics.Fill, value => new Elements.Rectangle
             {
-                var legend = legends.GetOrAdd(Aesthetics.Fill);
-
-                var labels = Aesthetics.Fill.Labels;
-
-                var n = labels.Count();
-
-                for (int i = 0; i < n; i++)
-                {
-                    var (value, label) = labels.ElementAt(i);
-
-                    legend.Add(label, new Elements.Rectangle
-                    {
-                        Fill = value,
-                        Alpha = Aesthetic.Alpha,
-                        Color = Aesthetic.Color,
-                        Width = Aesthetic.Width
-                    });
-                }
-            }
+                Fill = value,
+                Alpha = Aesthetic.Alpha,
+                Color = Aesthetic.Color,
+                Width = Aesthetic.Width
+            });
         }
 
         protected override void Shape(T item, bool flip)

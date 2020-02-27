@@ -8,6 +8,8 @@ namespace GGNet.Scales
         bool Guide { get; }
 
         string Name { get; }
+
+        Guide Type { get; }
     }
 
     public interface IAestheticMapping<T, TValue> : IAestheticMapping
@@ -37,10 +39,13 @@ namespace GGNet.Scales
 
         public string Name { get; }
 
+        public Guide Type => scale.Guide;
+
         public void Train(T item) => scale.Train(selector(item));
 
         public TValue Map(T item) => scale.Map(selector(item));
 
         public IEnumerable<(TValue value, string label)> Labels => scale.Labels;
+
     }
 }

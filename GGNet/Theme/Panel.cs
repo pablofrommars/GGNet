@@ -15,13 +15,13 @@
                     X = new Line
                     {
                         Width = 0.43,
-                        Color = color,
+                        Fill = color,
                         Alpha = 1.0
                     },
                     Y = new Line
                     {
                         Width = 0.43,
-                        Color = color,
+                        Fill = color,
                         Alpha = 1.0
                     }
                 },
@@ -30,13 +30,13 @@
                     X = new Line
                     {
                         Width = 0.32,
-                        Color = color,
+                        Fill = color,
                         Alpha = 1.0
                     },
                     Y = new Line
                     {
                         Width = 0.32,
-                        Color = color,
+                        Fill = color,
                         Alpha = 1.0
                     }
                 },

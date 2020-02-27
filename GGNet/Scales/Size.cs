@@ -36,6 +36,8 @@ namespace GGNet.Scales
             this.format = format;
         }
 
+        public override Guide Guide => Guide.Items;
+
         public override void Train(double key)
         {
             if (defined)

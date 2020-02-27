@@ -6,6 +6,7 @@ namespace GGNet
     using Scales;
 
     using static Direction;
+    using static Guide;
 
     internal class Legend
     {
@@ -175,22 +176,50 @@ namespace GGNet
                     }
                 }
 
-                for (int j = 0; j < legend.Items.Count; j++)
+                if (legend.Aes.Type == Items)
                 {
-                    var (label, elements) = legend.Items[j];
+                    for (int j = 0; j < legend.Items.Count; j++)
+                    {
+                        var (label, elements) = legend.Items[j];
 
-                    var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
-                    var h = theme.Legend.Labels.Margin.Top + Max(elements.Height, label.Height) + theme.Legend.Labels.Margin.Bottom;
+                        var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
+                        var h = theme.Legend.Labels.Margin.Top + Max(elements.Height, label.Height) + theme.Legend.Labels.Margin.Bottom;
+
+                        if (theme.Legend.Direction == Vertical)
+                        {
+                            width = Max(width, w);
+                            height += h;
+                        }
+                        else
+                        {
+                            width += w;
+                            height = Max(height, h);
+                        }
+                    }
+                }
+                else if (legend.Aes.Type == ColorBar)
+                {
+                    var n = legend.Items.Count;
 
                     if (theme.Legend.Direction == Vertical)
                     {
-                        width = Max(width, w);
-                        height += h;
+                        height += theme.Legend.Labels.Margin.Top;
+
+                        for (int j = 0; j < legend.Items.Count; j++)
+                        {
+                            var (label, _) = legend.Items[j];
+
+                            var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
+                            var h = Max(3.0 * legend.Height, label.Height);
+
+                            width = Max(width, w);
+                            height += h;
+                        }
                     }
                     else
                     {
-                        width += w;
-                        height = Max(height, h);
+                        width += theme.Legend.Labels.Margin.Left + 3.0 * legend.Width * n;
+                        height = Max(height, legend.Items[0].label.Height + theme.Legend.Labels.Margin.Bottom + legend.Height);
                     }
                 }
             }

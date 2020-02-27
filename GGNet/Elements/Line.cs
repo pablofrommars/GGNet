@@ -4,7 +4,7 @@
     {
         public double Width { get; set; }
 
-        public string Color { get; set; }
+        public string Fill { get; set; }
 
         public double Alpha { get; set; }
 

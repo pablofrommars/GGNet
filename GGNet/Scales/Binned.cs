@@ -12,6 +12,8 @@
             this.na = na;
         }
 
+        public override Guide Guide => Guide.Items;
+
         public override void Train(double key) { } 
 
         public override void Set() { }

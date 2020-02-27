@@ -20,6 +20,8 @@ namespace GGNet.Scales
             this.formatter = formatter ?? Standard<T>.Instance;
         }
 
+        public override Guide Guide => Guide.None;
+
         public override void Train(T key) => values.Add(key);
 
         protected virtual void Labeling(int start, int end)
