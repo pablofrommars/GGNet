@@ -10,10 +10,10 @@ Taking its inspiration from the highly popular [ggpplot2](https://ggplot2.tidyve
 
 | | | |
 |-|-|-|
-![](Site/wwwroot/img/scatterplot.png) | ![](Site/wwwroot/img/bubbleplot.png) | ![](Site/wwwroot/img/barchart.png)
-![](Site/wwwroot/img/candlestick.png) | ![](Site/wwwroot/img/linechart.png) | ![](Site/wwwroot/img/areachart.png)
-![](Site/wwwroot/img/barplot.png) | ![](Site/wwwroot/img/stacked.png) | ![](Site/wwwroot/img/hbarplot.png)
-![](Site/wwwroot/img/lolipop.png) | ![](Site/wwwroot/img/errorbar.png) | ![](Site/wwwroot/img/violin.png)
-![](Site/wwwroot/img/hex.png) | ![](Site/wwwroot/img/ridgeline.png) | ![](Site/wwwroot/img/choropleth.png)
+![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/scatterplot.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/bubbleplot.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/barchart.png)
+![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/candlestick.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/linechart.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/areachart.png)
+![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/barplot.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/stacked.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/hbarplot.png)
+![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/lolipop.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/errorbar.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/violin.png)
+![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/hex.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/ridgeline.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/choropleth.png)
  
-![](Site/wwwroot/img/bubblemap.png)
+![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/bubblemap.png)
