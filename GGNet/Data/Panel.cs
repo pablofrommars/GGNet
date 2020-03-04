@@ -98,7 +98,7 @@ namespace GGNet
 
             public Func<Position<TY>> Y { get; set; }
 
-            public string YLab { get; set; }
+            internal string YLab { get; set; }
 
             public void Add(Func<Panel, Facet<T>, IGeom> geom) => geoms.Add(geom);
 

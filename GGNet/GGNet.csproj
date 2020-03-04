@@ -7,8 +7,8 @@
     <Authors>Pablo Belin</Authors>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Title>GG.Net Data Visualization</Title>
-    <Description>GG.Net lets Data Scientists and Developers create interactive and flexible charts for Blazor Web Apps in C#</Description>
-    <Summary>GG.Net lets Data Scientists and Developers create interactive and flexible charts for Blazor Web Apps in C#</Summary>
+    <Description>GG.Net lets Data Scientists and Developers create interactive and flexible charts for .NET and Blazor Web Apps</Description>
+    <Summary>GG.Net lets Data Scientists and Developers create interactive and flexible charts for .NET and Blazor Web Apps</Summary>
     <PackageTags>Blazor;plotting;plot;plots;charting;chart;charts;visualization;ML.Net</PackageTags>
     <RepositoryUrl>https://github.com/pablofrommars/GGNet</RepositoryUrl>
     <PackageProjectUrl>https://pablofrommars.github.io/</PackageProjectUrl>
@@ -16,7 +16,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>GGNet Data Visualization</Product>
     <RepositoryType>git</RepositoryType>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

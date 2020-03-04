@@ -2045,5 +2045,24 @@ namespace GGNet
 
             return data;
         }
+
+        #region F# Helpers
+
+        public static (double min, double max)? Range(double min, double max) => (min, max);
+
+        public static (double minMult, double minAdd, double maxMult, double maxAdd)? Expand(double minMult, double minAdd, double maxMult, double maxAdd)
+            => (minMult, minAdd, maxMult, maxAdd);
+
+        public static (double? min, double? max)? Limits(double? min = null, double? max = null) => (min, max);
+
+        public static (LocalDate? min, LocalDate? max)? Limits(LocalDate? min = null, LocalDate? max = null) => (min, max);
+
+        public static (LocalDateTime? min, LocalDateTime? max)? Limits(LocalDateTime? min = null, LocalDateTime? max = null) => (min, max);
+
+        public static (T? min, T? max)? Limits<T>(T? min, T? max)
+             where T : struct
+             => (min, max);
+
+        #endregion
     }
 }

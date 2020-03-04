@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 using NodaTime;
 
@@ -9,19 +8,18 @@ namespace GGNet
 {
     using Scales;
     using Facets;
-    using Geoms;
 
     public partial class Data<T, TX, TY>
         where TX : struct
         where TY : struct
     {
-        public string Title { get; set; }
+        internal string Title { get; set; }
 
-        public string SubTitle { get; set; }
+        internal string SubTitle { get; set; }
 
-        public string XLab { get; set; }
+        internal string XLab { get; set; }
 
-        public string Caption { get; set; }
+        internal string Caption { get; set; }
 
         public Source<T> Source { get; set; }
 
@@ -81,7 +79,7 @@ namespace GGNet
 
         public bool Flip { get; set; }
 
-        public Theme Theme { get; set; }
+        internal Theme Theme { get; set; }
 
         public PanelFactory DefaultFactory { get; set; }
 
@@ -504,18 +502,4 @@ namespace GGNet
             Component = component;
         }
     }
-
-/*
-    public partial class Data<T>
-    {
-        public Data(Source<T> source = null)
-        {
-            Range = 0..; //TODO: Move to Source...
-        }
-
-        internal int Start => Range.Start.IsFromEnd ?  Source.Count - Range.Start.Value : Range.Start.Value;
-
-        internal int End => Range.End.IsFromEnd ? Source.Count - Range.End.Value : Range.End.Value;
-   }
-   */
 }
