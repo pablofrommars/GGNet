@@ -9,6 +9,8 @@
     {
         public Theme(bool dark, Position axisY, Position legend)
         {
+            FontFamily = "-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,\"Helvetica Neue\",Arial,\"Noto Sans\",sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Segoe UI Symbol\",\"Noto Color Emoji\"";
+
             Plot = new _Plot(dark);
 
             Panel = new _Panel(dark);
@@ -40,6 +42,8 @@
                 Fill = dark ? "#FFFFFF" : "#252A32"
             };
         }
+
+        public string FontFamily { get; set; }
 
         public _Plot Plot { get; set; }
 

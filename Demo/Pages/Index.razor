@@ -10,7 +10,7 @@
     <GGNet.Components.Plot Data=@diamond T="GGNet.Datasets.Diamond.Point" TX="Double" TY="Double" />
 </div>
 
-<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #252A32;">
+<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
     <GGNet.Components.Plot Data=@tip T="GGNet.Datasets.Tip.Point" TX="GGNet.Datasets.Tip.Day" TY="Double" />
 </div>
 
@@ -57,13 +57,27 @@
         }
 
         {
+            var theme = Theme.Default();
+
+            theme.Plot.Background.Fill = "#263238";
+            theme.Panel.Background.Fill = "#32464a";
+            theme.Axis.Text.X.Color = "#FFFFFF";
+            theme.Axis.Title.X.Color = "#FFFFFF";
+            theme.Axis.Text.Y.Color = "#FFFFFF";
+            theme.Axis.Title.Y.Color = "#FFFFFF";
+            theme.Panel.Grid.Major.X.Fill = "#263238";
+            theme.Panel.Grid.Minor.X.Fill = "#263238";
+            theme.Legend.Title.Color = "#FFFFFF";
+            theme.Legend.Labels.Color = "#FFFFFF";
+
             var source = new GGNet.Source<GGNet.Datasets.Tip.Point>(GGNet.Datasets.Tip.Load());
 
             tip = Plot.New(source, o => o.Day, o => o.Avg)
                 .Geom_ErrorBar(ymin: o => o.Lower, ymax: o => o.Upper, position: PositionAdjustment.Dodge)
                 .Scale_Color_Discrete(o => o.Sex, new[] { "#69b3a2", "#404080" })
+                .Title("Tipping Behavior")
                 .YLab("Tip (%)")
-                .Theme();
+                .Theme(theme);
         }
     }
 

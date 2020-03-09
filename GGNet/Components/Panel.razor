@@ -31,6 +31,8 @@
     </clipPath>
 </defs>
 
+<rect x="@Area.X" y="@Area.Y" width="@Area.Width" height="@Area.Height" class="css-@(Plot.Id)-panel" />
+
 @if (!string.IsNullOrEmpty(Data.Strip.x))
 {
     <g clip-path="url(#@(Plot.Id)-plot)">

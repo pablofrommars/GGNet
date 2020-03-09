@@ -6,6 +6,11 @@
     {
         public _Panel(bool dark)
         {
+            Background = new Rectangle
+            {
+                Fill = dark ? "#252A32" : "#FFFFFF"
+            };
+
             var color = dark ? "#464950" : "#cccccc";
 
             Grid = new _Grid
@@ -48,6 +53,8 @@
                 Y = 8
             };
         }
+
+        public Rectangle Background { get; set; }
 
         public class _Grid
         {
