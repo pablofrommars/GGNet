@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Components.Web;
@@ -35,12 +36,22 @@ namespace GGNet
 
         public static Data<T, LocalDate, double> New<T>(Source<T> source, Func<T, LocalDate> x, Func<T, double> y = null) => _New(source, x, y);
 
+        public static Data<T, LocalDate, double> New<T>(IEnumerable<T> items, Func<T, LocalDate> x, Func<T, double> y = null) => _New(new Source<T>(items), x, y);
+
         public static Data<T, LocalDateTime, double> New<T>(Source<T> source, Func<T, LocalDateTime> x, Func<T, double> y = null) => _New(source, x, y);
+
+        public static Data<T, LocalDateTime, double> New<T>(IEnumerable<T> items, Func<T, LocalDateTime> x, Func<T, double> y = null) => _New(new Source<T>(items), x, y);
 
         public static Data<T, TX, double> New<T, TX>(Source<T> source, Func<T, TX> x, Func<T, double> y = null)
             where TX : struct, Enum
         {
             return _New(source, x, y);
+        }
+
+        public static Data<T, TX, double> New<T, TX>(IEnumerable<T> items, Func<T, TX> x, Func<T, double> y = null)
+           where TX : struct, Enum
+        {
+            return _New(new Source<T>(items), x, y);
         }
 
         public static Data<T, TX, TY> New<T, TX, TY>(Source<T> source, Func<T, TX> x, Func<T, TY> y)
@@ -50,13 +61,28 @@ namespace GGNet
             return _New(source, x, y);
         }
 
+        public static Data<T, TX, TY> New<T, TX, TY>(IEnumerable<T> items, Func<T, TX> x, Func<T, TY> y)
+            where TX : struct, Enum
+            where TY : struct, Enum
+        {
+            return _New(new Source<T>(items), x, y);
+        }
+
         public static Data<T, double, TY> New<T, TY>(Source<T> source, Func<T, double> x, Func<T, TY> y)
             where TY : struct, Enum
         {
             return _New(source, x, y);
         }
 
+        public static Data<T, double, TY> New<T, TY>(IEnumerable<T> items, Func<T, double> x, Func<T, TY> y)
+            where TY : struct, Enum
+        {
+            return _New(new Source<T>(items), x, y);
+        }
+
         public static Data<T, double, double> New<T>(Source<T> source, Func<T, double> x = null, Func<T, double> y = null) => _New(source, x, y);
+
+        public static Data<T, double, double> New<T>(IEnumerable<T> items, Func<T, double> x = null, Func<T, double> y = null) => _New(new Source<T>(items), x, y);
 
         public static Data<IWaiver, double, double> New() => _New<IWaiver, double, double>(null, null, null);
 

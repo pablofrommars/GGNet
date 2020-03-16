@@ -1,11 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Components;
 
 namespace GGNet.Static
 {
-    public class RenderedComponent<TComponent> where TComponent : IComponent
+    public class RenderedComponent
     {
         private readonly StaticRenderer renderer;
         private readonly ContainerComponent container;
@@ -17,9 +18,9 @@ namespace GGNet.Static
             container = new ContainerComponent(this.renderer);
         }
 
-        internal async Task RenderAsync(ParameterView parameters)
+        internal async Task RenderAsync(Type type, ParameterView parameters)
         {
-            await container.RenderAsync(typeof(TComponent), parameters);
+            await container.RenderAsync(type, parameters);
 
             id = container.Child();
         }

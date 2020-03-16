@@ -23,11 +23,11 @@ namespace GGNet.Static
             renderer = new Lazy<StaticRenderer>(() => new StaticRenderer(provider.Value, new NullLoggerFactory()));
         }
 
-        public async Task<RenderedComponent<TComponent>> RenderAsync<TComponent>(IDictionary<string, object> parameters = null) where TComponent : IComponent
+        internal async Task<RenderedComponent> RenderAsync(Type type, IDictionary<string, object> parameters = null)
         {
-            var component = new RenderedComponent<TComponent>(renderer.Value);
+            var component = new RenderedComponent(renderer.Value);
 
-            await component.RenderAsync(parameters == null ? ParameterView.Empty : ParameterView.FromDictionary(parameters));
+            await component.RenderAsync(type, parameters == null ? ParameterView.Empty : ParameterView.FromDictionary(parameters));
 
             return component;
         }

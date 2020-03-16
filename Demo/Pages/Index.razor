@@ -34,9 +34,7 @@
                 Latitude = y.Latitude
             });
 
-            var source = new GGNet.Source<Point>(data);
-
-            map = Plot.New(source)
+            map = Plot.New(data)
                 .Geom_Map(latitude: o => o.Latitude, longitude: o => o.Longitude, alpha: 0.7, width: 0.2)
                 .Scale_X_Continuous(limits: (-15, 30), formatter: GGNet.Formats.Latitude.Instance)
                 .Scale_Y_Continuous(limits: (30, 70), formatter: GGNet.Formats.Longitude.Instance)
@@ -45,9 +43,7 @@
         }
 
         {
-            var source = new Source<GGNet.Datasets.Diamond.Point>(GGNet.Datasets.Diamond.Load());
-
-            diamond = Plot.New(source, x: o => o.Carat, y: o => o.Price)
+            diamond = Plot.New(GGNet.Datasets.Diamond.Load(), x: o => o.Carat, y: o => o.Price)
                 .Geom_Hex(dx: o => o.Dx, dy: o => o.Dy)
                 .Title("Prices of 50,000 round cut diamonds")
                 .XLab("Carat")
@@ -70,9 +66,7 @@
             theme.Legend.Title.Color = "#FFFFFF";
             theme.Legend.Labels.Color = "#FFFFFF";
 
-            var source = new GGNet.Source<GGNet.Datasets.Tip.Point>(GGNet.Datasets.Tip.Load());
-
-            tip = Plot.New(source, o => o.Day, o => o.Avg)
+            tip = Plot.New(GGNet.Datasets.Tip.Load(), o => o.Day, o => o.Avg)
                 .Geom_ErrorBar(ymin: o => o.Lower, ymax: o => o.Upper, position: PositionAdjustment.Dodge)
                 .Scale_Color_Discrete(o => o.Sex, new[] { "#69b3a2", "#404080" })
                 .Title("Tipping Behavior")

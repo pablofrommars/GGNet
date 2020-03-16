@@ -9,7 +9,7 @@ namespace GGNet
     using Scales;
     using Facets;
 
-    public partial class Data<T, TX, TY>
+    public partial class Data<T, TX, TY> : IData
         where TX : struct
         where TY : struct
     {
@@ -501,5 +501,11 @@ namespace GGNet
         {
             Component = component;
         }
+
+        #region IData
+
+        public Type PlotType => typeof(Components.Plot<T, TX, TY>);
+        
+        #endregion
     }
 }
