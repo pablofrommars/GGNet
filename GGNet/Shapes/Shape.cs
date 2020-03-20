@@ -7,6 +7,8 @@ namespace GGNet.Shapes
 {
     public abstract class Shape
     {
+        public string Classes { get; set; }
+
         public Func<MouseEventArgs, Task> OnClick { get; internal set; }
 
         public Func<MouseEventArgs, Task> OnMouseOver { get; internal set; }

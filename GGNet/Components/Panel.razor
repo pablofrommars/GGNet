@@ -167,15 +167,14 @@
         }
         else if (shape is Shapes.Circle c)
         {
-            <circle cx="@CoordX(c.X)"
-                    cy="@CoordY(c.Y)"
+            <g style="transform: translate(@CoordX(c.X)px, @CoordY(c.Y)px)"><circle cx="0"
+                    cy="0"
                     r="@c.Aesthetic.Radius"
                     class="@c.Css()"
                     style="stroke-width: 0.71; stroke: @c.Aesthetic.Fill; stroke-opacity: @c.Aesthetic.Alpha; fill: @c.Aesthetic.Fill; fill-opacity: @c.Aesthetic.Alpha;"
-                    clip-path="url(#@(Plot.Id)-@(Data.Id).area)"
                     @onclick=@(async e => await c.OnClickHandler(e))
                     @onmouseover=@(async e => await c.OnMouseOverHandler(e))
-                    @onmouseout=@(async e => await c.OnMouseOutHandler(e)) />
+                    @onmouseout=@(async e => await c.OnMouseOutHandler(e)) /></g>
         }
         else if (shape is Shapes.VStrip v)
         {

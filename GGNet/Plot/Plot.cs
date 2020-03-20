@@ -453,6 +453,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onmouseover = null,
             Func<T2, MouseEventArgs, Task> onmouseout = null,
             Func<T2, string[]> tooltip = null,
+            bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
             bool inherit = true)
             where TX1 : struct
@@ -462,7 +463,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Point<T2, TX2, TY2>(source, x, y, _size, _color, tooltip, inherit)
+                var geom = new Point<T2, TX2, TY2>(source, x, y, _size, _color, tooltip, animation, inherit)
                 {
                     OnClick = onclick,
                     OnMouseOver = onmouseover,
@@ -492,6 +493,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onmouseover = null,
             Func<T2, MouseEventArgs, Task> onmouseout = null,
             Func<T2, string[]> tooltip = null,
+            bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
             bool inherit = true)
             where TX1 : struct
@@ -499,7 +501,7 @@ namespace GGNet
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, size, color, alpha, inherit);
+            data.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
 
             return data;
         }
@@ -514,12 +516,13 @@ namespace GGNet
             Func<T, MouseEventArgs, Task> onmouseover = null,
             Func<T, MouseEventArgs, Task> onmouseout = null,
             Func<T, string[]> tooltip = null,
+            bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Point(panel, panel.Data.Source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, size, color, alpha, inherit);
+            return Geom_Point(panel, panel.Data.Source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Point<T, TX, TY>(
@@ -532,12 +535,13 @@ namespace GGNet
             Func<T, MouseEventArgs, Task> onmouseover = null,
             Func<T, MouseEventArgs, Task> onmouseout = null,
             Func<T, string[]> tooltip = null,
+            bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Point(x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, size, color, alpha, inherit);
+            data.Default_Panel().Geom_Point(x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
 
             return data;
         }

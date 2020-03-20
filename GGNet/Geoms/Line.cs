@@ -169,5 +169,12 @@ namespace GGNet.Geoms
             Positions.X.Position.Shape(x, x);
             Positions.Y.Position.Shape(y, y);
         }
+
+        public override void Clear()
+        {
+            base.Clear();
+
+            paths.Clear();
+        }
     }
 }

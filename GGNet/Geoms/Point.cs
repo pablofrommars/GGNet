@@ -13,6 +13,8 @@ namespace GGNet.Geoms
         where TX : struct
         where TY : struct
     {
+        private readonly bool animation;
+
         public Point(
             Source<T> source,
             Func<T, TX> x,
@@ -20,6 +22,7 @@ namespace GGNet.Geoms
             IAestheticMapping<T, double> size,
             IAestheticMapping<T, string> color,
             Func<T, string[]> tooltip = null,
+            bool animation = false,
             bool inherit = true,
             Buffer<Shape> layer = null)
             : base(source, inherit, layer)
@@ -36,6 +39,8 @@ namespace GGNet.Geoms
                 Size = size,
                 Color = color,
             };
+
+            this.animation = animation;
         }
 
         public class _Selectors
@@ -182,6 +187,7 @@ namespace GGNet.Geoms
 
             var circle = new Circle
             {
+                Classes = animation ? "animate" : string.Empty,
                 X = x,
                 Y = y,
                 Aesthetic = new Elements.Circle

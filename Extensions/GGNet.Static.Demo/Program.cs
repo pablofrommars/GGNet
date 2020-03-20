@@ -12,7 +12,7 @@ namespace GGNet.Static.Demo
                 .Geom_ErrorBar(ymin: o => o.Lower, ymax: o => o.Upper, position: PositionAdjustment.Dodge)
                 .Scale_Color_Discrete(o => o.Sex, new[] { "#69b3a2", "#404080" })
                 .YLab("Tip (%)")
-                .Theme();
+                .Theme(dark: false);
 
             //Save to File
             await plot.Save("tip.svg");

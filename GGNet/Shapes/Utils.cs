@@ -32,12 +32,19 @@ namespace GGNet.Shapes
 
         public static string Css(this Shape shape)
         {
+            var ret = shape.Classes ?? "";
+
             if (shape.OnClick != null || shape.OnMouseOver != null || shape.OnMouseOut != null)
             {
-                return "cursor-pointer";
+                if (!string.IsNullOrEmpty(ret))
+                {
+                    ret += " ";
+                }
+
+                ret += "cursor-pointer";
             }
 
-            return string.Empty;
+            return ret;
         }
     }
 }

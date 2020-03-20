@@ -5,6 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.2.0-preview2.20160.5" />
+    <PackageReference Include="NodaTime.Serialization.SystemTextJson" Version="1.0.0-beta01" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GGNet\GGNet.csproj" />
   </ItemGroup>
 

@@ -26,6 +26,13 @@
                     cursor: pointer;
                 }
 
+                circle.animate {
+                    transition: transform 1s;
+                }
+                circle.animate:hover {
+                    transform: scale(1.5);
+                }
+
                 @(".css-" + Id + "-plot") {
                     fill: @(Data.Theme.Plot.Background.Fill);
                 }

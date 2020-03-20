@@ -68,7 +68,11 @@ namespace GGNet.Palettes
             return values;
         }
 
-        public void Clear() => map.Clear();
+        public void Clear()
+        {
+            i = 0;
+            map.Clear();
+        }
 
         public static Discrete<TKey, TValue> New(TKey[] keys, TValue[] palette, int direction = 1)
         {

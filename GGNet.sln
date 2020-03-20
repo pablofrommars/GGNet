@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGNet.Static", "Extensions\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGNet.Static.Demo", "Extensions\GGNet.Static.Demo\GGNet.Static.Demo.csproj", "{5D460540-802E-46BB-AABC-E34714025A0A}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GGNet.FSharp", "Extensions\GGNet.FSharp\GGNet.FSharp.fsproj", "{69F96F5B-70D4-46AE-A9B5-04A804FA5430}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "GGNet.FSharp", "Extensions\GGNet.FSharp\GGNet.FSharp.fsproj", "{69F96F5B-70D4-46AE-A9B5-04A804FA5430}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

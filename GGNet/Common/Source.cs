@@ -85,6 +85,8 @@ namespace GGNet
 
         public ValueTask AddAsync(T item) => writer.WriteAsync(new _Add { Item = item });
 
+        public void Clear() => buffer.Clear();
+
         public void Dispose() => writer.Complete();
     }
 }
