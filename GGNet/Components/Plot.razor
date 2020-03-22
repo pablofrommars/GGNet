@@ -2,7 +2,7 @@
 @typeparam TX
 @typeparam TY
 
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
+    <svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
         <defs>
             <style type="text/css">
 
@@ -13,11 +13,6 @@
                     stroke-miterlimit: 10.00;
                 }
 
-                text {
-                    font-family: @(Data.Theme.FontFamily);
-                    fill: #929299;
-                }
-
                 .anchor-middle {
                     text-anchor: middle;
                 }
@@ -26,129 +21,133 @@
                     cursor: pointer;
                 }
 
-                circle.@("css-" + Data.Id + "-animate") {
-                    transition: transform @(Data.Theme.Animation.Point.Transition)s;
+                #@(Id) text {
+                    font-family: @(Theme.FontFamily);
+                    fill: #929299;
                 }
 
-                circle.@("css-" + Data.Id + "-animate"):hover {
-                    transform: scale(@(Data.Theme.Animation.Point.Scale));
+                #@(Id) circle.animate {
+                    transition: transform @(Theme.Animation.Point.Transition)s;
                 }
 
-                @(".css-" + Data.Id + "-plot") {
-                    fill: @(Data.Theme.Plot.Background.Fill) ;
+                #@(Id) circle.animate:hover {
+                    transform: scale(@(Theme.Animation.Point.Scale));
                 }
 
-                @(".css-" + Data.Id + "-panel") {
-                    fill: @(Data.Theme.Panel.Background.Fill);
+                #@(Id) .plot {
+                    fill: @(Theme.Plot.Background.Fill);
                 }
 
-                @(".css-" + Data.Id + "-title") {
-                    text-anchor: @(Data.Theme.Plot.Title.Anchor);
-                    font-size: @(Data.Theme.Plot.Title.Size);
-                    font-weight: @(Data.Theme.Plot.Title.Weight);
-                    font-style: @(Data.Theme.Plot.Title.Style);
-                    fill: @(Data.Theme.Plot.Title.Color);
+                #@(Id) .panel {
+                    fill: @(Theme.Panel.Background.Fill);
                 }
 
-                @(".css-" + Data.Id + "-SubTitle") {
-                    text-anchor: @(Data.Theme.Plot.SubTitle.Anchor);
-                    font-size: @(Data.Theme.Plot.SubTitle.Size);
-                    font-weight: @(Data.Theme.Plot.SubTitle.Weight);
-                    font-style: @(Data.Theme.Plot.SubTitle.Style);
-                    fill: @(Data.Theme.Plot.SubTitle.Color);
+                #@(Id) .title {
+                    text-anchor: @(Theme.Plot.Title.Anchor);
+                    font-size: @(Theme.Plot.Title.Size);
+                    font-weight: @(Theme.Plot.Title.Weight);
+                    font-style: @(Theme.Plot.Title.Style);
+                    fill: @(Theme.Plot.Title.Color);
                 }
 
-                @(".css-" + Data.Id + "-caption") {
-                    text-anchor: @(Data.Theme.Plot.Caption.Anchor);
-                    font-size: @(Data.Theme.Plot.Caption.Size);
-                    font-weight: @(Data.Theme.Plot.Caption.Weight);
-                    font-style: @(Data.Theme.Plot.Caption.Style);
-                    fill: @(Data.Theme.Plot.Caption.Color);
+                #@(Id) .SubTitle {
+                    text-anchor: @(Theme.Plot.SubTitle.Anchor);
+                    font-size: @(Theme.Plot.SubTitle.Size);
+                    font-weight: @(Theme.Plot.SubTitle.Weight);
+                    font-style: @(Theme.Plot.SubTitle.Style);
+                    fill: @(Theme.Plot.SubTitle.Color);
                 }
 
-                @(".css-" + Data.Id + "-gridMajor") {
-                    stroke-width: @(Data.Theme.Panel.Grid.Major.X.Width);
-                    stroke: @(Data.Theme.Panel.Grid.Major.X.Fill);
-                    stroke-opacity: @(Data.Theme.Panel.Grid.Major.X.Alpha);
+                #@(Id) .caption {
+                    text-anchor: @(Theme.Plot.Caption.Anchor);
+                    font-size: @(Theme.Plot.Caption.Size);
+                    font-weight: @(Theme.Plot.Caption.Weight);
+                    font-style: @(Theme.Plot.Caption.Style);
+                    fill: @(Theme.Plot.Caption.Color);
                 }
 
-                @(".css-" + Data.Id + "-gridMinor")
-                {
-                    stroke-width: @(Data.Theme.Panel.Grid.Minor.X.Width);
-                    stroke: @(Data.Theme.Panel.Grid.Minor.X.Fill);
-                    stroke-opacity: @(Data.Theme.Panel.Grid.Minor.X.Alpha);
+                #@(Id) .gridMajor {
+                    stroke-width: @(Theme.Panel.Grid.Major.X.Width);
+                    stroke: @(Theme.Panel.Grid.Major.X.Fill);
+                    stroke-opacity: @(Theme.Panel.Grid.Major.X.Alpha);
                 }
 
-                @(".css-" + Data.Id + "-axisTextX") {
-                    text-anchor: @(Data.Theme.Axis.Text.X.Anchor);
-                    font-size: @(Data.Theme.Axis.Text.X.Size);
-                    font-weight: @(Data.Theme.Axis.Text.X.Weight);
-                    font-style: @(Data.Theme.Axis.Text.X.Style);
-                    fill: @(Data.Theme.Axis.Text.X.Color);
+                #@(Id) .gridMinor {
+                    stroke-width: @(Theme.Panel.Grid.Minor.X.Width);
+                    stroke: @(Theme.Panel.Grid.Minor.X.Fill);
+                    stroke-opacity: @(Theme.Panel.Grid.Minor.X.Alpha);
                 }
 
-                @(".css-" + Data.Id + "-axisTextY") {
-                    text-anchor: @(Data.Theme.Axis.Text.Y.Anchor);
-                    font-size: @(Data.Theme.Axis.Text.Y.Size);
-                    font-weight: @(Data.Theme.Axis.Text.Y.Weight);
-                    font-style: @(Data.Theme.Axis.Text.Y.Style);
-                    fill: @(Data.Theme.Axis.Text.Y.Color);
+                #@(Id) .axisTextX {
+                    text-anchor: @(Theme.Axis.Text.X.Anchor);
+                    font-size: @(Theme.Axis.Text.X.Size);
+                    font-weight: @(Theme.Axis.Text.X.Weight);
+                    font-style: @(Theme.Axis.Text.X.Style);
+                    fill: @(Theme.Axis.Text.X.Color);
                 }
 
-                @(".css-" + Data.Id + "-axisTitleX") {
-                    text-anchor: @(Data.Theme.Axis.Title.X.Anchor);
-                    font-size: @(Data.Theme.Axis.Title.X.Size);
-                    font-weight: @(Data.Theme.Axis.Title.X.Weight);
-                    font-style: @(Data.Theme.Axis.Title.X.Style);
-                    fill: @(Data.Theme.Axis.Title.X.Color);
+                #@(Id) .axisTextY {
+                    text-anchor: @(Theme.Axis.Text.Y.Anchor);
+                    font-size: @(Theme.Axis.Text.Y.Size);
+                    font-weight: @(Theme.Axis.Text.Y.Weight);
+                    font-style: @(Theme.Axis.Text.Y.Style);
+                    fill: @(Theme.Axis.Text.Y.Color);
                 }
 
-                @(".css-" + Data.Id + "-axisTitleY") {
-                    text-anchor: @(Data.Theme.Axis.Title.Y.Anchor);
-                    font-size: @(Data.Theme.Axis.Title.Y.Size);
-                    font-weight: @(Data.Theme.Axis.Title.Y.Weight);
-                    font-style: @(Data.Theme.Axis.Title.Y.Style);
-                    fill: @(Data.Theme.Axis.Title.Y.Color);
+                #@(Id) .axisTitleX {
+                    text-anchor: @(Theme.Axis.Title.X.Anchor);
+                    font-size: @(Theme.Axis.Title.X.Size);
+                    font-weight: @(Theme.Axis.Title.X.Weight);
+                    font-style: @(Theme.Axis.Title.X.Style);
+                    fill: @(Theme.Axis.Title.X.Color);
                 }
 
-                @(".css-" + Data.Id + "-yLabel") {
-                    text-anchor: @(Data.Theme.YLabel.Anchor);
-                    font-size: @(Data.Theme.YLabel.Size);
-                    font-weight: @(Data.Theme.YLabel.Weight);
-                    font-style: @(Data.Theme.YLabel.Style);
-                    fill: @(Data.Theme.YLabel.Color);
+                #@(Id) .axisTitleY {
+                    text-anchor: @(Theme.Axis.Title.Y.Anchor);
+                    font-size: @(Theme.Axis.Title.Y.Size);
+                    font-weight: @(Theme.Axis.Title.Y.Weight);
+                    font-style: @(Theme.Axis.Title.Y.Style);
+                    fill: @(Theme.Axis.Title.Y.Color);
                 }
 
-                @(".css-" + Data.Id + "-legendTitle") {
-                    text-anchor: @(Data.Theme.Legend.Title.Anchor);
-                    font-size: @(Data.Theme.Legend.Title.Size);
-                    font-weight: @(Data.Theme.Legend.Title.Weight);
-                    font-style: @(Data.Theme.Legend.Title.Style);
-                    fill: @(Data.Theme.Legend.Title.Color);
+                #@(Id) .yLabel {
+                    text-anchor: @(Theme.YLabel.Anchor);
+                    font-size: @(Theme.YLabel.Size);
+                    font-weight: @(Theme.YLabel.Weight);
+                    font-style: @(Theme.YLabel.Style);
+                    fill: @(Theme.YLabel.Color);
                 }
 
-                @(".css-" + Data.Id + "-legendLabels") {
-                    text-anchor: @(Data.Theme.Legend.Labels.Anchor);
-                    font-size: @(Data.Theme.Legend.Labels.Size);
-                    font-weight: @(Data.Theme.Legend.Labels.Weight);
-                    font-style: @(Data.Theme.Legend.Labels.Style);
-                    fill: @(Data.Theme.Legend.Labels.Color);
+                #@(Id) .legendTitle {
+                    text-anchor: @(Theme.Legend.Title.Anchor);
+                    font-size: @(Theme.Legend.Title.Size);
+                    font-weight: @(Theme.Legend.Title.Weight);
+                    font-style: @(Theme.Legend.Title.Style);
+                    fill: @(Theme.Legend.Title.Color);
                 }
 
-                @(".css-" + Data.Id + "-stripTextX") {
-                    text-anchor: @(Data.Theme.Strip.Text.X.Anchor);
-                    font-size: @(Data.Theme.Strip.Text.X.Size);
-                    font-weight: @(Data.Theme.Strip.Text.X.Weight);
-                    font-style: @(Data.Theme.Strip.Text.X.Style);
-                    fill: @(Data.Theme.Strip.Text.X.Color);
+                #@(Id) .legendLabels {
+                    text-anchor: @(Theme.Legend.Labels.Anchor);
+                    font-size: @(Theme.Legend.Labels.Size);
+                    font-weight: @(Theme.Legend.Labels.Weight);
+                    font-style: @(Theme.Legend.Labels.Style);
+                    fill: @(Theme.Legend.Labels.Color);
                 }
 
-                @(".css-" + Data.Id + "-stripTextY") {
-                    text-anchor: @(Data.Theme.Strip.Text.Y.Anchor);
-                    font-size: @(Data.Theme.Strip.Text.Y.Size);
-                    font-weight: @(Data.Theme.Strip.Text.Y.Weight);
-                    font-style: @(Data.Theme.Strip.Text.Y.Style);
-                    fill: @(Data.Theme.Strip.Text.Y.Color);
+                #@(Id) .stripTextX {
+                    text-anchor: @(Theme.Strip.Text.X.Anchor);
+                    font-size: @(Theme.Strip.Text.X.Size);
+                    font-weight: @(Theme.Strip.Text.X.Weight);
+                    font-style: @(Theme.Strip.Text.X.Style);
+                    fill: @(Theme.Strip.Text.X.Color);
+                }
+
+                #@(Id) .stripTextY {
+                    text-anchor: @(Theme.Strip.Text.Y.Anchor);
+                    font-size: @(Theme.Strip.Text.Y.Size);
+                    font-weight: @(Theme.Strip.Text.Y.Weight);
+                    font-style: @(Theme.Strip.Text.Y.Style);
+                    fill: @(Theme.Strip.Text.Y.Color);
                 }
 
             </style>
@@ -169,11 +168,11 @@
                     continue;
                 }
 
-                <linearGradient id="gadient-@(Data.Id)-@i" 
+                <linearGradient id="gadient-@(Id)-@i" 
                                 x1="0%" 
                                 y1="0%" 
-                                x2=@(Data.Theme.Legend.Direction == Direction.Vertical ? "0%" : "100%") 
-                                y2="@(Data.Theme.Legend.Direction == Direction.Vertical ? "100%" : "0%")">
+                                x2=@(Theme.Legend.Direction == Direction.Vertical ? "0%" : "100%") 
+                                y2="@(Theme.Legend.Direction == Direction.Vertical ? "100%" : "0%")">
 
                     <stop offset="0%" stop-color="@l.Items[0].elements[0].Value.Fill" stop-opacity="@l.Items[0].elements[0].Value.Alpha" />
 
@@ -194,15 +193,15 @@
 
         </defs>
 
-        <clipPath id="@(Data.Id)-plot">
+        <clipPath id="@(Id)-plot">
             <rect x="0" y="0" width="@Width" height="@Height" />
         </clipPath>
 
-        <rect width="100%" height="100%" class="css-@(Data.Id)-plot" />
+        <rect width="100%" height="100%" class="plot" />
 
         @if (Legend.Width > 0)
         {
-            if (Data.Theme.Legend.Direction == Direction.Vertical)
+            if (Theme.Legend.Direction == Direction.Vertical)
             {
                 var offset = Legend.Y;
 
@@ -212,13 +211,13 @@
 
                     if (l.Title?.Width > 0)
                     {
-                        offset += Data.Theme.Legend.Title.Margin.Top;
+                        offset += Theme.Legend.Title.Margin.Top;
 
-                        <g clip-path="url(#@(Data.Id)-plot)">
-                            <text x="@Legend.X" y="@(offset + l.Title.Height)" class="css-@(Data.Id)-legendTitle">@l.Title.Value</text>
+                        <g clip-path="url(#@(Id)-plot)">
+                            <text x="@Legend.X" y="@(offset + l.Title.Height)" class="legendTitle">@l.Title.Value</text>
                         </g>
 
-                        offset += l.Title.Height + Data.Theme.Legend.Title.Margin.Bottom;
+                        offset += l.Title.Height + Theme.Legend.Title.Margin.Bottom;
                     }
 
                     if (l.Aes.Type == Guide.Items)
@@ -227,7 +226,7 @@
                         {
                             var (label, elements) = l.Items[j];
 
-                            offset += Data.Theme.Legend.Labels.Margin.Top;
+                            offset += Theme.Legend.Labels.Margin.Top;
 
                             for (int k = 0; k < elements.Count; k++)
                             {
@@ -239,7 +238,7 @@
                                           x2="@(Legend.X + l.Width)"
                                           y1="@(offset + elements.Height / 2.0)"
                                           y2="@(offset + elements.Height / 2.0)"
-                                          clip-path="url(#@(Data.Id)-plot)"
+                                          clip-path="url(#@(Id)-plot)"
                                           style="stroke-width: @hline.Width; stroke: @hline.Fill; stroke-opacity: @hline.Alpha;" />
 
                                 }
@@ -249,7 +248,7 @@
                                           x2="@(Legend.X + l.Width / 2.0)"
                                           y1="@offset"
                                           y2="@(offset + elements.Height)"
-                                          clip-path="url(#@(Data.Id)-plot)"
+                                          clip-path="url(#@(Id)-plot)"
                                           style="stroke-width: @vline.Width; stroke: @vline.Fill; stroke-opacity: @vline.Alpha;" />
 
                                 }
@@ -258,7 +257,7 @@
                                     <circle cx="@(Legend.X + l.Width / 2.0)"
                                             cy="@(offset + elements.Height / 2.0)"
                                             r="@circle.Radius"
-                                            clip-path="url(#@(Data.Id)-plot)"
+                                            clip-path="url(#@(Id)-plot)"
                                             style="stroke-width: 0.71; stroke: @circle.Fill; stroke-opacity: @circle.Alpha; fill: @circle.Fill; fill-opacity: @circle.Alpha;" />
                                 }
                                 else if (element.Value is Elements.Rectangle rect)
@@ -267,22 +266,22 @@
                                           y="@offset"
                                           width="@l.Width"
                                           height="@elements.Height"
-                                          clip-path="url(#@(Data.Id)-plot)"
+                                          clip-path="url(#@(Id)-plot)"
                                           style="fill: @rect.Fill; fill-opacity: @rect.Alpha; stroke: @rect.Color; stroke-width: @rect.Width;" />
                                 }
                             }
 
-                            <g clip-path="url(#@(Data.Id)-legend)">
-                                <text x="@(Legend.X + l.Width + Data.Theme.Legend.Labels.Margin.Left)" y="@(offset + elements.Height / 2.0 + label.Height / 4.0)" class="css-@(Data.Id)-legendLabels">@label.Value</text>
+                            <g clip-path="url(#@(Id)-legend)">
+                                <text x="@(Legend.X + l.Width + Theme.Legend.Labels.Margin.Left)" y="@(offset + elements.Height / 2.0 + label.Height / 4.0)" class="legendLabels">@label.Value</text>
                             </g>
 
-                            offset += Math.Max(elements.Height, label.Height) + Data.Theme.Legend.Labels.Margin.Bottom;
+                            offset += Math.Max(elements.Height, label.Height) + Theme.Legend.Labels.Margin.Bottom;
                         }
                     }
                     else if (l.Aes.Type == Guide.ColorBar)
                     {
-                        var xOffset = Legend.X + l.Width + Data.Theme.Legend.Labels.Margin.Left;
-                        offset += Data.Theme.Legend.Labels.Margin.Top;
+                        var xOffset = Legend.X + l.Width + Theme.Legend.Labels.Margin.Left;
+                        offset += Theme.Legend.Labels.Margin.Top;
 
                         var n = l.Items.Count;
 
@@ -290,8 +289,8 @@
                         {
                             var (label, _) = l.Items[j];
 
-                            <g clip-path="url(#@(Data.Id)-legend)">
-                                <text x="@xOffset" y="@(offset + (j + 1.0) * 3.0 * l.Height + label.Height / 4.0)" class="css-@(Data.Id)-legendLabels">@label.Value</text>
+                            <g clip-path="url(#@(Id)-legend)">
+                                <text x="@xOffset" y="@(offset + (j + 1.0) * 3.0 * l.Height + label.Height / 4.0)" class="legendLabels">@label.Value</text>
                             </g>
                         }
 
@@ -299,8 +298,8 @@
                               y="@offset"
                               width="@l.Width"
                               height="@(3.0 * n * l.Height)"
-                              clip-path="url(#@(Data.Id)-plot)"
-                              style="fill: url(#gadient-@(Data.Id)-@i); stroke: @Data.Theme.Legend.Labels.Color; stroke-width: 0.2;" />
+                              clip-path="url(#@(Id)-plot)"
+                              style="fill: url(#gadient-@(Id)-@i); stroke: @Theme.Legend.Labels.Color; stroke-width: 0.2;" />
                     }
                 }
             }
@@ -315,13 +314,13 @@
 
                     if (l.Title?.Height > 0)
                     {
-                        offset += Data.Theme.Legend.Title.Margin.Left;
+                        offset += Theme.Legend.Title.Margin.Left;
 
-                            <g clip-path="url(#@(Data.Id)-plot)">
-                                <text x="@offset" y="@(middle + l.Title.Height / 4.0)" class="css-@(Data.Id)-legendTitle">@l.Title.Value</text>
+                            <g clip-path="url(#@(Id)-plot)">
+                                <text x="@offset" y="@(middle + l.Title.Height / 4.0)" class="legendTitle">@l.Title.Value</text>
                             </g>
 
-                            offset += l.Title.Width + Data.Theme.Legend.Title.Margin.Right;
+                            offset += l.Title.Width + Theme.Legend.Title.Margin.Right;
                         }
 
                         if (l.Aes.Type == Guide.Items)
@@ -340,7 +339,7 @@
                                               x2="@(offset + elements.Width)"
                                               y1="@(middle)"
                                               y2="@(middle)"
-                                              clip-path="url(#@(Data.Id)-plot)"
+                                              clip-path="url(#@(Id)-plot)"
                                               style="stroke-width: @hline.Width; stroke: @hline.Fill; stroke-opacity: @hline.Alpha; stroke-dasharray: @(hline.LineType.DashArray());" />
 
                                     }
@@ -350,7 +349,7 @@
                                               x2="@(offset + elements.Width / 2.0)"
                                               y1="@Legend.Y"
                                               y2="@(Legend.Y + Legend.Height)"
-                                              clip-path="url(#@(Data.Id)-plot)"
+                                              clip-path="url(#@(Id)-plot)"
                                               style="stroke-width: @vline.Width; stroke: @vline.Fill; stroke-opacity: @vline.Alpha; stroke-dasharray: @(vline.LineType.DashArray());" />
 
                                     }
@@ -359,7 +358,7 @@
                                         <circle cx="@(offset + elements.Width / 2.0)"
                                                 cy="@middle"
                                                 r="@circle.Radius"
-                                                clip-path="url(#@(Data.Id)-plot)"
+                                                clip-path="url(#@(Id)-plot)"
                                                 style="stroke-width: 0.71; stroke: @circle.Fill; stroke-opacity: @circle.Alpha; fill: @circle.Fill; fill-opacity: @circle.Alpha;" />
                                     }
                                     else if (element.Value is Elements.Rectangle rect)
@@ -368,25 +367,25 @@
                                               y="@(middle - elements.Height / 2.0)"
                                               width="@elements.Width"
                                               height="@elements.Height"
-                                              clip-path="url(#@(Data.Id)-plot)"
+                                              clip-path="url(#@(Id)-plot)"
                                               style="fill: @rect.Fill; fill-opacity: @rect.Alpha; stroke: @rect.Color; stroke-width: @rect.Width;" />
                                     }
                                 }
 
                                 offset += elements.Width;
 
-                                offset += Data.Theme.Legend.Labels.Margin.Left;
+                                offset += Theme.Legend.Labels.Margin.Left;
 
-                                <g clip-path="url(#@(Data.Id)-legend)">
-                                    <text x="@offset" y="@(middle + label.Height / 4.0)" class="css-@(Data.Id)-legendLabels">@label.Value</text>
+                                <g clip-path="url(#@(Id)-legend)">
+                                    <text x="@offset" y="@(middle + label.Height / 4.0)" class="legendLabels">@label.Value</text>
                                 </g>
 
-                                offset += label.Width + Data.Theme.Legend.Labels.Margin.Right;
+                                offset += label.Width + Theme.Legend.Labels.Margin.Right;
                             }
                         }
                         else if (l.Aes.Type == Guide.ColorBar)
                         {
-                            offset += Data.Theme.Legend.Labels.Margin.Left;
+                            offset += Theme.Legend.Labels.Margin.Left;
 
                             var yOffset = Legend.Y + l.Items[0].label.Height;
 
@@ -394,19 +393,19 @@
                             {
                                 var (label, _) = l.Items[j];
 
-                                <g clip-path="url(#@(Data.Id)-legend)">
-                                    <text x="@(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0)" y="@yOffset" class="css-@(Data.Id)-legendLabels">@label.Value</text>
+                                <g clip-path="url(#@(Id)-legend)">
+                                    <text x="@(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0)" y="@yOffset" class="legendLabels">@label.Value</text>
                                 </g>
                             }
 
-                            yOffset += Data.Theme.Legend.Labels.Margin.Bottom;
+                            yOffset += Theme.Legend.Labels.Margin.Bottom;
 
                             <rect x="@offset"
                                   y="@yOffset"
                                   width="@(3.0 * l.Width * l.Items.Count)"
                                   height="@l.Height"
-                                  clip-path="url(#@(Data.Id)-plot)"
-                                  style="fill: url(#gadient-@(Data.Id)-@i); stroke: @Data.Theme.Legend.Labels.Color; stroke-width: 0.2;" />
+                                  clip-path="url(#@(Id)-plot)"
+                                  style="fill: url(#gadient-@(Id)-@i); stroke: @Theme.Legend.Labels.Color; stroke-width: 0.2;" />
                         }
                     }
                 }
@@ -414,14 +413,14 @@
 
         <CascadingValue Value=@this>
             @{
-                var width = wrapper.Width - Data.Strip - (Data.N.cols - 1.0) * Data.Theme.Panel.Spacing.X;
+                var width = wrapper.Width - Data.Strip - (Data.N.cols - 1.0) * Theme.Panel.Spacing.X;
 
                 if (!Data.AxisVisibility.y)
                 {
                     width -= Data.Axis.width;
                 }
 
-                var height = wrapper.Height - Data.Strip - (Data.N.rows - 1.0) * Data.Theme.Panel.Spacing.Y;
+                var height = wrapper.Height - Data.Strip - (Data.N.rows - 1.0) * Theme.Panel.Spacing.Y;
 
                 if (!Data.AxisVisibility.x)
                 {
@@ -453,7 +452,7 @@
                         h += Data.Strip;
                     }
 
-                    if (panel.Coord.col == 0 && !Data.AxisVisibility.y && Data.Theme.Axis.Y == Position.Left)
+                    if (panel.Coord.col == 0 && !Data.AxisVisibility.y && Theme.Axis.Y == Position.Left)
                     {
                         w += Data.Axis.width;
                     }
@@ -475,17 +474,17 @@
                     {
                         w += Data.Strip;
 
-                        if (!Data.AxisVisibility.y && Data.Theme.Axis.Y == Position.Right)
+                        if (!Data.AxisVisibility.y && Theme.Axis.Y == Position.Right)
                         {
                             w += Data.Axis.width;
                         }
 
                         xOffset = xOffsetReset;
-                        yOffset += h + Data.Theme.Panel.Spacing.Y;
+                        yOffset += h + Theme.Panel.Spacing.Y;
                     }
                     else
                     {
-                        xOffset += w + Data.Theme.Panel.Spacing.X;
+                        xOffset += w + Theme.Panel.Spacing.X;
                     }
 
                     <Panel Data="@panel"

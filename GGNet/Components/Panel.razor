@@ -8,42 +8,42 @@
 {
     if (Plot.Title.Width > 0)
     {
-        <g clip-path="url(#@(Plot.Data.Id)-plot)">
-            <text x="@(Plot.Title.X + Area.X)" y="@Plot.Title.Y" class="css-@(Plot.Data.Id)-title">@Plot.Data.Title</text>
+        <g clip-path="url(#@(Plot.Id)-plot)">
+            <text x="@(Plot.Title.X + Area.X)" y="@Plot.Title.Y" class="title">@Plot.Data.Title</text>
         </g>
     }
 
     if (Plot.SubTitle.Width > 0)
     {
-        <g clip-path="url(#@(Plot.Data.Id)-plot)">
-            <text x="@(Plot.SubTitle.X + Area.X)" y="@Plot.SubTitle.Y" class="css-@(Plot.Data.Id)-SubTitle">@Plot.Data.SubTitle</text>
+        <g clip-path="url(#@(Plot.Id)-plot)">
+            <text x="@(Plot.SubTitle.X + Area.X)" y="@Plot.SubTitle.Y" class="SubTitle">@Plot.Data.SubTitle</text>
         </g>
     }
 }
 
 <defs>
-    <clipPath id="@(Plot.Data.Id)-@Data.Id">
+    <clipPath id="@(clip)">
         <rect x="@X" y="@Y" width="@Width" height="@Height" />
     </clipPath>
 
-    <clipPath id="@(Plot.Data.Id)-@(Data.Id).area">
+    <clipPath id="@(clip).area">
         <rect x="@Area.X" y="@Area.Y" width="@Area.Width" height="@Area.Height" />
     </clipPath>
 </defs>
 
-<rect x="@Area.X" y="@Area.Y" width="@Area.Width" height="@Area.Height" class="css-@(Plot.Data.Id)-panel" />
+<rect x="@Area.X" y="@Area.Y" width="@Area.Width" height="@Area.Height" class="panel" />
 
 @if (!string.IsNullOrEmpty(Data.Strip.x))
 {
-    <g clip-path="url(#@(Plot.Data.Id)-plot)">
-        <text x="@xStrip.X" y="@xStrip.Y" class="css-@(Plot.Data.Id)-stripTextX">@Data.Strip.x</text>
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text x="@xStrip.X" y="@xStrip.Y" class="stripTextX">@Data.Strip.x</text>
     </g>
 }
 
 @if (!string.IsNullOrEmpty(Data.Strip.y))
 {
-    <g clip-path="url(#@(Plot.Data.Id)-plot)">
-        <text style="transform: translate(@(yStrip.X)px, @(yStrip.Y)px) rotate(@(Data.Data.Theme.Strip.Text.Y.Angle)deg);" class="css-@(Plot.Data.Id)-stripTextY">@Data.Strip.y</text>
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text style="transform: translate(@(yStrip.X)px, @(yStrip.Y)px) rotate(@(Plot.Theme.Strip.Text.Y.Angle)deg);" class="stripTextY">@Data.Strip.y</text>
     </g>
 }
 
@@ -54,13 +54,13 @@
     foreach (var b in xscale.Breaks)
     {
         var x = CoordX(b);
-        <line x1="@x" x2="@x" y1="@y1" y2="@y2" class="css-@(Plot.Data.Id)-gridMajor" clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)" />
+        <line x1="@x" x2="@x" y1="@y1" y2="@y2" class="gridMajor" clip-path="url(#@(clip).area)" />
     }
 
     foreach (var b in xscale.MinorBreaks)
     {
         var x = CoordX(b);
-        <line x1="@x" x2="@x" y1="@y1" y2="@y2" class="css-@(Plot.Data.Id)-gridMinor" clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)" />
+        <line x1="@x" x2="@x" y1="@y1" y2="@y2" class="gridMinor" clip-path="url(#@(clip).area)" />
     }
 
     if (Data.Axis.x)
@@ -71,8 +71,8 @@
 
             if (Area.X < x && x < (Area.X + Area.Width))
             {
-                <g clip-path="url(#@(Plot.Data.Id)-@Data.Id)">
-                    <text x="@x" y="@xAxisText.Y" class="css-@(Plot.Data.Id)-axisTextX">@label</text>
+                <g clip-path="url(#@(Plot.Id)-@Data.Id)">
+                    <text x="@x" y="@xAxisText.Y" class="axisTextX">@label</text>
                 </g>
             }
         }
@@ -83,8 +83,8 @@
 
             if (Area.X < x && x < (Area.X + Area.Width))
             {
-                <g clip-path="url(#@(Plot.Data.Id)-plot)">
-                    <text x="@x" y="@xAxisTitle.Y" class="css-@(Plot.Data.Id)-axisTitleX" style="text-anchor: middle;">@label</text>
+                <g clip-path="url(#@(Plot.Id)-plot)">
+                    <text x="@x" y="@xAxisTitle.Y" class="axisTitleX" style="text-anchor: middle;">@label</text>
                 </g>
             }
         }
@@ -98,13 +98,13 @@
     foreach (var b in yscale.Breaks)
     {
         var y = CoordY(b);
-        <line x1="@x1" x2="@x2" y1="@y" y2="@y" class="css-@(Plot.Data.Id)-gridMajor" clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)" />
+        <line x1="@x1" x2="@x2" y1="@y" y2="@y" class="gridMajor" clip-path="url(#@(clip).area)" />
     }
 
     foreach (var b in yscale.MinorBreaks)
     {
         var y = CoordY(b);
-        <line x1="@x1" x2="@x2" y1="@y" y2="@y" class="css-@(Plot.Data.Id)-gridMinor" clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)" />
+        <line x1="@x1" x2="@x2" y1="@y" y2="@y" class="gridMinor" clip-path="url(#@(clip).area)" />
     }
 
     if (Data.Axis.y)
@@ -118,8 +118,8 @@
 
             if (Area.Y < (y - height / 2.0) && (y + offset) < (Area.Y + Area.Height))
             {
-                <g clip-path="url(#@(Plot.Data.Id)-@Data.Id)">
-                    <text x="@yAxisText.X" y="@y" class="css-@(Plot.Data.Id)-axisTextY">@label</text>
+                <g clip-path="url(#@(clip)">
+                    <text x="@yAxisText.X" y="@y" class="axisTextY">@label</text>
                 </g>
             }
         }
@@ -142,7 +142,7 @@
                   y2="@CoordY(l.Y2)"
                   class="@l.Css()"
                   style="stroke-width: @l.Aesthetic.Width; stroke: @l.Aesthetic.Fill; stroke-opacity: @l.Aesthetic.Alpha; stroke-dasharray: @(l.Aesthetic.LineType.DashArray());"
-                  clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)"
+                  clip-path="url(#@(clip).area)"
                   @onclick=@(async e => await l.OnClickHandler(e))
                   @onmouseover=@(async e => await l.OnMouseOverHandler(e))
                   @onmouseout=@(async e => await l.OnMouseOutHandler(e)) />
@@ -160,7 +160,7 @@
                   height="@height"
                   class="@r.Css()"
                   style="fill: @r.Aesthetic.Fill; fill-opacity: @r.Aesthetic.Alpha;"
-                  clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)"
+                  clip-path="url(#@(clip).area)"
                   @onclick=@(async e => await r.OnClickHandler(e))
                   @onmouseover=@(async e => await r.OnMouseOverHandler(e))
                   @onmouseout=@(async e => await r.OnMouseOutHandler(e)) />
@@ -186,7 +186,7 @@
                   width="@width"
                   height="@Height"
                   style="fill: transparent"
-                  clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)"
+                  clip-path="url(#@(clip).area)"
                   @onclick=@(async e => await v.OnClickHandler(e))
                   @onmouseover=@(async e => await v.OnMouseOverHandler(e))
                   @onmouseout=@(async e => await v.OnMouseOutHandler(e)) />
@@ -216,7 +216,7 @@
 
                 <path d="@sb.ToString()"
                       style="stroke-width: @p.Aesthetic.Width; stroke: @p.Aesthetic.Fill; stroke-opacity: @p.Aesthetic.Alpha; stroke-dasharray: @(p.Aesthetic.LineType.DashArray());"
-                      clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)" />
+                      clip-path="url(#@(clip).area)" />
             }
         }
         else if (shape is Shapes.Area a)
@@ -256,7 +256,7 @@
 
                 <path d="@sb.ToString()"
                       style="fill: @a.Aesthetic.Fill; fill-opacity: @a.Aesthetic.Alpha;"
-                      clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)" />
+                      clip-path="url(#@(clip).area)" />
             }
         }
         else if (shape is Shapes.Polygon poly)
@@ -286,12 +286,12 @@
 
                 <path d="@sb.ToString()"
                       style="fill: @poly.Aesthetic.Fill; fill-opacity: @poly.Aesthetic.Alpha; stroke: @poly.Aesthetic.Color; stroke-width: @poly.Aesthetic.Width;"
-                      clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)" />
+                      clip-path="url(#@(clip).area)" />
             }
         }
         else if (shape is Shapes.Text text)
         {
-            <g style="pointer-events: none;" clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)">
+            <g style="pointer-events: none;" clip-path="url(#@(clip).area)">
                 <text x="@CoordX(text.X)" y="@CoordY(text.Y)" style="font-size: @text.Aesthetic.Size; fill: @text.Aesthetic.Color; text-anchor: @text.Aesthetic.Anchor; font-weigth: @text.Aesthetic.Weight; font-style: @text.Aesthetic.Style;">
                     @text.Value
                 </text>
@@ -306,7 +306,7 @@
                   x2="@x"
                   y2="@(Area.Y + Area.Height)"
                   style="stroke-width: @vline.Aesthetic.Width; stroke: @vline.Aesthetic.Fill; stroke-opacity: @vline.Aesthetic.Alpha; stroke-dasharray: @(vline.Aesthetic.LineType.DashArray());"
-                  clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)" />
+                  clip-path="url(#@(clip).area)" />
         }
         else if (shape is Shapes.HLine hline)
         {
@@ -317,29 +317,29 @@
                   x2="@(Area.X + Area.Width)"
                   y2="@y"
                   style="stroke-width: @hline.Aesthetic.Width; stroke: @hline.Aesthetic.Fill; stroke-opacity: @hline.Aesthetic.Alpha; stroke-dasharray: @(hline.Aesthetic.LineType.DashArray());"
-                  clip-path="url(#@(Plot.Data.Id)-@(Data.Id).area)" />
+                  clip-path="url(#@(clip).area)" />
         }
     }
 }
 
 @if (!string.IsNullOrEmpty(Data.XLab.text))
 {
-    <g clip-path="url(#@(Plot.Data.Id)-plot)">
-        <text x="@xAxisTitle.X" y="@xAxisTitle.Y" class="css-@(Plot.Data.Id)-axisTitleX">@Data.XLab.text</text>
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text x="@xAxisTitle.X" y="@xAxisTitle.Y" class="axisTitleX">@Data.XLab.text</text>
     </g>
 }
 
 @if (!string.IsNullOrEmpty(@Data.YLab.text))
 {
-    <g clip-path="url(#@(Plot.Data.Id)-plot)">
-        <text style="transform: translate(@(yAxisTitle.X)px, @(yAxisTitle.Y)px) rotate(@(Data.Data.Theme.Axis.Title.Y.Angle)deg);" class="css-@(Plot.Data.Id)-axisTitleY">@Data.YLab.text</text>
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text style="transform: translate(@(yAxisTitle.X)px, @(yAxisTitle.Y)px) rotate(@(Data.Data.Theme.Axis.Title.Y.Angle)deg);" class="axisTitleY">@Data.YLab.text</text>
     </g>
 }
 
 @if (Last && Plot.Caption.Width > 0)
 {
-    <g clip-path="url(#@(Plot.Data.Id)-plot)">
-        <text x="@(Area.X + Area.Width - Plot.Data.Theme.Plot.Caption.Margin.Right)" y="@Plot.Caption.Y" class="css-@(Plot.Data.Id)-caption">@Plot.Data.Caption</text>
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text x="@(Area.X + Area.Width - Plot.Data.Theme.Plot.Caption.Margin.Right)" y="@Plot.Caption.Y" class="caption">@Plot.Data.Caption</text>
     </g>
 }
 

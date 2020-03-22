@@ -80,13 +80,9 @@ namespace GGNet.Geoms
 
         public Elements.Circle Aesthetic { get; set; }
 
-        private string id;
-
         public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
         {
             base.Init(panel, facet);
-
-            id = panel.Data.Id;
 
             if (Selectors.X == null)
             {
@@ -192,7 +188,7 @@ namespace GGNet.Geoms
 
             var circle = new Circle
             {
-                Classes = animation ? ("css-" + id + "-animate") : string.Empty,
+                Classes = animation ? "animate" : string.Empty,
                 X = x,
                 Y = y,
                 Aesthetic = new Elements.Circle

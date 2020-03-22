@@ -31,6 +31,10 @@ namespace GGNet.Components
 
         private Zone wrapper;
 
+        public string Id => Data.Id;
+
+        public Theme Theme => Data.Theme;
+
         protected override void OnInitialized()
         {
             Data.Init();

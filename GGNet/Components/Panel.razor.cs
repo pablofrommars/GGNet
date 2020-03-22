@@ -61,9 +61,13 @@ namespace GGNet.Components
         protected YLabel<T, TX, TY> ylabel;
         internal YLabel<T, TX, TY> YLabel => ylabel;
 
+        protected string clip;
+
         protected override void OnInitialized()
         {
             Data.Register(this);
+
+            clip = Plot.Id + "-" + Data.Id;
 
             xscale = Data.X;
             yscale = Data.Y;
