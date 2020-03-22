@@ -21,6 +21,8 @@
 
             Strip = new _Strip(dark);
 
+            Animation = new _Animation();
+
             Tooltip = new Text
             {
                 Size = new Size
@@ -54,6 +56,8 @@
         public _Legend Legend { get; set; }
 
         public _Strip Strip { get; set; }
+
+        public _Animation Animation { get; set; }
 
         public Text Tooltip { get; set; }
 

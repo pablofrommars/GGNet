@@ -47,12 +47,12 @@ else
         theme.Panel.Grid.Major.Y.Alpha = 0.25;
         theme.Panel.Grid.Minor.Y.Alpha = 0.25;
 
+        theme.Animation.Point.Scale = 10;
+
         var capitals = new GGNet.Source<TS>(data);
 
-        var world = new GGNet.Source<GGNet.Datasets.Coastline.Polygon>(GGNet.Datasets.Coastline.Load());
-
         map = Plot.New(capitals, o => o.Position.Value.Long, y: o => o.Position.Value.Lat)
-            .Geom_Map(world, o => o.Latitude, o => o.Longitude, fill: "grey", alpha: 0.1)
+            .Geom_Map(GGNet.Datasets.Coastline.Load(), o => o.Latitude, o => o.Longitude, fill: "grey", alpha: 0.1)
             .Geom_Point(onclick: OnClick, color: "#000000", alpha: 0.5, animation: true)
             .Scale_X_Continuous(limits: (-180, 180), expand: (0, 0, 0, 0), formatter: GGNet.Formats.Latitude.Instance)
             .Scale_Y_Continuous(limits: (-90, 90), expand: (0, 0, 0, 0), formatter: GGNet.Formats.Longitude.Instance)
@@ -61,7 +61,7 @@ else
             .Theme(theme);
 
         ts = Plot.New(source, o => o.Date, o => o.Value)
-            .Geom_Line()
+            .Geom_Line(tooltip: o => new[] { o.Date.ToString(), $"{o.Stat}: {o.Value:#,##0}" }, width: 2)
             .Scale_Color_Discrete(o => o.Stat, Colors.Ipsum, guide: true)
             .Title(" ")
             .Theme(dark: false, legend: GGNet.Position.Top);

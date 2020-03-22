@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Components.Web;
 
 using GGNet.Scales;
 using GGNet.Facets;
@@ -19,6 +22,7 @@ namespace GGNet.Geoms
             Func<T, TY> y,
             IAestheticMapping<T, string> color = null,
             IAestheticMapping<T, LineType> lineType = null,
+            Func<T, string[]> tooltip = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
             : base(source, inherit, layer)
@@ -26,7 +30,8 @@ namespace GGNet.Geoms
             Selectors = new _Selectors
             {
                 X = x,
-                Y = y
+                Y = y,
+                Tooltip = tooltip
             };
 
             Aesthetics = new _Aesthetics
@@ -41,6 +46,8 @@ namespace GGNet.Geoms
             public Func<T, TX> X { get; set; }
 
             public Func<T, TY> Y { get; set; }
+
+            public Func<T, string[]> Tooltip { get; set; }
         }
 
         public _Selectors Selectors { get; }
@@ -62,6 +69,12 @@ namespace GGNet.Geoms
         }
 
         public _Positions Positions { get; } = new _Positions();
+
+        public Func<T, MouseEventArgs, Task> OnClick { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
 
         public Elements.Line Aesthetic { get; set; }
 
@@ -85,6 +98,27 @@ namespace GGNet.Geoms
             else
             {
                 Positions.Y = YMapping(Selectors.Y, panel.Y);
+            }
+
+            if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
+            {
+                OnMouseOver = (item, _) =>
+                {
+                    panel.Component.Tooltip.Show(
+                        Positions.X.Map(item),
+                        Positions.Y.Map(item),
+                        Selectors.Tooltip(item),
+                        Aesthetics.Color?.Map(item) ?? Aesthetic.Fill);
+
+                    return Task.CompletedTask;
+                };
+
+                OnMouseOut = (_, __) =>
+                {
+                    panel.Component.Tooltip.Hide();
+
+                    return Task.CompletedTask;
+                };
             }
 
             if (!inherit)
@@ -165,6 +199,38 @@ namespace GGNet.Geoms
             var y = Positions.Y.Map(item);
 
             path.Points.Add((x, y));
+
+            if (OnClick != null || OnMouseOver != null || OnMouseOut != null)
+            {
+                var circle = new Circle
+                {
+                    X = x,
+                    Y = y,
+                    Aesthetic = new Elements.Circle
+                    {
+                        Radius = 3.0 * Aesthetic.Width,
+                        Alpha = 0,
+                        Fill = "transparent"
+                    }
+                };
+
+                if (OnClick != null)
+                {
+                    circle.OnClick = e => OnClick(item, e);
+                }
+
+                if (OnMouseOver != null)
+                {
+                    circle.OnMouseOver = e => OnMouseOver(item, e);
+                }
+
+                if (OnMouseOut != null)
+                {
+                    circle.OnMouseOut = e => OnMouseOut(item, e);
+                }
+
+                Layer.Add(circle);
+            }
 
             Positions.X.Position.Shape(x, x);
             Positions.Y.Position.Shape(y, y);

@@ -13,6 +13,13 @@ namespace GGNet
         where TX : struct
         where TY : struct
     {
+        public Data()
+        {
+            Id = SVGUtils.Id(this);
+        }
+
+        public string Id { get; }
+        
         internal string Title { get; set; }
 
         internal string SubTitle { get; set; }

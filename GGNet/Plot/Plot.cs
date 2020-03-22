@@ -553,6 +553,10 @@ namespace GGNet
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _color = null,
             IAestheticMapping<T2, LineType> _lineType = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string[]> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             bool inherit = true)
             where TX1 : struct
@@ -562,7 +566,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Line<T2, TX2, TY2>(source, x, y, _color, _lineType, inherit)
+                var geom = new Line<T2, TX2, TY2>(source, x, y, _color, _lineType, tooltip, inherit)
                 {
                     Aesthetic = new Line
                     {
@@ -570,7 +574,10 @@ namespace GGNet
                         Fill = color,
                         Alpha = alpha,
                         LineType = lineType
-                    }
+                    },
+                    OnClick = onclick,
+                    OnMouseOver = onmouseover,
+                    OnMouseOut = onmouseout
                 };
 
                 return geom;
@@ -586,6 +593,10 @@ namespace GGNet
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _color = null,
             IAestheticMapping<T2, LineType> _lineType = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string[]> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             bool inherit = true)
             where TX1 : struct
@@ -593,7 +604,7 @@ namespace GGNet
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Line(source, x, y, _color, _lineType, width, color, alpha, lineType, inherit);
+            data.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
 
             return data;
         }
@@ -604,12 +615,16 @@ namespace GGNet
             Func<T, TY> y = null,
             IAestheticMapping<T, string> _color = null,
             IAestheticMapping<T, LineType> _lineType = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string[]> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Line(panel, panel.Data.Source, x, y, _color, _lineType, width, color, alpha, lineType, inherit);
+            return Geom_Line(panel, panel.Data.Source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Line<T, TX, TY>(
@@ -618,12 +633,16 @@ namespace GGNet
             Func<T, TY> y = null,
             IAestheticMapping<T, string> _color = null,
             IAestheticMapping<T, LineType> _lineType = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string[]> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Line(x, y, _color, _lineType, width, color, alpha, lineType, inherit);
+            data.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
 
             return data;
         }
@@ -1797,6 +1816,20 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Map<T1, TX1, TY1, T2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, double[]> latitude,
+            Func<T2, double[]> longitude,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+            bool inherit = true)
+            where TX1 : struct
+            where TY1 : struct
+        {
+            return Geom_Map(panel, new Source<T2>(source), latitude, longitude, _fill, fill, alpha, color, width, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -1811,6 +1844,20 @@ namespace GGNet
             data.Default_Panel().Geom_Map(source, latitude, longitude, _fill, fill, alpha, color, width, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, double[]> latitude,
+            Func<T2, double[]> longitude,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+            bool inherit = true)
+            where TX1 : struct
+            where TY1 : struct
+        {
+            return Geom_Map(data, new Source<T2>(source), latitude, longitude, _fill, fill, alpha, color, width, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Map<T, TX, TY>(

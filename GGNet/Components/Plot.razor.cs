@@ -11,7 +11,6 @@ namespace GGNet.Components
         public Plot()
             : base()
         {
-            Id = SVGUtils.Id(this);
         }
 
         [Parameter]
@@ -22,8 +21,6 @@ namespace GGNet.Components
 
         [Parameter]
         public double Height { get; set; } = 576;
-
-        public string Id { get; }
 
         public Zone Title;
         public Zone SubTitle;
