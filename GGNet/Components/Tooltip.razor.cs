@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-using static System.Math;
-
 namespace GGNet.Components
 {
     public partial class Tooltip<T, TX, TY> : ComponentBase
@@ -13,75 +11,47 @@ namespace GGNet.Components
 
         protected bool visibility = false;
 
-        protected string path;
-
-        protected string[] content;
-        protected (double x, double y, double width, double height) text;
-        protected string anchor;
         protected string color;
+        protected double alpha;
+        protected string foreignObject;
 
-        public void Show(double x, double y, string[] content, string color = null)
+        public void Show(double x, double y, string content, string color = null, double? alpha = null)
         {
             visibility = true;
 
             var _x = Panel.CoordX(x);
             var _y = Panel.CoordY(y);
 
-            var width = 0.0;
-            var height = 0.0;
+            this.color = color ?? Panel.Plot.Data.Theme.Tooltip.Fill;
+            this.alpha = alpha ?? Panel.Plot.Data.Theme.Tooltip.Alpha;
 
-            for (var i = 0; i < content.Length; i++)
-            {
-                width = Max(width, content[i].Width(Panel.Plot.Data.Theme.Tooltip.Size));
-                height += content[i].Height(Panel.Plot.Data.Theme.Tooltip.Size);
-            }
+            var px = (_x - Panel.Area.X) / Panel.Area.Width;
+            var py = 1.0 - ((_y - Panel.Area.Y) / Panel.Area.Height);
 
-            width += Panel.Plot.Data.Theme.Tooltip.Margin.Left + Panel.Plot.Data.Theme.Tooltip.Margin.Right;
-            height += Panel.Plot.Data.Theme.Tooltip.Margin.Top + Panel.Plot.Data.Theme.Tooltip.Margin.Bottom;
+            var role = (px, py) switch
+            {
+                var (_px, _py) when _px < 0.2 && _py < 0.2 => "tooltip-top-end",
+                var (_px, _py) when _px < 0.2 && _py > 0.8 => "tooltip-bottom-end",
+                var (_px, _py) when _px > 0.8 && _py < 0.2 => "tooltip-top-start",
+                var (_px, _py) when _px > 0.8 && _py > 0.8 => "tooltip-bottom-start",
+                var (_px, _) when _px > 0.8 => "tooltip-left-center",
+                var (_, _py) when _py > 0.8 => "tooltip-bottom-center",
+                var (_, _py) when _py < 0.2 => "tooltip-top-center",
+                _ => "tooltip-right-center"
+            };
 
-            if ((_x + width + 20.0) < (Panel.Area.X + Panel.Area.Width)
-                && (_y + (height + 5) / 2) < (Panel.Y + Panel.Height)
-                && (_y - (height + 5) / 2) > Panel.Y)
-            {
-                //right
-                path = $"M{_x},{_y} l5 -2.5 v-{height / 2} q0,-2.5 5,-2.5 h{width} q5,0 5,2.5 v{height + 5} q0,2.5 -5,2.5 h-{width} q-5,0 -5,-2.5 v-{height / 2} l-5 -2.5 z";
-                text = (_x + 7.5, _y - height / 2 - 2.5, width, height);
-                anchor = "start";
-            }
-            else if ((_x - width - 20) > Panel.Area.X
-                && (_y + (height + 5) / 2) < (Panel.Y + Panel.Height)
-                && (_y - (height + 5) / 2) > Panel.Y)
-            {
-                //left
-                path = $"M{_x},{_y} l-5 2.5 v{height / 2} q0,2.5 -5,2.5 h-{width} q-5,0 -5,-2.5 v-{height + 5} q0,-2.5 5,-2.5 h{width} q5,0 5,2.5 v{height / 2} l 5 2.5 z";
-                text = (_x - 7.5, _y - height / 2 - 2.5, width, height);
-                anchor = "end";
-            }
-            else if ((_x - (width + 20.0) / 2.0) > Panel.Area.X
-                && (_x + (width + 5.0) / 2.0) < (Panel.Area.X + Panel.Area.Width)
-                && (_y + height + 5) < (Panel.Y + Panel.Height))
-            {
-                //bottom
-                path = $"M{_x},{_y} l2.5 5 h{width / 2} q5,0 5,2.5 v{height} q0,2.5 -5,2.5 h-{width + 5} q-5,0 -5,-2.5 v-{height} q0,-2.5 5,-2.5 h{width / 2.0} l2.5 -5 z";
-                text = (_x - width / 2, _y + 5, width, height);
-                anchor = "start";
-            }
-            else if ((_x - (width + 20.0) / 2.0) > Panel.Area.X
-                && (_x + (width + 5.0) / 2.0) < (Panel.Area.X + Panel.Area.Width)
-                && (_y - height - 5) > Panel.Y)
-            {
-                //top
-                path = $"M{_x},{_y} l-2.5 -5 h-{width / 2} q-5,0 -5,-2.5 v-{height} q0,-2.5 5,-2.5 h{width + 5} q5,0 5,2.5 v{height} q0,2.5 -5,2.5 h-{width / 2} l-2.5 5 z";
-                text = (_x - width / 2, _y - height - 10, width, height);
-                anchor = "start";
-            }
-            else
-            {
-                return;
-            }
+            foreignObject =
+$@"
+<foreignObject role=""{role}"" x=""{_x}"" y=""{_y}"" width=""1"" height=""1"">
+        <div>
+            <div class=""arrow""></div>
+            <div class=""bubble"">{content}</div>
+        </div>
+    </foreignObject>
+";
 
-            this.content = content;
-            this.color = color;
+            //Panel.Plot.Data.Theme.Tooltip.Size
+            //
 
             //StateHasChanged();
         }

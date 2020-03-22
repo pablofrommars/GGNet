@@ -30,7 +30,8 @@
                     Value = 0.75,
                     Units = em
                 },
-                Color = "#FFF"
+                Color = "#FFF",
+                Alpha = 0.8
             };
 
             YLabel = new Text

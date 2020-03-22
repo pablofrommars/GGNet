@@ -4,13 +4,156 @@
 
 @if (visibility)
 {
-    <path d="@path" style="fill: @(color ?? Panel.Plot.Data.Theme.Tooltip.Fill); pointer-events: none;" clip-path="url(#@(Panel.Plot.Data.Id)-@(Panel.Data.Id).area)" />
-    <g style="pointer-events: none;" clip-path="url(#@(Panel.Plot.Data.Id)-@(Panel.Data.Id).area)">
-        <text x="@text.x" y="@text.y" style="font-size: @Panel.Plot.Data.Theme.Tooltip.Size; fill: @Panel.Plot.Data.Theme.Tooltip.Color; text-anchor: @anchor; pointer-events: none;">
-            @for (var i = 0; i < content?.Length; i++)
-            {
-                <tspan x="@text.x" dy="1em" style="pointer-events: none;">@content[i]</tspan>
+    <defs>
+        <style type="text/css">
+
+            [role^="tooltip"] {
+                --tooltip-background-color: @color;
+                --tooltip-background-opacity: @alpha;
+                --tooltip-fadein-duration: 500ms;
+                overflow: visible;
             }
-        </text>
-    </g>
+
+                [role^="tooltip"] + div {
+                    position: relative;
+                    pointer-events: none;
+                }
+
+                [role^="tooltip"] .arrow {
+                    position: absolute;
+                }
+
+                    [role^="tooltip"] .arrow::before {
+                        position: absolute;
+                        content: '';
+                        border: 5px solid transparent;
+                        pointer-events: none;
+                    }
+
+                [role^="tooltip"] .bubble {
+                    position: absolute;
+                    border-radius: 4px;
+                    padding: 5px 10px;
+                    background: var(--tooltip-background-color);
+                    white-space: nowrap;
+                    pointer-events: none;
+
+                    color: @(Panel.Plot.Data.Theme.Tooltip.Color);
+                    font-size: @(Panel.Plot.Data.Theme.Tooltip.Size);
+                }
+
+            @@keyframes fadein {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: var(--tooltip-background-opacity);
+                }
+            }
+
+            [role^="tooltip"] .arrow::before,
+            [role^="tooltip"] .bubble {
+                animation: fadein var(--tooltip-fadein-duration) linear forwards;
+            }
+
+            [role^="tooltip-top"] .arrow::before {
+                border-bottom-width: 0;
+                border-top-color: var(--tooltip-background-color);
+                bottom: 100%;
+                transform: translate(-50%, -.5em);
+            }
+
+            [role^="tooltip-top"] .bubble {
+                bottom: calc(100% + 5px);
+            }
+
+            [role^="tooltip-top"][role$="start"] .bubble {
+                transform: translate(-75%, -0.48em);
+            }
+
+            [role^="tooltip-top"][role$="center"] .bubble {
+                transform: translate(-50%, -0.48em);
+            }
+
+            [role^="tooltip-top"][role$="end"] .bubble {
+                transform: translate(-25%, -0.48em);
+            }
+
+            [role^="tooltip-bottom"] .arrow::before {
+                border-top-width: 0;
+                border-bottom-color: var(--tooltip-background-color);
+                top: 100%;
+                transform: translate(-50%, .5em);
+            }
+
+            [role^="tooltip-bottom"] .bubble {
+                top: calc(100% + 5px);
+            }
+
+            [role^="tooltip-bottom"][role$="start"] .bubble {
+                transform: translate(-75%, 0.48em);
+            }
+
+            [role^="tooltip-bottom"][role$="center"] .bubble {
+                transform: translate(-50%, 0.48em);
+            }
+
+            [role^="tooltip-bottom"][role$="end"] .bubble {
+                transform: translate(-25%, 0.48em);
+            }
+
+            [role^="tooltip-left"] .arrow::before {
+                border-right-width: 0;
+                border-left-color: var(--tooltip-background-color);
+                top: 50%;
+                left: calc(0em - 5px);
+                transform: translate(-.5em, -50%);
+            }
+
+            [role^="tooltip-left"] .bubble {
+                top: 50%;
+                right: calc(100% + 5px);
+            }
+
+            [role^="tooltip-left"][role$="start"] .bubble {
+                transform: translate(-0.48em, -75%);
+            }
+
+            [role^="tooltip-left"][role$="center"] .bubble {
+                transform: translate(-0.48em, -50%);
+            }
+
+            [role^="tooltip-left"][role$="end"] .bubble {
+                transform: translate(-0.48em, -25%);
+            }
+
+            [role^="tooltip-right"] .arrow::before {
+                border-left-width: 0;
+                border-right-color: var(--tooltip-background-color);
+                top: 50%;
+                right: calc(0em - 5px);
+                transform: translate(.5em, -50%);
+            }
+
+            [role^="tooltip-right"] .bubble {
+                top: 50%;
+                left: calc(100% + 5px);
+            }
+
+            [role^="tooltip-right"][role$="start"] .bubble {
+                transform: translate(0.48em, -75%);
+            }
+
+            [role^="tooltip-right"][role$="center"] .bubble {
+                transform: translate(0.48em, -50%);
+            }
+
+            [role^="tooltip-right"][role$="end"] .bubble {
+                transform: translate(0.48em, -25%);
+            }
+        </style>
+    </defs>
+
+    @((MarkupString)foreignObject)
 }

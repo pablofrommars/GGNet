@@ -21,7 +21,7 @@ namespace GGNet.Geoms
             Func<T, TY> y,
             IAestheticMapping<T, double> size,
             IAestheticMapping<T, string> color,
-            Func<T, string[]> tooltip = null,
+            Func<T, string> tooltip = null,
             bool animation = false,
             bool inherit = true,
             Buffer<Shape> layer = null)
@@ -49,7 +49,7 @@ namespace GGNet.Geoms
 
             public Func<T, TY> Y { get; set; }
 
-            public Func<T, string[]> Tooltip { get; set; }
+            public Func<T, string> Tooltip { get; set; }
         }
 
         public _Selectors Selectors { get; }
@@ -114,7 +114,8 @@ namespace GGNet.Geoms
                         Positions.X.Map(item),
                         Positions.Y.Map(item),
                         Selectors.Tooltip(item),
-                        Aesthetics.Color?.Map(item) ?? Aesthetic.Fill); 
+                        Aesthetics.Color?.Map(item) ?? Aesthetic.Fill,
+                        Aesthetic.Alpha); 
 
                     return Task.CompletedTask;
                 };

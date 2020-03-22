@@ -20,6 +20,8 @@
 
             Fill = "#FFFFFF";
 
+            Alpha = 1.0;
+
             Angle = 0;
 
             Margin = new Margin();
@@ -36,6 +38,8 @@
         public string Color { get; set; }
 
         public string Fill { get; set; }
+
+        public double Alpha { get; set; }
 
         public double Angle { get; set; }
 

@@ -16,8 +16,10 @@ else
 {
     <GGNet.Components.Plot Data=@map T="TS" TX="Double" TY="Double" Width="720" Height="360" />
 
-    <div style="visibility: @(clicked ? "visible" : "hidden")">
-        <GGNet.Components.Plot Data=@ts T="StatPoint" TX="LocalDate" TY="Double" @ref="plot" />
+    <div class="border rounded-lg m-5 p-1" style="width: 720px;">
+        <div style="visibility: @(clicked ? "visible" : "hidden")">
+            <GGNet.Components.Plot Data=@ts T="StatPoint" TX="LocalDate" TY="Double" @ref="plot" />
+        </div>
     </div>
 }
 
@@ -61,10 +63,10 @@ else
             .Theme(theme);
 
         ts = Plot.New(source, o => o.Date, o => o.Value)
-            .Geom_Line(tooltip: o => new[] { o.Date.ToString(), $"{o.Stat}: {o.Value:#,##0}" }, width: 2)
+            .Geom_Line(tooltip: o => $"<b>{o.Date.ToString()}<b><br/>{o.Stat}: {o.Value:#,##0}", width: 2)
             .Scale_Color_Discrete(o => o.Stat, Colors.Ipsum, guide: true)
             .Title(" ")
-            .Theme(dark: false, legend: GGNet.Position.Top);
+            .Theme(dark: false, legend: GGNet.Position.Right);
     }
 
     public Task OnClick(TS point, MouseEventArgs e)

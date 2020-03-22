@@ -452,7 +452,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onclick = null,
             Func<T2, MouseEventArgs, Task> onmouseover = null,
             Func<T2, MouseEventArgs, Task> onmouseout = null,
-            Func<T2, string[]> tooltip = null,
+            Func<T2, string> tooltip = null,
             bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
             bool inherit = true)
@@ -492,7 +492,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onclick = null,
             Func<T2, MouseEventArgs, Task> onmouseover = null,
             Func<T2, MouseEventArgs, Task> onmouseout = null,
-            Func<T2, string[]> tooltip = null,
+            Func<T2, string> tooltip = null,
             bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
             bool inherit = true)
@@ -515,7 +515,7 @@ namespace GGNet
             Func<T, MouseEventArgs, Task> onclick = null,
             Func<T, MouseEventArgs, Task> onmouseover = null,
             Func<T, MouseEventArgs, Task> onmouseout = null,
-            Func<T, string[]> tooltip = null,
+            Func<T, string> tooltip = null,
             bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
             bool inherit = true)
@@ -534,7 +534,7 @@ namespace GGNet
             Func<T, MouseEventArgs, Task> onclick = null,
             Func<T, MouseEventArgs, Task> onmouseover = null,
             Func<T, MouseEventArgs, Task> onmouseout = null,
-            Func<T, string[]> tooltip = null,
+            Func<T, string> tooltip = null,
             bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
             bool inherit = true)
@@ -556,7 +556,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onclick = null,
             Func<T2, MouseEventArgs, Task> onmouseover = null,
             Func<T2, MouseEventArgs, Task> onmouseout = null,
-            Func<T2, string[]> tooltip = null,
+            Func<T2, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             bool inherit = true)
             where TX1 : struct
@@ -596,7 +596,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onclick = null,
             Func<T2, MouseEventArgs, Task> onmouseover = null,
             Func<T2, MouseEventArgs, Task> onmouseout = null,
-            Func<T2, string[]> tooltip = null,
+            Func<T2, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             bool inherit = true)
             where TX1 : struct
@@ -618,7 +618,7 @@ namespace GGNet
             Func<T, MouseEventArgs, Task> onclick = null,
             Func<T, MouseEventArgs, Task> onmouseover = null,
             Func<T, MouseEventArgs, Task> onmouseout = null,
-            Func<T, string[]> tooltip = null,
+            Func<T, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             bool inherit = true)
             where TX : struct
@@ -636,7 +636,7 @@ namespace GGNet
             Func<T, MouseEventArgs, Task> onclick = null,
             Func<T, MouseEventArgs, Task> onmouseover = null,
             Func<T, MouseEventArgs, Task> onmouseout = null,
-            Func<T, string[]> tooltip = null,
+            Func<T, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             bool inherit = true)
             where TX : struct
@@ -679,6 +679,24 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            PositionAdjustment position = PositionAdjustment.Stack,
+            double width = 0.9,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, fill, alpha, position, width, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -697,6 +715,24 @@ namespace GGNet
             data.Default_Panel().Geom_Bar(source, x, y, _fill, fill, alpha, position, width, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            PositionAdjustment position = PositionAdjustment.Stack,
+            double width = 0.9,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_Bar(new Source<T2>(source), x, y, _fill, fill, alpha, position, width, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Bar<T, TX, TY>(
@@ -843,6 +879,22 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_Area(new Source<T2>(source), x, y, _fill, fill, alpha, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -859,6 +911,22 @@ namespace GGNet
             data.Default_Panel().Geom_Area(source, x, y, _fill, fill, alpha, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_Area(new Source<T2>(source), x, y, _fill, fill, alpha, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Area<T, TX, TY>(
@@ -920,6 +988,23 @@ namespace GGNet
             return panel;
         }
 
+       public static Data<T1, TX1, TY1>.PanelFactory Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> ymin = null,
+            Func<T2, TY2> ymax = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, fill, alpha, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -937,6 +1022,23 @@ namespace GGNet
             data.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, fill, alpha, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> ymin = null,
+            Func<T2, TY2> ymax = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, fill, alpha, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Ribbon<T, TX, TY>(
@@ -1011,6 +1113,26 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, TY2> ymin = null,
+            Func<T2, TY2> ymax = null,
+            IAestheticMapping<T2, string> _color = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double radius = 5,
+            PositionAdjustment position = PositionAdjustment.Identity,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -1031,6 +1153,26 @@ namespace GGNet
             data.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, TY2> ymin = null,
+            Func<T2, TY2> ymax = null,
+            IAestheticMapping<T2, string> _color = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double radius = 5,
+            PositionAdjustment position = PositionAdjustment.Identity,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_ErrorBar<T, TX, TY>(
@@ -1103,6 +1245,23 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, TT> text = null,
+            IAestheticMapping<T2, string> _color = null,
+            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc",
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_Text(new Source<T2>(source), x, y, text, _color, size, anchor, weight, style, color, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -1120,6 +1279,23 @@ namespace GGNet
             data.Default_Panel().Geom_Text(source, x, y, text, _color, size, anchor, weight, style, color, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, TT> text = null,
+            IAestheticMapping<T2, string> _color = null,
+            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc",
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_Text(new Source<T2>(source), x, y, text, _color, size, anchor, weight, style, color, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Text<T, TX, TY, TT>(
@@ -1180,6 +1356,18 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY>.PanelFactory Geom_VLine<T1, TX1, TY, T2, TX2>(
+            this Data<T1, TX1, TY>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            where TX1 : struct
+            where TX2 : struct
+            where TY : struct
+        {
+            return panel.Geom_VLine(new Source<T2>(source), x, width, color, alpha, lineType);
+        }
+
         public static Data<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
             this Data<T1, TX1, TY> data,
             Source<T2> source,
@@ -1192,6 +1380,18 @@ namespace GGNet
             data.Default_Panel().Geom_VLine(source, x, width, color, alpha, lineType);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
+            this Data<T1, TX1, TY> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            where TX1 : struct
+            where TX2 : struct
+            where TY : struct
+        {
+            return data.Geom_VLine(new Source<T2>(source), x, width, color, alpha, lineType);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_VLine<T, TX, TY>(
@@ -1244,6 +1444,18 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX, TY1>.PanelFactory Geom_HLine<T1, TX, TY1, T2, TY2>(
+            this Data<T1, TX, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TY2> y = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            where TX : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_HLine(new Source<T2>(source), y, width, color, alpha, lineType);
+        }
+
         public static Data<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
             this Data<T1, TX, TY1> data,
             Source<T2> source,
@@ -1256,6 +1468,18 @@ namespace GGNet
             data.Default_Panel().Geom_HLine(source, y, width, color, alpha, lineType);
 
             return data;
+        }
+
+        public static Data<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
+            this Data<T1, TX, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TY2> y = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            where TX : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_HLine(new Source<T2>(source), y, width, color, alpha, lineType);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_HLine<T, TX, TY>(
@@ -1568,6 +1792,24 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, TX2> dx = null,
+            Func<T2, TY2> dy = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, fill, alpha, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -1586,6 +1828,24 @@ namespace GGNet
             data.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, fill, alpha, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, TX2> dx = null,
+            Func<T2, TY2> dy = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, fill, alpha, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Hex<T, TX, TY>(
@@ -1651,6 +1911,23 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, double> height = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -1668,6 +1945,23 @@ namespace GGNet
             data.Default_Panel().Geom_RidgeLine(source, x, y, height, _fill, fill, alpha, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, double> height = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_RidgeLine<T, TX, TY>(
@@ -1734,6 +2028,24 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, double> width = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0, string color = null,
+            PositionAdjustment position = PositionAdjustment.Identity,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -1752,6 +2064,24 @@ namespace GGNet
             data.Default_Panel().Geom_Violin(source, x, y, width, _fill, fill, alpha, color, position, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            Func<T2, double> width = null,
+            IAestheticMapping<T2, string> _fill = null,
+            string fill = "#23d0fc", double alpha = 1.0, string color = null,
+            PositionAdjustment position = PositionAdjustment.Identity,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Violin<T, TX, TY>(
