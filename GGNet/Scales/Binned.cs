@@ -16,7 +16,7 @@
 
         public override void Train(double key) { } 
 
-        public override void Set() { }
+        public override void Set(bool grid) { }
 
         public override T Map(double key)
         {

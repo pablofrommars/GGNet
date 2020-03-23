@@ -2,12 +2,16 @@
 
 namespace GGNet.Components
 {
-    public partial class Tooltip<T, TX, TY> : ComponentBase
-        where TX : struct
-        where TY : struct
+    public partial class Tooltip: ComponentBase, ITooltip
     {
-        [CascadingParameter]
-        public Panel<T, TX, TY> Panel{ get; set; }
+        [Parameter]
+        public ICoord Coord{ get; set; }
+
+        [Parameter]
+        public Zone Area{ get; set; }
+
+        [Parameter]
+        public Theme Theme{ get; set; }
 
         protected bool visibility = false;
 
@@ -19,14 +23,14 @@ namespace GGNet.Components
         {
             visibility = true;
 
-            var _x = Panel.CoordX(x);
-            var _y = Panel.CoordY(y);
+            var _x = Coord.CoordX(x);
+            var _y = Coord.CoordY(y);
 
-            this.color = color ?? Panel.Plot.Data.Theme.Tooltip.Fill;
-            this.alpha = alpha ?? Panel.Plot.Data.Theme.Tooltip.Alpha;
+            this.color = color ?? Theme.Tooltip.Fill;
+            this.alpha = alpha ?? Theme.Tooltip.Alpha;
 
-            var px = (_x - Panel.Area.X) / Panel.Area.Width;
-            var py = 1.0 - ((_y - Panel.Area.Y) / Panel.Area.Height);
+            var px = (_x - Area.X) / Area.Width;
+            var py = 1.0 - ((_y - Area.Y) / Area.Height);
 
             var role = (px, py) switch
             {
@@ -49,18 +53,13 @@ $@"
         </div>
     </foreignObject>
 ";
-
-            //Panel.Plot.Data.Theme.Tooltip.Size
-            //
-
-            //StateHasChanged();
+            StateHasChanged();
         }
 
         public void Hide()
         {
             visibility = false;
-
-            //StateHasChanged();
+            StateHasChanged();
         }
     }
 }

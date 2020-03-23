@@ -2,8 +2,6 @@
 @typeparam TX
 @typeparam TY
 
-@using GGNet.Shapes
-
 @if (First)
 {
     if (Plot.Title.Width > 0)
@@ -126,201 +124,7 @@
     }
 }
 
-@for (var g = 0; g < Data.Geoms.Count; g++)
-{
-    var geom = Data.Geoms[g];
-
-    for (var i = 0; i < geom.Layer.Count; i++)
-    {
-        var shape = geom.Layer[i];
-
-        if (shape is Shapes.Line l)
-        {
-            <line x1="@CoordX(l.X1)"
-                  y1="@CoordY(l.Y1)"
-                  x2="@CoordX(l.X2)"
-                  y2="@CoordY(l.Y2)"
-                  class="@l.Css()"
-                  style="stroke-width: @l.Aesthetic.Width; stroke: @l.Aesthetic.Fill; stroke-opacity: @l.Aesthetic.Alpha; stroke-dasharray: @(l.Aesthetic.LineType.DashArray());"
-                  clip-path="url(#@(clip).area)"
-                  @onclick=@(async e => await l.OnClickHandler(e))
-                  @onmouseover=@(async e => await l.OnMouseOverHandler(e))
-                  @onmouseout=@(async e => await l.OnMouseOutHandler(e)) />
-        }
-        else if (shape is Shapes.Rectangle r)
-        {
-            var x = CoordX(r.X);
-            var y = CoordY(r.Y + r.Height);
-            var width = CoordX(r.X + r.Width) - x;
-            var height = CoordY(r.Y) - y;
-
-            <rect x="@x"
-                  y="@y"
-                  width="@width"
-                  height="@height"
-                  class="@r.Css()"
-                  style="fill: @r.Aesthetic.Fill; fill-opacity: @r.Aesthetic.Alpha;"
-                  clip-path="url(#@(clip).area)"
-                  @onclick=@(async e => await r.OnClickHandler(e))
-                  @onmouseover=@(async e => await r.OnMouseOverHandler(e))
-                  @onmouseout=@(async e => await r.OnMouseOutHandler(e)) />
-        }
-        else if (shape is Shapes.Circle c)
-        {
-            <g style="transform: translate(@CoordX(c.X)px, @CoordY(c.Y)px)"><circle cx="0"
-                    cy="0"
-                    r="@c.Aesthetic.Radius"
-                    class="@c.Css()"
-                    style="stroke-width: 0.71; stroke: @c.Aesthetic.Fill; stroke-opacity: @c.Aesthetic.Alpha; fill: @c.Aesthetic.Fill; fill-opacity: @c.Aesthetic.Alpha;"
-                    @onclick=@(async e => await c.OnClickHandler(e))
-                    @onmouseover=@(async e => await c.OnMouseOverHandler(e))
-                    @onmouseout=@(async e => await c.OnMouseOutHandler(e)) /></g>
-        }
-        else if (shape is Shapes.VStrip v)
-        {
-            var x = CoordX(v.X);
-            var width = CoordY(v.X + v.Width) - x;
-
-            <rect x="@x"
-                  y="@Y"
-                  width="@width"
-                  height="@Height"
-                  style="fill: transparent"
-                  clip-path="url(#@(clip).area)"
-                  @onclick=@(async e => await v.OnClickHandler(e))
-                  @onmouseover=@(async e => await v.OnMouseOverHandler(e))
-                  @onmouseout=@(async e => await v.OnMouseOutHandler(e)) />
-        }
-        else if (shape is Shapes.Path p)
-        {
-            if (p.Points.Count > 0)
-            {
-                sb.Clear();
-
-                var (x, y) = p.Points[0];
-
-                sb.Append("M ");
-                sb.Append(CoordX(x));
-                sb.Append(" ");
-                sb.Append(CoordY(y));
-
-                for (var j = 1; j < p.Points.Count; j++)
-                {
-                    (x, y) = p.Points[j];
-
-                    sb.Append(" L ");
-                    sb.Append(CoordX(x));
-                    sb.Append(" ");
-                    sb.Append(CoordY(y));
-                }
-
-                <path d="@sb.ToString()"
-                      style="stroke-width: @p.Aesthetic.Width; stroke: @p.Aesthetic.Fill; stroke-opacity: @p.Aesthetic.Alpha; stroke-dasharray: @(p.Aesthetic.LineType.DashArray());"
-                      clip-path="url(#@(clip).area)" />
-            }
-        }
-        else if (shape is Shapes.Area a)
-        {
-            if (a.Points.Count > 0)
-            {
-                sb.Clear();
-
-                var (x, ymin, ymax) = a.Points[0];
-
-                sb.Append("M ");
-                sb.Append(CoordX(x));
-                sb.Append(" ");
-                sb.Append(CoordY(ymax));
-
-                for (var j = 1; j < a.Points.Count; j++)
-                {
-                    (x, ymin, ymax) = a.Points[j];
-
-                    sb.Append(" L ");
-                    sb.Append(CoordX(x));
-                    sb.Append(" ");
-                    sb.Append(CoordY(ymax));
-                }
-
-                for (var j = 0; j < a.Points.Count; j++)
-                {
-                    (x, ymin, ymax) = a.Points[a.Points.Count - j - 1];
-
-                    sb.Append(" L ");
-                    sb.Append(CoordX(x));
-                    sb.Append(" ");
-                    sb.Append(CoordY(ymin));
-                }
-
-                sb.Append(" Z");
-
-                <path d="@sb.ToString()"
-                      style="fill: @a.Aesthetic.Fill; fill-opacity: @a.Aesthetic.Alpha;"
-                      clip-path="url(#@(clip).area)" />
-            }
-        }
-        else if (shape is Shapes.Polygon poly)
-        {
-            if (poly.Points.Count > 0)
-            {
-                sb.Clear();
-
-                var (x, y) = poly.Points[0];
-
-                sb.Append("M ");
-                sb.Append(CoordX(x));
-                sb.Append(" ");
-                sb.Append(CoordY(y));
-
-                for (var j = 1; j < poly.Points.Count; j++)
-                {
-                    (x, y) = poly.Points[j];
-
-                    sb.Append(" L ");
-                    sb.Append(CoordX(x));
-                    sb.Append(" ");
-                    sb.Append(CoordY(y));
-                }
-
-                sb.Append(" Z");
-
-                <path d="@sb.ToString()"
-                      style="fill: @poly.Aesthetic.Fill; fill-opacity: @poly.Aesthetic.Alpha; stroke: @poly.Aesthetic.Color; stroke-width: @poly.Aesthetic.Width;"
-                      clip-path="url(#@(clip).area)" />
-            }
-        }
-        else if (shape is Shapes.Text text)
-        {
-            <g style="pointer-events: none;" clip-path="url(#@(clip).area)">
-                <text x="@CoordX(text.X)" y="@CoordY(text.Y)" style="font-size: @text.Aesthetic.Size; fill: @text.Aesthetic.Color; text-anchor: @text.Aesthetic.Anchor; font-weigth: @text.Aesthetic.Weight; font-style: @text.Aesthetic.Style;">
-                    @text.Value
-                </text>
-            </g>
-        }
-        else if (shape is Shapes.VLine vline)
-        {
-            var x = CoordX(vline.X);
-
-            <line x1="@x"
-                  y1="@Area.Y"
-                  x2="@x"
-                  y2="@(Area.Y + Area.Height)"
-                  style="stroke-width: @vline.Aesthetic.Width; stroke: @vline.Aesthetic.Fill; stroke-opacity: @vline.Aesthetic.Alpha; stroke-dasharray: @(vline.Aesthetic.LineType.DashArray());"
-                  clip-path="url(#@(clip).area)" />
-        }
-        else if (shape is Shapes.HLine hline)
-        {
-            var y = CoordY(hline.Y);
-
-            <line x1="@Area.X"
-                  y1="@y"
-                  x2="@(Area.X + Area.Width)"
-                  y2="@y"
-                  style="stroke-width: @hline.Aesthetic.Width; stroke: @hline.Aesthetic.Fill; stroke-opacity: @hline.Aesthetic.Alpha; stroke-dasharray: @(hline.Aesthetic.LineType.DashArray());"
-                  clip-path="url(#@(clip).area)" />
-        }
-    }
-}
+<Area T="T" TX="TX" TY="TY" Data=@Data Coord=@this Zone=@Area Clip=@(clip + ".area") />
 
 @if (!string.IsNullOrEmpty(Data.XLab.text))
 {
@@ -339,11 +143,8 @@
 @if (Last && Plot.Caption.Width > 0)
 {
     <g clip-path="url(#@(Plot.Id)-plot)">
-        <text x="@(Area.X + Area.Width - Plot.Data.Theme.Plot.Caption.Margin.Right)" y="@Plot.Caption.Y" class="caption">@Plot.Data.Caption</text>
+        <text x="@(Area.X + Area.Width - Plot.Theme.Plot.Caption.Margin.Right)" y="@Plot.Caption.Y" class="caption">@Plot.Data.Caption</text>
     </g>
 }
 
-<CascadingValue Value=@this>
-    <Tooltip @ref=@tooltip T="T" TX="TX" TY="TY" />
-    <YLabel @ref=@ylabel T="T" TX="TX" TY="TY" />
-</CascadingValue>
+<Tooltip Coord=@this Area=@Area Theme=@Plot.Theme @ref=@tooltip />

@@ -28,9 +28,14 @@ namespace GGNet.Scales
 
         public override Guide Guide => Guide.None;
 
-        public override void Set()
+        public override void Set(bool grid)
         {
             SetRange(Limits.min ?? _min ?? 0.0, Limits.max ?? _max ?? 0.0);
+
+            if (!grid)
+            {
+                return;
+            }
 
             var breaks = Wilkinson.extended(Range.min, Range.max);
             if (breaks == null)

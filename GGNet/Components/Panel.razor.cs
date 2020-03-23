@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Linq;
+﻿using System.Linq;
 
 using Microsoft.AspNetCore.Components;
 
@@ -11,7 +10,7 @@ using static GGNet.Position;
 
 namespace GGNet.Components
 {
-    public partial class Panel<T, TX, TY> : ComponentBase
+    public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
         where TX : struct
         where TY : struct
     {
@@ -53,13 +52,8 @@ namespace GGNet.Components
 
         public Zone Area;
 
-        private StringBuilder sb = new StringBuilder();
-
-        protected Tooltip<T, TX, TY> tooltip;
-        internal Tooltip<T, TX, TY> Tooltip => tooltip;
-
-        protected YLabel<T, TX, TY> ylabel;
-        internal YLabel<T, TX, TY> YLabel => ylabel;
+        protected Tooltip tooltip;
+        public ITooltip Tooltip => tooltip;
 
         protected string clip;
 
@@ -75,7 +69,6 @@ namespace GGNet.Components
             Render();
         }
 
-        //protected void Render() //TODO
         public void Render()
         {
             Area.X = X;

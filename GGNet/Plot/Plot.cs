@@ -1513,8 +1513,7 @@ namespace GGNet
             Func<T2, TY2> low = null,
             Func<T2, TY2> close = null,
             Func<T2, MouseEventArgs, Task> onclick = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool vtrack = false, bool ylabel = false)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -1522,7 +1521,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new OHLC<T2, TX2, TY2>(source, x, open, high, low, close, vtrack, ylabel)
+                var geom = new OHLC<T2, TX2, TY2>(source, x, open, high, low, close)
                 {
                     OnClick = onclick,
                     Aesthetic = new Line
@@ -1550,14 +1549,13 @@ namespace GGNet
             Func<T2, TY2> low = null,
             Func<T2, TY2> close = null,
             Func<T2, MouseEventArgs, Task> onclick = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool vtrack = false, bool ylabel = false)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_OHLC(source, x, open, high, low, close, onclick, width, color, alpha, lineType, vtrack, ylabel);
+            data.Default_Panel().Geom_OHLC(source, x, open, high, low, close, onclick, width, color, alpha, lineType);
 
             return data;
         }
@@ -1570,12 +1568,11 @@ namespace GGNet
             Func<T, TY> low = null,
             Func<T, TY> close = null,
             Func<T, MouseEventArgs, Task> onclick = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool vtrack = false, bool ylabel = false)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
             where TX : struct
             where TY : struct
         {
-            return Geom_OHLC(panel, panel.Data.Source, x, open, high, low, close, onclick, width, color, alpha, lineType, vtrack, ylabel);
+            return Geom_OHLC(panel, panel.Data.Source, x, open, high, low, close, onclick, width, color, alpha, lineType);
         }
 
         public static Data<T, TX, TY> Geom_OHLC<T, TX, TY>(
@@ -1586,12 +1583,11 @@ namespace GGNet
             Func<T, TY> low = null,
             Func<T, TY> close = null,
             Func<T, MouseEventArgs, Task> onclick = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool vtrack = false, bool ylabel = false)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_OHLC(x, open, high, low, close, onclick, width, color, alpha, lineType, vtrack, ylabel);
+            data.Default_Panel().Geom_OHLC(x, open, high, low, close, onclick, width, color, alpha, lineType);
 
             return data;
         }
@@ -1689,8 +1685,7 @@ namespace GGNet
             Func<T2, TX2> x = null,
             Func<T2, TY2> volume = null,
             Func<T2, MouseEventArgs, Task> onclick = null,
-            string fill = "#23d0fc", double alpha = 1.0,
-            bool vtrack = false, bool ylabel = false)
+            string fill = "#23d0fc", double alpha = 1.0)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -1698,7 +1693,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Volume<T2, TX2, TY2>(source, x, volume, vtrack, ylabel)
+                var geom = new Volume<T2, TX2, TY2>(source, x, volume)
                 {
                     OnClick = onclick,
                     Aesthetic = new Rectangle
@@ -1720,14 +1715,13 @@ namespace GGNet
             Func<T2, TX2> x = null,
             Func<T2, TY2> volume = null,
             Func<T2, MouseEventArgs, Task> onclick = null,
-            string fill = "#23d0fc", double alpha = 1.0,
-            bool vtrack = false, bool ylabel = false)
+            string fill = "#23d0fc", double alpha = 1.0)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Volume(source, x, volume, onclick, fill, alpha, vtrack, ylabel);
+            data.Default_Panel().Geom_Volume(source, x, volume, onclick, fill, alpha);
 
             return data;
         }
@@ -1737,12 +1731,11 @@ namespace GGNet
             Func<T, TX> x = null,
             Func<T, TY> volume = null,
             Func<T, MouseEventArgs, Task> onclick = null,
-            string fill = "#23d0fc", double alpha = 1.0,
-            bool vtrack = false, bool ylabel = false)
+            string fill = "#23d0fc", double alpha = 1.0)
             where TX : struct
             where TY : struct
         {
-            return Geom_Volume(panel, panel.Data.Source, x, volume, onclick, fill, alpha, vtrack, ylabel);
+            return Geom_Volume(panel, panel.Data.Source, x, volume, onclick, fill, alpha);
         }
 
         public static Data<T, TX, TY> Geom_Volume<T, TX, TY>(
@@ -1750,12 +1743,11 @@ namespace GGNet
             Func<T, TX> x = null,
             Func<T, TY> volume = null,
             Func<T, MouseEventArgs, Task> onclick = null,
-            string fill = "#23d0fc", double alpha = 1.0,
-            bool vtrack = false, bool ylabel = false)
+            string fill = "#23d0fc", double alpha = 1.0)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Volume(x, volume, onclick, fill, alpha, vtrack, ylabel);
+            data.Default_Panel().Geom_Volume(x, volume, onclick, fill, alpha);
 
             return data;
         }

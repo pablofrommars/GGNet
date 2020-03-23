@@ -86,7 +86,7 @@ namespace GGNet.Scales
             }
         }
 
-        public override void Set()
+        public override void Set(bool grid)
         {
             var min = _min ?? 0.0;
             var max = _max ?? 0.0;
@@ -115,6 +115,11 @@ namespace GGNet.Scales
             }
 
             SetRange(min, max);
+
+            if (!grid)
+            {
+                return;
+            }
 
             var breaks = new List<double>();
             var minor = new List<double>();

@@ -41,8 +41,6 @@ namespace GGNet.Components
 
             Data.Render(true);
 
-            Data.Register(this);
-
             Render();
         }
 

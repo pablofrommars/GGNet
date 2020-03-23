@@ -1,8 +1,4 @@
-﻿@typeparam T
-@typeparam TX
-@typeparam TY
-
-@if (visibility)
+﻿@if (visibility)
 {
     <defs>
         <style type="text/css">
@@ -38,8 +34,8 @@
                     white-space: nowrap;
                     pointer-events: none;
 
-                    color: @(Panel.Plot.Data.Theme.Tooltip.Color);
-                    font-size: @(Panel.Plot.Data.Theme.Tooltip.Size);
+                    color: @(Theme.Tooltip.Color);
+                    font-size: @(Theme.Tooltip.Size);
                 }
 
             @@keyframes fadein {

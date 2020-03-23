@@ -110,8 +110,12 @@ namespace GGNet
 
         internal (bool x, bool y) AxisTitlesVisibility { get; set; }
 
-        public void Init()
+        private bool grid = true;
+
+        public void Init(bool grid = true)
         {
+            this.grid = grid;
+
             if (Positions.X.Factory == null)
             {
                 if (typeof(TX) == typeof(LocalDate))
@@ -430,10 +434,13 @@ namespace GGNet
 
             for (int i = 0; i < Aesthetics.Scales.Count; i++)
             {
-                Aesthetics.Scales[i].Set();
+                Aesthetics.Scales[i].Set(grid);
             }
 
-            RunLegend(first);
+            if (grid)
+            {
+                RunLegend(first);
+            }
 
             for (var p = 0; p < Panels.Count; p++)
             {
@@ -458,16 +465,19 @@ namespace GGNet
             {
                 var scale = Positions.X.Scales[i];
 
-                scale.Set();
+                scale.Set(grid);
 
-                foreach (var (_, label) in scale.Labels)
+                if (grid)
                 {
-                    height = Max(height, label.Height(Theme.Axis.Text.X.Size));
-                }
+                    foreach (var (_, label) in scale.Labels)
+                    {
+                        height = Max(height, label.Height(Theme.Axis.Text.X.Size));
+                    }
 
-                foreach (var (_, title) in scale.Titles)
-                {
-                    xtitles = Max(xtitles, title.Height(Theme.Axis.Title.X.Size));
+                    foreach (var (_, title) in scale.Titles)
+                    {
+                        xtitles = Max(xtitles, title.Height(Theme.Axis.Title.X.Size));
+                    }
                 }
             }
 
@@ -482,16 +492,19 @@ namespace GGNet
             {
                 var scale = Positions.Y.Scales[i];
 
-                scale.Set();
+                scale.Set(grid);
 
-                foreach (var (_, label) in scale.Labels)
+                if (grid)
                 {
-                    width = Max(width, label.Width(Theme.Axis.Text.Y.Size));
-                }
+                    foreach (var (_, label) in scale.Labels)
+                    {
+                        width = Max(width, label.Width(Theme.Axis.Text.Y.Size));
+                    }
 
-                foreach (var (_, title) in scale.Titles)
-                {
-                    ytitles = Max(ytitles, title.Height(Theme.Axis.Title.Y.Size));
+                    foreach (var (_, title) in scale.Titles)
+                    {
+                        ytitles = Max(ytitles, title.Height(Theme.Axis.Title.Y.Size));
+                    }
                 }
             }
 
@@ -500,13 +513,6 @@ namespace GGNet
             AxisTitles = (xtitles, ytitles);
 
             AxisTitlesVisibility = (xtitlesVisibility, false);
-        }
-
-        internal Components.Plot<T, TX, TY> Component { get; set; }
-
-        internal void Register(Components.Plot<T, TX, TY> component)
-        {
-            Component = component;
         }
 
         #region IData

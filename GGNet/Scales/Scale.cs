@@ -7,7 +7,7 @@ namespace GGNet.Scales
 {
     public interface IScale
     {
-        public void Set();
+        public void Set(bool grid);
 
         public void Clear();
     }
@@ -38,7 +38,7 @@ namespace GGNet.Scales
 
         public abstract void Train(TKey key);
 
-        public abstract void Set();
+        public abstract void Set(bool grid);
 
         public abstract TValue Map(TKey key);
 

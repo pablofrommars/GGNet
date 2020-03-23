@@ -15,14 +15,10 @@ namespace GGNet.Geoms
     {
         private readonly ObjectPool<Rectangle> rectanglePool = new ObjectPool<Rectangle>();
 
-        private readonly bool vtrack;
-        private readonly bool ylabel;
-
         public Volume(
             Source<T> source,
             Func<T, TX> x,
             Func<T, TY> volume,
-            bool vtrack = false, bool ylabel = false,
             Buffer<Shape> layer = null)
             : base(source, false, layer)
         {
@@ -62,9 +58,6 @@ namespace GGNet.Geoms
                 }
             };
             */
-
-            this.vtrack = vtrack;
-            this.ylabel = ylabel;
         }
 
         public class _Selectors
@@ -107,23 +100,6 @@ namespace GGNet.Geoms
             }
 
             Positions.Volume = YMapping(Selectors.Volume, panel.Y);
-
-            if (ylabel)
-            {
-                OnMouseOver = (item, _) =>
-                {
-                    panel.Component.YLabel.Show(Positions.Volume.Map(item));
-
-                    return Task.CompletedTask;
-                };
-
-                OnMouseOut = (_, __) =>
-                {
-                    panel.Component.YLabel.Hide();
-
-                    return Task.CompletedTask;
-                };
-            }
         }
 
         public override void Train(T item)

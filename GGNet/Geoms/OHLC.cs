@@ -15,8 +15,6 @@ namespace GGNet.Geoms
     {
         private readonly ObjectPool<Line> linePool = new ObjectPool<Line>();
 
-        private readonly bool ylabel; 
-
         public OHLC(
             Source<T> source,
             Func<T, TX> x,
@@ -24,8 +22,6 @@ namespace GGNet.Geoms
             Func<T, TY> high,
             Func<T, TY> low,
             Func<T, TY> close,
-            //double width = 1.07, string color = "#23d0fc", double alpha = 1.0,
-            bool vtrack = false, bool ylabel = false,
             Buffer<Shape> layer = null)
             : base(source, false, layer)
         {
@@ -37,8 +33,6 @@ namespace GGNet.Geoms
                 Low = low,
                 Close = close
             };
-
-            this.ylabel = ylabel;
 
             /*
             var aes = new Elements.Line
@@ -193,23 +187,6 @@ namespace GGNet.Geoms
             Positions.High = YMapping(Selectors.High, panel.Y);
             Positions.Low = YMapping(Selectors.Low, panel.Y);
             Positions.Close = YMapping(Selectors.Close, panel.Y);
-
-            if (ylabel)
-            {
-                OnMouseOver = (item, _) =>
-                {
-                    panel.Component.YLabel.Show(Positions.Close.Map(item));
-
-                    return Task.CompletedTask;
-                };
-
-                OnMouseOut = (_, __) =>
-                {
-                    panel.Component.YLabel.Hide();
-
-                    return Task.CompletedTask;
-                };
-            }
         }
 
         public override void Train(T item)
@@ -292,28 +269,7 @@ namespace GGNet.Geoms
             */
             Positions.Close.Position.Shape(low, high);
         }
-
-        /*
-        protected Task OnMouseOver(T item, MouseEventArgs e)
-        {
-            var x = Panel.Data.Scales.X.Map(item);
-            var close = mapping.Close(item);
-
-            Panel.Component.Tooltip.Show(
-                        x,
-                        close,
-                        new[] {
-                            $"{(Panel.Data.Scales.X as IPosition<T, LocalDate>)?.Value(item):yyyyMMdd}",
-                            $"Open: {mapping.Open(item):0,##}",
-                            $"High: {mapping.High(item):0,##}",
-                            $"Low: {mapping.Low(item):0,##}",
-                            $"Close: {close:0,##}"
-                        });
-
-            return Task.CompletedTask;
-        }
-        */
-
+        
         public override void Clear()
         {
             base.Clear();

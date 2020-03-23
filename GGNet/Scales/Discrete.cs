@@ -46,11 +46,16 @@ namespace GGNet.Scales
             palette.Add(key);
         }
 
-        public override void Set()
+        public override void Set(bool grid)
         {
             if (!defined)
             {
                 palette.Set();
+            }
+
+            if (!grid)
+            {
+                return;
             }
 
             var values = palette.Values();

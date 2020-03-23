@@ -55,8 +55,13 @@ namespace GGNet.Scales
             }
         }
 
-        public override void Set()
+        public override void Set(bool grid)
         {
+            if (!grid)
+            {
+                return;
+            }
+
             var breaks = Wilkinson.extended(limits.min, limits.max);
 
             var labels = new (double value, string label)[breaks.Length];

@@ -41,9 +41,9 @@ namespace GGNet
 
             internal (double width, string text) YLab { get; set; }
 
-            internal Components.Panel<T, TX, TY> Component { get; set; }
+            internal Components.IPanel Component { get; set; }
 
-            internal void Register(Components.Panel<T, TX, TY> component)
+            internal void Register(Components.IPanel component)
             {
                 Component = component;
             }

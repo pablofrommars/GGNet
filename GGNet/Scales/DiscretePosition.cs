@@ -39,7 +39,7 @@ namespace GGNet.Scales
             Labels = labels;
         }
 
-        public override void Set()
+        public override void Set(bool grid)
         {
             var min = _min ?? 0.0;
             var max = _max ?? 0.0;
@@ -69,7 +69,10 @@ namespace GGNet.Scales
 
             SetRange(min, max);
 
-            Labeling(start, end);
+            if (grid)
+            {
+                Labeling(start, end);
+            }
         }
 
         public override double Map(T key)

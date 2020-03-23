@@ -1,0 +1,40 @@
+﻿@page "/spark"
+
+@using GGNet
+
+<div class="border rounded-lg" style="width: 150px; height: 50px;">
+    <GGNet.Components.SparkLine Data=@data T="Point" TX="Double" TY="Double" />
+</div>
+
+@code {
+    Data<Point, double, double> data;
+
+    protected override void OnInitialized()
+    {
+        var source = new Source<Point>();
+
+        var x = -System.Math.PI;
+        var increment = 1.0 / 100;
+
+        while (x <= System.Math.PI)
+        {
+            source.Add(new Point
+            {
+                X = x,
+                Y = System.Math.Sin(x)
+            });
+
+            x += increment;
+        }
+
+        data = Plot.New(source, x: o => o.X, y: o => o.Y)
+            .Geom_Line()
+            .Theme(dark: false);
+    }
+
+    public class Point
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+    }
+}

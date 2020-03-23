@@ -8,7 +8,7 @@
 
         public override void Train(T key) { }
 
-        public override void Set() { }
+        public override void Set(bool grid) { }
 
         public override T Map(T key) => key;
 
