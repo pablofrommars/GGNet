@@ -30,10 +30,10 @@ namespace GGNet.Components
 
             var role = (px, py) switch
             {
-                var (_px, _py) when _px < 0.2 && _py < 0.2 => "tooltip-top-end",
-                var (_px, _py) when _px < 0.2 && _py > 0.8 => "tooltip-bottom-end",
-                var (_px, _py) when _px > 0.8 && _py < 0.2 => "tooltip-top-start",
-                var (_px, _py) when _px > 0.8 && _py > 0.8 => "tooltip-bottom-start",
+                var (_px, _py) when _px < 0.2 && _py < 0.2 => "tooltip-right-start",
+                var (_px, _py) when _px < 0.2 && _py > 0.8 => "tooltip-right-end",
+                var (_px, _py) when _px > 0.8 && _py < 0.2 => "tooltip-left-start",
+                var (_px, _py) when _px > 0.8 && _py > 0.8 => "tooltip-left-end",
                 var (_px, _) when _px > 0.8 => "tooltip-left-center",
                 var (_, _py) when _py > 0.8 => "tooltip-bottom-center",
                 var (_, _py) when _py < 0.2 => "tooltip-top-center",
