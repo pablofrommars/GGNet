@@ -15,6 +15,14 @@
             #@(Id) .panel {
                 fill: @(Theme.Panel.Background.Fill);
             }
+
+            #@(Id) .animate {
+                transition: transform @(Theme.Animation.Point.Transition)s;
+            }
+
+            #@(Id) .animate:hover {
+                transform: scale(@(Theme.Animation.Point.Scale));
+            }
         </style>
 
         <clipPath id=@(Id + "-" + Panel.Id + "-area")>

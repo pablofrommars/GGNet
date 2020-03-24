@@ -482,6 +482,28 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            IAestheticMapping<T2, double> _size = null,
+            IAestheticMapping<T2, string> _color = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
+            bool animation = false,
+            double size = 5, string color = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -504,6 +526,28 @@ namespace GGNet
             data.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            IAestheticMapping<T2, double> _size = null,
+            IAestheticMapping<T2, string> _color = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
+            bool animation = false,
+            double size = 5, string color = "#23d0fc", double alpha = 1.0,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Point<T, TX, TY>(
@@ -586,6 +630,27 @@ namespace GGNet
             return panel;
         }
 
+        public static Data<T1, TX1, TY1>.PanelFactory Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            IAestheticMapping<T2, string> _color = null,
+            IAestheticMapping<T2, LineType> _lineType = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return panel.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
+        }
+
         public static Data<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
@@ -607,6 +672,27 @@ namespace GGNet
             data.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
 
             return data;
+        }
+
+        public static Data<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x = null,
+            Func<T2, TY2> y = null,
+            IAestheticMapping<T2, string> _color = null,
+            IAestheticMapping<T2, LineType> _lineType = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+        {
+            return data.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Line<T, TX, TY>(

@@ -301,9 +301,9 @@ namespace GGNet.Geoms
                         Layer.Add(new Rectangle
                         {
                             X = x,
-                            Y = 0,
+                            Y = value >= 0 ? 0 : value,
                             Width = w,
-                            Height = value,
+                            Height = Math.Abs(value),
                             Aesthetic = new Elements.Rectangle
                             {
                                 Fill = fill,
@@ -312,7 +312,14 @@ namespace GGNet.Geoms
                         });
 
                         Positions.X.Position.Shape(x, x + w);
-                        Positions.Y.Position.Shape(0, value);
+                        if (value >= 0)
+                        {
+                            Positions.Y.Position.Shape(0, value);
+                        }
+                        else
+                        {
+                            Positions.Y.Position.Shape(value, 0);
+                        }
 
                         x += w;
                     }
