@@ -8,7 +8,7 @@ namespace GGNet.Static.Demo
     {
         static async Task Main(string[] args)
         {
-            var plot = Plot.New(new Source<Tip.Point>(Tip.Load()), x: o => o.Day, y: o => o.Avg)
+            var plot = Plot.New(Tip.Load(), x: o => o.Day, y: o => o.Avg)
                 .Geom_ErrorBar(ymin: o => o.Lower, ymax: o => o.Upper, position: PositionAdjustment.Dodge)
                 .Scale_Color_Discrete(o => o.Sex, new[] { "#69b3a2", "#404080" })
                 .YLab("Tip (%)")

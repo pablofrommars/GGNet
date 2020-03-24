@@ -17,12 +17,12 @@
             }
         </style>
 
-        <clipPath id=@(Id + "-" + Panel.Id + ".area")>
-            <rect x="@Area.X" y="@Area.Y" width="@Area.Width" height="@Area.Height" />
+        <clipPath id=@(Id + "-" + Panel.Id + "-area")>
+            <rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height />
         </clipPath>
     </defs>
 
-    <rect x="@Area.X" y="@Area.Y" width="@Area.Width" height="@Area.Height" class="panel" />
+    <rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height class="panel" />
 
-    <Area T="T" TX="TX" TY="TY" Data=@Panel Coord=@this Zone=@Area Clip=@(Id + "-" + Panel.Id + ".area") />
+    <Area T=T TX=TX TY=TY Data=@Panel Coord=@this Zone=@Area Clip=@(Id + "-" + Panel.Id + "-area") />
 </svg>

@@ -1,35 +1,36 @@
 ﻿@page "/"
 
 @using GGNet
+@using GGNet.Datasets
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px; height: 670px;">
-    <GGNet.Components.Plot Data=@map T="Point" TX="Double" TY="Double" Width="720" Height="670" />
+    <GGNet.Components.Plot Data=@map T=Point TX=Double TY=Double Width=720 Height=670 />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px;">
-    <GGNet.Components.Plot Data=@diamond T="GGNet.Datasets.Diamond.Point" TX="Double" TY="Double" />
+    <GGNet.Components.Plot Data=@diamond T=Diamond.Point TX=Double TY=Double />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
-    <GGNet.Components.Plot Data=@tip T="GGNet.Datasets.Tip.Point" TX="GGNet.Datasets.Tip.Day" TY="Double" />
+    <GGNet.Components.Plot Data=@tip T=Tip.Point TX=Tip.Day TY=Double />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px;">
-    <GGNet.Components.Plot Data=@gapminder T="GGNet.Datasets.GapMinder.Point" TX="Double" TY="Double" />
+    <GGNet.Components.Plot Data=@gapminder T=GapMinder.Point TX=Double TY=Double />
 </div>
 
 @code {
 
     Data<Point, double, double> map;
-    Data<GGNet.Datasets.Diamond.Point, double, double> diamond;
-    Data<GGNet.Datasets.Tip.Point, GGNet.Datasets.Tip.Day, double> tip;
-    Data<GGNet.Datasets.GapMinder.Point, double, double> gapminder;
+    Data<Diamond.Point, double, double> diamond;
+    Data<Tip.Point, Tip.Day, double> tip;
+    Data<GapMinder.Point, double, double> gapminder;
 
     protected override void OnInitialized()
     {
         {
-            var population = GGNet.Datasets.GapMinder.Load().Where(o => o.continent == GGNet.Datasets.GapMinder.Continent.Europe);
-            var world = GGNet.Datasets.World.Load();
+            var population = GapMinder.Load().Where(o => o.continent == GapMinder.Continent.Europe);
+            var world = World.Load();
 
             var data = population.Join(world, o => o.country, o => o.Region, (x, y) => new Point
             {
@@ -43,17 +44,17 @@
                 .Geom_Map(latitude: o => o.Latitude, longitude: o => o.Longitude, alpha: 0.7, width: 0.2)
                 .Scale_X_Continuous(limits: (-15, 30), formatter: GGNet.Formats.Latitude.Instance)
                 .Scale_Y_Continuous(limits: (30, 70), formatter: GGNet.Formats.Longitude.Instance)
-                .Scale_Fill_Continuous(o => o.Pop / 1000000, GGNet.Colors.Brewer.Blues[9], name: "Population (M)")
+                .Scale_Fill_Continuous(o => o.Pop / 1000000, Colors.Brewer.Blues[9], name: "Population (M)")
                 .Theme(dark: false, legend: Position.Top);
         }
 
         {
-            diamond = Plot.New(GGNet.Datasets.Diamond.Load(), x: o => o.Carat, y: o => o.Price)
+            diamond = Plot.New(Diamond.Load(), x: o => o.Carat, y: o => o.Price)
                 .Geom_Hex(dx: o => o.Dx, dy: o => o.Dy)
                 .Title("Prices of 50,000 round cut diamonds")
                 .XLab("Carat")
                 .YLab("Price($)")
-                .Scale_Fill_Continuous(o => o.Count, GGNet.Colors.Viridis, m: 10, name: "Count")
+                .Scale_Fill_Continuous(o => o.Count, Colors.Viridis, m: 10, name: "Count")
                 .Theme(dark: false);
         }
 
@@ -71,7 +72,7 @@
             theme.Legend.Title.Color = "#FFFFFF";
             theme.Legend.Labels.Color = "#FFFFFF";
 
-            tip = Plot.New(GGNet.Datasets.Tip.Load(), o => o.Day, o => o.Avg)
+            tip = Plot.New(Tip.Load(), o => o.Day, o => o.Avg)
                 .Geom_ErrorBar(ymin: o => o.Lower, ymax: o => o.Upper, position: PositionAdjustment.Dodge)
                 .Scale_Color_Discrete(o => o.Sex, new[] { "#69b3a2", "#404080" })
                 .Title("Tipping Behavior")
@@ -80,14 +81,14 @@
         }
 
         {
-            var text = new GGNet.Source<GGNet.Datasets.GapMinder.Point>(GGNet.Datasets.GapMinder.Load().Where(o => (o.gdpPercap > 5000 && o.lifeExp < 60) || o.lifeExp < 30 || o.gdpPercap > 40000));
+            var text = new GGNet.Source<GapMinder.Point>(GapMinder.Load().Where(o => (o.gdpPercap > 5000 && o.lifeExp < 60) || o.lifeExp < 30 || o.gdpPercap > 40000));
 
-            gapminder = Plot.New(GGNet.Datasets.GapMinder.Load(), x: o => o.gdpPercap, y: o => o.lifeExp)
+            gapminder = Plot.New(GapMinder.Load(), x: o => o.gdpPercap, y: o => o.lifeExp)
                 .Title("Gap Minder")
                 .Geom_Point(tooltip: o => o.country, color: "#000000", alpha: 0.7)
                 .Geom_Text(text, x: o => o.gdpPercap, y: o => o.lifeExp, text: o => o.country)
                 .XLab("GDP/Capita")
-                .Scale_Color_Discrete(o => o.continent, GGNet.Colors.Viridis, name: "Continent")
+                .Scale_Color_Discrete(o => o.continent, Colors.Viridis, name: "Continent")
                 .Scale_Size_Continuous(o => o.pop / 1000000, range: (1.86, 25.4), name: "Population(M)")
                 .YLab("Life Expectancy")
                 .Caption("Source: https://www.gapminder.org")
