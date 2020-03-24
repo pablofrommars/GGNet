@@ -21,7 +21,7 @@
 
             Strip = new _Strip(dark);
 
-            Animation = new _Animation();
+            Animation = new _Animation(dark);
 
             Tooltip = new Text
             {

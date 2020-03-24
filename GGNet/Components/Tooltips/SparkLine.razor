@@ -1,0 +1,57 @@
+﻿@if (visibility)
+{
+    <defs>
+        <style type="text/css">
+
+            [role^="tooltip"] {
+                --tooltip-background-color: @color;
+                --tooltip-background-opacity: @alpha;
+                --tooltip-fadein-duration: 500ms;
+                overflow: visible;
+            }
+
+                [role^="tooltip"] + div {
+                    position: relative;
+                    pointer-events: none;
+                }
+
+                [role^="tooltip"] .bubble {
+                    position: absolute;
+                    border-radius: 4px;
+                    padding: 2px 4px;
+                    background: var(--tooltip-background-color);
+                    white-space: nowrap;
+                    pointer-events: none;
+
+                    color: @(Theme.Tooltip.Color);
+                    font-size: @(Theme.Tooltip.Size);
+                }
+
+            @@keyframes fadein {
+                from {
+                    opacity: 0;
+                }
+
+                to {
+                    opacity: var(--tooltip-background-opacity);
+                }
+            }
+
+            [role^="tooltip"] .bubble {
+                top: 50%;
+                transform: translateY(-50%);
+                animation: fadein var(--tooltip-fadein-duration) linear forwards;
+            }
+
+            [role^="tooltip-left"] .bubble {
+                right: calc(100% + 2px);
+            }
+
+            [role^="tooltip-right"] .bubble {
+                left: calc(100% + 2px);
+            }
+        </style>
+    </defs>
+
+    @((MarkupString)foreignObject)
+}

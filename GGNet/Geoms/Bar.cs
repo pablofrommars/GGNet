@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Components.Web;
 
 using GGNet.Scales;
 using GGNet.Facets;
@@ -12,25 +14,30 @@ namespace GGNet.Geoms
         where TX : struct
         where TY : struct
     {
-        private class Comparer : IComparer<(double x, Buffer<(string fill, double value)> y)>
+        private class Comparer : IComparer<(double x, Buffer<(T item, string fill, double value)> y)>
         {
-            public int Compare([AllowNull] (double x, Buffer<(string fill, double value)> y) x, [AllowNull] (double x, Buffer<(string fill, double value)> y) y) => x.x.CompareTo(y.x);
+            public int Compare((double x, Buffer<(T item, string fill, double value)> y) x, (double x, Buffer<(T item, string fill, double value)> y) y) => x.x.CompareTo(y.x);
 
             public static readonly Comparer Instance = new Comparer();
         }
 
-        private readonly SortedBuffer<(double x, Buffer<(string fill, double value)> y)> bars = new SortedBuffer<(double x, Buffer<(string fill, double value)> y)>(32, 1, Comparer.Instance);
+        private readonly SortedBuffer<(double x, Buffer<(T item, string fill, double value)> y)> bars = new SortedBuffer<(double x, Buffer<(T item, string fill, double value)> y)>(32, 1, Comparer.Instance);
+        private readonly Dictionary<T, (double x, double y)> tooltips = new Dictionary<T, (double x, double y)>();
 
         private readonly PositionAdjustment position;
         private readonly double width;
+
+        private readonly bool animation;
 
         public Bar(
             Source<T> source,
             Func<T, TX> x,
             Func<T, TY> y,
             IAestheticMapping<T, string> fill = null,
+            Func<T, string> tooltip = null,
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
+            bool animation = false,
             bool inherit = true,
             Buffer<Shape> layer = null)
             : base(source, inherit, layer)
@@ -38,7 +45,8 @@ namespace GGNet.Geoms
             Selectors = new _Selectors
             {
                 X = x,
-                Y = y
+                Y = y,
+                Tooltip = tooltip
             };
 
             Aesthetics = new _Aesthetics
@@ -48,6 +56,8 @@ namespace GGNet.Geoms
 
             this.position = position;
             this.width = width;
+
+            this.animation = animation;
         }
 
         public class _Selectors
@@ -55,6 +65,8 @@ namespace GGNet.Geoms
             public Func<T, TX> X { get; set; }
 
             public Func<T, TY> Y { get; set; }
+
+            public Func<T, string> Tooltip { get; set; }
         }
 
         public _Selectors Selectors { get; }
@@ -74,6 +86,12 @@ namespace GGNet.Geoms
         }
 
         public _Positions Positions { get; } = new _Positions();
+
+        public Func<T, MouseEventArgs, Task> OnClick { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
 
         public Elements.Rectangle Aesthetic { get; set; }
 
@@ -97,6 +115,30 @@ namespace GGNet.Geoms
             else
             {
                 Positions.Y = YMapping(Selectors.Y, panel.Y);
+            }
+
+            if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
+            {
+                OnMouseOver = (item, _) =>
+                {
+                    var (x, y) = tooltips[item];
+                    panel.Component.Tooltip.Show(
+                        x,
+                        y,
+                        0,
+                        Selectors.Tooltip(item),
+                        Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
+                        Aesthetic.Alpha);
+
+                    return Task.CompletedTask;
+                };
+
+                OnMouseOut = (_, __) =>
+                {
+                    panel.Component.Tooltip.Hide();
+
+                    return Task.CompletedTask;
+                };
             }
 
             if (!inherit)
@@ -149,7 +191,7 @@ namespace GGNet.Geoms
                     var bar = bars[i];
                     if (bar.x == y)
                     {
-                        bar.y.Add((fill, x));
+                        bar.y.Add((item, fill, x));
                         exist = true;
                         break;
                     }
@@ -157,8 +199,8 @@ namespace GGNet.Geoms
 
                 if (!exist)
                 {
-                    var bar = new Buffer<(string fill, double value)>(8, 1);
-                    bar.Add((fill, x));
+                    var bar = new Buffer<(T item, string fill, double value)>(8, 1);
+                    bar.Add((item, fill, x));
                     bars.Add((y, bar));
                 }
             }
@@ -169,7 +211,7 @@ namespace GGNet.Geoms
                     var bar = bars[i];
                     if (bar.x == x)
                     {
-                        bar.y.Add((fill, y));
+                        bar.y.Add((item, fill, y));
                         exist = true;
                         break;
                     }
@@ -177,10 +219,28 @@ namespace GGNet.Geoms
 
                 if (!exist)
                 {
-                    var bar = new Buffer<(string fill, double value)>(8, 1);
-                    bar.Add((fill, y));
+                    var bar = new Buffer<(T item, string fill, double value)>(8, 1);
+                    bar.Add((item, fill, y));
                     bars.Add((x, bar));
                 }
+            }
+        }
+
+        private void Interactivity(Rectangle rect, T item)
+        {
+            if (OnClick != null)
+            {
+                rect.OnClick = e => OnClick(item, e);
+            }
+
+            if (OnMouseOver != null)
+            {
+                rect.OnMouseOver = e => OnMouseOver(item, e);
+            }
+
+            if (OnMouseOut != null)
+            {
+                rect.OnMouseOut = e => OnMouseOut(item, e);
             }
         }
 
@@ -204,61 +264,75 @@ namespace GGNet.Geoms
             {
                 for (var i = 0; i < bars.Count; i++)
                 {
-                    var bar = bars[i];
+                    var (x, y) = bars[i];
                     var sum = 0.0;
 
-                    for (var j = bar.y.Count - 1; j >= 0; j--)
+                    for (var j = y.Count - 1; j >= 0; j--)
                     {
-                        var y = bar.y[j];
+                        var (item, fill, value) = y[j];
 
-                        Layer.Add(new Rectangle
+                        var rect = new Rectangle
                         {
+                            Classes = animation ? "animate" : string.Empty,
                             X = sum,
-                            Y = bar.x - delta / 2.0,
-                            Width = sum + y.value,
+                            Y = x - delta / 2.0,
+                            Width = value,
                             Height = delta,
                             Aesthetic = new Elements.Rectangle
                             {
-                                Fill = y.fill,
+                                Fill = fill,
                                 Alpha = Aesthetic.Alpha
                             }
-                        });
+                        };
 
-                        sum += y.value;
+                        Interactivity(rect, item);
+
+                        Layer.Add(rect);
+
+                        tooltips[item] = (sum + value, x);
+
+                        sum += value;
                     }
 
                     Positions.X.Position.Shape(0, sum);
-                    Positions.Y.Position.Shape(bar.x - delta, bar.x + delta);
+                    Positions.Y.Position.Shape(x - delta, x + delta);
                 }
             }
             else
             {
                 for (var i = 0; i < bars.Count; i++)
                 {
-                    var bar = bars[i];
+                    var (x, y) = bars[i];
                     var sum = 0.0;
 
-                    for (var j = bar.y.Count - 1; j >= 0; j--)
+                    for (var j = y.Count - 1; j >= 0; j--)
                     {
-                        var y = bar.y[j];
+                        var (item, fill, value) = y[j];
 
-                        Layer.Add(new Rectangle
+                        var rect = new Rectangle
                         {
-                            X = bar.x - delta / 2.0,
+                            Classes = animation ? "animate" : string.Empty,
+                            X = x - delta / 2.0,
                             Y = sum,
                             Width = delta,
-                            Height = sum + y.value,
+                            Height = value,
                             Aesthetic = new Elements.Rectangle
                             {
-                                Fill = y.fill,
+                                Fill = fill,
                                 Alpha = Aesthetic.Alpha
                             }
-                        });
+                        };
 
-                        sum += y.value;
+                        Layer.Add(rect);
+
+                        Interactivity(rect, item);
+
+                        tooltips[item] = (x, sum + value);
+
+                        sum += value;
                     }
 
-                    Positions.X.Position.Shape(bar.x - delta, bar.x + delta);
+                    Positions.X.Position.Shape(x - delta, x + delta);
                     Positions.Y.Position.Shape(0, sum);
                 }
             }
@@ -296,10 +370,11 @@ namespace GGNet.Geoms
 
                     for (var j = 0; j < n; j++)
                     {
-                        var (fill, value) = bar.y[j];
+                        var (item, fill, value) = bar.y[j];
 
-                        Layer.Add(new Rectangle
+                        var rect = new Rectangle
                         {
+                            Classes = animation ? "animate" : string.Empty,
                             X = x,
                             Y = value >= 0 ? 0 : value,
                             Width = w,
@@ -309,9 +384,14 @@ namespace GGNet.Geoms
                                 Fill = fill,
                                 Alpha = Aesthetic.Alpha
                             }
-                        });
+                        };
+
+                        Interactivity(rect, item);
+
+                        Layer.Add(rect);
 
                         Positions.X.Position.Shape(x, x + w);
+
                         if (value >= 0)
                         {
                             Positions.Y.Position.Shape(0, value);
@@ -320,6 +400,8 @@ namespace GGNet.Geoms
                         {
                             Positions.Y.Position.Shape(value, 0);
                         }
+
+                        tooltips[item] = (x + w / 2.0, value);
 
                         x += w;
                     }
@@ -341,6 +423,12 @@ namespace GGNet.Geoms
             {
                 throw new NotImplementedException();
             }
+        }
+
+        public override void Clear()
+        {
+            bars.Clear();
+            tooltips.Clear(); 
         }
     }
 }

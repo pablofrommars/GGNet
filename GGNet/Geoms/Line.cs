@@ -104,9 +104,10 @@ namespace GGNet.Geoms
             {
                 OnMouseOver = (item, _) =>
                 {
-                    panel.Component.Tooltip?.Show(
+                    panel.Component.Tooltip.Show(
                         Positions.X.Map(item),
                         Positions.Y.Map(item),
+                        0,
                         Selectors.Tooltip(item),
                         Aesthetics.Color?.Map(item) ?? Aesthetic.Fill, 
                         Aesthetic.Alpha);
@@ -116,7 +117,7 @@ namespace GGNet.Geoms
 
                 OnMouseOut = (_, __) =>
                 {
-                    panel.Component.Tooltip?.Hide();
+                    panel.Component.Tooltip.Hide();
 
                     return Task.CompletedTask;
                 };

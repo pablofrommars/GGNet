@@ -47,13 +47,13 @@
 
         var spark1 = Plot.New(points, x: o => o.X, y: o => o.Y)
             .Geom_Line(color: "#000000")
-            .Geom_Point(new[] { min }, x: o => o.X, y: o => o.Y, color: "red", size: 3, animation: true)
-            .Geom_Point(new[] { max }, x: o => o.X, y: o => o.Y, color: "green", size: 3, animation: true)
+            .Geom_Point(new[] { min }, x: o => o.X, y: o => o.Y, tooltip: o => $"{o.Y:N2}", color: "red", size: 3, animation: true)
+            .Geom_Point(new[] { max }, x: o => o.X, y: o => o.Y, tooltip: o => $"{o.Y:N2}", color: "green", size: 3, animation: true)
             .Scale_Y_Continuous(expand: (0.1, 0, 0.1, 0))
             .Theme(dark: false);
 
         var spark2 = Plot.New(deltas, x: o => o.X, y: o => o.Y)
-            .Geom_Bar(position: PositionAdjustment.Dodge)
+            .Geom_Bar(tooltip: o => $"{o.Y:N2}", position: PositionAdjustment.Dodge, animation: true)
             .Scale_Fill_Discrete(o => o.Y >= 0 ? 1 : -1, Discrete<int, string>.New(new[] { -1, 1 }, new[] { "red", "green" }), guide: false)
             .Theme(dark: false);
 

@@ -52,7 +52,7 @@ namespace GGNet.Components
 
         public Zone Area;
 
-        protected Tooltip tooltip;
+        protected Tooltips.Plot tooltip;
         public ITooltip Tooltip => tooltip;
 
         protected string clip;

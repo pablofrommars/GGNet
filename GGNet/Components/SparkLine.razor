@@ -16,13 +16,6 @@
                 fill: @(Theme.Panel.Background.Fill);
             }
 
-            #@(Id) .animate {
-                transition: transform @(Theme.Animation.Point.Transition)s;
-            }
-
-            #@(Id) .animate:hover {
-                transform: scale(@(Theme.Animation.Point.Scale));
-            }
         </style>
 
         <clipPath id=@(Id + "-" + Panel.Id + "-area")>
@@ -30,7 +23,11 @@
         </clipPath>
     </defs>
 
+    <GGNet.Components.Defs.Animation Id=@Id Theme=@Theme />
+
     <rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height class="panel" />
 
     <Area T=T TX=TX TY=TY Data=@Panel Coord=@this Zone=@Area Clip=@(Id + "-" + Panel.Id + "-area") />
+
+    <GGNet.Components.Tooltips.SparkLine Coord=@this Area=@Area Theme=@Theme @ref=@tooltip />
 </svg>

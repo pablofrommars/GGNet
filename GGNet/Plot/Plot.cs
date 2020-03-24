@@ -739,9 +739,14 @@ namespace GGNet
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
+            bool animation = false,
             bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -750,8 +755,11 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Bar<T2, TX2, TY2>(source, x, y, _fill, position, width, inherit)
+                var geom = new Bar<T2, TX2, TY2>(source, x, y, _fill, tooltip, position, width, animation, inherit)
                 {
+                    OnClick = onclick,
+                    OnMouseOver = onmouseover,
+                    OnMouseOut = onmouseout,
                     Aesthetic = new Rectangle
                     {
                         Fill = fill,
@@ -771,16 +779,21 @@ namespace GGNet
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
+            bool animation = false,
             bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, fill, alpha, position, width, inherit);
+            return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
@@ -789,16 +802,21 @@ namespace GGNet
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
+            bool animation = false,
             bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Bar(source, x, y, _fill, fill, alpha, position, width, inherit);
+            data.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, inherit);
 
             return data;
         }
@@ -809,16 +827,21 @@ namespace GGNet
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
+            bool animation = false,
             bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Bar(new Source<T2>(source), x, y, _fill, fill, alpha, position, width, inherit);
+            return data.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Bar<T, TX, TY>(
@@ -826,14 +849,19 @@ namespace GGNet
             Func<T, TX> x = null,
             Func<T, TY> y = null,
             IAestheticMapping<T, string> _fill = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
+            bool animation = false,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Bar(panel, panel.Data.Source, x, y, _fill, fill, alpha, position, width, inherit);
+            return Geom_Bar(panel, panel.Data.Source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Bar<T, TX, TY>(
@@ -841,14 +869,19 @@ namespace GGNet
             Func<T, TX> x = null,
             Func<T, TY> y = null,
             IAestheticMapping<T, string> _fill = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
+            bool animation = false,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Bar(x, y, _fill, fill, alpha, position, width, inherit);
+            data.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, inherit);
 
             return data;
         }

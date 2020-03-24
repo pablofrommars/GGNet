@@ -106,9 +106,21 @@ namespace GGNet.Geoms
             {
                 OnMouseOver = (item, _) =>
                 {
-                    panel.Component.Tooltip?.Show(
+                    var radius = Aesthetic.Radius;
+                    if (Aesthetics.Size != null)
+                    {
+                        radius = Aesthetics.Size.Map(item);
+                    }
+
+                    if (animation)
+                    {
+                        radius *= panel.Data.Theme.Animation.Point.Scale;
+                    }
+
+                    panel.Component.Tooltip.Show(
                         Positions.X.Map(item),
                         Positions.Y.Map(item),
+                        radius,
                         Selectors.Tooltip(item),
                         Aesthetics.Color?.Map(item) ?? Aesthetic.Fill,
                         Aesthetic.Alpha); 
@@ -118,7 +130,7 @@ namespace GGNet.Geoms
 
                 OnMouseOut = (_, __) =>
                 {
-                    panel.Component.Tooltip?.Hide();
+                    panel.Component.Tooltip.Hide();
 
                     return Task.CompletedTask;
                 };

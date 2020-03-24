@@ -31,6 +31,9 @@ namespace GGNet.Components
         private Position<TX> xscale;
         private Position<TY> yscale;
 
+        protected Tooltips.SparkLine tooltip;
+        public ITooltip Tooltip => tooltip;
+
         protected override void OnInitialized()
         {
             Area.Width = Width;
@@ -52,8 +55,6 @@ namespace GGNet.Components
         public void Render()
         {
         }
-
-        public ITooltip Tooltip => null;
 
         public double CoordX(double value) => Area.X + xscale.Coord(value) * Area.Width;
 

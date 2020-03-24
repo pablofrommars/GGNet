@@ -25,15 +25,7 @@
                 font-family: @(Theme.FontFamily);
                 fill: #929299;
             }
-
-            #@(Id) .animate {
-                transition: transform @(Theme.Animation.Point.Transition)s;
-            }
-
-            #@(Id) .animate:hover {
-                transform: scale(@(Theme.Animation.Point.Scale));
-            }
-
+            
             #@(Id) .plot {
                 fill: @(Theme.Plot.Background.Fill);
             }
@@ -192,6 +184,8 @@
         }
 
     </defs>
+
+    <GGNet.Components.Defs.Animation Id=@Id Theme=@Theme /> 
 
     <clipPath id="@(Id)-plot">
         <rect x="0" y="0" width=@Width height=@Height />
