@@ -4,27 +4,17 @@ using GGNet.Scales;
 
 namespace GGNet.Components
 {
-    public partial class SparkLine<T, TX, TY> : ComponentBase, IPanel, ICoord
-    where TX : struct
-    where TY : struct
+    public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
+        where TX : struct
+        where TY : struct
     {
-        public SparkLine()
-            : base()
-        {
-        }
-
-        [Parameter]
-        public Data<T, TX, TY> Data { get; set; }
-
         [Parameter]
         public double Width { get; set; } = 150;
 
         [Parameter]
         public double Height { get; set; } = 50;
 
-        public string Id => Data.Id;
-
-        public Theme Theme => Data.Theme;
+        private RenderChildPolicyBase renderChildPolicy;
 
         private Zone Area;
         private Data<T, TX, TY>.Panel Panel;
@@ -36,6 +26,10 @@ namespace GGNet.Components
 
         protected override void OnInitialized()
         {
+            base.OnInitialized();
+
+            renderChildPolicy = Policy.Child();
+
             Area.Width = Width;
             Area.Height = Height;
 
@@ -48,12 +42,12 @@ namespace GGNet.Components
             yscale = Panel.Y;
 
             Panel.Register(this);
-
-            Render();
         }
 
-        public void Render()
+        public override void Render()
         {
+            Data.Render(false);
+            renderChildPolicy.Refresh();
         }
 
         public double CoordX(double value) => Area.X + xscale.Coord(value) * Area.Width;

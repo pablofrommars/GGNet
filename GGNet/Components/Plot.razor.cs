@@ -4,18 +4,10 @@ using static GGNet.Position;
 
 namespace GGNet.Components
 {
-    public partial class Plot<T, TX, TY> : ComponentBase
+    public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
         where TX : struct
         where TY : struct
     {
-        public Plot()
-            : base()
-        {
-        }
-
-        [Parameter]
-        public Data<T, TX, TY> Data { get; set; }
-
         [Parameter]
         public double Width { get; set; } = 720;
 
@@ -31,22 +23,19 @@ namespace GGNet.Components
 
         private Zone wrapper;
 
-        public string Id => Data.Id;
-
-        public Theme Theme => Data.Theme;
-
         protected override void OnInitialized()
         {
+            base.OnInitialized();
+
             Data.Init();
 
-            Data.Render(true);
-
-            Render();
+            Render(true);
         }
 
-        //protected void Render() //TODO
-        public void Render()
+        protected void Render(bool firstRender)
         {
+            Data.Render(firstRender);
+
             wrapper.X = 0;
             wrapper.Y = 0;
             wrapper.Width = Width;
@@ -144,10 +133,15 @@ namespace GGNet.Components
                 Caption.X = wrapper.X + wrapper.Width - Data.Theme.Plot.Caption.Margin.Right;
             }
 
-            for (var i = 0; i < Data.Panels.Count; i++)
+            if (!firstRender)
             {
-                Data.Panels[i].Component?.Render();
+                for (var i = 0; i < Data.Panels.Count; i++)
+                {
+                    Data.Panels[i].Component.Refresh();
+                }
             }
         }
+
+        public override void Render() => Render(false);
     }
 }

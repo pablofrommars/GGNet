@@ -2,6 +2,8 @@
 @typeparam TX
 @typeparam TY
 
+@inherits PlotBase<T, TX, TY>
+
 <svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
     <defs>
         <style type="text/css">
@@ -27,7 +29,7 @@
 
     <rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height class="panel" />
 
-    <Area T=T TX=TX TY=TY Data=@Panel Coord=@this Zone=@Area Clip=@(Id + "-" + Panel.Id + "-area") />
+    <Area T=T TX=TX TY=TY Data=@Panel Coord=@this Zone=@Area Clip=@(Id + "-" + Panel.Id + "-area") RenderPolicy=@renderChildPolicy />
 
     <GGNet.Components.Tooltips.SparkLine Coord=@this Area=@Area Theme=@Theme @ref=@tooltip />
 </svg>

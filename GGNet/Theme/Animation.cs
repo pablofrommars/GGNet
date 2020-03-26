@@ -4,10 +4,10 @@
     {
         public class _Animation
         {
-            public _Animation(bool dark)
+            public _Animation()
             {
                 Point = new _Point();
-                Bar = new _Bar(dark);
+                Bar = new _Bar();
             }
 
             public class _Point
@@ -28,14 +28,10 @@
 
             public class _Bar
             {
-                public _Bar(bool dark)
+                public _Bar()
                 {
-                    Flood = dark ? "#FFFFFF" : "#000000";
-
                     Transition = 0.2;
                 }
-
-                public string Flood { get; set; }
 
                 public double Transition { get; set; }
             }

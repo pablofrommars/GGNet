@@ -2,6 +2,11 @@
 @typeparam TX
 @typeparam TY
 
+@{ 
+    Render(firstRender);
+    firstRender = false;
+}
+
 @if (First)
 {
     if (Plot.Title.Width > 0)
@@ -124,7 +129,7 @@
     }
 }
 
-<Area T=T TX=TX TY=TY Data=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") />
+<Area T=T TX=TX TY=TY Data=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderPolicy=@areaPolicy/>
 
 @if (!string.IsNullOrEmpty(Data.XLab.text))
 {

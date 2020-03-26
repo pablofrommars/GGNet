@@ -1,13 +1,4 @@
 ﻿<defs>
-    <filter id="@(Id)-shadow">
-        <feFlood in="SourceGraphic" flood-color=@Theme.Animation.Bar.Flood result="COLOR"/>
-        <feGaussianBlur in="COLOR" stdDeviation="3" result="BLUR" />
-        <feMerge>
-            <feMergeNode in="BLUR" />
-            <feMergeNode in="SourceGraphic" />
-        </feMerge>
-    </filter>
-
     <style type="text/css">
         #@(Id) circle.animate {
                 transition: transform @(Theme.Animation.Point.Transition)s ease-in-out;
@@ -18,10 +9,11 @@
             }
 
         #@(Id) rect.animate {
-            transition: filter @(Theme.Animation.Bar.Transition)s ease-in-out;
+            transition: transform @(Theme.Animation.Bar.Transition)s ease-in-out;
+            fill-opacity: 0.6 !important;
         }
             #@(Id) rect.animate:hover {
-                filter: url(#@(Id)-shadow);
+                fill-opacity: 1 !important;
             }
     </style>
 </defs>

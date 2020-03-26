@@ -1,35 +1,104 @@
 ﻿@page "/spark"
 
 @using GGNet
+@using GGNet.Palettes
+@using Table.Net
 
-<div class="border rounded-lg" style="width: 150px; height: 50px;">
-    <GGNet.Components.SparkLine Data=@data T=Point TX=Double TY=Double />
-</div>
+<Table Loader="Loader" Context="continent" Small=true>
+    <Loading><p>Loading...</p></Loading>
+    <Header>
+        <Column Field="Name" Label="Continent" Sortable=true />
+        <Column Label="Trend" />
+        <Column Label="Change" />
+    </Header>
+    <Row>
+        @{ 
+            var (spark1, spark2) = sparks[continent.Name];
+        }
+        <Cell>@continent.Name</Cell>
+        <Cell>
+            <div style="width: 150px; height: 50px;">
+                <GGNet.Components.SparkLine Data=@spark1 T=Point TX=Double TY=Double />
+            </div>
+        </Cell>
+        <Cell>
+            <div style="width: 150px; height: 50px;">
+                <GGNet.Components.SparkLine Data=@spark2 T=Point TX=Double TY=Double RenderPolicy=RenderPolicy.Never  />
+            </div>
+        </Cell>
+    </Row>
+</Table>
 
 @code {
-    Data<Point, double, double> data;
+
+    List<Continent> Continents = new List<Continent>();
+
+    Dictionary<string, (Data<Point, double, double> spark1, Data<Point, double, double> spark2)> sparks
+        = new Dictionary<string, (Data<Point, double, double> spark1, Data<Point, double, double> spark2)>();
 
     protected override void OnInitialized()
     {
-        var source = new Source<Point>();
+        Continents = (new[] { "Africa", "Asia", "Australia", "Europe", "North America", "South America" })
+            .SelectMany(o => Enumerable.Range(0, 30).Select(i => new Continent { Name = o + i.ToString() }))
+            .ToList();
 
-        var x = -System.Math.PI;
-        var increment = 1.0 / 100;
+        var N = 30;
 
-        while (x <= System.Math.PI)
+        var rnd = new Random();
+
+        foreach (var continent in Continents)
         {
-            source.Add(new Point
+            var points = new Point[N];
+            var deltas = new Point[N - 1];
+            var min = new Point();
+            var max = new Point();
+
+            points[0] = new Point();
+
+            var cum = 0.0;
+
+            for (var i = 1; i < N; i++)
             {
-                X = x,
-                Y = System.Math.Sin(x)
-            });
+                var delta = Math.Sqrt(-2.0 * Math.Log(rnd.NextDouble())) * Math.Cos(2.0 * Math.PI * rnd.NextDouble());
+                cum += delta;
 
-            x += increment;
+                if (cum < min.Y)
+                {
+                    min.X = i;
+                    min.Y = cum;
+                }
+
+                if (cum > max.Y)
+                {
+                    max.X = i;
+                    max.Y = cum;
+                }
+
+                points[i] = new Point { X = i, Y = cum };
+                deltas[i - 1] = new Point { X = i, Y = delta };
+            }
+
+            var spark1 = Plot.New(points, x: o => o.X, y: o => o.Y)
+                .Geom_Line(color: "#000000")
+                .Geom_Point(new[] { min }, x: o => o.X, y: o => o.Y, tooltip: o => $"{o.Y:N2}", color: "red", size: 3, animation: true)
+                .Geom_Point(new[] { max }, x: o => o.X, y: o => o.Y, tooltip: o => $"{o.Y:N2}", color: "green", size: 3, animation: true)
+                .Scale_Y_Continuous(expand: (0.1, 0, 0.1, 0))
+                .Theme(dark: false);
+
+            var spark2 = Plot.New(deltas, x: o => o.X, y: o => o.Y)
+                .Geom_Bar(tooltip: o => $"{o.Y:N2}", position: PositionAdjustment.Dodge, animation: true)
+                .Scale_Fill_Discrete(o => o.Y >= 0 ? 1 : -1, Discrete<int, string>.New(new[] { -1, 1 }, new[] { "red", "green" }), guide: false)
+                .Theme(dark: false);
+
+            sparks[continent.Name] = (spark1, spark2);
         }
+    }
 
-        data = Plot.New(source, x: o => o.X, y: o => o.Y)
-            .Geom_Line()
-            .Theme(dark: false);
+    private Task<IList<Continent>> Loader() => Task.FromResult(Continents as IList<Continent>);
+
+    public class Continent
+    {
+        public string Name { get; set; }
     }
 
     public class Point

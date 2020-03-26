@@ -2,6 +2,8 @@
 @typeparam TX
 @typeparam TY
 
+@inherits PlotBase<T, TX, TY>
+
 <svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
     <defs>
         <style type="text/css">
@@ -25,7 +27,7 @@
                 font-family: @(Theme.FontFamily);
                 fill: #929299;
             }
-            
+
             #@(Id) .plot {
                 fill: @(Theme.Plot.Background.Fill);
             }
@@ -160,10 +162,10 @@
                 continue;
             }
 
-            <linearGradient id="gadient-@(Id)-@i" 
-                            x1="0%" 
-                            y1="0%" 
-                            x2=@(Theme.Legend.Direction == Direction.Vertical ? "0%" : "100%") 
+            <linearGradient id="gadient-@(Id)-@i"
+                            x1="0%"
+                            y1="0%"
+                            x2=@(Theme.Legend.Direction == Direction.Vertical ? "0%" : "100%")
                             y2="@(Theme.Legend.Direction == Direction.Vertical ? "100%" : "0%")">
 
                 <stop offset="0%" stop-color=@l.Items[0].elements[0].Value.Fill stop-opacity=@l.Items[0].elements[0].Value.Alpha />
@@ -185,7 +187,7 @@
 
     </defs>
 
-    <GGNet.Components.Defs.Animation Id=@Id Theme=@Theme /> 
+    <GGNet.Components.Defs.Animation Id=@Id Theme=@Theme />
 
     <clipPath id="@(Id)-plot">
         <rect x="0" y="0" width=@Width height=@Height />
@@ -310,99 +312,99 @@
                 {
                     offset += Theme.Legend.Title.Margin.Left;
 
-                        <g clip-path="url(#@(Id)-plot)">
-                            <text x=@offset y=@(middle + l.Title.Height / 4.0) class="legendTitle">@l.Title.Value</text>
-                        </g>
+                    <g clip-path="url(#@(Id)-plot)">
+                        <text x=@offset y=@(middle + l.Title.Height / 4.0) class="legendTitle">@l.Title.Value</text>
+                    </g>
 
-                        offset += l.Title.Width + Theme.Legend.Title.Margin.Right;
-                    }
+                    offset += l.Title.Width + Theme.Legend.Title.Margin.Right;
+                }
 
-                    if (l.Aes.Type == Guide.Items)
+                if (l.Aes.Type == Guide.Items)
+                {
+                    for (int j = 0; j < l.Items.Count; j++)
                     {
-                        for (int j = 0; j < l.Items.Count; j++)
+                        var (label, elements) = l.Items[j];
+
+                        for (int k = 0; k < elements.Count; k++)
                         {
-                            var (label, elements) = l.Items[j];
+                            var element = elements[k];
 
-                            for (int k = 0; k < elements.Count; k++)
+                            if (element.Value is Elements.HLine hline)
                             {
-                                var element = elements[k];
+                                <line x1=@offset
+                                      x2=@(offset + elements.Width)
+                                      y1=@(middle)
+                                      y2=@(middle)
+                                      clip-path="url(#@(Id)-plot)"
+                                      style="stroke-width: @hline.Width; stroke: @hline.Fill; stroke-opacity: @hline.Alpha; stroke-dasharray: @(hline.LineType.DashArray());" />
 
-                                if (element.Value is Elements.HLine hline)
-                                {
-                                    <line x1=@offset
-                                          x2=@(offset + elements.Width)
-                                          y1=@(middle)
-                                          y2=@(middle)
-                                          clip-path="url(#@(Id)-plot)"
-                                          style="stroke-width: @hline.Width; stroke: @hline.Fill; stroke-opacity: @hline.Alpha; stroke-dasharray: @(hline.LineType.DashArray());" />
-
-                                }
-                                else if (element.Value is Elements.VLine vline)
-                                {
-                                    <line x1=@(offset + elements.Width / 2.0)
-                                          x2=@(offset + elements.Width / 2.0)
-                                          y1=@Legend.Y
-                                          y2=@(Legend.Y + Legend.Height)
-                                          clip-path="url(#@(Id)-plot)"
-                                          style="stroke-width: @vline.Width; stroke: @vline.Fill; stroke-opacity: @vline.Alpha; stroke-dasharray: @(vline.LineType.DashArray());" />
-
-                                }
-                                else if (element.Value is Elements.Circle circle)
-                                {
-                                    <circle cx=@(offset + elements.Width / 2.0)
-                                            cy=@middle
-                                            r=@circle.Radius
-                                            clip-path="url(#@(Id)-plot)"
-                                            style="stroke-width: 0.71; stroke: @circle.Fill; stroke-opacity: @circle.Alpha; fill: @circle.Fill; fill-opacity: @circle.Alpha;" />
-                                }
-                                else if (element.Value is Elements.Rectangle rect)
-                                {
-                                    <rect x=@offset
-                                          y=@(middle - elements.Height / 2.0)
-                                          width=@elements.Width
-                                          height=@elements.Height
-                                          clip-path="url(#@(Id)-plot)"
-                                          style="fill: @rect.Fill; fill-opacity: @rect.Alpha; stroke: @rect.Color; stroke-width: @rect.Width;" />
-                                }
                             }
+                            else if (element.Value is Elements.VLine vline)
+                            {
+                                <line x1=@(offset + elements.Width / 2.0)
+                                      x2=@(offset + elements.Width / 2.0)
+                                      y1=@Legend.Y
+                                      y2=@(Legend.Y + Legend.Height)
+                                      clip-path="url(#@(Id)-plot)"
+                                      style="stroke-width: @vline.Width; stroke: @vline.Fill; stroke-opacity: @vline.Alpha; stroke-dasharray: @(vline.LineType.DashArray());" />
 
-                            offset += elements.Width;
-
-                            offset += Theme.Legend.Labels.Margin.Left;
-
-                            <g clip-path="url(#@(Id)-legend)">
-                                <text x=@offset y=@(middle + label.Height / 4.0) class="legendLabels">@label.Value</text>
-                            </g>
-
-                            offset += label.Width + Theme.Legend.Labels.Margin.Right;
+                            }
+                            else if (element.Value is Elements.Circle circle)
+                            {
+                                <circle cx=@(offset + elements.Width / 2.0)
+                                        cy=@middle
+                                        r=@circle.Radius
+                                        clip-path="url(#@(Id)-plot)"
+                                        style="stroke-width: 0.71; stroke: @circle.Fill; stroke-opacity: @circle.Alpha; fill: @circle.Fill; fill-opacity: @circle.Alpha;" />
+                            }
+                            else if (element.Value is Elements.Rectangle rect)
+                            {
+                                <rect x=@offset
+                                      y=@(middle - elements.Height / 2.0)
+                                      width=@elements.Width
+                                      height=@elements.Height
+                                      clip-path="url(#@(Id)-plot)"
+                                      style="fill: @rect.Fill; fill-opacity: @rect.Alpha; stroke: @rect.Color; stroke-width: @rect.Width;" />
+                            }
                         }
-                    }
-                    else if (l.Aes.Type == Guide.ColorBar)
-                    {
+
+                        offset += elements.Width;
+
                         offset += Theme.Legend.Labels.Margin.Left;
 
-                        var yOffset = Legend.Y + l.Items[0].label.Height;
+                        <g clip-path="url(#@(Id)-legend)">
+                            <text x=@offset y=@(middle + label.Height / 4.0) class="legendLabels">@label.Value</text>
+                        </g>
 
-                        for (int j = 0; j < l.Items.Count; j++)
-                        {
-                            var (label, _) = l.Items[j];
-
-                            <g clip-path="url(#@(Id)-legend)">
-                                <text x=@(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0) y=@yOffset class="legendLabels">@label.Value</text>
-                            </g>
-                        }
-
-                        yOffset += Theme.Legend.Labels.Margin.Bottom;
-
-                        <rect x=@offset
-                              y=@yOffset
-                              width=@(3.0 * l.Width * l.Items.Count)
-                              height=@l.Height
-                              clip-path="url(#@(Id)-plot)"
-                              style="fill: url(#gadient-@(Id)-@i); stroke: @Theme.Legend.Labels.Color; stroke-width: 0.2;" />
+                        offset += label.Width + Theme.Legend.Labels.Margin.Right;
                     }
                 }
+                else if (l.Aes.Type == Guide.ColorBar)
+                {
+                    offset += Theme.Legend.Labels.Margin.Left;
+
+                    var yOffset = Legend.Y + l.Items[0].label.Height;
+
+                    for (int j = 0; j < l.Items.Count; j++)
+                    {
+                        var (label, _) = l.Items[j];
+
+                        <g clip-path="url(#@(Id)-legend)">
+                            <text x=@(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0) y=@yOffset class="legendLabels">@label.Value</text>
+                        </g>
+                    }
+
+                    yOffset += Theme.Legend.Labels.Margin.Bottom;
+
+                    <rect x=@offset
+                          y=@yOffset
+                          width=@(3.0 * l.Width * l.Items.Count)
+                          height=@l.Height
+                          clip-path="url(#@(Id)-plot)"
+                          style="fill: url(#gadient-@(Id)-@i); stroke: @Theme.Legend.Labels.Color; stroke-width: 0.2;" />
+                }
             }
+        }
     }
 
     <CascadingValue Value=@this>
@@ -488,8 +490,7 @@
                        Height=@h
                        First=@(i == 0)
                        Last=@(i == (Data.Panels.Count - 1))
-                       T=T TX=TX TY=TY
-                       @key=@panel.Id />
+                       T=T TX=TX TY=TY />
             }
         }
     </CascadingValue>

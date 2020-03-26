@@ -38,6 +38,9 @@ namespace GGNet.Components
         [Parameter]
         public bool Last { get; set; }
 
+        private RenderChildPolicyBase policy;
+        private RenderChildPolicyBase areaPolicy;
+
         private Position<TX> xscale;
         private Position<TY> yscale;
 
@@ -57,19 +60,22 @@ namespace GGNet.Components
 
         protected string clip;
 
+        protected bool firstRender = true;
+
         protected override void OnInitialized()
         {
             Data.Register(this);
+
+            policy = Plot.Policy.Child();
+            areaPolicy = Plot.Policy.Child();
 
             clip = Plot.Id + "-" + Data.Id;
 
             xscale = Data.X;
             yscale = Data.Y;
-
-            Render();
         }
 
-        public void Render()
+        protected void Render(bool firstRender)
         {
             Area.X = X;
             Area.Y = Y;
@@ -185,7 +191,16 @@ namespace GGNet.Components
             {
                 yAxisText.Height = Area.Height;
             }
+
+            if (!firstRender)
+            {
+                areaPolicy.Refresh();
+            }
         }
+
+        public void Refresh() => policy.Refresh();
+
+        protected override bool ShouldRender() => policy.ShouldRender();
 
         public double CoordX(double value) => Area.X + xscale.Coord(value) * Area.Width;
 

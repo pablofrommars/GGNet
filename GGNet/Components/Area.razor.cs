@@ -12,6 +12,9 @@ namespace GGNet.Components
         public Data<T, TX, TY>.Panel Data { get; set; }
 
         [Parameter]
+        public RenderChildPolicyBase RenderPolicy { get; set; }
+
+        [Parameter]
         public ICoord Coord { get; set; }
 
         [Parameter]
@@ -21,5 +24,7 @@ namespace GGNet.Components
         public string Clip { get; set; }
 
         private StringBuilder sb = new StringBuilder();
+
+        protected override bool ShouldRender() => RenderPolicy.ShouldRender();
     }
 }

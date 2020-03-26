@@ -41,6 +41,14 @@ namespace GGNet
 
         public abstract void Add(T item);
 
+        public void Add(IEnumerable<T> items)
+        {
+            foreach (var item in items)
+            {
+                Add(item);
+            }
+        }
+
         protected void Grow()
         {
             count++;
