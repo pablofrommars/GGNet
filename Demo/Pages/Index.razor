@@ -52,7 +52,7 @@
             });
 
             map = Plot.New(data)
-                .Geom_Map(latitude: o => o.Latitude, longitude: o => o.Longitude, alpha: 0.7, width: 0.2)
+                .Geom_Map(latitude: o => o.Latitude, longitude: o => o.Longitude, alpha: 0.7, width: 0.2, animation: true)
                 .Scale_X_Continuous(limits: (-15, 30), formatter: GGNet.Formats.Latitude.Instance)
                 .Scale_Y_Continuous(limits: (30, 70), formatter: GGNet.Formats.Longitude.Instance)
                 .Scale_Fill_Continuous(o => o.Pop / 1000000, Colors.Brewer.Blues[9], name: "Population (M)")
@@ -94,16 +94,33 @@
         {
             var text = new GGNet.Source<GapMinder.Point>(GapMinder.Load().Where(o => (o.gdpPercap > 5000 && o.lifeExp < 60) || o.lifeExp < 30 || o.gdpPercap > 40000));
 
+            var tooltip =
+@"
+<div class=""border rounded"" style=""padding: 5px 10px;"">
+    <div class=""text-center font-weight-bold border-bottom"" style=""color: var(--tooltip-color);"">Country</div>
+    <div class=""text-nowrap"">
+        <div class=""d-inline-block""><div class=""text-center"">Confirmed</div><div class=""text-center font-weight-bold"" style=""color: rgba(209, 137, 117, 1)""><span style=""opacity: 1;"">100</span></div></div>
+        <div class=""d-inline-block""><div class=""text-center"">Deaths</div><div class=""text-center font-weight-bold"" style=""color: rgba(45, 84, 61, 1)""><span style=""opacity: 1;"">100</span></div></div>
+        <div class=""d-inline-block""><div class=""text-center"">Recovered</div><div class=""text-center font-weight-bold"" style=""color: rgba(117, 139, 209, 1)""><span style=""opacity: 1;"">100</span></div></div>
+    </div>
+</div>
+";
+            var theme = Theme.Default(dark: false);
+            theme.Tooltip.Margin = new GGNet.Elements.Margin();
+            theme.Tooltip.Background = "#FFFFFF";
+            theme.Tooltip.Alpha = 1.0;
+            theme.Tooltip.Text.Color = "#000000";
+
             gapminder = Plot.New(GapMinder.Load(), x: o => o.gdpPercap, y: o => o.lifeExp)
                 .Title("Gap Minder")
-                .Geom_Point(tooltip: o => o.country, color: "#000000", alpha: 0.7, animation: true)
+                .Geom_Point(tooltip: o => tooltip, color: "#000000", alpha: 0.7, animation: true)
                 .Geom_Text(text, x: o => o.gdpPercap, y: o => o.lifeExp, text: o => o.country)
                 .XLab("GDP/Capita")
                 .Scale_Color_Discrete(o => o.continent, Colors.Viridis, name: "Continent")
                 .Scale_Size_Continuous(o => o.pop / 1000000, range: (1.86, 25.4), name: "Population(M)")
                 .YLab("Life Expectancy")
                 .Caption("Source: https://www.gapminder.org")
-                .Theme(dark: false);
+                .Theme(theme);
         }
 
         {

@@ -1,0 +1,25 @@
+﻿<defs>
+    <style type="text/css">
+        line, polyline, polygon, path, rect, circle {
+                stroke-linecap: butt;
+                stroke-linejoin: round;
+                stroke-miterlimit: 10.00;
+            }
+
+            #@(Id) .panel {
+                fill: @(Theme.Panel.Background.Fill);
+            }
+    </style>
+</defs>
+
+@code {
+
+    [Parameter]
+    public string Id { get; set; }
+
+    [Parameter]
+    public Theme Theme { get; set; }
+
+    protected override bool ShouldRender() => false;
+
+}

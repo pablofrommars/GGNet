@@ -1,19 +1,29 @@
 ﻿<defs>
     <style type="text/css">
-        #@(Id) circle.animate {
+        #@(Id) .animate-point {
                 transition: transform @(Theme.Animation.Point.Transition)s ease-in-out;
             }
 
-            #@(Id) circle.animate:hover {
+            #@(Id) .animate-point:hover {
                 transform: scale(@(Theme.Animation.Point.Scale));
             }
 
-        #@(Id) rect.animate {
+        #@(Id) .animate-bar {
             transition: transform @(Theme.Animation.Bar.Transition)s ease-in-out;
             fill-opacity: 0.6 !important;
         }
-            #@(Id) rect.animate:hover {
+            #@(Id) .animate-bar:hover {
                 fill-opacity: 1 !important;
+            }
+
+        #@(Id) .animate-map {
+            transition: transform @(Theme.Animation.Map.Transition)s ease-in-out;
+            fill-opacity: 0.6 !important;
+            stroke-width: 0.2 !important;
+        }
+            #@(Id) .animate-map:hover {
+                fill-opacity: 1 !important;
+                stroke-width: 0.5 !important;
             }
     </style>
 </defs>
@@ -25,5 +35,7 @@
 
     [Parameter]
     public Theme Theme { get; set; }
+
+    protected override bool ShouldRender() => false;
 
 }

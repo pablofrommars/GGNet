@@ -2233,6 +2233,7 @@ namespace GGNet
             Func<T2, double[]> latitude,
             Func<T2, double[]> longitude,
             IAestheticMapping<T2, string> _fill = null,
+            bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX1 : struct
@@ -2240,7 +2241,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Map<T2>(source, latitude, longitude, _fill, inherit)
+                var geom = new Map<T2>(source, latitude, longitude, _fill, animation, inherit)
                 {
                     Aesthetic = new Rectangle
                     {
@@ -2263,12 +2264,13 @@ namespace GGNet
             Func<T2, double[]> latitude,
             Func<T2, double[]> longitude,
             IAestheticMapping<T2, string> _fill = null,
+            bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
-            return Geom_Map(panel, new Source<T2>(source), latitude, longitude, _fill, fill, alpha, color, width, inherit);
+            return Geom_Map(panel, new Source<T2>(source), latitude, longitude, _fill, animation, fill, alpha, color, width, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
@@ -2277,12 +2279,13 @@ namespace GGNet
             Func<T2, double[]> latitude,
             Func<T2, double[]> longitude,
             IAestheticMapping<T2, string> _fill = null,
+            bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
-            data.Default_Panel().Geom_Map(source, latitude, longitude, _fill, fill, alpha, color, width, inherit);
+            data.Default_Panel().Geom_Map(source, latitude, longitude, _fill, animation, fill, alpha, color, width, inherit);
 
             return data;
         }
@@ -2293,12 +2296,13 @@ namespace GGNet
             Func<T2, double[]> latitude,
             Func<T2, double[]> longitude,
             IAestheticMapping<T2, string> _fill = null,
+            bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
-            return Geom_Map(data, new Source<T2>(source), latitude, longitude, _fill, fill, alpha, color, width, inherit);
+            return Geom_Map(data, new Source<T2>(source), latitude, longitude, _fill, animation, fill, alpha, color, width, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Map<T, TX, TY>(
@@ -2306,12 +2310,13 @@ namespace GGNet
             Func<T, double[]> latitude,
             Func<T, double[]> longitude,
             IAestheticMapping<T, string> _fill = null,
+            bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Map(panel, panel.Data.Source, latitude, longitude, _fill, fill, alpha, color, width, inherit);
+            return Geom_Map(panel, panel.Data.Source, latitude, longitude, _fill, animation, fill, alpha, color, width, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Map<T, TX, TY>(
@@ -2319,12 +2324,13 @@ namespace GGNet
             Func<T, double[]> latitude,
             Func<T, double[]> longitude,
             IAestheticMapping<T, string> _fill = null,
+            bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Map(latitude, longitude, _fill, fill, alpha, color, width, inherit);
+            data.Default_Panel().Geom_Map(latitude, longitude, _fill, animation, fill, alpha, color, width, inherit);
 
             return data;
         }

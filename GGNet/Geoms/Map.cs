@@ -8,11 +8,14 @@ namespace GGNet.Geoms
 {
     public class Map<T> : Geom<T, double, double>
     {
+        private readonly bool animation;
+
         public Map(
             Source<T> source,
             Func<T, double[]> latitude,
             Func<T, double[]> longitude,
             IAestheticMapping<T, string> fill = null,
+            bool animation = false,
             bool inherit = true,
             Buffer<Shape> layer = null)
             : base(source, inherit, layer)
@@ -27,6 +30,8 @@ namespace GGNet.Geoms
             {
                 Fill = fill
             };
+
+            this.animation = animation;
         }
 
         public class _Selectors
@@ -111,6 +116,7 @@ namespace GGNet.Geoms
 
             var poly = new Polygon
             {
+                Classes = animation ? "animate-map" : string.Empty,
                 Aesthetic = new Elements.Rectangle
                 {
                     Fill = fill,

@@ -1,12 +1,18 @@
-﻿@if (visibility)
+﻿@inherits Tooltip
+
+@if (visibility)
 {
     <defs>
         <style type="text/css">
 
             [role^="tooltip"] {
-                --tooltip-background-color: @color;
-                --tooltip-background-opacity: @alpha;
+                --tooltip-color: @color;
+                --tooltip-alpha: @alpha;
+                --tooltip-theme-color: @themeColor;
+                --tooltip-theme-alpha: @themeAlpha;
+
                 --tooltip-fadein-duration: 500ms;
+
                 overflow: visible;
             }
 
@@ -19,12 +25,12 @@
                     position: absolute;
                     border-radius: 4px;
                     padding: 2px 4px;
-                    background: var(--tooltip-background-color);
+                    background: var(--tooltip-theme-color);
                     white-space: nowrap;
                     pointer-events: none;
 
-                    color: @(Theme.Tooltip.Color);
-                    font-size: @(Theme.Tooltip.Size);
+                    color: @(Theme.Tooltip.Text.Color);
+                    font-size: @(Theme.Tooltip.Text.Size);
                 }
 
             @@keyframes fadein {
@@ -33,7 +39,7 @@
                 }
 
                 to {
-                    opacity: var(--tooltip-background-opacity);
+                    opacity: var(--tooltip-theme-alpha);
                 }
             }
 

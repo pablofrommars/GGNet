@@ -5,147 +5,10 @@
 @inherits PlotBase<T, TX, TY>
 
 <svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
+
+    <GGNet.Components.Defs.Plot Id=@Id Theme=@Theme />
+
     <defs>
-        <style type="text/css">
-
-            line, polyline, polygon, path, rect, circle {
-                fill: none;
-                stroke-linecap: butt;
-                stroke-linejoin: round;
-                stroke-miterlimit: 10.00;
-            }
-
-            .anchor-middle {
-                text-anchor: middle;
-            }
-
-            .cursor-pointer {
-                cursor: pointer;
-            }
-
-            #@(Id) text {
-                font-family: @(Theme.FontFamily);
-                fill: #929299;
-            }
-
-            #@(Id) .plot {
-                fill: @(Theme.Plot.Background.Fill);
-            }
-
-            #@(Id) .panel {
-                fill: @(Theme.Panel.Background.Fill);
-            }
-
-            #@(Id) .title {
-                text-anchor: @(Theme.Plot.Title.Anchor);
-                font-size: @(Theme.Plot.Title.Size);
-                font-weight: @(Theme.Plot.Title.Weight);
-                font-style: @(Theme.Plot.Title.Style);
-                fill: @(Theme.Plot.Title.Color);
-            }
-
-            #@(Id) .SubTitle {
-                text-anchor: @(Theme.Plot.SubTitle.Anchor);
-                font-size: @(Theme.Plot.SubTitle.Size);
-                font-weight: @(Theme.Plot.SubTitle.Weight);
-                font-style: @(Theme.Plot.SubTitle.Style);
-                fill: @(Theme.Plot.SubTitle.Color);
-            }
-
-            #@(Id) .caption {
-                text-anchor: @(Theme.Plot.Caption.Anchor);
-                font-size: @(Theme.Plot.Caption.Size);
-                font-weight: @(Theme.Plot.Caption.Weight);
-                font-style: @(Theme.Plot.Caption.Style);
-                fill: @(Theme.Plot.Caption.Color);
-            }
-
-            #@(Id) .gridMajor {
-                stroke-width: @(Theme.Panel.Grid.Major.X.Width);
-                stroke: @(Theme.Panel.Grid.Major.X.Fill);
-                stroke-opacity: @(Theme.Panel.Grid.Major.X.Alpha);
-            }
-
-            #@(Id) .gridMinor {
-                stroke-width: @(Theme.Panel.Grid.Minor.X.Width);
-                stroke: @(Theme.Panel.Grid.Minor.X.Fill);
-                stroke-opacity: @(Theme.Panel.Grid.Minor.X.Alpha);
-            }
-
-            #@(Id) .axisTextX {
-                text-anchor: @(Theme.Axis.Text.X.Anchor);
-                font-size: @(Theme.Axis.Text.X.Size);
-                font-weight: @(Theme.Axis.Text.X.Weight);
-                font-style: @(Theme.Axis.Text.X.Style);
-                fill: @(Theme.Axis.Text.X.Color);
-            }
-
-            #@(Id) .axisTextY {
-                text-anchor: @(Theme.Axis.Text.Y.Anchor);
-                font-size: @(Theme.Axis.Text.Y.Size);
-                font-weight: @(Theme.Axis.Text.Y.Weight);
-                font-style: @(Theme.Axis.Text.Y.Style);
-                fill: @(Theme.Axis.Text.Y.Color);
-            }
-
-            #@(Id) .axisTitleX {
-                text-anchor: @(Theme.Axis.Title.X.Anchor);
-                font-size: @(Theme.Axis.Title.X.Size);
-                font-weight: @(Theme.Axis.Title.X.Weight);
-                font-style: @(Theme.Axis.Title.X.Style);
-                fill: @(Theme.Axis.Title.X.Color);
-            }
-
-            #@(Id) .axisTitleY {
-                text-anchor: @(Theme.Axis.Title.Y.Anchor);
-                font-size: @(Theme.Axis.Title.Y.Size);
-                font-weight: @(Theme.Axis.Title.Y.Weight);
-                font-style: @(Theme.Axis.Title.Y.Style);
-                fill: @(Theme.Axis.Title.Y.Color);
-            }
-
-            #@(Id) .yLabel {
-                text-anchor: @(Theme.YLabel.Anchor);
-                font-size: @(Theme.YLabel.Size);
-                font-weight: @(Theme.YLabel.Weight);
-                font-style: @(Theme.YLabel.Style);
-                fill: @(Theme.YLabel.Color);
-            }
-
-            #@(Id) .legendTitle {
-                text-anchor: @(Theme.Legend.Title.Anchor);
-                font-size: @(Theme.Legend.Title.Size);
-                font-weight: @(Theme.Legend.Title.Weight);
-                font-style: @(Theme.Legend.Title.Style);
-                fill: @(Theme.Legend.Title.Color);
-            }
-
-            #@(Id) .legendLabels {
-                text-anchor: @(Theme.Legend.Labels.Anchor);
-                font-size: @(Theme.Legend.Labels.Size);
-                font-weight: @(Theme.Legend.Labels.Weight);
-                font-style: @(Theme.Legend.Labels.Style);
-                fill: @(Theme.Legend.Labels.Color);
-            }
-
-            #@(Id) .stripTextX {
-                text-anchor: @(Theme.Strip.Text.X.Anchor);
-                font-size: @(Theme.Strip.Text.X.Size);
-                font-weight: @(Theme.Strip.Text.X.Weight);
-                font-style: @(Theme.Strip.Text.X.Style);
-                fill: @(Theme.Strip.Text.X.Color);
-            }
-
-            #@(Id) .stripTextY {
-                text-anchor: @(Theme.Strip.Text.Y.Anchor);
-                font-size: @(Theme.Strip.Text.Y.Size);
-                font-weight: @(Theme.Strip.Text.Y.Weight);
-                font-style: @(Theme.Strip.Text.Y.Style);
-                fill: @(Theme.Strip.Text.Y.Color);
-            }
-
-        </style>
-
         @for (int i = 0; i < Data.Legends.Count; i++)
         {
             var l = Data.Legends[i];
@@ -234,8 +97,10 @@
                                       x2=@(Legend.X + l.Width)
                                       y1=@(offset + elements.Height / 2.0)
                                       y2=@(offset + elements.Height / 2.0)
-                                      clip-path="url(#@(Id)-plot)"
-                                      style="stroke-width: @hline.Width; stroke: @hline.Fill; stroke-opacity: @hline.Alpha;" />
+                                      stroke-width=@hline.Width
+                                      stroke=@hline.Fill
+                                      stroke-opacity=@hline.Alpha
+                                      clip-path="url(#@(Id)-plot)" />
 
                             }
                             else if (element.Value is Elements.VLine vline)
@@ -244,8 +109,10 @@
                                       x2=@(Legend.X + l.Width / 2.0)
                                       y1=@offset
                                       y2=@(offset + elements.Height)
-                                      clip-path="url(#@(Id)-plot)"
-                                      style="stroke-width: @vline.Width; stroke: @vline.Fill; stroke-opacity: @vline.Alpha;" />
+                                      stroke-width=@vline.Width
+                                      stroke=@vline.Fill
+                                      stroke-opacity=@vline.Alpha
+                                      clip-path="url(#@(Id)-plot)" />
 
                             }
                             else if (element.Value is Elements.Circle circle)
@@ -253,8 +120,12 @@
                                 <circle cx=@(Legend.X + l.Width / 2.0)
                                         cy=@(offset + elements.Height / 2.0)
                                         r=@circle.Radius
-                                        clip-path="url(#@(Id)-plot)"
-                                        style="stroke-width: 0.71; stroke: @circle.Fill; stroke-opacity: @circle.Alpha; fill: @circle.Fill; fill-opacity: @circle.Alpha;" />
+                                        stroke-width="0.71"
+                                        stroke=@circle.Fill
+                                        stroke-opacity=@circle.Alpha
+                                        fill=@circle.Fill
+                                        fill-opacity=@circle.Alpha
+                                        clip-path="url(#@(Id)-plot)" />
                             }
                             else if (element.Value is Elements.Rectangle rect)
                             {
@@ -262,8 +133,11 @@
                                       y=@offset
                                       width=@l.Width
                                       height=@elements.Height
-                                      clip-path="url(#@(Id)-plot)"
-                                      style="fill: @rect.Fill; fill-opacity: @rect.Alpha; stroke: @rect.Color; stroke-width: @rect.Width;" />
+                                      fill=@rect.Fill
+                                      fill-opacity=@rect.Alpha
+                                      stroke=@rect.Color
+                                      stroke-width=@rect.Width
+                                      clip-path="url(#@(Id)-plot)" />
                             }
                         }
 
@@ -294,8 +168,10 @@
                           y=@offset
                           width=@l.Width
                           height=@(3.0 * n * l.Height)
-                          clip-path="url(#@(Id)-plot)"
-                          style="fill: url(#gadient-@(Id)-@i); stroke: @Theme.Legend.Labels.Color; stroke-width: 0.2;" />
+                          fill="url(#gadient-@(Id)-@i)"
+                          stroke=@Theme.Legend.Labels.Color
+                          stroke-width="0.2"
+                          clip-path="url(#@(Id)-plot)" />
                 }
             }
         }
@@ -335,8 +211,11 @@
                                       x2=@(offset + elements.Width)
                                       y1=@(middle)
                                       y2=@(middle)
-                                      clip-path="url(#@(Id)-plot)"
-                                      style="stroke-width: @hline.Width; stroke: @hline.Fill; stroke-opacity: @hline.Alpha; stroke-dasharray: @(hline.LineType.DashArray());" />
+                                      stroke-width=@hline.Width
+                                      stroke=@hline.Fill
+                                      stroke-opacity=@hline.Alpha
+                                      stroke-dasharray=@(hline.LineType.DashArray())
+                                      clip-path="url(#@(Id)-plot)" />
 
                             }
                             else if (element.Value is Elements.VLine vline)
@@ -345,8 +224,11 @@
                                       x2=@(offset + elements.Width / 2.0)
                                       y1=@Legend.Y
                                       y2=@(Legend.Y + Legend.Height)
-                                      clip-path="url(#@(Id)-plot)"
-                                      style="stroke-width: @vline.Width; stroke: @vline.Fill; stroke-opacity: @vline.Alpha; stroke-dasharray: @(vline.LineType.DashArray());" />
+                                      stroke-width=@vline.Width
+                                      stroke=@vline.Fill
+                                      stroke-opacity=@vline.Alpha
+                                      stroke-dasharray=@(vline.LineType.DashArray())
+                                      clip-path="url(#@(Id)-plot)" />
 
                             }
                             else if (element.Value is Elements.Circle circle)
@@ -354,8 +236,12 @@
                                 <circle cx=@(offset + elements.Width / 2.0)
                                         cy=@middle
                                         r=@circle.Radius
-                                        clip-path="url(#@(Id)-plot)"
-                                        style="stroke-width: 0.71; stroke: @circle.Fill; stroke-opacity: @circle.Alpha; fill: @circle.Fill; fill-opacity: @circle.Alpha;" />
+                                        stroke-width="0.71"
+                                        stroke=@circle.Fill
+                                        stroke-opacity=@circle.Alpha
+                                        fill=@circle.Fill
+                                        fill-opacity=@circle.Alpha
+                                        clip-path="url(#@(Id)-plot)" />
                             }
                             else if (element.Value is Elements.Rectangle rect)
                             {
@@ -363,8 +249,11 @@
                                       y=@(middle - elements.Height / 2.0)
                                       width=@elements.Width
                                       height=@elements.Height
-                                      clip-path="url(#@(Id)-plot)"
-                                      style="fill: @rect.Fill; fill-opacity: @rect.Alpha; stroke: @rect.Color; stroke-width: @rect.Width;" />
+                                      fill=@rect.Fill
+                                      fill-opacity=@rect.Alpha
+                                      stroke=@rect.Color
+                                      stroke-width=@rect.Width
+                                      clip-path="url(#@(Id)-plot)" />
                             }
                         }
 
@@ -400,8 +289,10 @@
                           y=@yOffset
                           width=@(3.0 * l.Width * l.Items.Count)
                           height=@l.Height
-                          clip-path="url(#@(Id)-plot)"
-                          style="fill: url(#gadient-@(Id)-@i); stroke: @Theme.Legend.Labels.Color; stroke-width: 0.2;" />
+                          fill="url(#gadient-@(Id)-@i)"
+                          stroke=@Theme.Legend.Labels.Color
+                          stroke-width="0.2"
+                          clip-path="url(#@(Id)-plot)" />
                 }
             }
         }

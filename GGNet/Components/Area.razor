@@ -19,7 +19,10 @@
                   x2=@Coord.CoordX(l.X2)
                   y2=@Coord.CoordY(l.Y2)
                   class=@l.Css()
-                  style="stroke-width: @l.Aesthetic.Width; stroke: @l.Aesthetic.Fill; stroke-opacity: @l.Aesthetic.Alpha; stroke-dasharray: @(l.Aesthetic.LineType.DashArray());"
+                  stroke-width=@l.Aesthetic.Width
+                  stroke=@l.Aesthetic.Fill
+                  stroke-opacity=@l.Aesthetic.Alpha
+                  stroke-dasharray=@(l.Aesthetic.LineType.DashArray())
                   clip-path="url(#@(Clip))"
                   @onclick=@(async e => await l.OnClickHandler(e))
                   @onmouseover=@(async e => await l.OnMouseOverHandler(e))
@@ -36,8 +39,9 @@
                   y=@y
                   width=@width
                   height=@height
-                  class="@r.Css()"
-                  style="fill: @r.Aesthetic.Fill; fill-opacity: @r.Aesthetic.Alpha;"
+                  class=@r.Css()
+                  fill=@r.Aesthetic.Fill
+                  fill-opacity=@r.Aesthetic.Alpha
                   clip-path="url(#@(Clip))"
                   @onclick=@(async e => await r.OnClickHandler(e))
                   @onmouseover=@(async e => await r.OnMouseOverHandler(e))
@@ -50,7 +54,11 @@
                         cy="0"
                         r=@c.Aesthetic.Radius
                         class=@c.Css()
-                        style="stroke-width: 0.71; stroke: @c.Aesthetic.Fill; stroke-opacity: @c.Aesthetic.Alpha; fill: @c.Aesthetic.Fill; fill-opacity: @c.Aesthetic.Alpha;"
+                        stroke-width="0.71" 
+                        stroke=@c.Aesthetic.Fill
+                        stroke-opacity=@c.Aesthetic.Alpha
+                        fill=@c.Aesthetic.Fill
+                        fill-opacity=@c.Aesthetic.Alpha
                         @onclick=@(async e => await c.OnClickHandler(e))
                         @onmouseover=@(async e => await c.OnMouseOverHandler(e))
                         @onmouseout=@(async e => await c.OnMouseOutHandler(e)) />
@@ -65,7 +73,7 @@
                   y=@Zone.Y
                   width=@width
                   height=@Zone.Height
-                  style="fill: transparent"
+                  fill="transparent"
                   clip-path="url(#@(Clip))"
                   @onclick=@(async e => await v.OnClickHandler(e))
                   @onmouseover=@(async e => await v.OnMouseOverHandler(e))
@@ -95,7 +103,11 @@
                 }
 
                 <path d=@sb.ToString()
-                      style="stroke-width: @p.Aesthetic.Width; stroke: @p.Aesthetic.Fill; stroke-opacity: @p.Aesthetic.Alpha; stroke-dasharray: @(p.Aesthetic.LineType.DashArray());"
+                      fill="none"
+                      stroke-width=@p.Aesthetic.Width
+                      stroke=@p.Aesthetic.Fill
+                      stroke-opacity=@p.Aesthetic.Alpha
+                      stroke-dasharray=@(p.Aesthetic.LineType.DashArray())
                       clip-path="url(#@(Clip))" />
             }
         }
@@ -135,7 +147,8 @@
                 sb.Append(" Z");
 
                 <path d=@sb.ToString()
-                      style="fill: @a.Aesthetic.Fill; fill-opacity: @a.Aesthetic.Alpha;"
+                      fill=@a.Aesthetic.Fill
+                      fill-opacity=@a.Aesthetic.Alpha
                       clip-path="url(#@(Clip))" />
             }
         }
@@ -165,14 +178,21 @@
                 sb.Append(" Z");
 
                 <path d=@sb.ToString()
-                      style="fill: @poly.Aesthetic.Fill; fill-opacity: @poly.Aesthetic.Alpha; stroke: @poly.Aesthetic.Color; stroke-width: @poly.Aesthetic.Width;"
+                      class=@poly.Css()
+                      fill=@poly.Aesthetic.Fill
+                      fill-opacity=@poly.Aesthetic.Alpha
+                      stroke=@poly.Aesthetic.Color
+                      stroke-width=@poly.Aesthetic.Width
                       clip-path="url(#@(Clip))" />
             }
         }
         else if (shape is Shapes.Text text)
         {
             <g style="pointer-events: none;" clip-path="url(#@(Clip))">
-                <text x=@Coord.CoordX(text.X) y=@Coord.CoordY(text.Y) style="font-size: @text.Aesthetic.Size; fill: @text.Aesthetic.Color; text-anchor: @text.Aesthetic.Anchor; font-weigth: @text.Aesthetic.Weight; font-style: @text.Aesthetic.Style;">
+                <text 
+                      x=@Coord.CoordX(text.X) 
+                      y=@Coord.CoordY(text.Y)
+                      style="fill: @text.Aesthetic.Color; text-anchor: @text.Aesthetic.Anchor; font-size: @text.Aesthetic.Size; font-weigth: @text.Aesthetic.Weight; font-style: @text.Aesthetic.Style;">
                     @text.Value
                 </text>
             </g>
@@ -185,7 +205,10 @@
                   y1=@Zone.Y
                   x2=@x
                   y2=@(Zone.Y + Zone.Height)
-                  style="stroke-width: @vline.Aesthetic.Width; stroke: @vline.Aesthetic.Fill; stroke-opacity: @vline.Aesthetic.Alpha; stroke-dasharray: @(vline.Aesthetic.LineType.DashArray());"
+                  stroke-width=@vline.Aesthetic.Width
+                  stroke=@vline.Aesthetic.Fill
+                  stroke-opacity=@vline.Aesthetic.Alpha
+                  stroke-dasharray=@(vline.Aesthetic.LineType.DashArray())
                   clip-path="url(#@(Clip))" />
         }
         else if (shape is Shapes.HLine hline)
@@ -196,7 +219,10 @@
                   y1=@y
                   x2=@(Zone.X + Zone.Width)
                   y2=@y
-                  style="stroke-width: @hline.Aesthetic.Width; stroke: @hline.Aesthetic.Fill; stroke-opacity: @hline.Aesthetic.Alpha; stroke-dasharray: @(hline.Aesthetic.LineType.DashArray());"
+                  stroke-width=@hline.Aesthetic.Width
+                  stroke=@hline.Aesthetic.Fill
+                  stroke-opacity=@hline.Aesthetic.Alpha
+                  stroke-dasharray=@(hline.Aesthetic.LineType.DashArray())
                   clip-path="url(#@(Clip))" />
         }
     }

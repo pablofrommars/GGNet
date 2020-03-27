@@ -8,6 +8,7 @@
             {
                 Point = new _Point();
                 Bar = new _Bar();
+                Map = new _Map();
             }
 
             public class _Point
@@ -37,6 +38,18 @@
             }
 
             public _Bar Bar { get; set; }
+
+            public class _Map
+            {
+                public _Map()
+                {
+                    Transition = 0.2;
+                }
+
+                public double Transition { get; set; }
+            }
+
+            public _Map Map { get; set; }
         }
     }
 }

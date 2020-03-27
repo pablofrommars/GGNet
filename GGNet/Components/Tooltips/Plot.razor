@@ -1,12 +1,18 @@
-﻿@if (visibility)
+﻿@inherits Tooltip
+
+@if (visibility)
 {
     <defs>
         <style type="text/css">
 
             [role^="tooltip"] {
-                --tooltip-background-color: @color;
-                --tooltip-background-opacity: @alpha;
+                --tooltip-color: @color;
+                --tooltip-alpha: @alpha;
+                --tooltip-theme-color: @themeColor;
+                --tooltip-theme-alpha: @themeAlpha;
+
                 --tooltip-fadein-duration: 500ms;
+
                 overflow: visible;
             }
 
@@ -28,14 +34,14 @@
 
                 [role^="tooltip"] .bubble {
                     position: absolute;
-                    border-radius: 4px;
-                    padding: 5px 10px;
-                    background: var(--tooltip-background-color);
+                    border-radius: @(Theme.Tooltip.Radius);
+                    padding: @(Theme.Tooltip.Margin.Top)@(Theme.Tooltip.Margin.Units) @(Theme.Tooltip.Margin.Right)@(Theme.Tooltip.Margin.Units) @(Theme.Tooltip.Margin.Bottom)@(Theme.Tooltip.Margin.Units) @(Theme.Tooltip.Margin.Left)@(Theme.Tooltip.Margin.Units);
+                    background: var(--tooltip-theme-color);
                     white-space: nowrap;
                     pointer-events: none;
 
-                    color: @(Theme.Tooltip.Color);
-                    font-size: @(Theme.Tooltip.Size);
+                    color: @(Theme.Tooltip.Text.Color);
+                    font-size: @(Theme.Tooltip.Text.Size);
                 }
 
             @@keyframes fadein {
@@ -44,7 +50,7 @@
                 }
 
                 to {
-                    opacity: var(--tooltip-background-opacity);
+                    opacity: var(--tooltip-theme-opacity);
                 }
             }
 
@@ -55,7 +61,7 @@
 
             [role^="tooltip-top"] .arrow::before {
                 border-bottom-width: 0;
-                border-top-color: var(--tooltip-background-color);
+                border-top-color: var(--tooltip-theme-color);
                 bottom: 100%;
                 transform: translate(-50%, -.5em);
             }
@@ -78,7 +84,7 @@
 
             [role^="tooltip-bottom"] .arrow::before {
                 border-top-width: 0;
-                border-bottom-color: var(--tooltip-background-color);
+                border-bottom-color: var(--tooltip-theme-color);
                 top: 100%;
                 transform: translate(-50%, .5em);
             }
@@ -101,7 +107,7 @@
 
             [role^="tooltip-left"] .arrow::before {
                 border-right-width: 0;
-                border-left-color: var(--tooltip-background-color);
+                border-left-color: var(--tooltip-theme-color);
                 top: 50%;
                 left: calc(0em - 5px);
                 transform: translate(-.5em, -50%);
@@ -126,7 +132,7 @@
 
             [role^="tooltip-right"] .arrow::before {
                 border-left-width: 0;
-                border-right-color: var(--tooltip-background-color);
+                border-right-color: var(--tooltip-theme-color);
                 top: 50%;
                 right: calc(0em - 5px);
                 transform: translate(.5em, -50%);

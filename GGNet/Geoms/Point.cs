@@ -200,7 +200,7 @@ namespace GGNet.Geoms
 
             var circle = new Circle
             {
-                Classes = animation ? "animate" : string.Empty,
+                Classes = animation ? "animate-point" : string.Empty,
                 X = x,
                 Y = y,
                 Aesthetic = new Elements.Circle

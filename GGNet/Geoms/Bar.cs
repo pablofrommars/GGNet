@@ -273,7 +273,7 @@ namespace GGNet.Geoms
 
                         var rect = new Rectangle
                         {
-                            Classes = animation ? "animate" : string.Empty,
+                            Classes = animation ? "animate-bar" : string.Empty,
                             X = sum,
                             Y = x - delta / 2.0,
                             Width = value,
@@ -311,7 +311,7 @@ namespace GGNet.Geoms
 
                         var rect = new Rectangle
                         {
-                            Classes = animation ? "animate" : string.Empty,
+                            Classes = animation ? "animate-bar" : string.Empty,
                             X = x - delta / 2.0,
                             Y = sum,
                             Width = delta,
@@ -374,7 +374,7 @@ namespace GGNet.Geoms
 
                         var rect = new Rectangle
                         {
-                            Classes = animation ? "animate" : string.Empty,
+                            Classes = animation ? "animate-bar" : string.Empty,
                             X = x,
                             Y = value >= 0 ? 0 : value,
                             Width = w,

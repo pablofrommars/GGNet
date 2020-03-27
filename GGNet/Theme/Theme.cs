@@ -23,17 +23,8 @@
 
             Animation = new _Animation();
 
-            Tooltip = new Text
-            {
-                Size = new Size
-                {
-                    Value = 0.75,
-                    Units = em
-                },
-                Color = "#FFF",
-                Alpha = 0.8
-            };
-
+            Tooltip = new _Tooltip();
+            
             YLabel = new Text
             {
                 Size = new Size
@@ -60,7 +51,7 @@
 
         public _Animation Animation { get; set; }
 
-        public Text Tooltip { get; set; }
+        public _Tooltip Tooltip { get; set; }
 
         public Text YLabel { get; set; }
 
