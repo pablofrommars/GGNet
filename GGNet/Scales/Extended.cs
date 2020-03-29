@@ -49,16 +49,12 @@ namespace GGNet.Scales
 
             for (var i = 0; i < labels.Length; i++)
             {
-                var inv = transformation.Inverse(breaks[i]);
-
-                labels[i] = (inv, formatter.Format(breaks[i]));
-
-                breaks[i] = inv;
+                labels[i] = (breaks[i], formatter.Format(transformation.Inverse(breaks[i])));
             }
 
             for (var i = 0; i < minorBreaks.Length; i++)
             {
-                minorBreaks[i] = transformation.Inverse(minorBreaks[i]);
+                minorBreaks[i] = minorBreaks[i];
             }
 
             Breaks = breaks;

@@ -28,6 +28,14 @@
     <GGNet.Components.Plot Data=@weapon T=Weapon.Point TX=Double TY=Double />
 </div>
 
+<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
+    <GGNet.Components.Plot Data=@log10 T=Point2 TX=Double TY=Double />
+</div>
+
+<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
+    <GGNet.Components.Plot Data=@sqrt T=Point2 TX=Double TY=Double />
+</div>
+
 @code {
 
     Data<Point, double, double> map;
@@ -36,6 +44,8 @@
     Data<GapMinder.Point, double, double> gapminder;
     Data<Beatles.Point, double, double> beatles;
     Data<Weapon.Point, double, double> weapon;
+    Data<Point2, double, double> log10;
+    Data<Point2, double, double> sqrt;
 
     protected override void OnInitialized()
     {
@@ -179,6 +189,45 @@
                 .Caption("SIPRI trend-indicator value")
                 .Theme(dark: false);
         }
+
+        {
+            var source = new Point2[5];
+
+            for (var i = 0; i < 5; i++)
+            {
+                source[i] = new Point2
+                { 
+                    X = i + 1, 
+                    Y = System.Math.Pow(i + 1.0, 10)
+                };
+            }
+
+            /*
+            var source = new[] {
+                new Point2 { X = 1, Y = 300.005 },
+                new Point2 { X = 2, Y = 8420.1 }
+            };
+            */
+
+            log10 = Plot.New(source, o => o.X, o => o.Y)
+                .Geom_Point()
+                .Scale_Y_Log10()
+                .Theme();
+        }
+
+        {
+            var source = new Point2[5];
+
+            for (var i = 0; i < 5; i++)
+            {
+                source[i] = new Point2 { X = i, Y = i * i };
+            }
+
+            sqrt = Plot.New(source, o => o.X, o => o.Y)
+                .Geom_Point()
+                .Scale_Y_Sqrt()
+                .Theme();
+        }
     }
 
     public class Point
@@ -190,5 +239,11 @@
         public double[] Latitude { get; set; }
 
         public double[] Longitude { get; set; }
+    }
+
+    public class Point2
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
     }
 }

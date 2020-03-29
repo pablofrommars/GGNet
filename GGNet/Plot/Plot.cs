@@ -16,6 +16,7 @@ namespace GGNet
     using Formats;
 
     using static Position;
+    using System.IO;
 
     public static class Plot
     {
@@ -273,7 +274,11 @@ namespace GGNet
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
             string format = null)
             where TX : struct
-            => panel.Scale_Y_Continuous(format, Log10.Instance, limits, expand);
+         {
+            panel.Y = () => new Scales.Log10(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+
+            return panel;
+         }
 
         public static Data<T, TX, double> Scale_Y_Log10<T, TX>(
             this Data<T, TX, double> data,
@@ -281,7 +286,11 @@ namespace GGNet
             (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
             string format = null)
             where TX : struct
-            => data.Scale_Y_Continuous(format, Log10.Instance, limits, expand);
+        {
+            data.Positions.Y.Factory = () => new Scales.Log10(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+
+            return data;
+        }
 
         public static Data<T, TX, TY> Scale_Y_Discrete<T, TX, TY>(
            this Data<T, TX, TY> data,
