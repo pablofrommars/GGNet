@@ -16,7 +16,6 @@ namespace GGNet
     using Formats;
 
     using static Position;
-    using System.IO;
 
     public static class Plot
     {

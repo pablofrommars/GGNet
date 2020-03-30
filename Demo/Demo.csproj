@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Extensions\GGNet.NaturalEarth\GGNet.NaturalEarth.csproj" />
     <ProjectReference Include="..\GGNet\GGNet.csproj" />
   </ItemGroup>
 

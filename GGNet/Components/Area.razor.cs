@@ -26,5 +26,48 @@ namespace GGNet.Components
         private StringBuilder sb = new StringBuilder();
 
         protected override bool ShouldRender() => RenderPolicy.ShouldRender();
+
+        private void AppendPolygon(Geospacial.Polygon poly)
+        {
+            sb.Append("M ");
+            sb.Append(Coord.CoordX(poly.Longitude[0]));
+            sb.Append(" ");
+            sb.Append(Coord.CoordY(poly.Latitude[0]));
+
+            for (var i = 1; i < poly.Longitude.Length; i++)
+            {
+                sb.Append(" L ");
+                sb.Append(Coord.CoordX(poly.Longitude[i]));
+                sb.Append(" ");
+                sb.Append(Coord.CoordY(poly.Latitude[i]));
+            }
+
+            sb.Append(" Z");
+        }
+
+        private string PolygonPath(Geospacial.Polygon poly)
+        {
+            sb.Clear();
+
+            AppendPolygon(poly);
+
+            return sb.ToString();
+        }
+
+        private string PolygonPath(Geospacial.Polygon[] polygons)
+        {
+            sb.Clear();
+
+            AppendPolygon(polygons[0]);
+
+            for (var i = 1; i < polygons.Length; i++)
+            {
+                sb.Append(" ");
+
+                AppendPolygon(polygons[i]);
+            }
+
+            return sb.ToString();
+        }
     }
 }

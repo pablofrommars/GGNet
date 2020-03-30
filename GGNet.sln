@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGNet.Static.Demo", "Extens
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "GGNet.FSharp", "Extensions\GGNet.FSharp\GGNet.FSharp.fsproj", "{69F96F5B-70D4-46AE-A9B5-04A804FA5430}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GGNet.NaturalEarth", "Extensions\GGNet.NaturalEarth\GGNet.NaturalEarth.csproj", "{B14324D9-BFA9-4807-A9E8-B87C2E7824E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,10 @@ Global
 		{69F96F5B-70D4-46AE-A9B5-04A804FA5430}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69F96F5B-70D4-46AE-A9B5-04A804FA5430}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69F96F5B-70D4-46AE-A9B5-04A804FA5430}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B14324D9-BFA9-4807-A9E8-B87C2E7824E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B14324D9-BFA9-4807-A9E8-B87C2E7824E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B14324D9-BFA9-4807-A9E8-B87C2E7824E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B14324D9-BFA9-4807-A9E8-B87C2E7824E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -49,6 +55,7 @@ Global
 		{FF7F929C-3218-41A4-BC51-62A5827F35F6} = {3160B3E9-DFEF-406F-9473-FFF06DB25495}
 		{5D460540-802E-46BB-AABC-E34714025A0A} = {3160B3E9-DFEF-406F-9473-FFF06DB25495}
 		{69F96F5B-70D4-46AE-A9B5-04A804FA5430} = {3160B3E9-DFEF-406F-9473-FFF06DB25495}
+		{B14324D9-BFA9-4807-A9E8-B87C2E7824E1} = {3160B3E9-DFEF-406F-9473-FFF06DB25495}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FA09627F-8B33-40BB-9BCF-BC361E00847E}

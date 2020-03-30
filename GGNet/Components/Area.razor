@@ -186,6 +186,10 @@
                       clip-path="url(#@(Clip))" />
             }
         }
+        else if (shape is Shapes.MultiPolygon multi)
+        {
+
+        }
         else if (shape is Shapes.Text text)
         {
             <g style="pointer-events: none;" clip-path="url(#@(Clip))">
