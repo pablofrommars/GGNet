@@ -14,6 +14,7 @@ namespace GGNet.Geoms
             Source<T> source,
             Func<T, TX> x,
             Func<T, TY> y,
+            Func<T, double> angle,
             Func<T, TT> text,
             IAestheticMapping<T, string> color = null,
             bool inherit = true,
@@ -24,6 +25,7 @@ namespace GGNet.Geoms
             {
                 X = x,
                 Y = y,
+                Angle = angle,
                 Text = text
             };
 
@@ -38,6 +40,8 @@ namespace GGNet.Geoms
             public Func<T, TX> X { get; set; }
 
             public Func<T, TY> Y { get; set; }
+
+            public Func<T, double> Angle { get; set; }
 
             public Func<T, TT> Text { get; set; }
         }
@@ -110,19 +114,27 @@ namespace GGNet.Geoms
                 return;
             }
 
-            var aes = Aesthetic;
 
+            var clone = false;
+
+            var color = Aesthetic.Color;
             if (Aesthetics.Color != null)
             {
-                var color = Aesthetics.Color.Map(item);
+                color = Aesthetics.Color.Map(item);
                 if (string.IsNullOrEmpty(color))
                 {
                     return;
                 }
 
-                aes = aes.Clone();
+                clone = true;
+            }
 
-                aes.Color = color;
+            var angle = Aesthetic.Angle;
+            if (Selectors.Angle != null)
+            {
+                angle = Selectors.Angle(item);
+
+                clone = true;
             }
 
             var x = Positions.X.Map(item);
@@ -130,6 +142,15 @@ namespace GGNet.Geoms
 
             var width = value.Width(Aesthetic.Size);
             var height = value.Height(Aesthetic.Size);
+
+            var aes = Aesthetic;
+            if (clone)
+            {
+                aes = aes.Clone();
+
+                aes.Color = color;
+                aes.Angle = angle;
+            }
 
             var text = new Text
             {

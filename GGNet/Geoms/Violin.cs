@@ -177,18 +177,12 @@ namespace GGNet.Geoms
                     var xmin = c;
                     var xmax = c;
 
-                    var poly = new Polygon
-                    {
-                        Aesthetic = new Elements.Rectangle
-                        {
-                            Fill = violin.Key,
-                            Alpha = Aesthetic.Alpha,
-                            Color = Aesthetic.Color,
-                            Width = Aesthetic.Width
-                        }
-                    };
+                    var n = violin.Value.Count;
+                    var longitude = new double[2 * n];
+                    var latitude = new double[2 * n];
+                    var j = 0;
 
-                    for (var i = 0; i < violin.Value.Count; i++)
+                    for (var i = 0; i < n; i++)
                     {
                         var (y, width) = violin.Value[i];
 
@@ -198,10 +192,13 @@ namespace GGNet.Geoms
                             xmin = x;
                         }
 
-                        poly.Points.Add((x, y));
+                        longitude[j] = x;
+                        latitude[j] = y;
+
+                        j++;
                     }
 
-                    for (var i = violin.Value.Count - 1; i >= 0; i--)
+                    for (var i = n - 1; i >= 0; i--)
                     {
                         var (y, width) = violin.Value[i];
 
@@ -211,13 +208,32 @@ namespace GGNet.Geoms
                             xmax = x;
                         }
 
-                        poly.Points.Add((x, y));
+                        longitude[j] = x;
+                        latitude[j] = y;
+
+                        j++;
                     }
+
+                    var poly = new Polygon
+                    {
+                        Path = new Geospacial.Polygon
+                        {
+                            Longitude = longitude,
+                            Latitude = latitude
+                        },
+                        Aesthetic = new Elements.Rectangle
+                        {
+                            Fill = violin.Key,
+                            Alpha = Aesthetic.Alpha,
+                            Color = Aesthetic.Color,
+                            Width = Aesthetic.Width
+                        }
+                    };
 
                     Layer.Add(poly);
 
                     Positions.X.Position.Shape(xmin, xmax);
-                    Positions.Y.Position.Shape(violin.Value[0].y, violin.Value[violin.Value.Count - 1].y);
+                    Positions.Y.Position.Shape(violin.Value[0].y, violin.Value[n - 1].y);
                 }
             }
         }
@@ -250,18 +266,12 @@ namespace GGNet.Geoms
                     var xmin = c;
                     var xmax = c;
 
-                    var poly = new Polygon
-                    {
-                        Aesthetic = new Elements.Rectangle
-                        {
-                            Fill = violin.Key,
-                            Alpha = Aesthetic.Alpha,
-                            Color = Aesthetic.Color,
-                            Width = Aesthetic.Width
-                        }
-                    };
+                    var N = violin.Value.Count;
+                    var longitude = new double[2 * N];
+                    var latitude = new double[2 * N];
+                    var j = 0;
 
-                    for (var i = 0; i < violin.Value.Count; i++)
+                    for (var i = 0; i < N; i++)
                     {
                         var (y, width) = violin.Value[i];
 
@@ -271,10 +281,13 @@ namespace GGNet.Geoms
                             xmin = x;
                         }
 
-                        poly.Points.Add((x, y));
+                        longitude[j] = x;
+                        latitude[j] = y;
+
+                        j++;
                     }
 
-                    for (var i = violin.Value.Count - 1; i >= 0; i--)
+                    for (var i = N - 1; i >= 0; i--)
                     {
                         var (y, width) = violin.Value[i];
 
@@ -284,13 +297,32 @@ namespace GGNet.Geoms
                             xmax = x;
                         }
 
-                        poly.Points.Add((x, y));
+                        longitude[j] = x;
+                        latitude[j] = y;
+
+                        j++;
                     }
+
+                    var poly = new Polygon
+                    {
+                        Path = new Geospacial.Polygon
+                        {
+                            Longitude = longitude,
+                            Latitude = latitude
+                        },
+                        Aesthetic = new Elements.Rectangle
+                        {
+                            Fill = violin.Key,
+                            Alpha = Aesthetic.Alpha,
+                            Color = Aesthetic.Color,
+                            Width = Aesthetic.Width
+                        }
+                    };
 
                     Layer.Add(poly);
 
                     Positions.X.Position.Shape(xmin, xmax);
-                    Positions.Y.Position.Shape(violin.Value[0].y, violin.Value[violin.Value.Count - 1].y);
+                    Positions.Y.Position.Shape(violin.Value[0].y, violin.Value[N - 1].y);
 
                     c += w;
                 }

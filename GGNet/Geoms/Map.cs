@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Components.Web;
 
 using GGNet.Scales;
 using GGNet.Facets;
@@ -12,9 +15,9 @@ namespace GGNet.Geoms
 
         public Map(
             Source<T> source,
-            Func<T, double[]> latitude,
-            Func<T, double[]> longitude,
+            Func<T, Geospacial.Polygon[]> polygons,
             IAestheticMapping<T, string> fill = null,
+            Func<T, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             bool inherit = true,
             Buffer<Shape> layer = null)
@@ -22,8 +25,8 @@ namespace GGNet.Geoms
         {
             Selectors = new _Selectors
             {
-                Latitude = latitude,
-                Longitude = longitude,
+                Polygons = polygons,
+                Tooltip = tooltip
             };
 
             Aesthetics = new _Aesthetics
@@ -36,9 +39,9 @@ namespace GGNet.Geoms
 
         public class _Selectors
         {
-            public Func<T, double[]> Latitude { get; set; }
+            public Func<T, Geospacial.Polygon[]> Polygons { get; set; }
 
-            public Func<T, double[]> Longitude { get; set; }
+            public Func<T, (Geospacial.Point point, string content)> Tooltip { get; set; }
         }
 
         public _Selectors Selectors { get; }
@@ -59,6 +62,12 @@ namespace GGNet.Geoms
 
         public _Positions Positions { get; } = new _Positions();
 
+        public Func<T, MouseEventArgs, Task> OnClick { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
+
         public Elements.Rectangle Aesthetic { get; set; }
 
         public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
@@ -67,6 +76,34 @@ namespace GGNet.Geoms
 
             Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
             Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
+
+            if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
+            {
+                OnMouseOver = (item, _) =>
+                {
+                    var (point, content) = Selectors.Tooltip(item);
+
+                    if (point != null)
+                    {
+                        panel.Component.Tooltip.Show(
+                            point.Longitude,
+                            point.Latitude, 
+                            0,
+                            content,
+                            Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
+                            Aesthetic.Alpha);
+                    }
+
+                    return Task.CompletedTask;
+                };
+
+                OnMouseOut = (_, __) =>
+                {
+                    panel.Component.Tooltip.Hide();
+
+                    return Task.CompletedTask;
+                };
+            }
 
             if (!inherit)
             {
@@ -105,8 +142,7 @@ namespace GGNet.Geoms
                 }
             }
 
-            var latitudes = Selectors.Latitude(item);
-            var longitudes = Selectors.Longitude(item);
+            var polygons = Selectors.Polygons(item);
 
             var xmin = double.MaxValue;
             var xmax = double.MinValue;
@@ -114,9 +150,41 @@ namespace GGNet.Geoms
             var ymin = double.MaxValue;
             var ymax = double.MinValue;
 
-            var poly = new Polygon
+
+            for (var i = 0; i < polygons.Length; i++)
+            {
+                var polygon = polygons[i];
+                for (var j = 0; j < polygon.Longitude.Length; j++)
+                {
+                    var x = polygon.Longitude[j];
+                    var y = polygon.Latitude[j];
+
+                    if (x < xmin)
+                    {
+                        xmin = x;
+                    }
+
+                    if (x > xmax)
+                    {
+                        xmax = x;
+                    }
+
+                    if (y < ymin)
+                    {
+                        ymin = y;
+                    }
+
+                    if (y > ymax)
+                    {
+                        ymax = y;
+                    }
+                }
+            }
+
+            var multi = new MultiPolygon
             {
                 Classes = animation ? "animate-map" : string.Empty,
+                Polygons = polygons,
                 Aesthetic = new Elements.Rectangle
                 {
                     Fill = fill,
@@ -126,35 +194,22 @@ namespace GGNet.Geoms
                 }
             };
 
-            for (var i = 0; i < latitudes.Length; i++)
+            if (OnClick != null)
             {
-                var x = latitudes[i];
-                var y = longitudes[i];
-
-                if (x < xmin)
-                {
-                    xmin = x;
-                }
-
-                if (x > xmax)
-                {
-                    xmax = x;
-                }
-
-                if (y < ymin)
-                {
-                    ymin = y;
-                }
-
-                if (y > ymax)
-                {
-                    ymax = y;
-                }
-
-                poly.Points.Add((x, y));
+                multi.OnClick = e => OnClick(item, e);
             }
 
-            Layer.Add(poly);
+            if (OnMouseOver != null)
+            {
+                multi.OnMouseOver = e => OnMouseOver(item, e);
+            }
+
+            if (OnMouseOut != null)
+            {
+                multi.OnMouseOut = e => OnMouseOut(item, e);
+            }
+
+            Layer.Add(multi);
 
             Positions.X.Position.Shape(xmin, xmax);
             Positions.Y.Position.Shape(ymin, ymax);

@@ -120,7 +120,7 @@
             },
             new Point
             {
-                country = "Bosnia and Herzegovina",
+                country = "Bosnia and Herz.",
                 continent = Continent.Europe,
                 lifeExp = 74.852,
                 pop = 4552198,
@@ -288,7 +288,7 @@
             },
             new Point
             {
-                country = "Czech Republic",
+                country = "Czechia",
                 continent = Continent.Europe,
                 lifeExp = 76.486,
                 pop = 10228744,
@@ -936,7 +936,7 @@
             },
             new Point
             {
-                country = "Slovak Republic",
+                country = "Slovakia",
                 continent = Continent.Europe,
                 lifeExp = 74.663,
                 pop = 5447502,

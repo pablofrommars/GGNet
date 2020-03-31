@@ -12,10 +12,7 @@ namespace GGNet.NaturalEarth
     {
         private readonly static MessagePackSerializerOptions options = MessagePackSerializerOptions.Standard.WithResolver(Resolver.Instance);
 
-        public static T Load<T>(string data)
-        {
-            return MessagePackSerializer.Deserialize<T>(Convert.FromBase64String(data), options);
-        }
+        public static T Load<T>(string data) => MessagePackSerializer.Deserialize<T>(Convert.FromBase64String(data), options);
 
         public class PointFormatter : IMessagePackFormatter<Point>
         {

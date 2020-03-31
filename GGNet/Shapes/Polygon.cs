@@ -2,9 +2,7 @@
 {
     public class Polygon : Shape
     {
-        public Polygon() => Points = new Buffer<(double x, double y)>(8, 1);
-
-        public Buffer<(double x, double y)> Points { get; }
+        public Geospacial.Polygon Path { get; set; }
 
         public Elements.Rectangle Aesthetic { get; set; }
     }

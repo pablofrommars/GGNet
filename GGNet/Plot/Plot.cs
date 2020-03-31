@@ -304,6 +304,24 @@ namespace GGNet
             return data;
         }
 
+        public static Data<T, double, TY> Scale_Latitude<T, TY>(
+            this Data<T, double, TY> data,
+            (double? min, double? max)? limits = null)
+            where TY : struct
+            => data.Scale_X_Continuous(null, limits ?? (-180, 180), (0, 0, 0, 0), Latitude.Instance);
+
+        public static Data<T, TX, double>.PanelFactory Scale_Longitude<T, TX>(
+           this Data<T, TX, double>.PanelFactory panel,
+           (double? min, double? max)? limits = null)
+           where TX : struct
+           => panel.Scale_Y_Continuous(null, limits ?? (-90, 90), (0, 0, 0, 0), Longitude.Instance);
+
+        public static Data<T, TX, double> Scale_Longitude<T, TX>(
+            this Data<T, TX, double> data,
+            (double? min, double? max)? limits = null)
+            where TX : struct
+            => data.Scale_Y_Continuous(null, limits ?? (-90, 90), (0, 0, 0, 0), Longitude.Instance);
+
         public static Data<T, TX, double> YLim<T, TX>(this Data<T, TX, double> data, double? min = null, double? max = null)
            where TX : struct
         {
@@ -1343,9 +1361,10 @@ namespace GGNet
             Source<T2> source,
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
+            Func<T2, double> _angle = null,
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc",
+            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -1354,7 +1373,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Text<T2, TX2, TY2, TT>(source, x, y, text, _color, inherit)
+                var geom = new Text<T2, TX2, TY2, TT>(source, x, y, _angle, text, _color, inherit)
                 {
                     Aesthetic = new Text
                     {
@@ -1362,7 +1381,8 @@ namespace GGNet
                         Anchor = anchor,
                         Weight = weight,
                         Style = style,
-                        Color = color
+                        Color = color,
+                        Angle = angle
                     }
                 };
 
@@ -1377,16 +1397,17 @@ namespace GGNet
             IEnumerable<T2> source,
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
+            Func<T2, double> _angle = null,
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc",
+            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Text(new Source<T2>(source), x, y, text, _color, size, anchor, weight, style, color, inherit);
+            return panel.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
@@ -1394,16 +1415,17 @@ namespace GGNet
             Source<T2> source,
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
+            Func<T2, double> _angle = null,
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc",
+            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Text(source, x, y, text, _color, size, anchor, weight, style, color, inherit);
+            data.Default_Panel().Geom_Text(source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, inherit);
 
             return data;
         }
@@ -1413,44 +1435,47 @@ namespace GGNet
             IEnumerable<T2> source,
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
+            Func<T2, double> _angle = null,
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc",
+            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Text(new Source<T2>(source), x, y, text, _color, size, anchor, weight, style, color, inherit);
+            return data.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Text<T, TX, TY, TT>(
             this Data<T, TX, TY>.PanelFactory panel,
             Func<T, TX> x = null,
             Func<T, TY> y = null,
+            Func<T, double> _angle = null,
             Func<T, TT> text = null,
             IAestheticMapping<T, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc",
+            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Text(panel, panel.Data.Source, x, y, text, _color, size, anchor, weight, style, color, inherit);
+            return Geom_Text(panel, panel.Data.Source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Text<T, TX, TY, TT>(
             this Data<T, TX, TY> data,
             Func<T, TX> x = null,
             Func<T, TY> y = null,
+            Func<T, double> _angle = null,
             Func<T, TT> text = null,
             IAestheticMapping<T, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc",
+            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Text(x, y, text, _color, size, anchor, weight, style, color, inherit);
+            data.Default_Panel().Geom_Text(x, y, _angle, text, _color, size, anchor, weight, style, color, angle, inherit);
 
             return data;
         }
@@ -2238,9 +2263,12 @@ namespace GGNet
         public static Data<T1, TX1, TY1>.PanelFactory Geom_Map<T1, TX1, TY1, T2>(
             this Data<T1, TX1, TY1>.PanelFactory panel,
             Source<T2> source,
-            Func<T2, double[]> latitude,
-            Func<T2, double[]> longitude,
+            Func<T2, Geospacial.Polygon[]> polygons,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
@@ -2249,8 +2277,11 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Map<T2>(source, latitude, longitude, _fill, animation, inherit)
+                var geom = new Map<T2>(source, polygons, _fill, tooltip, animation, inherit)
                 {
+                    OnClick = onclick,
+                    OnMouseOver = onmouseover,
+                    OnMouseOut = onmouseout,
                     Aesthetic = new Rectangle
                     {
                         Fill = fill,
@@ -2269,31 +2300,54 @@ namespace GGNet
         public static Data<T1, TX1, TY1>.PanelFactory Geom_Map<T1, TX1, TY1, T2>(
             this Data<T1, TX1, TY1>.PanelFactory panel,
             IEnumerable<T2> source,
-            Func<T2, double[]> latitude,
-            Func<T2, double[]> longitude,
+            Func<T2, Geospacial.Polygon[]> polygons,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
-            return Geom_Map(panel, new Source<T2>(source), latitude, longitude, _fill, animation, fill, alpha, color, width, inherit);
+            return Geom_Map(panel, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
+        }
+
+        public static Data<T, TX, TY>.PanelFactory Geom_Map<T, TX, TY>(
+            this Data<T, TX, TY>.PanelFactory panel,
+            Geospacial.Polygon[] polygons,
+            IAestheticMapping<Geospacial.Polygon[], string> _fill = null,
+            Func<Geospacial.Polygon[], MouseEventArgs, Task> onclick = null,
+            Func<Geospacial.Polygon[], MouseEventArgs, Task> onmouseover = null,
+            Func<Geospacial.Polygon[], MouseEventArgs, Task> onmouseout = null,
+            Func<Geospacial.Polygon[], (Geospacial.Point point, string content)> tooltip = null,
+            bool animation = false,
+            string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            return Geom_Map(panel, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
             this Data<T1, TX1, TY1> data,
             Source<T2> source,
-            Func<T2, double[]> latitude,
-            Func<T2, double[]> longitude,
+            Func<T2, Geospacial.Polygon[]> polygons,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
-            data.Default_Panel().Geom_Map(source, latitude, longitude, _fill, animation, fill, alpha, color, width, inherit);
+            data.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
 
             return data;
         }
@@ -2301,44 +2355,70 @@ namespace GGNet
         public static Data<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
             this Data<T1, TX1, TY1> data,
             IEnumerable<T2> source,
-            Func<T2, double[]> latitude,
-            Func<T2, double[]> longitude,
+            Func<T2, Geospacial.Polygon[]> polygons,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
-            return Geom_Map(data, new Source<T2>(source), latitude, longitude, _fill, animation, fill, alpha, color, width, inherit);
-        }
-
-        public static Data<T, TX, TY>.PanelFactory Geom_Map<T, TX, TY>(
-            this Data<T, TX, TY>.PanelFactory panel,
-            Func<T, double[]> latitude,
-            Func<T, double[]> longitude,
-            IAestheticMapping<T, string> _fill = null,
-            bool animation = false,
-            string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
-            bool inherit = true)
-            where TX : struct
-            where TY : struct
-        {
-            return Geom_Map(panel, panel.Data.Source, latitude, longitude, _fill, animation, fill, alpha, color, width, inherit);
+            return Geom_Map(data, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Map<T, TX, TY>(
             this Data<T, TX, TY> data,
-            Func<T, double[]> latitude,
-            Func<T, double[]> longitude,
-            IAestheticMapping<T, string> _fill = null,
+            Geospacial.Polygon[] polygons,
+            IAestheticMapping<Geospacial.Polygon[], string> _fill = null,
+            Func<Geospacial.Polygon[], MouseEventArgs, Task> onclick = null,
+            Func<Geospacial.Polygon[], MouseEventArgs, Task> onmouseover = null,
+            Func<Geospacial.Polygon[], MouseEventArgs, Task> onmouseout = null,
+            Func<Geospacial.Polygon[], (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
             bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Map(latitude, longitude, _fill, animation, fill, alpha, color, width, inherit);
+            return Geom_Map(data, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
+        }
+
+        public static Data<T, TX, TY>.PanelFactory Geom_Map<T, TX, TY>(
+            this Data<T, TX, TY>.PanelFactory panel,
+            Func<T, Geospacial.Polygon[]> polygons,
+            IAestheticMapping<T, string> _fill = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, (Geospacial.Point point, string content)> tooltip = null,
+            bool animation = false,
+            string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            return Geom_Map(panel, panel.Data.Source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
+        }
+
+        public static Data<T, TX, TY> Geom_Map<T, TX, TY>(
+            this Data<T, TX, TY> data,
+            Func<T, Geospacial.Polygon[]> polygons,
+            IAestheticMapping<T, string> _fill = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, (Geospacial.Point point, string content)> tooltip = null,
+            bool animation = false,
+            string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+            bool inherit = true)
+            where TX : struct
+            where TY : struct
+        {
+            data.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
 
             return data;
         }

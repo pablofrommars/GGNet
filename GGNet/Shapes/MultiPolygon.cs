@@ -2,7 +2,7 @@
 {
     public class MultiPolygon : Shape
     {
-        public Polygon[] Polygons { get; set; }
+        public Geospacial.Polygon[] Polygons { get; set; }
 
         public Elements.Rectangle Aesthetic { get; set; }
     }

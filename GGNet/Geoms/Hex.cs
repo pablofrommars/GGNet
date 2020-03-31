@@ -142,6 +142,11 @@ namespace GGNet.Geoms
 
             var hex = new Polygon
             {
+                Path = new Geospacial.Polygon
+                {
+                    Longitude = new[] { x + dx, x + dx, x, x - dx, x - dx, x },
+                    Latitude = new[] { y + dy, y - dy, y - 2.0 * dy, y - dy, y + dy, y + 2.0 * dy }
+                },
                 Aesthetic = new Elements.Rectangle
                 {
                     Fill = fill,
@@ -150,13 +155,6 @@ namespace GGNet.Geoms
             };
 
             Layer.Add(hex);
-
-            hex.Points.Add((x + dx, y + dy));
-            hex.Points.Add((x + dx, y - dy));
-            hex.Points.Add((x, y - 2.0 * dy));
-            hex.Points.Add((x - dx, y - dy));
-            hex.Points.Add((x - dx, y + dy));
-            hex.Points.Add((x, y + 2 * dy));
 
             Positions.X.Position.Shape(x - dx, x + dx);
             Positions.Y.Position.Shape(y - 2.0 * dy, y + 2.0 * dy);

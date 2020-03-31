@@ -83,26 +83,7 @@
         {
             if (p.Points.Count > 0)
             {
-                sb.Clear();
-
-                var (x, y) = p.Points[0];
-
-                sb.Append("M ");
-                sb.Append(Coord.CoordX(x));
-                sb.Append(" ");
-                sb.Append(Coord.CoordY(y));
-
-                for (var j = 1; j < p.Points.Count; j++)
-                {
-                    (x, y) = p.Points[j];
-
-                    sb.Append(" L ");
-                    sb.Append(Coord.CoordX(x));
-                    sb.Append(" ");
-                    sb.Append(Coord.CoordY(y));
-                }
-
-                <path d=@sb.ToString()
+                <path d=@(Path(p))
                       fill="none"
                       stroke-width=@p.Aesthetic.Width
                       stroke=@p.Aesthetic.Fill
@@ -115,38 +96,7 @@
         {
             if (a.Points.Count > 0)
             {
-                sb.Clear();
-
-                var (x, ymin, ymax) = a.Points[0];
-
-                sb.Append("M ");
-                sb.Append(Coord.CoordX(x));
-                sb.Append(" ");
-                sb.Append(Coord.CoordY(ymax));
-
-                for (var j = 1; j < a.Points.Count; j++)
-                {
-                    (x, ymin, ymax) = a.Points[j];
-
-                    sb.Append(" L ");
-                    sb.Append(Coord.CoordX(x));
-                    sb.Append(" ");
-                    sb.Append(Coord.CoordY(ymax));
-                }
-
-                for (var j = 0; j < a.Points.Count; j++)
-                {
-                    (x, ymin, ymax) = a.Points[a.Points.Count - j - 1];
-
-                    sb.Append(" L ");
-                    sb.Append(Coord.CoordX(x));
-                    sb.Append(" ");
-                    sb.Append(Coord.CoordY(ymin));
-                }
-
-                sb.Append(" Z");
-
-                <path d=@sb.ToString()
+                <path d=@(Path(a))
                       fill=@a.Aesthetic.Fill
                       fill-opacity=@a.Aesthetic.Alpha
                       clip-path="url(#@(Clip))" />
@@ -154,49 +104,32 @@
         }
         else if (shape is Shapes.Polygon poly)
         {
-            if (poly.Points.Count > 0)
-            {
-                sb.Clear();
-
-                var (x, y) = poly.Points[0];
-
-                sb.Append("M ");
-                sb.Append(Coord.CoordX(x));
-                sb.Append(" ");
-                sb.Append(Coord.CoordY(y));
-
-                for (var j = 1; j < poly.Points.Count; j++)
-                {
-                    (x, y) = poly.Points[j];
-
-                    sb.Append(" L ");
-                    sb.Append(Coord.CoordX(x));
-                    sb.Append(" ");
-                    sb.Append(Coord.CoordY(y));
-                }
-
-                sb.Append(" Z");
-
-                <path d=@sb.ToString()
-                      class=@poly.Css()
-                      fill=@poly.Aesthetic.Fill
-                      fill-opacity=@poly.Aesthetic.Alpha
-                      stroke=@poly.Aesthetic.Color
-                      stroke-width=@poly.Aesthetic.Width
-                      clip-path="url(#@(Clip))" />
-            }
+            <path d=@(Path(poly.Path))
+                  class=@poly.Css()
+                  fill=@poly.Aesthetic.Fill
+                  fill-opacity=@poly.Aesthetic.Alpha
+                  stroke=@poly.Aesthetic.Color
+                  stroke-width=@poly.Aesthetic.Width
+                  clip-path="url(#@(Clip))" />
         }
         else if (shape is Shapes.MultiPolygon multi)
         {
-
+            <path d=@(Path(multi.Polygons))
+                  class=@multi.Css()
+                  fill=@multi.Aesthetic.Fill
+                  fill-opacity=@multi.Aesthetic.Alpha
+                  stroke=@multi.Aesthetic.Color
+                  stroke-width=@multi.Aesthetic.Width
+                  clip-path="url(#@(Clip))"
+                  @onclick=@(async e => await multi.OnClickHandler(e))
+                  @onmouseover=@(async e => await multi.OnMouseOverHandler(e))
+                  @onmouseout=@(async e => await multi.OnMouseOutHandler(e)) />
         }
         else if (shape is Shapes.Text text)
         {
             <g style="pointer-events: none;" clip-path="url(#@(Clip))">
                 <text 
-                      x=@Coord.CoordX(text.X) 
-                      y=@Coord.CoordY(text.Y)
-                      style="fill: @text.Aesthetic.Color; text-anchor: @text.Aesthetic.Anchor; font-size: @text.Aesthetic.Size; font-weigth: @text.Aesthetic.Weight; font-style: @text.Aesthetic.Style;">
+                      style="fill: @text.Aesthetic.Color; text-anchor: @text.Aesthetic.Anchor; font-size: @text.Aesthetic.Size; font-weigth: @text.Aesthetic.Weight; font-style: @text.Aesthetic.Style; transform: translate(@Coord.CoordX(text.X)px, @Coord.CoordY(text.Y)px) rotate(@(text.Aesthetic.Angle)deg);">
                     @text.Value
                 </text>
             </g>
