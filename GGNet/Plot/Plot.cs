@@ -304,23 +304,23 @@ namespace GGNet
             return data;
         }
 
-        public static Data<T, double, TY> Scale_Latitude<T, TY>(
+        public static Data<T, double, TY> Scale_Longitude<T, TY>(
             this Data<T, double, TY> data,
             (double? min, double? max)? limits = null)
             where TY : struct
-            => data.Scale_X_Continuous(null, limits ?? (-180, 180), (0, 0, 0, 0), Latitude.Instance);
+            => data.Scale_X_Continuous(null, limits ?? (-180, 180), (0, 0, 0, 0), Longitude.Instance);
 
-        public static Data<T, TX, double>.PanelFactory Scale_Longitude<T, TX>(
+        public static Data<T, TX, double>.PanelFactory Scale_Latitude<T, TX>(
            this Data<T, TX, double>.PanelFactory panel,
            (double? min, double? max)? limits = null)
            where TX : struct
-           => panel.Scale_Y_Continuous(null, limits ?? (-90, 90), (0, 0, 0, 0), Longitude.Instance);
+           => panel.Scale_Y_Continuous(null, limits ?? (-90, 90), (0, 0, 0, 0), Latitude.Instance);
 
-        public static Data<T, TX, double> Scale_Longitude<T, TX>(
+        public static Data<T, TX, double> Scale_Latitude<T, TX>(
             this Data<T, TX, double> data,
             (double? min, double? max)? limits = null)
             where TX : struct
-            => data.Scale_Y_Continuous(null, limits ?? (-90, 90), (0, 0, 0, 0), Longitude.Instance);
+            => data.Scale_Y_Continuous(null, limits ?? (-90, 90), (0, 0, 0, 0), Latitude.Instance);
 
         public static Data<T, TX, double> YLim<T, TX>(this Data<T, TX, double> data, double? min = null, double? max = null)
            where TX : struct

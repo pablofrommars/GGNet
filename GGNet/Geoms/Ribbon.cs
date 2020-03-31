@@ -162,5 +162,12 @@ namespace GGNet.Geoms
             Positions.YMin.Position.Shape(ymin, ymax);
             Positions.YMax.Position.Shape(ymin, ymax);
         }
+
+        public override void Clear()
+        {
+            base.Clear();
+
+            areas.Clear();
+        }
     }
 }

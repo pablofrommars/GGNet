@@ -71,8 +71,8 @@
 
             map = Plot.New(data)
                 .Geom_Map(o => o.Country.Polygons, tooltip: o => (o.Country.Capital.Point, o.Country.Name), alpha: 0.7, width: 0.2, animation: true)
-                .Scale_Latitude(limits: (-15, 30))
-                .Scale_Longitude(limits: (30, 70))
+                .Scale_Longitude(limits: (-15, 30))
+                .Scale_Latitude(limits: (30, 70))
                 .Scale_Fill_Continuous(o => o.Pop / 1000000, Colors.Brewer.Blues[9], name: "Population (M)")
                 .Theme(theme);
         }

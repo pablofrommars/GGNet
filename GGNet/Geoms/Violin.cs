@@ -344,5 +344,12 @@ namespace GGNet.Geoms
                 throw new NotImplementedException();
             }
         }
+
+        public override void Clear()
+        {
+            base.Clear();
+
+            violins.Clear();
+        }
     }
 }

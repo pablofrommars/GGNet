@@ -150,7 +150,6 @@ namespace GGNet.Geoms
             var ymin = double.MaxValue;
             var ymax = double.MinValue;
 
-
             for (var i = 0; i < polygons.Length; i++)
             {
                 var polygon = polygons[i];

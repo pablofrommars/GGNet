@@ -427,6 +427,8 @@ namespace GGNet.Geoms
 
         public override void Clear()
         {
+            base.Clear();
+
             bars.Clear();
             tooltips.Clear(); 
         }
