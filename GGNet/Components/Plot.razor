@@ -6,7 +6,7 @@
 
 <svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
 
-    <GGNet.Components.Defs.Plot Id=@Id Theme=@Theme />
+    <GGNet.Components.Definitions.Plot Id=@Id Theme=@Theme />
 
     <defs>
         @for (int i = 0; i < Data.Legends.Count; i++)
@@ -50,7 +50,7 @@
 
     </defs>
 
-    <GGNet.Components.Defs.Animation Id=@Id Theme=@Theme />
+    <GGNet.Components.Definitions.Animation Id=@Id Theme=@Theme />
 
     <clipPath id="@(Id)-plot">
         <rect x="0" y="0" width=@Width height=@Height />

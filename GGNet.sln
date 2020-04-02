@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGNet.Static.Demo", "Extens
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "GGNet.FSharp", "Extensions\GGNet.FSharp\GGNet.FSharp.fsproj", "{69F96F5B-70D4-46AE-A9B5-04A804FA5430}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GGNet.NaturalEarth", "Extensions\GGNet.NaturalEarth\GGNet.NaturalEarth.csproj", "{B14324D9-BFA9-4807-A9E8-B87C2E7824E1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GGNet.NaturalEarth", "Extensions\GGNet.NaturalEarth\GGNet.NaturalEarth.csproj", "{B14324D9-BFA9-4807-A9E8-B87C2E7824E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

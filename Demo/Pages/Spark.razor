@@ -2,6 +2,8 @@
 
 @using GGNet
 @using GGNet.Palettes
+@using GGNet.Components
+
 @using Table.Net
 
 <Table Loader="Loader" Context="continent" Small=true>
@@ -18,12 +20,12 @@
         <Cell>@continent.Name</Cell>
         <Cell>
             <div style="width: 150px; height: 50px;">
-                <GGNet.Components.SparkLine Data=@spark1 T=Point TX=Double TY=Double />
+                <SparkLine Data=@spark1 T=Point TX=Double TY=Double />
             </div>
         </Cell>
         <Cell>
             <div style="width: 150px; height: 50px;">
-                <GGNet.Components.SparkLine Data=@spark2 T=Point TX=Double TY=Double RenderPolicy=RenderPolicy.Never  />
+                <SparkLine Data=@spark2 T=Point TX=Double TY=Double RenderPolicy=RenderPolicy.Never  />
             </div>
         </Cell>
     </Row>

@@ -4,41 +4,42 @@
 @using GGNet.Formats
 @using GGNet.Datasets
 @using GGNet.NaturalEarth
+@using GGNet.Components
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px; height: 670px;">
-    <GGNet.Components.Plot Data=@map T=Point TX=Double TY=Double Width=720 Height=670 />
+    <Plot Data=@map T=Point TX=Double TY=Double Width=720 Height=670 />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px;">
-    <GGNet.Components.Plot Data=@diamond T=Diamond.Point TX=Double TY=Double />
+    <Plot Data=@diamond T=Diamond.Point TX=Double TY=Double />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px;">
-    <GGNet.Components.Plot Data=@tipdist T=TipDistribution.Point TX=TipDistribution.Day TY=Double />
+    <Plot Data=@tipdist T=TipDistribution.Point TX=TipDistribution.Day TY=Double />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
-    <GGNet.Components.Plot Data=@tip T=Tip.Point TX=Tip.Day TY=Double />
+    <Plot Data=@tip T=Tip.Point TX=Tip.Day TY=Double />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px;">
-    <GGNet.Components.Plot Data=@gapminder T=GapMinder.Point TX=Double TY=Double />
+    <Plot Data=@gapminder T=GapMinder.Point TX=Double TY=Double />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px;">
-    <GGNet.Components.Plot Data=@beatles T=Beatles.Point TX=Double TY=Double />
+    <Plot Data=@beatles T=Beatles.Point TX=Double TY=Double />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px;">
-    <GGNet.Components.Plot Data=@weapon T=Weapon.Point TX=Double TY=Double />
+    <Plot Data=@weapon T=Weapon.Point TX=Double TY=Double />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
-    <GGNet.Components.Plot Data=@log10 T=Point2 TX=Double TY=Double />
+    <Plot Data=@log10 T=Point2 TX=Double TY=Double />
 </div>
 
 <div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
-    <GGNet.Components.Plot Data=@sqrt T=Point2 TX=Double TY=Double />
+    <Plot Data=@sqrt T=Point2 TX=Double TY=Double />
 </div>
 
 @code {

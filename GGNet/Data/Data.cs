@@ -122,6 +122,10 @@ namespace GGNet
                 {
                     (this as Data<T, LocalDate, TY>).Scale_X_Discrete_Date();
                 }
+                else if (typeof(TX) == typeof(LocalDateTime))
+                {
+                    (this as Data<T, LocalDateTime, TY>).Scale_X_Discrete_DateTime();
+                }
                 else if (typeof(TX) == typeof(double))
                 {
                     (this as Data<T, double, TY>).Scale_X_Continuous();

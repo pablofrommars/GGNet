@@ -8,16 +8,17 @@
 
 @using GGNet
 @using GGNet.Datasets
+@using GGNet.Components
 
 <div class="border rounded-lg p-1" style="width: 720px; background-color: #252A32;">
-    <GGNet.Components.Plot Data=@spy T=SPY.Bar TX=LocalDate TY=Double RenderPolicy=RenderPolicy.Auto @ref=@plot />
+    <Plot Data=@spy T=SPY.Bar TX=LocalDate TY=Double RenderPolicy=RenderPolicy.Auto @ref=@plot />
 </div>
 
 @code {
 
     private Source<SPY.Bar> source;
     private Data<SPY.Bar, LocalDate, double> spy;
-    private GGNet.Components.Plot<SPY.Bar, LocalDate, double> plot;
+    private Plot<SPY.Bar, LocalDate, double> plot;
 
     private SPY.Bar[] bars = SPY.Load();
 
