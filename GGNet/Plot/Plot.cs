@@ -251,6 +251,18 @@ namespace GGNet
             where TY : struct
             => data.Scale_X_Continuous(format, Sqrt.Instance, limits, expand);
 
+        public static Data<T, double, TY> Scale_X_Log10<T, TY>(
+            this Data<T, double, TY> data,
+            (double? min, double? max)? limits = null,
+            (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
+            string format = null)
+            where TY : struct
+        {
+            data.Positions.X.Factory = () => new Scales.Log10(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+
+            return data;
+        }
+
         public static Data<T, TX, double>.PanelFactory Scale_Y_Sqrt<T, TX>(
             this Data<T, TX, double>.PanelFactory panel,
             (double? min, double? max)? limits = null,
@@ -964,6 +976,21 @@ namespace GGNet
             return data;
         }
 
+        public static Data<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2, TX2, TY2>(
+            this Data<T1, TX1, TY1> data,
+            IEnumerable<T2> source,
+            Func<T2, TX2> x,
+            Func<T2, TX2> xend,
+            Func<T2, TY2> y,
+            Func<T2, TY2> yend,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            bool inherit = true)
+            where TX1 : struct
+            where TX2 : struct
+            where TY1 : struct
+            where TY2 : struct
+            => data.Geom_Segment(new Source<T2>(source), x, xend, y, yend, width, color, alpha, lineType, inherit);
+
         public static Data<T, TX, TY>.PanelFactory Geom_Segment<T, TX, TY>(
             this Data<T, TX, TY>.PanelFactory panel,
             Func<T, TX> x,
@@ -1652,6 +1679,117 @@ namespace GGNet
             where TY : struct
         {
             data.Default_Panel().Geom_HLine(y, width, color, alpha, lineType);
+
+            return data;
+        }
+
+        public static Data<T1, TX, TY>.PanelFactory Geom_ABLine<T1, TX, TY, T2>(
+            this Data<T1, TX, TY>.PanelFactory panel,
+            Source<T2> source,
+            Func<T2, double> a,
+            Func<T2, double> b,
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            where TX : struct
+            where TY : struct
+        {
+            panel.Add_Geom(() =>
+            {
+                var geom = new ABLine<T2>(source, a, b, label)
+                {
+                    Line = new Line
+                    {
+                        Width = width,
+                        Fill = color,
+                        Alpha = alpha,
+                        LineType = lineType
+                    },
+                    Text = new Text
+                    {
+                        Size = size ?? new Size { Value = 1.0, Units = Units.em },
+                        Anchor = (anchor == Anchor.end ? Anchor.end : Anchor.start),
+                        Weight = weight,
+                        Style = style,
+                        Color = color,
+                        Alpha = alpha
+                    }
+                };
+
+                return geom;
+            });
+
+            return panel;
+        }
+
+        public static Data<T1, TX, TY>.PanelFactory Geom_ABLine<T1, TX, TY, T2>(
+            this Data<T1, TX, TY>.PanelFactory panel,
+            IEnumerable<T2> source,
+            Func<T2, double> a,
+            Func<T2, double> b,
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            where TX : struct
+            where TY : struct
+        {
+            return panel.Geom_ABLine(new Source<T2>(source), a, b, label, width, color, alpha, lineType, size, anchor, weight, style);
+        }
+
+        public static Data<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
+            this Data<T1, TX, TY> data,
+            Source<T2> source,
+            Func<T2, double> a,
+            Func<T2, double> b,
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            where TX : struct
+            where TY : struct
+        {
+            data.Default_Panel().Geom_ABLine(source, a, b, label, width, color, alpha, lineType, size, anchor, weight, style);
+
+            return data;
+        }
+
+        public static Data<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
+            this Data<T1, TX, TY> data,
+            IEnumerable<T2> source,
+            Func<T2, double> a,
+            Func<T2, double> b,
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            where TX : struct
+            where TY : struct
+        {
+            return data.Geom_ABLine(new Source<T2>(source), a, b, label, width, color, alpha, lineType, size, anchor, weight, style);
+        }
+
+        public static Data<T, TX, TY>.PanelFactory Geom_ABLine<T, TX, TY>(
+            this Data<T, TX, TY>.PanelFactory panel,
+            Func<T, double> a,
+            Func<T, double> b,
+            Func<T, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            where TX : struct
+            where TY : struct
+        {
+            return Geom_ABLine(panel, panel.Data.Source, a, b, label, width, color, alpha, lineType, size, anchor, weight, style);
+        }
+
+        public static Data<T, TX, TY> Geom_ABLine<T, TX, TY>(
+            this Data<T, TX, TY> data,
+            Func<T, double> a,
+            Func<T, double> b,
+            Func<T, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            where TX : struct
+            where TY : struct
+        {
+            data.Default_Panel().Geom_ABLine(a, b, label, width, color, alpha, lineType, size, anchor, weight, style);
 
             return data;
         }

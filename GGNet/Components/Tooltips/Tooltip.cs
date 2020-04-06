@@ -5,6 +5,9 @@ namespace GGNet.Components.Tooltips
     public abstract class Tooltip: ComponentBase, ITooltip
     {
         [Parameter]
+        public string Id{ get; set; }
+
+        [Parameter]
         public ICoord Coord{ get; set; }
 
         [Parameter]

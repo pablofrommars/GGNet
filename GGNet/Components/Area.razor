@@ -54,7 +54,7 @@
                         cy="0"
                         r=@c.Aesthetic.Radius
                         class=@c.Css()
-                        stroke-width="0.71" 
+                        stroke-width="0.71"
                         stroke=@c.Aesthetic.Fill
                         stroke-opacity=@c.Aesthetic.Alpha
                         fill=@c.Aesthetic.Fill
@@ -128,8 +128,7 @@
         else if (shape is Shapes.Text text)
         {
             <g style="pointer-events: none;" clip-path="url(#@(Clip))">
-                <text 
-                      style="fill: @text.Aesthetic.Color; text-anchor: @text.Aesthetic.Anchor; font-size: @text.Aesthetic.Size; font-weigth: @text.Aesthetic.Weight; font-style: @text.Aesthetic.Style; transform: translate(@Coord.CoordX(text.X)px, @Coord.CoordY(text.Y)px) rotate(@(text.Aesthetic.Angle)deg);">
+                <text style="fill: @text.Aesthetic.Color; text-anchor: @text.Aesthetic.Anchor; font-size: @text.Aesthetic.Size; font-weigth: @text.Aesthetic.Weight; font-style: @text.Aesthetic.Style; transform: translate(@Coord.CoordX(text.X)px, @Coord.CoordY(text.Y)px) rotate(@(text.Aesthetic.Angle)deg);">
                     @text.Value
                 </text>
             </g>
@@ -161,6 +160,93 @@
                   stroke-opacity=@hline.Aesthetic.Alpha
                   stroke-dasharray=@(hline.Aesthetic.LineType.DashArray())
                   clip-path="url(#@(Clip))" />
+        }
+        else if (shape is Shapes.ABLine abline)
+        {
+            var ymin = Coord.YTransformation.Apply(abline.A * Coord.XTransformation.Inverse(Coord.XRange.min) + abline.B);
+            var ymax = Coord.YTransformation.Apply(abline.A * Coord.XTransformation.Inverse(Coord.XRange.max) + abline.B);
+
+            var y1 = Coord.CoordY(ymin);
+            var y2 = Coord.CoordY(ymax);
+
+            <line x1=@Zone.X
+                  y1=@y1
+                  x2=@(Zone.X + Zone.Width)
+                  y2=@y2
+                  stroke-width=@abline.Line.Width
+                  stroke=@abline.Line.Fill
+                  stroke-opacity=@abline.Line.Alpha
+                  stroke-dasharray=@(abline.Line.LineType.DashArray())
+                  clip-path="url(#@(Clip))" />
+
+            if (!string.IsNullOrEmpty(abline.Label))
+            {
+                var x = 0.0;
+                var y = 0.0;
+                var offset = 0.05 * Zone.Width;
+
+                var tan = (y1 - y2) / Zone.Width;
+                var angle = Math.Atan(tan);
+
+                if (abline.Text.Anchor == Anchor.end)
+                {
+                    x = Zone.X + Zone.Width;
+                    y = y2;
+
+                    if (angle >= 0)
+                    {
+                        if (ymax > Coord.YRange.max)
+                        {
+                            x = Coord.CoordX(Coord.XTransformation.Apply((Coord.YTransformation.Inverse(Coord.YRange.max) - abline.B) / abline.A));
+                            y = Zone.Y;
+                        }
+                    }
+                    else
+                    {
+                        if (ymax < Coord.YRange.min)
+                        {
+                            x = Coord.CoordX(Coord.XTransformation.Apply((Coord.YTransformation.Inverse(Coord.YRange.min) - abline.B) / abline.A));
+                            y = Zone.Y + Zone.Height;
+                        }
+                    }
+
+                    x -= offset;
+                    y += offset * tan;
+                }
+                else
+                {
+                    x = Zone.X;
+                    y = y1;
+
+                    if (angle >= 0)
+                    {
+                        if (ymin < Coord.YRange.min)
+                        {
+                            x = Coord.CoordX(Coord.XTransformation.Apply((Coord.YTransformation.Inverse(Coord.YRange.min) - abline.B) / abline.A));
+                            y = Zone.Y + Zone.Height;
+                        }
+                    }
+                    else
+                    {
+                        if (ymin < Coord.YRange.max)
+                        {
+                            x = Coord.CoordX(Coord.XTransformation.Apply((Coord.YTransformation.Inverse(Coord.YRange.max) - abline.B) / abline.A));
+                            y = Zone.Y;
+                        }
+                    }
+
+                    x += offset;
+                    y -= offset * tan;
+
+                }
+
+                <g style="pointer-events: none;" clip-path="url(#@(Clip))">
+                    <text style="fill: @abline.Text.Color; fill-opacity: @abline.Text.Alpha; text-anchor: @abline.Text.Anchor; font-size: @abline.Text.Size; font-weigth: @abline.Text.Weight; font-style: @abline.Text.Style; transform: translate(@(x)px, @(y)px) rotate(@(-angle)rad);">
+                        @abline.Label
+                    </text>
+                </g>
+
+            }
         }
     }
 }

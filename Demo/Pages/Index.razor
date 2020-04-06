@@ -42,6 +42,10 @@
     <Plot Data=@sqrt T=Point2 TX=Double TY=Double />
 </div>
 
+<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
+    <Plot Data=@abline T="(double, double)" TX=Double TY=Double />
+</div>
+
 @code {
 
     Data<Point, double, double> map;
@@ -53,6 +57,8 @@
     Data<Weapon.Point, double, double> weapon;
     Data<Point2, double, double> log10;
     Data<Point2, double, double> sqrt;
+
+    Data<(double x, double y), double, double> abline;
 
     protected override void OnInitialized()
     {
@@ -246,6 +252,13 @@
             sqrt = Plot.New(source, o => o.X, o => o.Y)
                 .Geom_Point()
                 .Scale_Y_Sqrt()
+                .Theme();
+        }
+
+        {
+            abline = Plot.New(new[] { (x: 0.0, y: 0.0), (x: 1.0, y: 1.0) }, o => o.x, o => o.y)
+                .Geom_Point()
+                .Geom_ABLine(new[] { (a: -2.0, b: 1.0), (a: 2.0, b: 0.0), (a: 0.5, b: 0.0), (a: -0.5, b: 1.0) }, o => o.a, o => o.b, o => "Label", anchor: Anchor.start)
                 .Theme();
         }
     }

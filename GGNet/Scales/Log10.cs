@@ -2,6 +2,7 @@
 using System.Linq;
 
 using GGNet.Formats;
+using GGNet.Transformations;
 
 namespace GGNet.Scales
 {
@@ -55,6 +56,8 @@ namespace GGNet.Scales
         }
 
         public override double Map(double key) => transformation.Apply(key);
+
+        public override ITransformation<double> RangeTransformation => transformation;
     }
 
     public static class Log10Utils
@@ -101,7 +104,7 @@ namespace GGNet.Scales
                     b += by;
                 }
 
-                if (relevant >= (n - 2))
+                if (relevant >= (n - 3))
                 {
                     return breaks;
                 }

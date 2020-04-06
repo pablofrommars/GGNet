@@ -1,0 +1,34 @@
+﻿@page "/covid19"
+
+@inject HttpClient Http
+
+@using GGNet
+@using GGNet.Components
+
+
+@if (plot != null)
+{
+    <div style="width: 720px;">
+        <Plot Data=@plot T=TS TX=Double TY=Double Width=720 Height=576 />
+    </div>
+}
+
+@code {
+    Data<TS, double, double> plot;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var data = await GetData();
+
+        plot = Plot.New(data.Where(o => o.DeathsCumulative >= 5 && !string.IsNullOrEmpty(o.Country.Continent)), o => o.ConfirmedCumulative, o => o.DeathsCumulative)
+            .Title("Case Fatality Rate")
+            .Geom_ABLine(new[] { 0.005, 0.01, 0.02, 0.05, 0.1 }, o => o, o => 0, o => $"{o:P2}".Replace(".00", ""), color: "rgba(0, 0, 0, 0.3)", lineType: LineType.Dotted)
+            .Geom_Point(size: 3, alpha: 0.5)
+            .Scale_X_Log10()
+            .XLab("Confirmed Cases - Log")
+            .Scale_Y_Log10()
+            .YLab("Confirmed Deaths - Log")
+            .Scale_Color_Discrete(o => o.Country.Continent, Colors.Viridis)
+            .Theme(dark: false);
+    }
+}

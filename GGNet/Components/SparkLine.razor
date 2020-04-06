@@ -19,5 +19,5 @@
 
     <Area T=T TX=TX TY=TY Data=@Panel Coord=@this Zone=@Area Clip=@(Id + "-" + Panel.Id + "-area") RenderPolicy=@renderChildPolicy />
 
-    <GGNet.Components.Tooltips.SparkLine Coord=@this Area=@Area Theme=@Theme @ref=@tooltip />
+    <GGNet.Components.Tooltips.SparkLine Id=@Id Coord=@this Area=@Area Theme=@Theme @ref=@tooltip />
 </svg>

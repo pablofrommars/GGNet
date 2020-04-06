@@ -37,6 +37,8 @@ namespace GGNet.NaturalEarth
 
         [Key(6)]
         public Point Centroid { get; set; }
+
+        public override string ToString() => $"{A2} - {Name}";
     }
 
     [MessagePackObject]

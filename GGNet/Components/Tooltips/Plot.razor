@@ -5,7 +5,7 @@
     <defs>
         <style type="text/css">
 
-            [role^="tooltip"] {
+            #@(Id) [role^="tooltip"] {
                 --tooltip-color: @color;
                 --tooltip-alpha: @alpha;
                 --tooltip-theme-color: @themeColor;
@@ -16,23 +16,23 @@
                 overflow: visible;
             }
 
-                [role^="tooltip"] + div {
+                #@(Id) [role^="tooltip"] + div {
                     position: relative;
                     pointer-events: none;
                 }
 
-                [role^="tooltip"] .arrow {
+                #@(Id) [role^="tooltip"] .arrow {
                     position: absolute;
                 }
 
-                    [role^="tooltip"] .arrow::before {
+                    #@(Id) [role^="tooltip"] .arrow::before {
                         position: absolute;
                         content: '';
                         border: 5px solid transparent;
                         pointer-events: none;
                     }
 
-                [role^="tooltip"] .bubble {
+                #@(Id) [role^="tooltip"] .bubble {
                     position: absolute;
                     border-radius: @(Theme.Tooltip.Radius);
                     padding: @(Theme.Tooltip.Margin.Top)@(Theme.Tooltip.Margin.Units) @(Theme.Tooltip.Margin.Right)@(Theme.Tooltip.Margin.Units) @(Theme.Tooltip.Margin.Bottom)@(Theme.Tooltip.Margin.Units) @(Theme.Tooltip.Margin.Left)@(Theme.Tooltip.Margin.Units);
@@ -54,58 +54,58 @@
                 }
             }
 
-            [role^="tooltip"] .arrow::before,
-            [role^="tooltip"] .bubble {
+            #@(Id) [role^="tooltip"] .arrow::before,
+            #@(Id) [role^="tooltip"] .bubble {
                 animation: fadein var(--tooltip-fadein-duration) linear forwards;
             }
 
-            [role^="tooltip-top"] .arrow::before {
+            #@(Id) [role^="tooltip-top"] .arrow::before {
                 border-bottom-width: 0;
                 border-top-color: var(--tooltip-theme-color);
                 bottom: 100%;
                 transform: translate(-50%, -.5em);
             }
 
-            [role^="tooltip-top"] .bubble {
+            #@(Id) [role^="tooltip-top"] .bubble {
                 bottom: calc(100% + 5px);
             }
 
-            [role^="tooltip-top"][role$="start"] .bubble {
+            #@(Id) [role^="tooltip-top"][role$="start"] .bubble {
                 transform: translate(-75%, -0.48em);
             }
 
-            [role^="tooltip-top"][role$="center"] .bubble {
+            #@(Id) [role^="tooltip-top"][role$="center"] .bubble {
                 transform: translate(-50%, -0.48em);
             }
 
-            [role^="tooltip-top"][role$="end"] .bubble {
+            #@(Id) [role^="tooltip-top"][role$="end"] .bubble {
                 transform: translate(-25%, -0.48em);
             }
 
-            [role^="tooltip-bottom"] .arrow::before {
+            #@(Id) [role^="tooltip-bottom"] .arrow::before {
                 border-top-width: 0;
                 border-bottom-color: var(--tooltip-theme-color);
                 top: 100%;
                 transform: translate(-50%, .5em);
             }
 
-            [role^="tooltip-bottom"] .bubble {
+            #@(Id) [role^="tooltip-bottom"] .bubble {
                 top: calc(100% + 5px);
             }
 
-            [role^="tooltip-bottom"][role$="start"] .bubble {
+            #@(Id) [role^="tooltip-bottom"][role$="start"] .bubble {
                 transform: translate(-75%, 0.48em);
             }
 
-            [role^="tooltip-bottom"][role$="center"] .bubble {
+            #@(Id) [role^="tooltip-bottom"][role$="center"] .bubble {
                 transform: translate(-50%, 0.48em);
             }
 
-            [role^="tooltip-bottom"][role$="end"] .bubble {
+            #@(Id) [role^="tooltip-bottom"][role$="end"] .bubble {
                 transform: translate(-25%, 0.48em);
             }
 
-            [role^="tooltip-left"] .arrow::before {
+            #@(Id) [role^="tooltip-left"] .arrow::before {
                 border-right-width: 0;
                 border-left-color: var(--tooltip-theme-color);
                 top: 50%;
@@ -113,24 +113,24 @@
                 transform: translate(-.5em, -50%);
             }
 
-            [role^="tooltip-left"] .bubble {
+            #@(Id) [role^="tooltip-left"] .bubble {
                 top: 50%;
                 right: calc(100% + 5px);
             }
 
-            [role^="tooltip-left"][role$="start"] .bubble {
+            #@(Id) [role^="tooltip-left"][role$="start"] .bubble {
                 transform: translate(-0.48em, -75%);
             }
 
-            [role^="tooltip-left"][role$="center"] .bubble {
+            #@(Id) [role^="tooltip-left"][role$="center"] .bubble {
                 transform: translate(-0.48em, -50%);
             }
 
-            [role^="tooltip-left"][role$="end"] .bubble {
+            #@(Id) [role^="tooltip-left"][role$="end"] .bubble {
                 transform: translate(-0.48em, -25%);
             }
 
-            [role^="tooltip-right"] .arrow::before {
+            #@(Id) [role^="tooltip-right"] .arrow::before {
                 border-left-width: 0;
                 border-right-color: var(--tooltip-theme-color);
                 top: 50%;
@@ -138,20 +138,20 @@
                 transform: translate(.5em, -50%);
             }
 
-            [role^="tooltip-right"] .bubble {
+            #@(Id) [role^="tooltip-right"] .bubble {
                 top: 50%;
                 left: calc(100% + 5px);
             }
 
-            [role^="tooltip-right"][role$="start"] .bubble {
+            #@(Id) [role^="tooltip-right"][role$="start"] .bubble {
                 transform: translate(0.48em, -75%);
             }
 
-            [role^="tooltip-right"][role$="center"] .bubble {
+            #@(Id) [role^="tooltip-right"][role$="center"] .bubble {
                 transform: translate(0.48em, -50%);
             }
 
-            [role^="tooltip-right"][role$="end"] .bubble {
+            #@(Id) [role^="tooltip-right"][role$="end"] .bubble {
                 transform: translate(0.48em, -25%);
             }
         </style>

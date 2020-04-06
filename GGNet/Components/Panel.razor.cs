@@ -7,6 +7,7 @@ using GGNet.Scales;
 using static System.Math;
 
 using static GGNet.Position;
+using GGNet.Transformations;
 
 namespace GGNet.Components
 {
@@ -204,6 +205,14 @@ namespace GGNet.Components
 
         public double CoordX(double value) => Area.X + xscale.Coord(value) * Area.Width;
 
+        public (double min, double max) XRange => xscale.Range;
+
+        public ITransformation<double> XTransformation => xscale.RangeTransformation;
+
         public double CoordY(double value) => Area.Y + (1 - yscale.Coord(value)) * Area.Height;
+
+        public (double min, double max) YRange => yscale.Range;
+
+        public ITransformation<double> YTransformation => yscale.RangeTransformation;
     }
 }

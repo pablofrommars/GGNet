@@ -63,6 +63,8 @@ namespace GGNet.Scales
         }
 
         public override double Map(double key) => transformation.Apply(key);
+
+        public override ITransformation<double> RangeTransformation => transformation;
     }
 
     public static class Wilkinson

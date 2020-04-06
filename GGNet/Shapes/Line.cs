@@ -26,4 +26,17 @@
 
         public Elements.Line Aesthetic { get; set; }
     }
+
+    public class ABLine : Shape
+    {
+        public double A { get; set; }
+
+        public double B { get; set; }
+
+        public string Label { get; set; }
+
+        public Elements.Line Line { get; set; }
+
+        public Elements.Text Text { get; set; }
+    }
 }

@@ -28,6 +28,8 @@ namespace GGNet.Scales
 
         public (double min, double max) Range { get; protected set; }
 
+        public virtual ITransformation<double> RangeTransformation { get; } = Transformations.Identity<double>.Instance;
+
         protected void SetRange(double min, double max)
         {
             if (min == max)
