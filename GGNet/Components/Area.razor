@@ -141,11 +141,36 @@
                   y1=@Zone.Y
                   x2=@x
                   y2=@(Zone.Y + Zone.Height)
-                  stroke-width=@vline.Aesthetic.Width
-                  stroke=@vline.Aesthetic.Fill
-                  stroke-opacity=@vline.Aesthetic.Alpha
-                  stroke-dasharray=@(vline.Aesthetic.LineType.DashArray())
+                  stroke-width=@vline.Line.Width
+                  stroke=@vline.Line.Fill
+                  stroke-opacity=@vline.Line.Alpha
+                  stroke-dasharray=@(vline.Line.LineType.DashArray())
                   clip-path="url(#@(Clip))" />
+
+            if (!string.IsNullOrEmpty(vline.Label))
+            {
+                var offset = 0.025 * Zone.Height;
+
+                var y = 0.0;
+                var angle = 0.0;
+
+                if (vline.Text.Anchor == Anchor.end)
+                {
+                    y = Zone.Y + offset;
+                    angle = 90;
+                }
+                else
+                {
+                    y = Zone.Y + Zone.Height - offset;
+                    angle = -90;
+                }
+
+                <g style="pointer-events: none;" clip-path="url(#@(Clip))">
+                    <text style="fill: @vline.Text.Color; fill-opacity: @vline.Text.Alpha; text-anchor: @Anchor.start; font-size: @vline.Text.Size; font-weigth: @vline.Text.Weight; font-style: @vline.Text.Style; transform: translate(@(x)px, @(y)px) rotate(@(angle)deg);">
+                        @vline.Label
+                    </text>
+                </g>
+            }
         }
         else if (shape is Shapes.HLine hline)
         {
@@ -155,11 +180,33 @@
                   y1=@y
                   x2=@(Zone.X + Zone.Width)
                   y2=@y
-                  stroke-width=@hline.Aesthetic.Width
-                  stroke=@hline.Aesthetic.Fill
-                  stroke-opacity=@hline.Aesthetic.Alpha
-                  stroke-dasharray=@(hline.Aesthetic.LineType.DashArray())
+                  stroke-width=@hline.Line.Width
+                  stroke=@hline.Line.Fill
+                  stroke-opacity=@hline.Line.Alpha
+                  stroke-dasharray=@(hline.Line.LineType.DashArray())
                   clip-path="url(#@(Clip))" />
+
+            if (!string.IsNullOrEmpty(hline.Label))
+            {
+                var offset = 0.025 * Zone.Width;
+
+                var x = 0.0;
+
+                if (hline.Text.Anchor == Anchor.end)
+                {
+                    x = Zone.X + Zone.Width - offset;
+                }
+                else
+                {
+                    x = Zone.X + offset;
+                }
+
+                <g style="pointer-events: none;" clip-path="url(#@(Clip))">
+                    <text style="fill: @hline.Text.Color; fill-opacity: @hline.Text.Alpha; text-anchor: @hline.Text.Anchor; font-size: @hline.Text.Size; font-weigth: @hline.Text.Weight; font-style: @hline.Text.Style; transform: translate(@(x)px, @(y)px);">
+                        @hline.Label
+                    </text>
+                </g>
+            }
         }
         else if (shape is Shapes.ABLine abline)
         {
@@ -245,7 +292,6 @@
                         @abline.Label
                     </text>
                 </g>
-
             }
         }
     }

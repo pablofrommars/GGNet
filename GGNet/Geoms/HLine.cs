@@ -13,18 +13,22 @@ namespace GGNet.Geoms
         public HLine(
             Source<T> source,
             Func<T, TY> y,
+            Func<T, string> label,
             Buffer<Shape> layer = null)
             : base(source, false, layer)
         {
             Selectors = new _Selectors
             {
                 Y = y,
+                Label = label
             };
         }
 
         public class _Selectors
         {
             public Func<T, TY> Y { get; set; }
+
+            public Func<T, string> Label { get; set; }
         }
 
         public _Selectors Selectors { get; }
@@ -36,7 +40,9 @@ namespace GGNet.Geoms
 
         public _Positions Positions { get; } = new _Positions();
 
-        public Elements.Line Aesthetic { get; set; }
+        public Elements.Line Line { get; set; }
+
+        public Elements.Text Text { get; set; }
 
         public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
         {
@@ -54,13 +60,19 @@ namespace GGNet.Geoms
         {
             var y = Positions.Y.Map(item);
 
+            string label = null;
+            if (Selectors.Label != null)
+            {
+                label = Selectors.Label(item);
+            }
+
             Layer.Add(new HLine
             {
                 Y = y,
-                Aesthetic = Aesthetic
+                Label = label,
+                Line = Line,
+                Text = Text
             });
-
-            //Positions.Y.Position.Shape(y, y);
         }
     }
 }

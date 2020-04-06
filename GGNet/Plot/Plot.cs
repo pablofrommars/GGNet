@@ -1511,21 +1511,32 @@ namespace GGNet
             this Data<T1, TX1, TY>.PanelFactory panel,
             Source<T2> source,
             Func<T2, TX2> x = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX1 : struct
             where TX2 : struct
             where TY : struct
         {
             panel.Add_Geom(() =>
             {
-                var geom = new VLine<T2, TX2, TY>(source, x)
+                var geom = new VLine<T2, TX2, TY>(source, x, label)
                 {
-                    Aesthetic = new Line
+                    Line = new Line
                     {
                         Width = width,
                         Fill = color,
                         Alpha = alpha,
                         LineType = lineType
+                    },
+                    Text = new Text
+                    {
+                        Size = size ?? new Size { Value = 1.0, Units = Units.em },
+                        Anchor = (anchor == Anchor.end ? Anchor.end : Anchor.start),
+                        Weight = weight,
+                        Style = style,
+                        Color = color,
+                        Alpha = alpha
                     }
                 };
 
@@ -1539,24 +1550,28 @@ namespace GGNet
             this Data<T1, TX1, TY>.PanelFactory panel,
             IEnumerable<T2> source,
             Func<T2, TX2> x = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX1 : struct
             where TX2 : struct
             where TY : struct
         {
-            return panel.Geom_VLine(new Source<T2>(source), x, width, color, alpha, lineType);
+            return panel.Geom_VLine(new Source<T2>(source), x, label, width, color, alpha, lineType, size, anchor, weight, style);
         }
 
         public static Data<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
             this Data<T1, TX1, TY> data,
             Source<T2> source,
             Func<T2, TX2> x = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX1 : struct
             where TX2 : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_VLine(source, x, width, color, alpha, lineType);
+            data.Default_Panel().Geom_VLine(source, x, label, width, color, alpha, lineType, size, anchor, weight, style);
 
             return data;
         }
@@ -1565,32 +1580,38 @@ namespace GGNet
             this Data<T1, TX1, TY> data,
             IEnumerable<T2> source,
             Func<T2, TX2> x = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX1 : struct
             where TX2 : struct
             where TY : struct
         {
-            return data.Geom_VLine(new Source<T2>(source), x, width, color, alpha, lineType);
+            return data.Geom_VLine(new Source<T2>(source), x, label, width, color, alpha, lineType, size, anchor, weight, style);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_VLine<T, TX, TY>(
             this Data<T, TX, TY>.PanelFactory panel,
             Func<T, TX> x = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
-            return Geom_VLine(panel, panel.Data.Source, x, width, color, alpha, lineType);
+            return Geom_VLine(panel, panel.Data.Source, x, label, width, color, alpha, lineType, size, anchor, weight, style);
         }
 
         public static Data<T, TX, TY> Geom_VLine<T, TX, TY>(
             this Data<T, TX, TY> data,
             Func<T, TX> x = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_VLine(x, width, color, alpha, lineType);
+            data.Default_Panel().Geom_VLine(x, label, width, color, alpha, lineType, size, anchor, weight, style);
 
             return data;
         }
@@ -1599,21 +1620,32 @@ namespace GGNet
             this Data<T1, TX, TY1>.PanelFactory panel,
             Source<T2> source,
             Func<T2, TY2> y = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY1 : struct
             where TY2 : struct
         {
             panel.Add_Geom(() =>
             {
-                var geom = new HLine<T2, TX, TY2>(source, y)
+                var geom = new HLine<T2, TX, TY2>(source, y, label)
                 {
-                    Aesthetic = new Line
+                    Line = new Line
                     {
                         Width = width,
                         Fill = color,
                         Alpha = alpha,
                         LineType = lineType
+                    },
+                    Text = new Text
+                    {
+                        Size = size ?? new Size { Value = 1.0, Units = Units.em },
+                        Anchor = (anchor == Anchor.end ? Anchor.end : Anchor.start),
+                        Weight = weight,
+                        Style = style,
+                        Color = color,
+                        Alpha = alpha
                     }
                 };
 
@@ -1627,24 +1659,28 @@ namespace GGNet
             this Data<T1, TX, TY1>.PanelFactory panel,
             IEnumerable<T2> source,
             Func<T2, TY2> y = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_HLine(new Source<T2>(source), y, width, color, alpha, lineType);
+            return panel.Geom_HLine(new Source<T2>(source), y, label, width, color, alpha, lineType, size, anchor, weight, style);
         }
 
         public static Data<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
             this Data<T1, TX, TY1> data,
             Source<T2> source,
             Func<T2, TY2> y = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_HLine(source, y, width, color, alpha, lineType);
+            data.Default_Panel().Geom_HLine(source, y, label, width, color, alpha, lineType, size, anchor, weight, style);
 
             return data;
         }
@@ -1653,32 +1689,38 @@ namespace GGNet
             this Data<T1, TX, TY1> data,
             IEnumerable<T2> source,
             Func<T2, TY2> y = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T2, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_HLine(new Source<T2>(source), y, width, color, alpha, lineType);
+            return data.Geom_HLine(new Source<T2>(source), y, label, width, color, alpha, lineType, size, anchor, weight, style);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_HLine<T, TX, TY>(
             this Data<T, TX, TY>.PanelFactory panel,
             Func<T, TY> y = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
-            return Geom_HLine(panel, panel.Data.Source, y, width, color, alpha, lineType);
+            return Geom_HLine(panel, panel.Data.Source, y, label, width, color, alpha, lineType, size, anchor, weight, style);
         }
 
         public static Data<T, TX, TY> Geom_HLine<T, TX, TY>(
             this Data<T, TX, TY> data,
             Func<T, TY> y = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            Func<T, string> label = null,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_HLine(y, width, color, alpha, lineType);
+            data.Default_Panel().Geom_HLine(y, label, width, color, alpha, lineType, size, anchor, weight, style);
 
             return data;
         }

@@ -17,14 +17,22 @@
     {
         public double X { get; set; }
 
-        public Elements.Line Aesthetic { get; set; }
+        public string Label { get; set; }
+
+        public Elements.Line Line { get; set; }
+
+        public Elements.Text Text { get; set; }
     }
 
     public class HLine : Shape
     {
         public double Y { get; set; }
 
-        public Elements.Line Aesthetic { get; set; }
+        public string Label { get; set; }
+
+        public Elements.Line Line { get; set; }
+
+        public Elements.Text Text { get; set; }
     }
 
     public class ABLine : Shape
