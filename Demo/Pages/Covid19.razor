@@ -1,6 +1,7 @@
 ﻿@page "/covid19"
 
 @inject HttpClient Http
+@inject NavigationManager Navigation
 
 @using GGNet
 @using GGNet.Components
@@ -11,24 +12,80 @@
     <div style="width: 720px;">
         <Plot Data=@plot T=TS TX=Double TY=Double Width=720 Height=576 />
     </div>
+
+    <div style="width: 720px;">
+        <Plot Data=@plot2 T="(TS, double)" TX=Double TY=Double Width=720 Height=576 />
+    </div>
+
+    <div style="width: 720px;">
+        <Plot Data=@plot3 T="(TS, double)" TX=Double TY=Double Width=720 Height=576 />
+    </div>
+
+    <div style="width: 720px;">
+        <Plot Data=@plot4 T="(TS, double)" TX=Double TY=Double Width=720 Height=576 />
+    </div>
 }
 
 @code {
     Data<TS, double, double> plot;
+    Data<(TS ts, double age), double, double> plot2;
+    Data<(TS ts, double obesity), double, double> plot3;
+    Data<(TS ts, double probability), double, double> plot4;
 
     protected override async Task OnInitializedAsync()
     {
         var data = await GetData();
+        var ageData = await GetAgeData();
+        var obesityData = await GetObesityData();
+        var probabilityData = await GetProbabilityData();
 
         plot = Plot.New(data.Where(o => o.DeathsCumulative >= 5 && !string.IsNullOrEmpty(o.Country.Continent)), o => o.ConfirmedCumulative, o => o.DeathsCumulative)
             .Title("Case Fatality Rate")
             .Geom_ABLine(new[] { 0.005, 0.01, 0.02, 0.05, 0.1 }, o => o, o => 0, o => $"{o:P2}".Replace(".00", ""), color: "rgba(0, 0, 0, 0.3)", lineType: LineType.Dotted)
-            .Geom_Point(size: 3, alpha: 0.5)
+            .Geom_Point(size: 3, alpha: 0.5, animation: true)
             .Scale_X_Log10()
             .XLab("Confirmed Cases - Log")
             .Scale_Y_Log10()
             .YLab("Confirmed Deaths - Log")
             .Scale_Color_Discrete(o => o.Country.Continent, Colors.Viridis)
+            .Theme(dark: false);
+
+        var age = data
+            .Where(o => o.Population > 0 && o.DeathsCumulative > 5 && !string.IsNullOrEmpty(o.Country.Continent))
+            .Join(ageData, o => o.Country.A3, o => o.a3, (o, p) => (ts: o, age: p.age60_))
+            .ToList();
+
+        plot2 = Plot.New(age, o => o.age / 100, o => o.ts.DeathsCumulative / o.ts.Population * 1000000.0)
+            .Title("Proportion of Population above 60")
+            .Geom_Point(size: 3, alpha: 0.5, animation: true)
+            .Scale_X_Continuous(format: "P2")
+            .Scale_Y_Log10()
+            .YLab("Confirmed Deaths / Million - Log")
+            .Scale_Color_Discrete(o => o.ts.Country.Continent, Colors.Viridis)
+            .Theme(dark: false);
+
+        var obesity = data
+           .Where(o => o.Population > 0 && o.DeathsCumulative > 5 && !string.IsNullOrEmpty(o.Country.Continent))
+           .Join(obesityData, o => o.Country.A3, o => o.a3, (o, p) => (ts: o, obesity: p.obesity))
+           .ToList();
+
+        plot3 = Plot.New(obesity, o => o.obesity, o => o.ts.DeathsCumulative / o.ts.Population * 1000000.0)
+            .Geom_Point(size: 3, alpha: 0.5, animation: true)
+            .Scale_Y_Log10()
+            .YLab("Confirmed Deaths / Million - Log")
+            .Scale_Color_Discrete(o => o.ts.Country.Continent, Colors.Viridis)
+            .Theme(dark: false);
+
+        var probability = data
+           .Where(o => o.Population > 0 && o.DeathsCumulative > 5 && !string.IsNullOrEmpty(o.Country.Continent))
+           .Join(probabilityData, o => o.Country.A3, o => o.a3, (o, p) => (ts: o, probability: p.probability))
+           .ToList();
+
+        plot4 = Plot.New(probability, o => o.probability, o => o.ts.DeathsCumulative / o.ts.Population * 1000000.0)
+            .Geom_Point(size: 3, alpha: 0.5, animation: true)
+            .Scale_Y_Log10()
+            .YLab("Confirmed Deaths / Million - Log")
+            .Scale_Color_Discrete(o => o.ts.Country.Continent, Colors.Viridis)
             .Theme(dark: false);
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components;
 using NodaTime;
 
 using GGNet.NaturalEarth;
+using System;
 
 namespace Demo.Pages
 {
@@ -220,6 +221,72 @@ namespace Demo.Pages
             }
 
             return stats;
+        }
+
+        private async Task<List<(string a3, double age60_, double age40_59, double age_20_39)>> GetAgeData()
+        {
+            var csv = await Http.GetStringAsync(Navigation.ToAbsoluteUri("data/Age.csv"));
+
+            var data = csv
+                .Split('\n')
+                .Skip(1)
+                .Select(line =>
+                {
+                    var fields = line.Split(',');
+
+                    var a3 = fields[0];
+
+                    var age60_ = double.Parse(fields[1]);
+                    var age40_59 = double.Parse(fields[2]);
+                    var age20_39 = double.Parse(fields[3]);
+
+                    return (a3, age60_, age40_59, age20_39);
+                })
+                .ToList();
+
+            return data;
+        }
+
+        private async Task<List<(string a3, double obesity)>> GetObesityData()
+        {
+            var csv = await Http.GetStringAsync(Navigation.ToAbsoluteUri("data/Obesity.csv"));
+
+            var data = csv
+                .Split('\n')
+                .Skip(1)
+                .Select(line =>
+                {
+                    var fields = line.Split(',');
+
+                    var a3 = fields[0];
+                    var obesity = double.Parse(fields[1]);
+
+                    return (a3, obesity);
+                })
+                .ToList();
+
+            return data;
+        }
+
+        private async Task<List<(string a3, double probability)>> GetProbabilityData()
+        {
+            var csv = await Http.GetStringAsync(Navigation.ToAbsoluteUri("data/Probability.csv"));
+
+            var data = csv
+                .Split('\n')
+                .Skip(1)
+                .Select(line =>
+                {
+                    var fields = line.Split(',');
+
+                    var a3 = fields[0];
+                    var probability = double.Parse(fields[1]);
+
+                    return (a3, probability);
+                })
+                .ToList();
+
+            return data;
         }
     }
 

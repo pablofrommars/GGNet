@@ -16,13 +16,13 @@
     <RepositoryUrl>https://github.com/pablofrommars/GGNet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp</PackageTags>
-    <Version>1.1.7</Version>
+    <Version>1.1.8</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="3.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="5.0.0-preview.2.20167.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.0-preview.2.20167.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0-preview.2.20160.3" />
   </ItemGroup>
 
   <ItemGroup>
