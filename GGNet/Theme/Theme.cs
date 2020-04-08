@@ -1,9 +1,6 @@
 ﻿namespace GGNet
 {
-    using Elements;
-
     using static Position;
-    using static Units;
 
     public partial class Theme
     {
@@ -24,17 +21,6 @@
             Animation = new _Animation();
 
             Tooltip = new _Tooltip();
-            
-            YLabel = new Text
-            {
-                Size = new Size
-                {
-                    Value = 0.75,
-                    Units = em
-                },
-                Color = dark ? "#252A32" : "#FFFFFF",
-                Fill = dark ? "#FFFFFF" : "#252A32"
-            };
         }
 
         public string FontFamily { get; set; }
@@ -52,8 +38,6 @@
         public _Animation Animation { get; set; }
 
         public _Tooltip Tooltip { get; set; }
-
-        public Text YLabel { get; set; }
 
         public static Theme Default(bool dark = true, Position axisY = Left, Position legend = Right) => new Theme(dark, axisY, legend);
     }

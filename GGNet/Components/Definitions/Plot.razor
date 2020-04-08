@@ -51,16 +51,28 @@
             fill: @(Theme.Plot.Caption.Color);
         }
 
-        #@(Id) .gridMajor {
+        #@(Id) .gridMajorX {
             stroke-width: @(Theme.Panel.Grid.Major.X.Width);
             stroke: @(Theme.Panel.Grid.Major.X.Fill);
             stroke-opacity: @(Theme.Panel.Grid.Major.X.Alpha);
         }
 
-        #@(Id) .gridMinor {
+        #@(Id) .gridMinorX {
             stroke-width: @(Theme.Panel.Grid.Minor.X.Width);
             stroke: @(Theme.Panel.Grid.Minor.X.Fill);
             stroke-opacity: @(Theme.Panel.Grid.Minor.X.Alpha);
+        }
+
+        #@(Id) .gridMajorY {
+            stroke-width: @(Theme.Panel.Grid.Major.Y.Width);
+            stroke: @(Theme.Panel.Grid.Major.Y.Fill);
+            stroke-opacity: @(Theme.Panel.Grid.Major.Y.Alpha);
+        }
+
+        #@(Id) .gridMinorY {
+            stroke-width: @(Theme.Panel.Grid.Minor.Y.Width);
+            stroke: @(Theme.Panel.Grid.Minor.Y.Fill);
+            stroke-opacity: @(Theme.Panel.Grid.Minor.Y.Alpha);
         }
 
         #@(Id) .axisTextX {
@@ -93,14 +105,6 @@
             font-weight: @(Theme.Axis.Title.Y.Weight);
             font-style: @(Theme.Axis.Title.Y.Style);
             fill: @(Theme.Axis.Title.Y.Color);
-        }
-
-        #@(Id) .yLabel {
-            text-anchor: @(Theme.YLabel.Anchor);
-            font-size: @(Theme.YLabel.Size);
-            font-weight: @(Theme.YLabel.Weight);
-            font-style: @(Theme.YLabel.Style);
-            fill: @(Theme.YLabel.Color);
         }
 
         #@(Id) .legendTitle {

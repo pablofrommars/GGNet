@@ -54,16 +54,22 @@
     var y1 = Area.Y;
     var y2 = Area.Y + Area.Height;
 
-    foreach (var b in xscale.Breaks)
+    if (Data.Data.Theme.Panel.Grid.Major.X.Width > 0)
     {
-        var x = CoordX(b);
-        <line x1=@x x2=@x y1=@y1 y2=@y2 class="gridMajor" clip-path="url(#@(clip)-area)" />
+        foreach (var b in xscale.Breaks)
+        {
+            var x = CoordX(b);
+            <line x1=@x x2=@x y1=@y1 y2=@y2 class="gridMajorX" clip-path="url(#@(clip)-area)" />
+        }
     }
 
-    foreach (var b in xscale.MinorBreaks)
+    if (Data.Data.Theme.Panel.Grid.Minor.X.Width > 0)
     {
-        var x = CoordX(b);
-        <line x1=@x x2=@x y1=@y1 y2=@y2 class="gridMinor" clip-path="url(#@(clip)-area)" />
+        foreach (var b in xscale.MinorBreaks)
+        {
+            var x = CoordX(b);
+            <line x1=@x x2=@x y1=@y1 y2=@y2 class="gridMinorX" clip-path="url(#@(clip)-area)" />
+        }
     }
 
     if (Data.Axis.x)
@@ -98,16 +104,23 @@
     var x1 = Area.X;
     var x2 = Area.X + Area.Width;
 
-    foreach (var b in yscale.Breaks)
+
+    if (Data.Data.Theme.Panel.Grid.Major.Y.Width > 0)
     {
-        var y = CoordY(b);
-        <line x1=@x1 x2=@x2 y1=@y y2=@y class="gridMajor" clip-path="url(#@(clip)-area)" />
+        foreach (var b in yscale.Breaks)
+        {
+            var y = CoordY(b);
+            <line x1=@x1 x2=@x2 y1=@y y2=@y class="gridMajorY" clip-path="url(#@(clip)-area)" />
+        }
     }
 
-    foreach (var b in yscale.MinorBreaks)
+    if (Data.Data.Theme.Panel.Grid.Minor.Y.Width > 0)
     {
-        var y = CoordY(b);
-        <line x1=@x1 x2=@x2 y1=@y y2=@y class="gridMinor" clip-path="url(#@(clip)-area)" />
+        foreach (var b in yscale.MinorBreaks)
+        {
+            var y = CoordY(b);
+            <line x1=@x1 x2=@x2 y1=@y y2=@y class="gridMinorY" clip-path="url(#@(clip)-area)" />
+        }
     }
 
     if (Data.Axis.y)

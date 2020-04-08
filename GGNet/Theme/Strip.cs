@@ -15,7 +15,7 @@
         {
             public _Text(bool dark)
             {
-                var color = dark ? "#929299" : "#2b2b2b";
+                var color = dark ? "#929299" : "#212529";
 
                 X = new Text()
                 {

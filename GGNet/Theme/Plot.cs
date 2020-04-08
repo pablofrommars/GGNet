@@ -13,7 +13,7 @@
             {
                 Background = new Rectangle
                 {
-                    Fill = dark ? "#252A32" : "#FFFFFF"
+                    Fill = dark ? "#343a40" : "#FFFFFF"
                 };
 
                 Title = new Text
@@ -25,7 +25,7 @@
                     },
                     Anchor = start,
                     Weight = "bold",
-                    Color = dark ? "#FFFFFF" : "#2b2b2b"
+                    Color = dark ? "#FFFFFF" : "#212529"
                 };
 
                 Title.Margin.Bottom = 8;
@@ -42,7 +42,7 @@
 
                 if (!dark)
                 {
-                    SubTitle.Color = "#2b2b2b";
+                    SubTitle.Color = "#212529";
                 }
 
                 SubTitle.Margin.Bottom = 8;
@@ -65,7 +65,7 @@
 
                 if (!dark)
                 {
-                    Caption.Color = "#2b2b2b";
+                    Caption.Color = "#212529";
                 }
             }
 

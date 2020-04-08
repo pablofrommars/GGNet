@@ -18,7 +18,7 @@
     <Plot Data=@tipdist T=TipDistribution.Point TX=TipDistribution.Day TY=Double />
 </div>
 
-<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
+<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #343a40;">
     <Plot Data=@tip T=Tip.Point TX=Tip.Day TY=Double />
 </div>
 
@@ -34,15 +34,16 @@
     <Plot Data=@weapon T=Weapon.Point TX=Double TY=Double />
 </div>
 
-<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
+<div class="border rounded-lg m-5 p-1" style="        width: 720px;
+        background-color: #263238;">
     <Plot Data=@log10 T=Point2 TX=Double TY=Double />
 </div>
 
-<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
+<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #343a40;">
     <Plot Data=@sqrt T=Point2 TX=Double TY=Double />
 </div>
 
-<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #263238;">
+<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #343a40;">
     <Plot Data=@abline T="(double, double)" TX=Double TY=Double />
 </div>
 
@@ -180,13 +181,16 @@
                 [3.0] = "2010"
             };
 
+            var theme = Theme.Default(dark: false);
+            theme.Panel.Grid.Major.X.Width = 0;
+
             beatles = Plot.New(source, x: X, y: o => o.N)
                  .Geom_Bar(tooltip: o => $"<b>{o.Name}:</b> {o.N}", position: PositionAdjustment.Stack, width: 0.5, alpha: 0.7)
                  .Scale_X_Discrete(expand: (0.0, 0.1, 0, 0.1), formatter: labeller)
                  .Scale_Fill_Discrete(o => o.Name, Colors.Brewer.YlGnBu[4], direction: -1)
                  .YLab("#")
                  .XLab("Year")
-                 .Theme(dark: false);
+                 .Theme(theme);
         }
         {
             var n = 15;
@@ -207,13 +211,16 @@
 
             var source = new Source<Weapon.Point>(data);
 
+            var theme = Theme.Default(dark: false);
+            theme.Panel.Grid.Major.Y.Width = 0;
+
             weapon = Plot.New(source, o => o.Value, o => o.Id)
                 .Geom_Bar(tooltip: o => $"{o.Value}", fill: "#69b3a2", alpha: 0.7)
                 .Scale_Y_Discrete(expand: (0.0, 0.1, 0, 0.1), formatter: labeller)
                 .Flip()
                 .XLab("Weapon Quantity")
                 .Caption("SIPRI trend-indicator value")
-                .Theme(dark: false);
+                .Theme(theme);
         }
 
         {

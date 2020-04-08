@@ -1,5 +1,5 @@
 [![License](https://img.shields.io/github/license/BlazorExtensions/Storage.svg?longCache=true&style=flat-square)](https://github.com/pablofrommars/GGNet/blob/master/LICENSE.TXT)
-[![Package Version](https://img.shields.io/badge/nuget-v1.3.11-blue.svg?longCache=true&style=flat-square)](https://www.nuget.org/packages/GGNet/1.3.11)
+[![Package Version](https://img.shields.io/badge/nuget-v1.3.12-blue.svg?longCache=true&style=flat-square)](https://www.nuget.org/packages/GGNet/1.3.12)
 # GG.Net Data Visualization
 
 GG.Net lets Data Scientists and Developers create interactive and flexible charts for .NET and [Blazor](https://dotnet.microsoft.com/apps/aspnet/web-apps/blazor) Web Apps.
@@ -17,6 +17,6 @@ Taking its inspiration from the highly popular [ggpplot2](https://ggplot2.tidyve
 ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/barplot.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/stacked.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/hbarplot.png)
 ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/lolipop.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/errorbar.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/violin.png)
 ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/hex.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/ridgeline.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/choropleth.png)
-![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/sparkline.png) |  | 
+![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/sparkline.png) |  ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/CFR.png) | 
  
 ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/bubblemap.png)

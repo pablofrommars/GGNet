@@ -16,7 +16,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Product>GGNet Data Visualization</Product>
     <RepositoryType>git</RepositoryType>
-    <Version>1.3.11</Version>
+    <Version>1.3.12</Version>
   </PropertyGroup>
 
   <ItemGroup>

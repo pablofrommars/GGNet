@@ -8,7 +8,7 @@
         {
             Background = new Rectangle
             {
-                Fill = dark ? "#252A32" : "#FFFFFF"
+                Fill = dark ? "#343a40" : "#FFFFFF"
             };
 
             var color = dark ? "#464950" : "#cccccc";
