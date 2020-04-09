@@ -19,9 +19,10 @@ namespace GGNet.Geoms
             IAestheticMapping<T, string> fill = null,
             Func<T, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
+            (bool x, bool y)? scale = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
-            : base(source, inherit, layer)
+            : base(source, scale, inherit, layer)
         {
             Selectors = new _Selectors
             {
@@ -210,8 +211,15 @@ namespace GGNet.Geoms
 
             Layer.Add(multi);
 
-            Positions.X.Position.Shape(xmin, xmax);
-            Positions.Y.Position.Shape(ymin, ymax);
+            if (scale.x)
+            {
+                Positions.X.Position.Shape(xmin, xmax);
+            }
+
+            if (scale.y)
+            {
+                Positions.Y.Position.Shape(ymin, ymax);
+            }
         }
     }
 }

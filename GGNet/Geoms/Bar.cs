@@ -38,9 +38,10 @@ namespace GGNet.Geoms
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
             bool animation = false,
+            (bool x, bool y)? scale = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
-            : base(source, inherit, layer)
+            : base(source, scale, inherit, layer)
         {
             Selectors = new _Selectors
             {
@@ -294,8 +295,15 @@ namespace GGNet.Geoms
                         sum += value;
                     }
 
-                    Positions.X.Position.Shape(0, sum);
-                    Positions.Y.Position.Shape(x - delta, x + delta);
+                    if (scale.x)
+                    {
+                        Positions.X.Position.Shape(0, sum);
+                    }
+
+                    if (scale.y)
+                    {
+                        Positions.Y.Position.Shape(x - delta, x + delta);
+                    }
                 }
             }
             else
@@ -332,8 +340,15 @@ namespace GGNet.Geoms
                         sum += value;
                     }
 
-                    Positions.X.Position.Shape(x - delta, x + delta);
-                    Positions.Y.Position.Shape(0, sum);
+                    if (scale.x)
+                    {
+                        Positions.X.Position.Shape(x - delta, x + delta);
+                    }
+
+                    if (scale.y)
+                    {
+                        Positions.Y.Position.Shape(0, sum);
+                    }
                 }
             }
         }
@@ -390,15 +405,21 @@ namespace GGNet.Geoms
 
                         Layer.Add(rect);
 
-                        Positions.X.Position.Shape(x, x + w);
-
-                        if (value >= 0)
+                        if (scale.x)
                         {
-                            Positions.Y.Position.Shape(0, value);
+                            Positions.X.Position.Shape(x, x + w);
                         }
-                        else
+
+                        if (scale.y)
                         {
-                            Positions.Y.Position.Shape(value, 0);
+                            if (value >= 0)
+                            {
+                                Positions.Y.Position.Shape(0, value);
+                            }
+                            else
+                            {
+                                Positions.Y.Position.Shape(value, 0);
+                            }
                         }
 
                         tooltips[item] = (x + w / 2.0, value);

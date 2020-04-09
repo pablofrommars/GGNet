@@ -19,9 +19,10 @@ namespace GGNet.Geoms
             Func<T, TY> y,
             Func<T, double> height,
             IAestheticMapping<T, string> fill = null,
+            (bool x, bool y)? scale = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
-            : base(source, inherit, layer)
+            : base(source, scale, inherit, layer)
         {
             Selectors = new _Selectors
             {
@@ -160,12 +161,18 @@ namespace GGNet.Geoms
             }
 
             var height = Selectors.Height(item);
-             
 
             area.Points.Add((x, y, y + height));
 
-            Positions.X.Position.Shape(x, x);
-            Positions.Y.Position.Shape(y, y + height);
+            if (scale.x)
+            {
+                Positions.X.Position.Shape(x, x);
+            }
+
+            if (scale.y)
+            {
+                Positions.Y.Position.Shape(y, y + height);
+            }
         }
 
         public override void Clear()

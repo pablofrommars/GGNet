@@ -15,7 +15,7 @@ namespace GGNet.Geoms
             Func<T, string> label,
             (bool x, bool y)? transformation = null,
             Buffer<Shape> layer = null)
-            : base(source, false, layer)
+            : base(source, null, false, layer)
         {
             this.transformation = transformation ?? (true, true);
 

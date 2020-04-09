@@ -22,8 +22,9 @@ namespace GGNet.Geoms
             Func<T, TY> high,
             Func<T, TY> low,
             Func<T, TY> close,
+            (bool x, bool y)? scale = null,
             Buffer<Shape> layer = null)
-            : base(source, false, layer)
+            : base(source, scale, false, layer)
         {
             Selectors = new _Selectors
             {

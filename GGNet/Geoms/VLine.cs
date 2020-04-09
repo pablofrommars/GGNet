@@ -15,7 +15,7 @@ namespace GGNet.Geoms
             Func<T, TX> x,
             Func<T, string> label,
             Buffer<Shape> layer = null)
-            : base(source, false, layer)
+            : base(source, null, false, layer)
         {
             Selectors = new _Selectors
             {

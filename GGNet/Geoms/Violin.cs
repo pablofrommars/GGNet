@@ -30,9 +30,10 @@ namespace GGNet.Geoms
             Func<T, double> width,
             IAestheticMapping<T, string> fill = null,
             PositionAdjustment position = PositionAdjustment.Identity,
+            (bool x, bool y)? scale = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
-            : base(source, inherit, layer)
+            : base(source, scale, inherit, layer)
         {
             Selectors = new _Selectors
             {
@@ -321,8 +322,15 @@ namespace GGNet.Geoms
 
                     Layer.Add(poly);
 
-                    Positions.X.Position.Shape(xmin, xmax);
-                    Positions.Y.Position.Shape(violin.Value[0].y, violin.Value[N - 1].y);
+                    if (scale.x)
+                    {
+                        Positions.X.Position.Shape(xmin, xmax);
+                    }
+
+                    if (scale.y)
+                    {
+                        Positions.Y.Position.Shape(violin.Value[0].y, violin.Value[N - 1].y);
+                    }
 
                     c += w;
                 }

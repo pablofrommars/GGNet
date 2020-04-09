@@ -19,8 +19,9 @@ namespace GGNet.Geoms
             Func<T, TY> y,
             Func<T, double> width,
             Func<T, double> height,
+            (bool x, bool y)? scale = null,
             Buffer<Shape> layer = null)
-            : base(source, false, layer)
+            : base(source, scale, false, layer)
         {
             Selectors = new _Selectors
             {
@@ -130,8 +131,15 @@ namespace GGNet.Geoms
 
             Layer.Add(rectangle);
 
-            Positions.X.Position.Shape(x, x + width);
-            Positions.Y.Position.Shape(y, y + height);
+            if (scale.x)
+            {
+                Positions.X.Position.Shape(x, x + width);
+            }
+
+            if (scale.y)
+            {
+                Positions.Y.Position.Shape(y, y + height);
+            }
         }
     }
 }

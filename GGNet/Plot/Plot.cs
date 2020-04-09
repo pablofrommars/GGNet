@@ -493,7 +493,7 @@ namespace GGNet
             Func<T2, string> tooltip = null,
             bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -501,7 +501,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Point<T2, TX2, TY2>(source, x, y, _size, _color, tooltip, animation, inherit)
+                var geom = new Point<T2, TX2, TY2>(source, x, y, _size, _color, tooltip, animation, scale, inherit)
                 {
                     OnClick = onclick,
                     OnMouseOver = onmouseover,
@@ -533,13 +533,13 @@ namespace GGNet
             Func<T2, string> tooltip = null,
             bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
+            return panel.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
@@ -555,13 +555,13 @@ namespace GGNet
             Func<T2, string> tooltip = null,
             bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
+            data.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
 
             return data;
         }
@@ -579,13 +579,13 @@ namespace GGNet
             Func<T2, string> tooltip = null,
             bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
+            return data.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Point<T, TX, TY>(
@@ -600,11 +600,11 @@ namespace GGNet
             Func<T, string> tooltip = null,
             bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Point(panel, panel.Data.Source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
+            return Geom_Point(panel, panel.Data.Source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Point<T, TX, TY>(
@@ -619,11 +619,11 @@ namespace GGNet
             Func<T, string> tooltip = null,
             bool animation = false,
             double size = 5, string color = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Point(x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, inherit);
+            data.Default_Panel().Geom_Point(x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
 
             return data;
         }
@@ -640,7 +640,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onmouseout = null,
             Func<T2, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -648,7 +648,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Line<T2, TX2, TY2>(source, x, y, _color, _lineType, tooltip, inherit)
+                var geom = new Line<T2, TX2, TY2>(source, x, y, _color, _lineType, tooltip, scale, inherit)
                 {
                     Aesthetic = new Line
                     {
@@ -680,13 +680,13 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onmouseout = null,
             Func<T2, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
+            return panel.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
@@ -701,13 +701,13 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onmouseout = null,
             Func<T2, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
+            data.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
 
             return data;
         }
@@ -724,13 +724,13 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onmouseout = null,
             Func<T2, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
+            return data.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Line<T, TX, TY>(
@@ -744,11 +744,11 @@ namespace GGNet
             Func<T, MouseEventArgs, Task> onmouseout = null,
             Func<T, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Line(panel, panel.Data.Source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
+            return Geom_Line(panel, panel.Data.Source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Line<T, TX, TY>(
@@ -762,11 +762,11 @@ namespace GGNet
             Func<T, MouseEventArgs, Task> onmouseout = null,
             Func<T, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, inherit);
+            data.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
 
             return data;
         }
@@ -785,7 +785,7 @@ namespace GGNet
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
             bool animation = false,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -793,7 +793,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Bar<T2, TX2, TY2>(source, x, y, _fill, tooltip, position, width, animation, inherit)
+                var geom = new Bar<T2, TX2, TY2>(source, x, y, _fill, tooltip, position, width, animation, scale, inherit)
                 {
                     OnClick = onclick,
                     OnMouseOver = onmouseover,
@@ -825,13 +825,13 @@ namespace GGNet
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
             bool animation = false,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, inherit);
+            return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
@@ -848,13 +848,13 @@ namespace GGNet
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
             bool animation = false,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, inherit);
+            data.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
 
             return data;
         }
@@ -873,13 +873,13 @@ namespace GGNet
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
             bool animation = false,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, inherit);
+            return data.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Bar<T, TX, TY>(
@@ -895,11 +895,11 @@ namespace GGNet
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
             bool animation = false,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Bar(panel, panel.Data.Source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, inherit);
+            return Geom_Bar(panel, panel.Data.Source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Bar<T, TX, TY>(
@@ -915,11 +915,11 @@ namespace GGNet
             PositionAdjustment position = PositionAdjustment.Stack,
             double width = 0.9,
             bool animation = false,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, inherit);
+            data.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
 
             return data;
         }
@@ -932,7 +932,7 @@ namespace GGNet
             Func<T2, TY2> y,
             Func<T2, TY2> yend,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -965,13 +965,13 @@ namespace GGNet
             Func<T2, TY2> y,
             Func<T2, TY2> yend,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Segment(source, x, xend, y, yend, width, color, alpha, lineType, inherit);
+            data.Default_Panel().Geom_Segment(source, x, xend, y, yend, width, color, alpha, lineType, scale, inherit);
 
             return data;
         }
@@ -984,12 +984,12 @@ namespace GGNet
             Func<T2, TY2> y,
             Func<T2, TY2> yend,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
-            => data.Geom_Segment(new Source<T2>(source), x, xend, y, yend, width, color, alpha, lineType, inherit);
+            => data.Geom_Segment(new Source<T2>(source), x, xend, y, yend, width, color, alpha, lineType, scale, inherit);
 
         public static Data<T, TX, TY>.PanelFactory Geom_Segment<T, TX, TY>(
             this Data<T, TX, TY>.PanelFactory panel,
@@ -998,11 +998,11 @@ namespace GGNet
             Func<T, TY> y,
             Func<T, TY> yend,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Segment(panel, panel.Data.Source, x, xend, y, yend, width, color, alpha, lineType, inherit);
+            return Geom_Segment(panel, panel.Data.Source, x, xend, y, yend, width, color, alpha, lineType, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Segment<T, TX, TY>(
@@ -1012,11 +1012,11 @@ namespace GGNet
             Func<T, TY> y,
             Func<T, TY> yend,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Segment(x, xend, y, yend, width, color, alpha, lineType, inherit);
+            data.Default_Panel().Geom_Segment(x, xend, y, yend, width, color, alpha, lineType, scale, inherit);
 
             return data;
         }
@@ -1028,7 +1028,8 @@ namespace GGNet
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            PositionAdjustment position = PositionAdjustment.Identity,
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -1036,7 +1037,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Area<T2, TX2, TY2>(source, x, y, _fill, inherit)
+                var geom = new Area<T2, TX2, TY2>(source, x, y, _fill, position, scale, inherit)
                 {
                     Aesthetic = new Rectangle
                     {
@@ -1058,13 +1059,14 @@ namespace GGNet
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            PositionAdjustment position = PositionAdjustment.Identity,
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Area(new Source<T2>(source), x, y, _fill, fill, alpha, inherit);
+            return panel.Geom_Area(new Source<T2>(source), x, y, _fill, fill, alpha, position, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1074,13 +1076,14 @@ namespace GGNet
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            PositionAdjustment position = PositionAdjustment.Identity,
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Area(source, x, y, _fill, fill, alpha, inherit);
+            data.Default_Panel().Geom_Area(source, x, y, _fill, fill, alpha, position, scale, inherit);
 
             return data;
         }
@@ -1092,13 +1095,14 @@ namespace GGNet
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            PositionAdjustment position = PositionAdjustment.Identity,
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Area(new Source<T2>(source), x, y, _fill, fill, alpha, inherit);
+            return data.Geom_Area(new Source<T2>(source), x, y, _fill, fill, alpha, position, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Area<T, TX, TY>(
@@ -1107,11 +1111,12 @@ namespace GGNet
             Func<T, TY> y = null,
             IAestheticMapping<T, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            PositionAdjustment position = PositionAdjustment.Identity,
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Area(panel, panel.Data.Source, x, y, _fill, fill, alpha, inherit);
+            return Geom_Area(panel, panel.Data.Source, x, y, _fill, fill, alpha, position, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Area<T, TX, TY>(
@@ -1120,11 +1125,12 @@ namespace GGNet
             Func<T, TY> y = null,
             IAestheticMapping<T, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            PositionAdjustment position = PositionAdjustment.Identity,
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Area(x, y, _fill, fill, alpha, inherit);
+            data.Default_Panel().Geom_Area(x, y, _fill, fill, alpha, position, scale, inherit);
 
             return data;
         }
@@ -1137,7 +1143,7 @@ namespace GGNet
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -1145,7 +1151,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Ribbon<T2, TX2, TY2>(source, x, ymin, ymax, _fill, inherit)
+                var geom = new Ribbon<T2, TX2, TY2>(source, x, ymin, ymax, _fill, scale, inherit)
                 {
                     Aesthetic = new Rectangle
                     {
@@ -1168,13 +1174,13 @@ namespace GGNet
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, fill, alpha, inherit);
+            return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, fill, alpha, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1185,13 +1191,13 @@ namespace GGNet
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, fill, alpha, inherit);
+            data.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, fill, alpha, scale, inherit);
 
             return data;
         }
@@ -1204,13 +1210,13 @@ namespace GGNet
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, fill, alpha, inherit);
+            return data.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, fill, alpha, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Ribbon<T, TX, TY>(
@@ -1220,11 +1226,11 @@ namespace GGNet
             Func<T, TY> ymax = null,
             IAestheticMapping<T, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Ribbon(panel, panel.Data.Source, x, ymin, ymax, _fill, fill, alpha, inherit);
+            return Geom_Ribbon(panel, panel.Data.Source, x, ymin, ymax, _fill, fill, alpha, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Ribbon<T, TX, TY>(
@@ -1234,11 +1240,11 @@ namespace GGNet
             Func<T, TY> ymax = null,
             IAestheticMapping<T, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, fill, alpha, inherit);
+            data.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, fill, alpha, scale, inherit);
 
             return data;
         }
@@ -1254,7 +1260,7 @@ namespace GGNet
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -1262,7 +1268,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new ErrorBar<T2, TX2, TY2>(source, x, y, ymin, ymax, _color, position, inherit)
+                var geom = new ErrorBar<T2, TX2, TY2>(source, x, y, ymin, ymax, _color, position, scale, inherit)
                 {
                     Line = new Line
                     {
@@ -1296,13 +1302,13 @@ namespace GGNet
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, inherit);
+            return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1316,13 +1322,13 @@ namespace GGNet
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, inherit);
+            data.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, scale, inherit);
 
             return data;
         }
@@ -1338,13 +1344,13 @@ namespace GGNet
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, inherit);
+            return data.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_ErrorBar<T, TX, TY>(
@@ -1357,11 +1363,11 @@ namespace GGNet
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_ErrorBar(panel, panel.Data.Source, x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, inherit);
+            return Geom_ErrorBar(panel, panel.Data.Source, x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
@@ -1374,11 +1380,11 @@ namespace GGNet
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, inherit);
+            data.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, scale, inherit);
 
             return data;
         }
@@ -1392,7 +1398,7 @@ namespace GGNet
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
             Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -1400,7 +1406,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Text<T2, TX2, TY2, TT>(source, x, y, _angle, text, _color, inherit)
+                var geom = new Text<T2, TX2, TY2, TT>(source, x, y, _angle, text, _color, scale, inherit)
                 {
                     Aesthetic = new Text
                     {
@@ -1428,13 +1434,13 @@ namespace GGNet
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
             Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, inherit);
+            return panel.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
@@ -1446,13 +1452,13 @@ namespace GGNet
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
             Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Text(source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, inherit);
+            data.Default_Panel().Geom_Text(source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
 
             return data;
         }
@@ -1466,13 +1472,13 @@ namespace GGNet
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
             Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, inherit);
+            return data.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Text<T, TX, TY, TT>(
@@ -1483,11 +1489,11 @@ namespace GGNet
             Func<T, TT> text = null,
             IAestheticMapping<T, string> _color = null,
             Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Text(panel, panel.Data.Source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, inherit);
+            return Geom_Text(panel, panel.Data.Source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Text<T, TX, TY, TT>(
@@ -1498,11 +1504,11 @@ namespace GGNet
             Func<T, TT> text = null,
             IAestheticMapping<T, string> _color = null,
             Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Text(x, y, _angle, text, _color, size, anchor, weight, style, color, angle, inherit);
+            data.Default_Panel().Geom_Text(x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
 
             return data;
         }
@@ -2099,7 +2105,7 @@ namespace GGNet
             Func<T2, TY2> dy = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -2107,7 +2113,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Hex<T2, TX2, TY2>(source, x, y, dx, dy, _fill, inherit)
+                var geom = new Hex<T2, TX2, TY2>(source, x, y, dx, dy, _fill, scale, inherit)
                 {
                     Aesthetic = new Rectangle
                     {
@@ -2131,13 +2137,13 @@ namespace GGNet
             Func<T2, TY2> dy = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, fill, alpha, inherit);
+            return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, fill, alpha, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2149,13 +2155,13 @@ namespace GGNet
             Func<T2, TY2> dy = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, fill, alpha, inherit);
+            data.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, fill, alpha, scale, inherit);
 
             return data;
         }
@@ -2169,13 +2175,13 @@ namespace GGNet
             Func<T2, TY2> dy = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, fill, alpha, inherit);
+            return data.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, fill, alpha, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Hex<T, TX, TY>(
@@ -2186,11 +2192,11 @@ namespace GGNet
             Func<T, TY> dy = null,
             IAestheticMapping<T, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Hex(panel, panel.Data.Source, x, y, dx, dy, _fill, fill, alpha, inherit);
+            return Geom_Hex(panel, panel.Data.Source, x, y, dx, dy, _fill, fill, alpha, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Hex<T, TX, TY>(
@@ -2201,11 +2207,11 @@ namespace GGNet
             Func<T, TY> dy = null,
             IAestheticMapping<T, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, fill, alpha, inherit);
+            data.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, fill, alpha, scale, inherit);
 
             return data;
         }
@@ -2218,7 +2224,7 @@ namespace GGNet
             Func<T2, double> height = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -2226,7 +2232,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new RidgeLine<T2, TX2, TY2>(source, x, y, height, _fill, inherit)
+                var geom = new RidgeLine<T2, TX2, TY2>(source, x, y, height, _fill, scale, inherit)
                 {
                     Aesthetic = new Rectangle
                     {
@@ -2249,13 +2255,13 @@ namespace GGNet
             Func<T2, double> height = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, inherit);
+            return panel.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2266,13 +2272,13 @@ namespace GGNet
             Func<T2, double> height = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_RidgeLine(source, x, y, height, _fill, fill, alpha, inherit);
+            data.Default_Panel().Geom_RidgeLine(source, x, y, height, _fill, fill, alpha, scale, inherit);
 
             return data;
         }
@@ -2285,13 +2291,13 @@ namespace GGNet
             Func<T2, double> height = null,
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, inherit);
+            return data.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_RidgeLine<T, TX, TY>(
@@ -2301,11 +2307,11 @@ namespace GGNet
             Func<T, double> height = null,
             IAestheticMapping<T, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_RidgeLine(panel, panel.Data.Source, x, y, height, _fill, fill, alpha, inherit);
+            return Geom_RidgeLine(panel, panel.Data.Source, x, y, height, _fill, fill, alpha, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_RidgeLine<T, TX, TY>(
@@ -2315,11 +2321,11 @@ namespace GGNet
             Func<T, double> height = null,
             IAestheticMapping<T, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_RidgeLine(x, y, height, _fill, fill, alpha, inherit);
+            data.Default_Panel().Geom_RidgeLine(x, y, height, _fill, fill, alpha, scale, inherit);
 
             return data;
         }
@@ -2333,7 +2339,7 @@ namespace GGNet
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0, string color = "null",
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -2341,7 +2347,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Violin<T2, TX2, TY2>(source, x, y, width, _fill, position, inherit)
+                var geom = new Violin<T2, TX2, TY2>(source, x, y, width, _fill, position, scale, inherit)
                 {
                     Aesthetic = new Rectangle
                     {
@@ -2367,13 +2373,13 @@ namespace GGNet
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0, string color = null,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, inherit);
+            return panel.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2385,13 +2391,13 @@ namespace GGNet
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0, string color = null,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Violin(source, x, y, width, _fill, fill, alpha, color, position, inherit);
+            data.Default_Panel().Geom_Violin(source, x, y, width, _fill, fill, alpha, color, position, scale, inherit);
 
             return data;
         }
@@ -2405,13 +2411,13 @@ namespace GGNet
             IAestheticMapping<T2, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0, string color = null,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, inherit);
+            return data.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Violin<T, TX, TY>(
@@ -2422,11 +2428,11 @@ namespace GGNet
             IAestheticMapping<T, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0, string color = null,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Violin(panel, panel.Data.Source, x, y, width, _fill, fill, alpha, color, position, inherit);
+            return Geom_Violin(panel, panel.Data.Source, x, y, width, _fill, fill, alpha, color, position, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Violin<T, TX, TY>(
@@ -2437,11 +2443,11 @@ namespace GGNet
             IAestheticMapping<T, string> _fill = null,
             string fill = "#23d0fc", double alpha = 1.0, string color = null,
             PositionAdjustment position = PositionAdjustment.Identity,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Violin(x, y, width, _fill, fill, alpha, color, position, inherit);
+            data.Default_Panel().Geom_Violin(x, y, width, _fill, fill, alpha, color, position, scale, inherit);
 
             return data;
         }
@@ -2457,13 +2463,13 @@ namespace GGNet
             Func<T2, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Map<T2>(source, polygons, _fill, tooltip, animation, inherit)
+                var geom = new Map<T2>(source, polygons, _fill, tooltip, animation, scale, inherit)
                 {
                     OnClick = onclick,
                     OnMouseOver = onmouseover,
@@ -2494,11 +2500,11 @@ namespace GGNet
             Func<T2, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
-            return Geom_Map(panel, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
+            return Geom_Map(panel, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Map<T, TX, TY>(
@@ -2511,11 +2517,11 @@ namespace GGNet
             Func<Geospacial.Polygon[], (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Map(panel, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
+            return Geom_Map(panel, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
@@ -2529,11 +2535,11 @@ namespace GGNet
             Func<T2, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
-            data.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
+            data.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
 
             return data;
         }
@@ -2549,11 +2555,11 @@ namespace GGNet
             Func<T2, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TY1 : struct
         {
-            return Geom_Map(data, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
+            return Geom_Map(data, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Map<T, TX, TY>(
@@ -2566,11 +2572,11 @@ namespace GGNet
             Func<Geospacial.Polygon[], (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Map(data, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
+            return Geom_Map(data, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Map<T, TX, TY>(
@@ -2583,11 +2589,11 @@ namespace GGNet
             Func<T, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Map(panel, panel.Data.Source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
+            return Geom_Map(panel, panel.Data.Source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Map<T, TX, TY>(
@@ -2600,11 +2606,11 @@ namespace GGNet
             Func<T, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
-            bool inherit = true)
+            (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, inherit);
+            data.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
 
             return data;
         }
@@ -2860,6 +2866,8 @@ namespace GGNet
         public static (T? min, T? max)? Limits<T>(T? min, T? max)
              where T : struct
              => (min, max);
+
+        public static (bool x, bool y)? Scale(bool x, bool y) => (x, y);
 
         #endregion
     }

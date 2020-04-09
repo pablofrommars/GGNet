@@ -25,14 +25,16 @@ namespace GGNet.Geoms
         where TY : struct
     {
         protected readonly Source<T> source;
+        protected readonly (bool x, bool y) scale;
         protected readonly bool inherit;
 
         private Facet<T> facet;
         internal Legends legends;
 
-        public Geom(Source<T> source, bool inherit, Buffer<Shape> layer)
+        public Geom(Source<T> source, (bool x, bool y)? scale, bool inherit, Buffer<Shape> layer)
         {
             this.source = source;
+            this.scale = scale ?? (true, true);
             this.inherit = inherit;
 
             Layer = layer ?? new Buffer<Shape>();

@@ -17,9 +17,10 @@ namespace GGNet.Geoms
             Func<T, TX> Dx,
             Func<T, TY> Dy,
             IAestheticMapping<T, string> fill = null,
+            (bool x, bool y)? scale = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
-            : base(source, inherit, layer)
+            : base(source, scale, inherit, layer)
         {
             Selectors = new _Selectors
             {
@@ -156,8 +157,15 @@ namespace GGNet.Geoms
 
             Layer.Add(hex);
 
-            Positions.X.Position.Shape(x - dx, x + dx);
-            Positions.Y.Position.Shape(y - 2.0 * dy, y + 2.0 * dy);
+            if (scale.x)
+            {
+                Positions.X.Position.Shape(x - dx, x + dx);
+            }
+
+            if (scale.y)
+            {
+                Positions.Y.Position.Shape(y - 2.0 * dy, y + 2.0 * dy);
+            }
         }
     }
 }

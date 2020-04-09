@@ -19,7 +19,7 @@ namespace GGNet.Geoms
             Func<T, TY> y,
             Func<T, double> width,
             Buffer<Shape> layer = null)
-            : base(source, false, layer)
+            : base(source, null, false, layer)
         {
             Selectors = new _Selectors
             {

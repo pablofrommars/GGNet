@@ -21,8 +21,9 @@ namespace GGNet.Geoms
             Func<T, TX> xend,
             Func<T, TY> y,
             Func<T, TY> yend,
+            (bool x, bool y)? scale = null,
             Buffer<Shape> layer = null)
-            : base(source, false, layer)
+            : base(source, scale, false, layer)
         {
             Selectors = new _Selectors
             {
@@ -118,8 +119,15 @@ namespace GGNet.Geoms
 
             Layer.Add(line);
 
-            Positions.X.Position.Shape(Min(x, xend), Max(x, xend));
-            Positions.Y.Position.Shape(Min(y, yend), Max(y, yend));
+            if (scale.x)
+            {
+                Positions.X.Position.Shape(Min(x, xend), Max(x, xend));
+            }
+
+            if (scale.y)
+            {
+                Positions.Y.Position.Shape(Min(y, yend), Max(y, yend));
+            }
         }
     }
 }

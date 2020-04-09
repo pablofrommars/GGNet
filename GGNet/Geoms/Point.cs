@@ -23,9 +23,10 @@ namespace GGNet.Geoms
             IAestheticMapping<T, string> color,
             Func<T, string> tooltip = null,
             bool animation = false,
+            (bool x, bool y)? scale = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
-            : base(source, inherit, layer)
+            : base(source, scale, inherit, layer)
         {
             Selectors = new _Selectors
             {
@@ -228,8 +229,15 @@ namespace GGNet.Geoms
 
             Layer.Add(circle);
 
-            Positions.X.Position.Shape(x, x);
-            Positions.Y.Position.Shape(y, y);
+            if (scale.x)
+            {
+                Positions.X.Position.Shape(x, x);
+            }
+
+            if (scale.y)
+            {
+                Positions.Y.Position.Shape(y, y);
+            }
         }
     }
 }

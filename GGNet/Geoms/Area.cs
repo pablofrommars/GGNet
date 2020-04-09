@@ -13,14 +13,18 @@ namespace GGNet.Geoms
     {
         private readonly Dictionary<object, Area> areas = new Dictionary<object, Area>();
 
+        private readonly PositionAdjustment position;
+
         public Area(
             Source<T> source,
             Func<T, TX> x,
             Func<T, TY> y,
             IAestheticMapping<T, string> fill = null,
+            PositionAdjustment position = PositionAdjustment.Identity,
+            (bool x, bool y)? scale = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
-            : base(source, inherit, layer)
+            : base(source, scale, inherit, layer)
         {
             Selectors = new _Selectors
             {
@@ -32,6 +36,8 @@ namespace GGNet.Geoms
             {
                 Fill = fill
             };
+
+            this.position = position;
         }
 
         public class _Selectors
@@ -155,8 +161,15 @@ namespace GGNet.Geoms
 
             area.Points.Add((x, 0, y));
 
-            Positions.X.Position.Shape(x, x);
-            Positions.Y.Position.Shape(y, y);
+            if (scale.x)
+            {
+                Positions.X.Position.Shape(x, x);
+            }
+
+            if (scale.y)
+            {
+                Positions.Y.Position.Shape(y, y);
+            }
         }
 
         public override void Clear()

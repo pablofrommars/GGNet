@@ -31,9 +31,10 @@ namespace GGNet.Geoms
             Func<T, TY> ymax,
             IAestheticMapping<T, string> color = null,
             PositionAdjustment position = PositionAdjustment.Identity,
+            (bool x, bool y)? scale = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
-            : base(source, inherit, layer)
+            : base(source, scale, inherit, layer)
         {
             Selectors = new _Selectors
             {
@@ -229,9 +230,16 @@ namespace GGNet.Geoms
                         },
                     });
 
-                    Positions.X.Position.Shape(bar.x, bar.x);
-                    Positions.YMin.Position.Shape(ymin, ymax);
-                    Positions.YMax.Position.Shape(ymin, ymax);
+                    if (scale.x)
+                    {
+                        Positions.X.Position.Shape(bar.x, bar.x);
+                    }
+
+                    if (scale.y)
+                    {
+                        Positions.YMin.Position.Shape(ymin, ymax);
+                        Positions.YMax.Position.Shape(ymin, ymax);
+                    }
                 }
             }
         }
@@ -292,9 +300,16 @@ namespace GGNet.Geoms
                         },
                     });
 
-                    Positions.X.Position.Shape(x, x);
-                    Positions.YMin.Position.Shape(ymin, ymax);
-                    Positions.YMax.Position.Shape(ymin, ymax);
+                    if (scale.x)
+                    {
+                        Positions.X.Position.Shape(x, x);
+                    }
+
+                    if (scale.y)
+                    {
+                        Positions.YMin.Position.Shape(ymin, ymax);
+                        Positions.YMax.Position.Shape(ymin, ymax);
+                    }
 
                     x += w;
                 }
