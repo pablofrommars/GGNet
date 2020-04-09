@@ -1731,6 +1731,7 @@ namespace GGNet
             Func<T2, double> a,
             Func<T2, double> b,
             Func<T2, string> label = null,
+            (bool x, bool y)? transformation = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
@@ -1738,7 +1739,7 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new ABLine<T2>(source, a, b, label)
+                var geom = new ABLine<T2>(source, a, b, label, transformation)
                 {
                     Line = new Line
                     {
@@ -1770,12 +1771,13 @@ namespace GGNet
             Func<T2, double> a,
             Func<T2, double> b,
             Func<T2, string> label = null,
+            (bool x, bool y)? transformation = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
-            return panel.Geom_ABLine(new Source<T2>(source), a, b, label, width, color, alpha, lineType, size, anchor, weight, style);
+            return panel.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
         }
 
         public static Data<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
@@ -1784,12 +1786,13 @@ namespace GGNet
             Func<T2, double> a,
             Func<T2, double> b,
             Func<T2, string> label = null,
+            (bool x, bool y)? transformation = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_ABLine(source, a, b, label, width, color, alpha, lineType, size, anchor, weight, style);
+            data.Default_Panel().Geom_ABLine(source, a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
 
             return data;
         }
@@ -1800,12 +1803,13 @@ namespace GGNet
             Func<T2, double> a,
             Func<T2, double> b,
             Func<T2, string> label = null,
+            (bool x, bool y)? transformation = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
-            return data.Geom_ABLine(new Source<T2>(source), a, b, label, width, color, alpha, lineType, size, anchor, weight, style);
+            return data.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_ABLine<T, TX, TY>(
@@ -1813,12 +1817,13 @@ namespace GGNet
             Func<T, double> a,
             Func<T, double> b,
             Func<T, string> label = null,
+            (bool x, bool y)? transformation = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
-            return Geom_ABLine(panel, panel.Data.Source, a, b, label, width, color, alpha, lineType, size, anchor, weight, style);
+            return Geom_ABLine(panel, panel.Data.Source, a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
         }
 
         public static Data<T, TX, TY> Geom_ABLine<T, TX, TY>(
@@ -1826,12 +1831,13 @@ namespace GGNet
             Func<T, double> a,
             Func<T, double> b,
             Func<T, string> label = null,
+            (bool x, bool y)? transformation = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
             Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_ABLine(a, b, label, width, color, alpha, lineType, size, anchor, weight, style);
+            data.Default_Panel().Geom_ABLine(a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
 
             return data;
         }

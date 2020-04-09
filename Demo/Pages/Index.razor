@@ -265,7 +265,7 @@
         {
             abline = Plot.New(new[] { (x: 0.0, y: 0.0), (x: 1.0, y: 1.0) }, o => o.x, o => o.y)
                 .Geom_Point()
-                //.Geom_ABLine(new[] { (a: -2.0, b: 1.0), (a: 2.0, b: 0.0), (a: 0.5, b: 0.0), (a: -0.5, b: 1.0) }, o => o.a, o => o.b, o => "Label", anchor: Anchor.start)
+                .Geom_ABLine(new[] { (a: -2.0, b: 1.0), (a: 2.0, b: 0.0), (a: 0.5, b: 0.0), (a: -0.5, b: 1.0) }, o => o.a, o => o.b, o => "Label", anchor: Anchor.end)
                 //.Geom_VLine(new[] { 0.25 }, o => o, o => "Label", anchor: Anchor.end)
                 //.Geom_VLine(new[] { 0.75 }, o => o, o => "Label", anchor: Anchor.start)
                 .Geom_HLine(new[] { 0.25 }, o => o, o => "Label", anchor: Anchor.end)

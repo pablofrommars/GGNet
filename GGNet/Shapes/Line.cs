@@ -41,6 +41,8 @@
 
         public double B { get; set; }
 
+        public (bool x, bool y) Transformation { get; set; }
+
         public string Label { get; set; }
 
         public Elements.Line Line { get; set; }

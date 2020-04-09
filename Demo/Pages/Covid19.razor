@@ -41,7 +41,7 @@
 
         plot = Plot.New(data.Where(o => o.DeathsCumulative >= 5 && !string.IsNullOrEmpty(o.Country.Continent)), o => o.ConfirmedCumulative, o => o.DeathsCumulative)
             .Title("Case Fatality Rate")
-            .Geom_ABLine(new[] { 0.005, 0.01, 0.02, 0.05, 0.1 }, o => o, o => 0, o => $"{o:P2}".Replace(".00", ""), color: "rgba(0, 0, 0, 0.3)", lineType: LineType.Dotted)
+            //.Geom_ABLine(new[] { 0.005, 0.01, 0.02, 0.05, 0.1 }, o => o, o => 0, o => $"{o:P2}".Replace(".00", ""), color: "rgba(0, 0, 0, 0.3)", lineType: LineType.Dotted)
             .Geom_Point(size: 3, alpha: 0.5, animation: true)
             .Scale_X_Log10()
             .XLab("Confirmed Cases - Log")
@@ -55,10 +55,26 @@
             .Join(ageData, o => o.Country.A3, o => o.a3, (o, p) => (ts: o, age: p.age60_))
             .ToList();
 
+        var text = string.Join('\n', age
+            .Select(o => $"new Point {{ Age = {o.age / 100}, Deaths = {Math.Log10(o.ts.DeathsCumulative / o.ts.Population * 1000000.0)} }},")
+            .ToArray());
+
+        var t = 1.9855;
+        var n = 86;
+        var mse = 0.4248488275613588;
+        var xavg = 0.170082554;
+        var sx = 0.0831531957;
+        var N = 100;
+
+        double CI(double x) => t * Math.Sqrt(n / (n - 2.0) * mse) * Math.Sqrt(1.0 / n + (x - xavg) * (x - xavg) / ((n - 1.0) * sx * sx));
+
         plot2 = Plot.New(age, o => o.age / 100, o => o.ts.DeathsCumulative / o.ts.Population * 1000000.0)
-            .Title("Proportion of Population above 60")
+            .Title("Covid19 - Proportion of Population above 60")
+            .SubTitle("R² =0.4")
+            .Geom_Ribbon(Enumerable.Range(0, N).Select(o => o * 0.4 / N), o => o, o => Math.Pow(10.0, 6.37009 * o - 0.540860355 - CI(o)), o => Math.Pow(10.0, 6.37009 * o - 0.540860355 + CI(o)), fill: "rgba(0, 0, 0, 0.05)")
+            .Geom_ABLine(new[] { (a: 6.37009, b: -0.540860355) }, o => o.a, o => o.b, o => $"y = {o.a:N2}x {o.b:N2}", transformation: (false, false), color: "rgba(0, 0, 0, 0.3)")
             .Geom_Point(size: 3, alpha: 0.5, animation: true)
-            .Scale_X_Continuous(format: "P2")
+            .Scale_X_Continuous(format: "P0")
             .Scale_Y_Log10()
             .YLab("Confirmed Deaths / Million - Log")
             .Scale_Color_Discrete(o => o.ts.Country.Continent, Colors.Viridis)

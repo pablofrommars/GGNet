@@ -210,8 +210,22 @@
         }
         else if (shape is Shapes.ABLine abline)
         {
-            var ymin = Coord.YTransformation.Apply(abline.A * Coord.XTransformation.Inverse(Coord.XRange.min) + abline.B);
-            var ymax = Coord.YTransformation.Apply(abline.A * Coord.XTransformation.Inverse(Coord.XRange.max) + abline.B);
+            var ymin = Coord.XRange.min;
+            var ymax = Coord.XRange.max;
+            if (abline.Transformation.x)
+            {
+                ymin = Coord.XTransformation.Inverse(ymin);
+                ymax = Coord.XTransformation.Inverse(ymax);
+            }
+
+            ymin = abline.A * ymin + abline.B;
+            ymax = abline.A * ymax + abline.B;
+
+            if (abline.Transformation.y)
+            {
+                ymin = Coord.YTransformation.Apply(ymin);
+                ymax = Coord.YTransformation.Apply(ymax);
+            }
 
             var y1 = Coord.CoordY(ymin);
             var y2 = Coord.CoordY(ymax);
@@ -244,7 +258,23 @@
                     {
                         if (ymax > Coord.YRange.max)
                         {
-                            x = Coord.CoordX(Coord.XTransformation.Apply((Coord.YTransformation.Inverse(Coord.YRange.max) - abline.B) / abline.A));
+                            x = Coord.YRange.max;
+
+                            if (abline.Transformation.y)
+                            {
+                                x = Coord.YTransformation.Inverse(x);
+                            }
+
+                            x = (x - abline.B) / abline.A;
+
+                            if (abline.Transformation.x)
+                            {
+                                x = Coord.XTransformation.Apply(x);
+
+                            }
+
+                            x = Coord.CoordX(x);
+
                             y = Zone.Y;
                         }
                     }
@@ -252,7 +282,23 @@
                     {
                         if (ymax < Coord.YRange.min)
                         {
-                            x = Coord.CoordX(Coord.XTransformation.Apply((Coord.YTransformation.Inverse(Coord.YRange.min) - abline.B) / abline.A));
+                            x = Coord.YRange.min;
+
+                            if (abline.Transformation.y)
+                            {
+                                x = Coord.YTransformation.Inverse(x);
+                            }
+
+                            x = (x - abline.B) / abline.A;
+
+                            if (abline.Transformation.x)
+                            {
+                                x = Coord.XTransformation.Apply(x);
+
+                            }
+
+                            x = Coord.CoordX(x);
+
                             y = Zone.Y + Zone.Height;
                         }
                     }
@@ -269,7 +315,23 @@
                     {
                         if (ymin < Coord.YRange.min)
                         {
-                            x = Coord.CoordX(Coord.XTransformation.Apply((Coord.YTransformation.Inverse(Coord.YRange.min) - abline.B) / abline.A));
+                            x = Coord.YRange.min;
+
+                            if (abline.Transformation.y)
+                            {
+                                x = Coord.YTransformation.Inverse(x);
+                            }
+
+                            x = (x - abline.B) / abline.A;
+
+                            if (abline.Transformation.x)
+                            {
+                                x = Coord.XTransformation.Apply(x);
+
+                            }
+
+                            x = Coord.CoordX(x);
+
                             y = Zone.Y + Zone.Height;
                         }
                     }
@@ -277,7 +339,23 @@
                     {
                         if (ymin < Coord.YRange.max)
                         {
-                            x = Coord.CoordX(Coord.XTransformation.Apply((Coord.YTransformation.Inverse(Coord.YRange.max) - abline.B) / abline.A));
+                            x = Coord.YRange.max;
+
+                            if (abline.Transformation.y)
+                            {
+                                x = Coord.YTransformation.Inverse(x);
+                            }
+
+                            x = (x - abline.B) / abline.A;
+
+                            if (abline.Transformation.x)
+                            {
+                                x = Coord.XTransformation.Apply(x);
+
+                            }
+
+                            x = Coord.CoordX(x);
+
                             y = Zone.Y;
                         }
                     }

@@ -6,14 +6,19 @@ namespace GGNet.Geoms
 {
     public class ABLine<T> : Geom<T, double, double>
     {
+        private readonly (bool x, bool y) transformation;
+
         public ABLine(
             Source<T> source,
             Func<T, double> a,
             Func<T, double> b,
             Func<T, string> label,
+            (bool x, bool y)? transformation = null,
             Buffer<Shape> layer = null)
             : base(source, false, layer)
         {
+            this.transformation = transformation ?? (true, true);
+
             Selectors = new _Selectors
             {
                 A = a,
@@ -54,6 +59,7 @@ namespace GGNet.Geoms
             {
                 A = a,
                 B = b,
+                Transformation = transformation,
                 Label = label,
                 Line = Line,
                 Text = Text
