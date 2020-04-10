@@ -47,6 +47,18 @@
     <Plot Data=@abline T="(double, double)" TX=Double TY=Double />
 </div>
 
+<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #343a40;">
+    <Plot Data=@area T=Beatles.Point TX=Double TY=Double />
+</div>
+
+<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #343a40;">
+    <Plot Data=@stack T=Beatles.Point TX=Double TY=Double />
+</div>
+
+<div class="border rounded-lg m-5 p-1" style="width: 720px;">
+    <Plot Data=@debug T="(int, int)" TX=Double TY=Double />
+</div>
+
 @code {
 
     Data<Point, double, double> map;
@@ -60,6 +72,11 @@
     Data<Point2, double, double> sqrt;
 
     Data<(double x, double y), double, double> abline;
+
+    Data<Beatles.Point, double, double> area;
+    Data<Beatles.Point, double, double> stack;
+
+    Data<(int, int), double, double> debug;
 
     protected override void OnInitialized()
     {
@@ -272,6 +289,40 @@
                 .Geom_VLine(new[] { 0.75 }, o => o, o => "Label", anchor: Anchor.start)
                 .Geom_HLine(new[] { 0.25 }, o => o, o => "Label", anchor: Anchor.end)
                 .Geom_HLine(new[] { 0.75 }, o => o, o => "Label", anchor: Anchor.start)
+                .Theme();
+        }
+
+        {
+            area = Plot.New(Beatles.Load(), x: o => o.Year)
+                .Geom_Area(y: o => o.N)
+                .Geom_VLine(new[] { 1984 }, o => o, o => o.ToString(), color: "#FFFFFF", lineType: LineType.Dashed)
+                .Scale_Y_Continuous(format: "#,##0")
+                .Scale_Fill_Discrete(o => o.Name, Colors.FT, guide: false)
+                .Facet_Wrap(selector: o => o.Name, freeY: true)
+                .Title("Popularity of Beatles Names")
+                .YLab("#")
+                .XLab("Year")
+                .Theme();
+        }
+
+        {
+            var beatles = Beatles.Load().GroupBy(o => o.Year).Select(o => (year: o.Key, N: o.Sum(p => p.N))).OrderBy(o => o.year).ToList();
+            stack = Plot.New(Beatles.Load(), x: o => o.Year)
+                .Geom_Area(y: o => o.N, position: PositionAdjustment.Stack)
+                .Geom_Line(beatles, o => o.year, o => o.N, tooltip: o => o.year.ToString(), color: "red")
+                .Scale_Y_Continuous(format: "#,##0")
+                .Scale_Fill_Discrete(o => o.Name, Colors.FT, guide: false)
+                .Title("Popularity of Beatles Names")
+                .YLab("#")
+                .XLab("Year")
+                .Theme();
+        }
+
+        {
+            var beatles = Beatles.Load().GroupBy(o => o.Year).Select(o => (year: o.Key, N: o.Sum(p => p.N))).OrderBy(o => o.year).ToList();
+
+            debug = Plot.New(beatles, o => (double)o.year, o => (double)o.N)
+                .Geom_Line()
                 .Theme();
         }
     }

@@ -11,7 +11,14 @@ namespace GGNet.Geoms
         where TX : struct
         where TY : struct
     {
-        private readonly Dictionary<object, Area> areas = new Dictionary<object, Area>();
+        private class Comparer : Comparer<(double x, double y)>
+        {
+            public override int Compare((double x, double y) a, (double x, double y) b) => a.x.CompareTo(b.x);
+        }
+
+        private static readonly Comparer comparer = new Comparer();
+
+        private readonly Buffer<(string fill, SortedBuffer<(double x, double y)> points)> series = new Buffer<(string fill, SortedBuffer<(double x, double y)>)>(16, 1);
 
         private readonly PositionAdjustment position;
 
@@ -114,70 +121,222 @@ namespace GGNet.Geoms
             });
         }
 
-        private Area _area = null;
-
         protected override void Shape(T item, bool flip)
         {
-            Area area;
-
-            if (Aesthetics.Fill == null)
+            var fill = Aesthetic.Fill;
+            if (Aesthetics.Fill != null)
             {
-                if (_area == null)
-                {
-                    _area = new Area { Aesthetic = Aesthetic };
-
-                    Layer.Add(_area);
-                }
-
-                area = _area;
-            }
-            else
-            {
-                var fill = Aesthetics.Fill.Map(item);
+                fill = Aesthetics.Fill.Map(item);
                 if (string.IsNullOrEmpty(fill))
                 {
                     return;
                 }
+            }
 
-                if (!areas.TryGetValue(fill, out area))
+            SortedBuffer<(double x, double y)> points = null;
+
+            for (var i = 0; i < series.Count; i++)
+            {
+                var serie = series[i];
+                if (serie.fill == fill)
                 {
-                    area = new Area
-                    {
-                        Aesthetic = new Elements.Rectangle
-                        {
-                            Fill = fill,
-                            Alpha = Aesthetic.Alpha
-                        }
-                    };
-
-                    Layer.Add(area);
-
-                    areas[fill] = area;
+                    points = serie.points;
+                    break;
                 }
+            }
+
+            if (points == null)
+            {
+                points = new SortedBuffer<(double x, double y)>(comparer: comparer);
+
+                series.Add((fill, points));
             }
 
             var x = Positions.X.Map(item);
             var y = Positions.Y.Map(item);
 
-            area.Points.Add((x, 0, y));
-
-            if (scale.x)
-            {
-                Positions.X.Position.Shape(x, x);
-            }
-
-            if (scale.y)
-            {
-                Positions.Y.Position.Shape(y, y);
-            }
+            points.Add((x, y));
         }
 
         private void Stack(bool flip)
         {
+            SortedBuffer<(double x, double y)> sum = new SortedBuffer<(double x, double y)>(comparer: comparer);
+
+            for (var i = 0; i < series.Count; i++)
+            {
+                var (_, points) = series[i];
+                for (var j = 0; j < points.Count; j++)
+                {
+                    var (x, _) = points[j];
+
+                    sum.Add((x, 0));
+                }
+            }
+
+            for (var i = 0; i < series.Count; i++)
+            {
+                var (fill, points) = series[i];
+
+                var area = new Area
+                {
+                    Aesthetic = new Elements.Rectangle
+                    {
+                        Fill = fill,
+                        Alpha = Aesthetic.Alpha
+                    }
+                };
+
+                var ylast = 0.0;
+                var xlast = 0.0;
+                var slast = 0.0;
+
+                var head = 0;
+
+                {
+                    var (x, y) = points[0];
+
+                    while (head < sum.Count)
+                    {
+                        var (xhead, yhead) = sum[head];
+
+                        if (xhead == x)
+                        {
+                            ylast = y;
+                            slast = yhead + y;
+
+                            area.Points.Add((x, yhead, slast));
+
+                            if (scale.y)
+                            {
+                                Positions.Y.Position.Shape(0, slast);
+                            }
+
+                            sum[head++] = (x, slast);
+                            xlast = x;
+
+                            break;
+                        }
+
+                        head++;
+                    }
+
+                    if (scale.x)
+                    {
+                        Positions.X.Position.Shape(x, x);
+                    }
+                }
+
+                for (var j = 1; j < points.Count; j++)
+                {
+                    var k = head;
+                    var (x, y) = points[j];
+
+                    var (xk, _) = sum[k];
+
+                    var xhead = xk;
+
+                    while (head < sum.Count)
+                    {
+                        (xhead, _) = sum[head];
+
+                        if (xhead == x)
+                        {
+                            break;
+                        }
+
+                        head++;
+                    }
+
+                    if (head == k)
+                    {
+                        var (sx, sy) = sum[head];
+                        slast = sy + y;
+                        area.Points.Add((x, sy, slast));
+                        sum[k] = (x, slast);
+                    }
+                    else
+                    {
+                        var xdelta = xhead - xlast;
+                        var ydelta = y - ylast;
+
+                        if (ydelta >= 0)
+                        {
+                            for (; k <= head; k++)
+                            {
+                                var (sx, sy) = sum[k];
+                                var delta = sy + (sx - xlast) / xdelta * ydelta;
+                                area.Points.Add((sx, sy, delta));
+                                sum[k] = (sx, delta);
+                            }
+                        }
+                        else
+                        {
+                            for (; k <= head; k++)
+                            {
+                                var (sx, sy) = sum[k];
+                                var delta = sy + ylast + (sx - xlast) / xdelta * ydelta;
+                                area.Points.Add((sx, sy, delta));
+                                sum[k] = (sx, delta);
+                            }
+                        }
+                        
+                        slast += ydelta;
+                    }
+
+                    if (scale.y)
+                    {
+                        Positions.Y.Position.Shape(0, slast);
+                    }
+
+                    xlast = x;
+                    ylast = y;
+
+                    if (scale.x)
+                    {
+                        Positions.X.Position.Shape(x, x);
+                    }
+
+                    head++;
+                }
+
+                Layer.Add(area);
+            }
         }
 
         private void Identity(bool flip)
         {
+            for (var i = 0; i < series.Count; i++)
+            {
+                var (fill, points) = series[i];
+
+                var area = new Area
+                {
+                    Aesthetic = new Elements.Rectangle
+                    {
+                        Fill = fill,
+                        Alpha = Aesthetic.Alpha
+                    }
+                };
+
+                for (var j = 0; j < points.Count; j++)
+                {
+                    var (x, y) = points[j];
+
+                    area.Points.Add((x, 0, y));
+
+                    if (scale.x)
+                    {
+                        Positions.X.Position.Shape(x, x);
+                    }
+
+                    if (scale.y)
+                    {
+                        Positions.Y.Position.Shape(0, y);
+                    }
+                }
+
+                Layer.Add(area);
+            }
         }
 
         protected override void Set(bool flip)
@@ -200,8 +359,7 @@ namespace GGNet.Geoms
         {
             base.Clear();
 
-            _area = null;
-            areas.Clear();
+            series.Clear();
         }
     }
 }
