@@ -71,7 +71,7 @@
         plot2 = Plot.New(age, o => o.age / 100, o => o.ts.DeathsCumulative / o.ts.Population * 1000000.0)
             .Title("Covid19 - Proportion of Population above 60")
             .SubTitle("R² =0.4")
-            .Geom_Ribbon(Enumerable.Range(0, N).Select(o => o * 0.4 / N), o => o, o => Math.Pow(10.0, 6.37009 * o - 0.540860355 - CI(o)), o => Math.Pow(10.0, 6.37009 * o - 0.540860355 + CI(o)), fill: "rgba(0, 0, 0, 0.05)")
+            .Geom_Ribbon(Enumerable.Range(0, N).Select(o => o * 0.4 / N), o => o, o => Math.Pow(10.0, 6.37009 * o - 0.540860355 - CI(o)), o => Math.Pow(10.0, 6.37009 * o - 0.540860355 + CI(o)), fill: "rgba(0, 0, 0, 0.05)", scale: (false, true))
             .Geom_ABLine(new[] { (a: 6.37009, b: -0.540860355) }, o => o.a, o => o.b, o => $"y = {o.a:N2}x {o.b:N2}", transformation: (false, false), color: "rgba(0, 0, 0, 0.3)")
             .Geom_Point(size: 3, alpha: 0.5, animation: true)
             .Scale_X_Continuous(format: "P0")

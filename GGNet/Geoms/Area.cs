@@ -172,6 +172,30 @@ namespace GGNet.Geoms
             }
         }
 
+        private void Stack(bool flip)
+        {
+        }
+
+        private void Identity(bool flip)
+        {
+        }
+
+        protected override void Set(bool flip)
+        {
+            if (position == PositionAdjustment.Stack)
+            {
+                Stack(flip);
+            }
+            else if (position == PositionAdjustment.Identity)
+            {
+                Identity(flip);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public override void Clear()
         {
             base.Clear();

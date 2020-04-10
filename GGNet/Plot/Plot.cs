@@ -16,6 +16,8 @@ namespace GGNet
     using Formats;
 
     using static Position;
+    using static Anchor;
+    using static LineType;
 
     public static class Plot
     {
@@ -639,7 +641,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onmouseover = null,
             Func<T2, MouseEventArgs, Task> onmouseout = null,
             Func<T2, string> tooltip = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -679,7 +681,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onmouseover = null,
             Func<T2, MouseEventArgs, Task> onmouseout = null,
             Func<T2, string> tooltip = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -700,7 +702,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onmouseover = null,
             Func<T2, MouseEventArgs, Task> onmouseout = null,
             Func<T2, string> tooltip = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -723,7 +725,7 @@ namespace GGNet
             Func<T2, MouseEventArgs, Task> onmouseover = null,
             Func<T2, MouseEventArgs, Task> onmouseout = null,
             Func<T2, string> tooltip = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -743,7 +745,7 @@ namespace GGNet
             Func<T, MouseEventArgs, Task> onmouseover = null,
             Func<T, MouseEventArgs, Task> onmouseout = null,
             Func<T, string> tooltip = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
@@ -761,7 +763,7 @@ namespace GGNet
             Func<T, MouseEventArgs, Task> onmouseover = null,
             Func<T, MouseEventArgs, Task> onmouseout = null,
             Func<T, string> tooltip = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
@@ -931,7 +933,7 @@ namespace GGNet
             Func<T2, TX2> xend,
             Func<T2, TY2> y,
             Func<T2, TY2> yend,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -964,7 +966,7 @@ namespace GGNet
             Func<T2, TX2> xend,
             Func<T2, TY2> y,
             Func<T2, TY2> yend,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -983,7 +985,7 @@ namespace GGNet
             Func<T2, TX2> xend,
             Func<T2, TY2> y,
             Func<T2, TY2> yend,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -997,7 +999,7 @@ namespace GGNet
             Func<T, TX> xend,
             Func<T, TY> y,
             Func<T, TY> yend,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
@@ -1011,7 +1013,7 @@ namespace GGNet
             Func<T, TX> xend,
             Func<T, TY> y,
             Func<T, TY> yend,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
@@ -1257,7 +1259,7 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _color = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
@@ -1299,7 +1301,7 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _color = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
@@ -1319,7 +1321,7 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _color = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
@@ -1341,7 +1343,7 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _color = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
@@ -1360,7 +1362,7 @@ namespace GGNet
             Func<T, TY> ymin = null,
             Func<T, TY> ymax = null,
             IAestheticMapping<T, string> _color = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
@@ -1377,7 +1379,7 @@ namespace GGNet
             Func<T, TY> ymin = null,
             Func<T, TY> ymax = null,
             IAestheticMapping<T, string> _color = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
@@ -1397,7 +1399,7 @@ namespace GGNet
             Func<T2, double> _angle = null,
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+            Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -1410,7 +1412,7 @@ namespace GGNet
                 {
                     Aesthetic = new Text
                     {
-                        Size = size ?? new Size { Value = 1.0, Units = Units.em },
+                        Size = size ?? new Size(1),
                         Anchor = anchor,
                         Weight = weight,
                         Style = style,
@@ -1433,7 +1435,7 @@ namespace GGNet
             Func<T2, double> _angle = null,
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+            Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -1451,7 +1453,7 @@ namespace GGNet
             Func<T2, double> _angle = null,
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+            Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -1471,7 +1473,7 @@ namespace GGNet
             Func<T2, double> _angle = null,
             Func<T2, TT> text = null,
             IAestheticMapping<T2, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+            Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -1488,7 +1490,7 @@ namespace GGNet
             Func<T, double> _angle = null,
             Func<T, TT> text = null,
             IAestheticMapping<T, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+            Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
@@ -1503,7 +1505,7 @@ namespace GGNet
             Func<T, double> _angle = null,
             Func<T, TT> text = null,
             IAestheticMapping<T, string> _color = null,
-            Size? size = null, Anchor anchor = Anchor.middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+            Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
@@ -1518,8 +1520,8 @@ namespace GGNet
             Source<T2> source,
             Func<T2, TX2> x = null,
             Func<T2, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX1 : struct
             where TX2 : struct
             where TY : struct
@@ -1537,8 +1539,8 @@ namespace GGNet
                     },
                     Text = new Text
                     {
-                        Size = size ?? new Size { Value = 1.0, Units = Units.em },
-                        Anchor = (anchor == Anchor.end ? Anchor.end : Anchor.start),
+                        Size = size ?? new Size(0.75),
+                        Anchor = (anchor == end ? end : start),
                         Weight = weight,
                         Style = style,
                         Color = color,
@@ -1557,8 +1559,8 @@ namespace GGNet
             IEnumerable<T2> source,
             Func<T2, TX2> x = null,
             Func<T2, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX1 : struct
             where TX2 : struct
             where TY : struct
@@ -1571,8 +1573,8 @@ namespace GGNet
             Source<T2> source,
             Func<T2, TX2> x = null,
             Func<T2, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX1 : struct
             where TX2 : struct
             where TY : struct
@@ -1587,8 +1589,8 @@ namespace GGNet
             IEnumerable<T2> source,
             Func<T2, TX2> x = null,
             Func<T2, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX1 : struct
             where TX2 : struct
             where TY : struct
@@ -1600,8 +1602,8 @@ namespace GGNet
             this Data<T, TX, TY>.PanelFactory panel,
             Func<T, TX> x = null,
             Func<T, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
@@ -1612,8 +1614,8 @@ namespace GGNet
             this Data<T, TX, TY> data,
             Func<T, TX> x = null,
             Func<T, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
@@ -1627,8 +1629,8 @@ namespace GGNet
             Source<T2> source,
             Func<T2, TY2> y = null,
             Func<T2, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY1 : struct
             where TY2 : struct
@@ -1646,8 +1648,8 @@ namespace GGNet
                     },
                     Text = new Text
                     {
-                        Size = size ?? new Size { Value = 1.0, Units = Units.em },
-                        Anchor = (anchor == Anchor.end ? Anchor.end : Anchor.start),
+                        Size = size ?? new Size(0.75),
+                        Anchor = (anchor == end ? end : start),
                         Weight = weight,
                         Style = style,
                         Color = color,
@@ -1666,8 +1668,8 @@ namespace GGNet
             IEnumerable<T2> source,
             Func<T2, TY2> y = null,
             Func<T2, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY1 : struct
             where TY2 : struct
@@ -1680,8 +1682,8 @@ namespace GGNet
             Source<T2> source,
             Func<T2, TY2> y = null,
             Func<T2, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY1 : struct
             where TY2 : struct
@@ -1696,8 +1698,8 @@ namespace GGNet
             IEnumerable<T2> source,
             Func<T2, TY2> y = null,
             Func<T2, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY1 : struct
             where TY2 : struct
@@ -1709,8 +1711,8 @@ namespace GGNet
             this Data<T, TX, TY>.PanelFactory panel,
             Func<T, TY> y = null,
             Func<T, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
@@ -1721,8 +1723,8 @@ namespace GGNet
             this Data<T, TX, TY> data,
             Func<T, TY> y = null,
             Func<T, string> label = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
@@ -1738,8 +1740,8 @@ namespace GGNet
             Func<T2, double> b,
             Func<T2, string> label = null,
             (bool x, bool y)? transformation = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
@@ -1756,8 +1758,8 @@ namespace GGNet
                     },
                     Text = new Text
                     {
-                        Size = size ?? new Size { Value = 1.0, Units = Units.em },
-                        Anchor = (anchor == Anchor.end ? Anchor.end : Anchor.start),
+                        Size = size ?? new Size(0.75),
+                        Anchor = (anchor == end ? end : start),
                         Weight = weight,
                         Style = style,
                         Color = color,
@@ -1778,8 +1780,8 @@ namespace GGNet
             Func<T2, double> b,
             Func<T2, string> label = null,
             (bool x, bool y)? transformation = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
@@ -1793,8 +1795,8 @@ namespace GGNet
             Func<T2, double> b,
             Func<T2, string> label = null,
             (bool x, bool y)? transformation = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
@@ -1810,8 +1812,8 @@ namespace GGNet
             Func<T2, double> b,
             Func<T2, string> label = null,
             (bool x, bool y)? transformation = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
@@ -1824,8 +1826,8 @@ namespace GGNet
             Func<T, double> b,
             Func<T, string> label = null,
             (bool x, bool y)? transformation = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
@@ -1838,8 +1840,8 @@ namespace GGNet
             Func<T, double> b,
             Func<T, string> label = null,
             (bool x, bool y)? transformation = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid,
-            Size? size = null, Anchor anchor = Anchor.end, string weight = "normal", string style = "normal")
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+            Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
             where TX : struct
             where TY : struct
         {
@@ -1857,7 +1859,7 @@ namespace GGNet
             Func<T2, TY2> low = null,
             Func<T2, TY2> close = null,
             Func<T2, MouseEventArgs, Task> onclick = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -1893,7 +1895,7 @@ namespace GGNet
             Func<T2, TY2> low = null,
             Func<T2, TY2> close = null,
             Func<T2, MouseEventArgs, Task> onclick = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -1912,7 +1914,7 @@ namespace GGNet
             Func<T, TY> low = null,
             Func<T, TY> close = null,
             Func<T, MouseEventArgs, Task> onclick = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
             where TX : struct
             where TY : struct
         {
@@ -1927,7 +1929,7 @@ namespace GGNet
             Func<T, TY> low = null,
             Func<T, TY> close = null,
             Func<T, MouseEventArgs, Task> onclick = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
             where TX : struct
             where TY : struct
         {
@@ -1944,7 +1946,7 @@ namespace GGNet
             Func<T2, TY2> high = null,
             Func<T2, TY2> low = null,
             Func<T2, TY2> close = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -1982,7 +1984,7 @@ namespace GGNet
             Func<T2, TY2> high = null,
             Func<T2, TY2> low = null,
             Func<T2, TY2> close = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
@@ -2000,7 +2002,7 @@ namespace GGNet
             Func<T, TY> high = null,
             Func<T, TY> low = null,
             Func<T, TY> close = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
             where TX : struct
             where TY : struct
         {
@@ -2014,7 +2016,7 @@ namespace GGNet
             Func<T, TY> high = null,
             Func<T, TY> low = null,
             Func<T, TY> close = null,
-            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = LineType.Solid)
+            double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
             where TX : struct
             where TY : struct
         {

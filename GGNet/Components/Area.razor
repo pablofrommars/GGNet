@@ -156,11 +156,13 @@
 
                 if (vline.Text.Anchor == Anchor.end)
                 {
+                    x += 3;
                     y = Zone.Y + offset;
                     angle = 90;
                 }
                 else
                 {
+                    x -= 3;
                     y = Zone.Y + Zone.Height - offset;
                     angle = -90;
                 }
@@ -200,6 +202,8 @@
                 {
                     x = Zone.X + offset;
                 }
+
+                y -= 3;
 
                 <g style="pointer-events: none;" clip-path="url(#@(Clip))">
                     <text style="fill: @hline.Text.Color; fill-opacity: @hline.Text.Alpha; text-anchor: @hline.Text.Anchor; font-size: @hline.Text.Size; font-weigth: @hline.Text.Weight; font-style: @hline.Text.Style; transform: translate(@(x)px, @(y)px);">
@@ -304,7 +308,7 @@
                     }
 
                     x -= offset;
-                    y += offset * tan;
+                    y += offset * tan - 3;
                 }
                 else
                 {
@@ -361,7 +365,7 @@
                     }
 
                     x += offset;
-                    y -= offset * tan;
+                    y -= offset * tan + 3;
 
                 }
 

@@ -27,21 +27,13 @@
                 {
                     X = new Text
                     {
-                        Size = new Size
-                        {
-                            Value = 0.75,
-                            Units = em
-                        },
+                        Size = new Size(0.75),
                         Anchor = middle
                     };
 
                     Y = new Text
                     {
-                        Size = new Size
-                        {
-                            Value = 0.75,
-                            Units = em
-                        },
+                        Size = new Size(0.75),
                         Anchor = axisY == Left ? end : start
                     };
 
@@ -69,11 +61,7 @@
                     X = new Text
                     { 
                         Anchor = end,
-                        Size = new Size
-                        {
-                            Value = 0.75,
-                            Units = em
-                        }
+                        Size = new Size(0.75)
                     };
 
                     X.Margin.Top = 4;
@@ -86,11 +74,7 @@
                         {
                             Angle = -90,
                             Anchor = end,
-                            Size = new Size
-                            { 
-                                Value = 0.75, 
-                                Units = em 
-                            }
+                            Size = new Size(0.75)
                         };
 
                         Y.Margin.Right = 4;
@@ -101,11 +85,7 @@
                         {
                             Angle = 90,
                             Anchor = start,
-                            Size = new Size
-                            {
-                                Value = 0.75,
-                                Units = em
-                            }
+                            Size = new Size(0.75)
                         };
 
                         Y.Margin.Top = 4;

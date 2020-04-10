@@ -15,18 +15,10 @@
                 Text = new Text
                 {
                     Color = "#FFFFFF",
-                    Size = new Size
-                    {
-                        Value = 0.75,
-                        Units = em
-                    }
+                    Size = new Size(0.75)
                 };
 
-                Radius = new Size
-                {
-                    Value = 4,
-                    Units = px
-                };
+                Radius = new Size(4, px);
             }
 
             public Margin Margin { get; set; }

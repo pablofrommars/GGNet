@@ -1,16 +1,14 @@
 ﻿namespace GGNet.Elements
 {
+    using static Anchor;
+
     public class Text
     {
         public Text()
         {
-            Size = new Size
-            {
-                Value = 16.0,
-                Units = Units.px
-            };
+            Size = new Size(1);
 
-            Anchor = Anchor.start;
+            Anchor = start;
 
             Weight = "normal";
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace GGNet.Shapes
 {
@@ -11,7 +10,7 @@ namespace GGNet.Shapes
 
         private class Comparer : Comparer<(double x, double ymin, double ymax)>
         {
-            public override int Compare([AllowNull] (double x, double ymin, double ymax) a, [AllowNull] (double x, double ymin, double ymax) b) => a.x.CompareTo(b.x);
+            public override int Compare((double x, double ymin, double ymax) a, (double x, double ymin, double ymax) b) => a.x.CompareTo(b.x);
         }
 
         private static readonly Comparer comparer = new Comparer();

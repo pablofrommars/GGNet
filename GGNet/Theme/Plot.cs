@@ -18,11 +18,7 @@
 
                 Title = new Text
                 {
-                    Size = new Size
-                    {
-                        Value = 1.125,
-                        Units = em
-                    },
+                    Size = new Size(1.125),
                     Anchor = start,
                     Weight = "bold",
                     Color = dark ? "#FFFFFF" : "#212529"
@@ -32,11 +28,7 @@
 
                 SubTitle = new Text
                 {
-                    Size = new Size
-                    {
-                        Value = 0.8125,
-                        Units = em
-                    },
+                    Size = new Size(0.8125),
                     Anchor = start
                 };
 
@@ -49,11 +41,7 @@
 
                 Caption = new Text
                 {
-                    Size = new Size
-                    {
-                        Value = 0.75,
-                        Units = em
-                    },
+                    Size = new Size(0.75),
                     Anchor = end,
                     Style = "italic"
                 };

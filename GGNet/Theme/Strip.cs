@@ -19,11 +19,7 @@
 
                 X = new Text()
                 {
-                    Size = new Size()
-                    {
-                        Value = 0.75,
-                        Units = em
-                    },
+                    Size = new Size(0.75),
                     Color = color,
                     Weight = "bold"
                 };
@@ -34,11 +30,7 @@
 
                 Y = new Text()
                 {
-                    Size = new Size()
-                    {
-                        Value = 0.75,
-                        Units = em
-                    },
+                    Size = new Size(0.75),
                     Color = color,
                     Weight = "bold",
                     Angle = 90

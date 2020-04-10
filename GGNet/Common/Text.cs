@@ -17,7 +17,7 @@
                 //pixelWidthCalculator.html
                 width += c switch
                 {
-                    ' ' => 4,
+                    ' ' => 8, //normally 4 but increased to correct "potential" long text
                     '!' => 5,
                     '\"' => 7,
                     '#' => 8,
@@ -112,7 +112,7 @@
                     '|' => 3,
                     '}' => 8,
                     '~' => 9,
-                    _ => 0
+                    _ => 4
                 };
             }
 
