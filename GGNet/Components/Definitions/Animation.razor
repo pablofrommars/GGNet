@@ -25,5 +25,13 @@
                 fill-opacity: 1 !important;
                 stroke-width: 0.5 !important;
             }
+
+        #@(Id) .animate-hex {
+            transition: transform @(Theme.Animation.Hex.Transition)s ease-in-out;
+            fill-opacity: 0.7 !important;
+        }
+            #@(Id) .animate-hex:hover {
+                fill-opacity: 1 !important;
+            }
     </style>
 </defs>

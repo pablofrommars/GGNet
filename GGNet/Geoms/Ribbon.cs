@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Components.Web;
 
 using GGNet.Scales;
 using GGNet.Facets;
@@ -19,6 +22,7 @@ namespace GGNet.Geoms
             Func<T, TY> ymin,
             Func<T, TY> ymax,
             IAestheticMapping<T, string> fill = null,
+            Func<T, string> tooltip = null,
             (bool x, bool y)? scale = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
@@ -28,7 +32,8 @@ namespace GGNet.Geoms
             {
                 X = x,
                 YMin = ymin,
-                YMax = ymax
+                YMax = ymax,
+                Tooltip = tooltip
             };
 
             Aesthetics = new _Aesthetics
@@ -44,6 +49,8 @@ namespace GGNet.Geoms
             public Func<T, TY> YMin { get; set; }
 
             public Func<T, TY> YMax { get; set; }
+
+            public Func<T, string> Tooltip { get; set; }
         }
 
         public _Selectors Selectors { get; }
@@ -66,6 +73,14 @@ namespace GGNet.Geoms
 
         public _Positions Positions { get; } = new _Positions();
 
+        public Func<T, MouseEventArgs, Task> OnClick { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
+
+        private Func<T, double, double, MouseEventArgs, Task> onMouseOver;
+
         public Elements.Rectangle Aesthetic { get; set; }
 
         public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
@@ -84,6 +99,33 @@ namespace GGNet.Geoms
             Positions.YMin = YMapping(Selectors.YMin, panel.Y);
 
             Positions.YMax = YMapping(Selectors.YMax, panel.Y);
+
+            if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
+            {
+                onMouseOver = (item, x, y, _) =>
+                {
+                    panel.Component.Tooltip.Show(
+                        x,
+                        y,
+                        0,
+                        Selectors.Tooltip(item),
+                        Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
+                        Aesthetic.Alpha);
+
+                    return Task.CompletedTask;
+                };
+
+                OnMouseOut = (_, __) =>
+                {
+                    panel.Component.Tooltip.Hide();
+
+                    return Task.CompletedTask;
+                };
+            }
+            else if (OnMouseOver != null)
+            {
+                onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
+            }
 
             if (!inherit)
             {
@@ -158,6 +200,51 @@ namespace GGNet.Geoms
             var ymax = Positions.YMax.Map(item);
 
             area.Points.Add((x, ymin, ymax));
+
+            if (OnClick != null || onMouseOver != null || OnMouseOut != null)
+            {
+                var aes = new Elements.Circle
+                {
+                    Radius = 3.0,
+                    Alpha = 0,
+                    Fill = "transparent"
+                };
+
+                var circle1 = new Circle
+                {
+                    X = x,
+                    Y = ymin,
+                    Aesthetic = aes
+                };
+
+                var circle2 = new Circle
+                {
+                    X = x,
+                    Y = ymax,
+                    Aesthetic = aes
+                };
+
+                if (OnClick != null)
+                {
+                    circle1.OnClick = e => OnClick(item, e);
+                    circle2.OnClick = e => OnClick(item, e);
+                }
+
+                if (onMouseOver != null)
+                {
+                    circle1.OnMouseOver = e => onMouseOver(item, x, ymin, e);
+                    circle2.OnMouseOver = e => onMouseOver(item, x, ymax, e);
+                }
+
+                if (OnMouseOut != null)
+                {
+                    circle1.OnMouseOut = e => OnMouseOut(item, e);
+                    circle2.OnMouseOut = e => OnMouseOut(item, e);
+                }
+
+                Layer.Add(circle1);
+                Layer.Add(circle2);
+            }
 
             if (scale.x)
             {

@@ -98,7 +98,7 @@
 
         {
             diamond = Plot.New(Diamond.Load(), x: o => o.Carat, y: o => o.Price)
-                .Geom_Hex(dx: o => o.Dx, dy: o => o.Dy)
+                .Geom_Hex(dx: o => o.Dx, dy: o => o.Dy, tooltip: o => "Tooltip", animation: true)
                 .Title("Prices of 50,000 round cut diamonds")
                 .XLab("Carat")
                 .YLab("Price($)")
@@ -132,7 +132,7 @@
             theme.Legend.Labels.Color = "#FFFFFF";
 
             tip = Plot.New(Tip.Load(), o => o.Day, o => o.Avg)
-                .Geom_ErrorBar(ymin: o => o.Lower, ymax: o => o.Upper, position: PositionAdjustment.Dodge)
+                .Geom_ErrorBar(ymin: o => o.Lower, ymax: o => o.Upper, tooltip: o => "Tooltip", position: PositionAdjustment.Dodge, animation: true)
                 .Scale_Color_Discrete(o => o.Sex, new[] { "#69b3a2", "#404080" })
                 .Title("Tipping Behavior")
                 .YLab("Tip (%)")
@@ -198,7 +198,7 @@
             beatles = Plot.New(source, x: X, y: o => o.N)
                  .Geom_Bar(tooltip: o => $"<b>{o.Name}:</b> {o.N}", position: PositionAdjustment.Stack, width: 0.5, alpha: 0.7)
                  .Scale_X_Discrete(expand: (0.0, 0.1, 0, 0.1), formatter: labeller)
-                 .Scale_Y_Continuous(expand: (0.0, 0.0, 0.5, 0.0))
+                 .Scale_Y_Continuous(expand: (0.0, 0.0, 0.05, 0.0))
                  .Scale_Fill_Discrete(o => o.Name, Colors.Brewer.YlGnBu[4], direction: -1)
                  .YLab("#")
                  .XLab("Year")
@@ -270,7 +270,8 @@
             }
 
             sqrt = Plot.New(source, o => o.X, o => o.Y)
-                .Geom_Point()
+                //.Geom_Point()
+                .Geom_Line(tooltip: o => $"({o.X}, {o.Y})")
                 .Scale_Y_Sqrt()
                 .Theme();
         }
@@ -288,7 +289,7 @@
 
         {
             area = Plot.New(Beatles.Load(), x: o => o.Year)
-                .Geom_Area(y: o => o.N)
+                .Geom_Area(y: o => o.N, tooltip: o => $"{o.Name}: {o.Year}")
                 .Geom_VLine(new[] { 1984 }, o => o, o => o.ToString(), color: "#FFFFFF", lineType: LineType.Dashed)
                 .Scale_Y_Continuous(format: "#,##0")
                 .Scale_Fill_Discrete(o => o.Name, Colors.FT, guide: false)
@@ -301,7 +302,7 @@
 
         {
             stack = Plot.New(Beatles.Load().OrderBy(o => o.Name), x: o => o.Year, o => o.N)
-                .Geom_Area(alpha: 0.7, position: PositionAdjustment.Stack)
+                .Geom_Area(tooltip: o => $"{o.Name}: {o.Year}", alpha: 0.5, position: PositionAdjustment.Stack)
                 .Scale_X_Continuous(expand: (0, 3, 0, 0))
                 .Scale_Y_Continuous(format: "#,##0")
                 .Scale_Fill_Discrete(o => o.Name, Colors.Nature)

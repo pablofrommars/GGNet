@@ -1029,6 +1029,10 @@ namespace GGNet
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
@@ -1039,8 +1043,11 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Area<T2, TX2, TY2>(source, x, y, _fill, position, scale, inherit)
+                var geom = new Area<T2, TX2, TY2>(source, x, y, _fill, tooltip, position, scale, inherit)
                 {
+                    OnClick = onclick,
+                    OnMouseOver = onmouseover,
+                    OnMouseOut = onmouseout,
                     Aesthetic = new Rectangle
                     {
                         Fill = fill,
@@ -1060,6 +1067,10 @@ namespace GGNet
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
@@ -1068,7 +1079,7 @@ namespace GGNet
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Area(new Source<T2>(source), x, y, _fill, fill, alpha, position, scale, inherit);
+            return panel.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1077,6 +1088,10 @@ namespace GGNet
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
@@ -1085,7 +1100,7 @@ namespace GGNet
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Area(source, x, y, _fill, fill, alpha, position, scale, inherit);
+            data.Default_Panel().Geom_Area(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
 
             return data;
         }
@@ -1096,6 +1111,10 @@ namespace GGNet
             Func<T2, TX2> x = null,
             Func<T2, TY2> y = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
@@ -1104,7 +1123,7 @@ namespace GGNet
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Area(new Source<T2>(source), x, y, _fill, fill, alpha, position, scale, inherit);
+            return data.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Area<T, TX, TY>(
@@ -1112,13 +1131,17 @@ namespace GGNet
             Func<T, TX> x = null,
             Func<T, TY> y = null,
             IAestheticMapping<T, string> _fill = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Area(panel, panel.Data.Source, x, y, _fill, fill, alpha, position, scale, inherit);
+            return Geom_Area(panel, panel.Data.Source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Area<T, TX, TY>(
@@ -1126,13 +1149,17 @@ namespace GGNet
             Func<T, TX> x = null,
             Func<T, TY> y = null,
             IAestheticMapping<T, string> _fill = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Area(x, y, _fill, fill, alpha, position, scale, inherit);
+            data.Default_Panel().Geom_Area(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
 
             return data;
         }
@@ -1144,6 +1171,10 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
@@ -1153,8 +1184,11 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Ribbon<T2, TX2, TY2>(source, x, ymin, ymax, _fill, scale, inherit)
+                var geom = new Ribbon<T2, TX2, TY2>(source, x, ymin, ymax, _fill, tooltip, scale, inherit)
                 {
+                    OnClick = onclick,
+                    OnMouseOver = onmouseover,
+                    OnMouseOut = onmouseout,
                     Aesthetic = new Rectangle
                     {
                         Fill = fill,
@@ -1175,6 +1209,10 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
@@ -1182,7 +1220,7 @@ namespace GGNet
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, fill, alpha, scale, inherit);
+            return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1192,6 +1230,10 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
@@ -1199,7 +1241,7 @@ namespace GGNet
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, fill, alpha, scale, inherit);
+            data.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
 
             return data;
         }
@@ -1211,6 +1253,10 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
@@ -1218,7 +1264,7 @@ namespace GGNet
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, fill, alpha, scale, inherit);
+            return data.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Ribbon<T, TX, TY>(
@@ -1227,12 +1273,16 @@ namespace GGNet
             Func<T, TY> ymin = null,
             Func<T, TY> ymax = null,
             IAestheticMapping<T, string> _fill = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Ribbon(panel, panel.Data.Source, x, ymin, ymax, _fill, fill, alpha, scale, inherit);
+            return Geom_Ribbon(panel, panel.Data.Source, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Ribbon<T, TX, TY>(
@@ -1241,12 +1291,16 @@ namespace GGNet
             Func<T, TY> ymin = null,
             Func<T, TY> ymax = null,
             IAestheticMapping<T, string> _fill = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, fill, alpha, scale, inherit);
+            data.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
 
             return data;
         }
@@ -1259,9 +1313,14 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _color = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -1270,8 +1329,11 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new ErrorBar<T2, TX2, TY2>(source, x, y, ymin, ymax, _color, position, scale, inherit)
+                var geom = new ErrorBar<T2, TX2, TY2>(source, x, y, ymin, ymax, _color, tooltip, position, animation, scale, inherit)
                 {
+                    OnClick = onclick,
+                    OnMouseOver = onmouseover,
+                    OnMouseOut = onmouseout,
                     Line = new Line
                     {
                         Width = width,
@@ -1301,16 +1363,21 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _color = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, scale, inherit);
+            return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1321,16 +1388,21 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _color = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, scale, inherit);
+            data.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
 
             return data;
         }
@@ -1343,16 +1415,21 @@ namespace GGNet
             Func<T2, TY2> ymin = null,
             Func<T2, TY2> ymax = null,
             IAestheticMapping<T2, string> _color = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, scale, inherit);
+            return data.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_ErrorBar<T, TX, TY>(
@@ -1362,14 +1439,19 @@ namespace GGNet
             Func<T, TY> ymin = null,
             Func<T, TY> ymax = null,
             IAestheticMapping<T, string> _color = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_ErrorBar(panel, panel.Data.Source, x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, scale, inherit);
+            return Geom_ErrorBar(panel, panel.Data.Source, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
@@ -1379,14 +1461,19 @@ namespace GGNet
             Func<T, TY> ymin = null,
             Func<T, TY> ymax = null,
             IAestheticMapping<T, string> _color = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string> tooltip = null,
             double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
             double radius = 5,
             PositionAdjustment position = PositionAdjustment.Identity,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, _color, width, color, alpha, lineType, radius, position, scale, inherit);
+            data.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
 
             return data;
         }
@@ -2106,7 +2193,12 @@ namespace GGNet
             Func<T2, TX2> dx = null,
             Func<T2, TY2> dy = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
@@ -2115,13 +2207,16 @@ namespace GGNet
         {
             panel.Add_Geom(() =>
             {
-                var geom = new Hex<T2, TX2, TY2>(source, x, y, dx, dy, _fill, scale, inherit)
+                var geom = new Hex<T2, TX2, TY2>(source, x, y, dx, dy, _fill, tooltip, animation, scale, inherit)
                 {
                     Aesthetic = new Rectangle
                     {
                         Fill = fill,
                         Alpha = alpha
-                    }
+                    },
+                    OnClick = onclick,
+                    OnMouseOver = onmouseover,
+                    OnMouseOut = onmouseout
                 };
 
                 return geom;
@@ -2138,14 +2233,19 @@ namespace GGNet
             Func<T2, TX2> dx = null,
             Func<T2, TY2> dy = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, fill, alpha, scale, inherit);
+            return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
         }
 
         public static Data<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2156,14 +2256,19 @@ namespace GGNet
             Func<T2, TX2> dx = null,
             Func<T2, TY2> dy = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            data.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, fill, alpha, scale, inherit);
+            data.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
 
             return data;
         }
@@ -2176,14 +2281,19 @@ namespace GGNet
             Func<T2, TX2> dx = null,
             Func<T2, TY2> dy = null,
             IAestheticMapping<T2, string> _fill = null,
+            Func<T2, MouseEventArgs, Task> onclick = null,
+            Func<T2, MouseEventArgs, Task> onmouseover = null,
+            Func<T2, MouseEventArgs, Task> onmouseout = null,
+            Func<T2, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX1 : struct
             where TX2 : struct
             where TY1 : struct
             where TY2 : struct
         {
-            return data.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, fill, alpha, scale, inherit);
+            return data.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
         }
 
         public static Data<T, TX, TY>.PanelFactory Geom_Hex<T, TX, TY>(
@@ -2193,12 +2303,17 @@ namespace GGNet
             Func<T, TX> dx = null,
             Func<T, TY> dy = null,
             IAestheticMapping<T, string> _fill = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            return Geom_Hex(panel, panel.Data.Source, x, y, dx, dy, _fill, fill, alpha, scale, inherit);
+            return Geom_Hex(panel, panel.Data.Source, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
         }
 
         public static Data<T, TX, TY> Geom_Hex<T, TX, TY>(
@@ -2208,12 +2323,17 @@ namespace GGNet
             Func<T, TX> dx = null,
             Func<T, TY> dy = null,
             IAestheticMapping<T, string> _fill = null,
+            Func<T, MouseEventArgs, Task> onclick = null,
+            Func<T, MouseEventArgs, Task> onmouseover = null,
+            Func<T, MouseEventArgs, Task> onmouseout = null,
+            Func<T, string> tooltip = null,
             string fill = "#23d0fc", double alpha = 1.0,
+            bool animation = false,
             (bool x, bool y)? scale = null, bool inherit = true)
             where TX : struct
             where TY : struct
         {
-            data.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, fill, alpha, scale, inherit);
+            data.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
 
             return data;
         }

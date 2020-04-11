@@ -100,6 +100,14 @@ namespace GGNet
         
         public override void Add(T item) => Append(item);
 
+        public void Add(Buffer<T> buffer)
+        {
+            for (var i = 0; i < buffer.Count; i++)
+            {
+                Add(buffer[i]);
+            }
+        }
+
         public override int IndexOf(T item)
         {
             var i = 0;

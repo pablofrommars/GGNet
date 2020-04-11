@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Components.Web;
 
 using GGNet.Scales;
 using GGNet.Facets;
@@ -12,16 +14,17 @@ namespace GGNet.Geoms
         where TX : struct
         where TY : struct
     {
-        private class Comparer : IComparer<(double x, Buffer<(string color, double y, double ymin, double ymax)> bars)>
+        private class Comparer : IComparer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)>
         {
-            public int Compare([AllowNull] (double x, Buffer<(string color, double y, double ymin, double ymax)> bars) x, [AllowNull] (double x, Buffer<(string color, double y, double ymin, double ymax)> bars) y) => x.x.CompareTo(y.x);
+            public int Compare((double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars) x, (double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars) y) => x.x.CompareTo(y.x);
 
             public static readonly Comparer Instance = new Comparer();
         }
 
-        private readonly SortedBuffer<(double x, Buffer<(string color, double y, double ymin, double ymax)> bars)> bars = new SortedBuffer<(double x, Buffer<(string color, double y, double ymin, double ymax)> bars)>(32, 1, Comparer.Instance); 
+        private readonly SortedBuffer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)> bars = new SortedBuffer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)>(32, 1, Comparer.Instance); 
 
         private readonly PositionAdjustment position;
+        private readonly bool animation;
 
         public ErrorBar(
             Source<T> source,
@@ -30,7 +33,9 @@ namespace GGNet.Geoms
             Func<T, TY> ymin,
             Func<T, TY> ymax,
             IAestheticMapping<T, string> color = null,
+            Func<T, string> tooltip = null,
             PositionAdjustment position = PositionAdjustment.Identity,
+            bool animation = false,
             (bool x, bool y)? scale = null,
             bool inherit = true,
             Buffer<Shape> layer = null)
@@ -41,7 +46,8 @@ namespace GGNet.Geoms
                 X = x,
                 Y = y,
                 YMin = ymin,
-                YMax = ymax
+                YMax = ymax,
+                Tooltip = tooltip
             };
 
             Aesthetics = new _Aesthetics
@@ -49,6 +55,7 @@ namespace GGNet.Geoms
                 Color = color
             };
 
+            this.animation = animation;
             this.position = position;
         }
 
@@ -61,6 +68,8 @@ namespace GGNet.Geoms
             public Func<T, TY> YMin { get; set; }
 
             public Func<T, TY> YMax { get; set; }
+
+            public Func<T, string> Tooltip { get; set; }
         }
 
         public _Selectors Selectors { get; }
@@ -84,6 +93,14 @@ namespace GGNet.Geoms
         }
 
         public _Positions Positions { get; } = new _Positions();
+
+        public Func<T, MouseEventArgs, Task> OnClick { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
+
+        private Func<T, double, double, MouseEventArgs, Task> onMouseOver;
 
         public Elements.Line Line { get; set; }
 
@@ -114,6 +131,39 @@ namespace GGNet.Geoms
             Positions.YMin = YMapping(Selectors.YMin, panel.Y);
 
             Positions.YMax = YMapping(Selectors.YMax, panel.Y);
+
+            if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
+            {
+                onMouseOver = (item, x, y, _) =>
+                {
+                    var radius = Circle.Radius;
+                    if (animation)
+                    {
+                        radius *= panel.Data.Theme.Animation.Point.Scale;
+                    }
+
+                    panel.Component.Tooltip.Show(
+                        x,
+                        y,
+                        radius,
+                        Selectors.Tooltip(item),
+                        Aesthetics.Color?.Map(item) ?? Circle.Fill,
+                        Circle.Alpha);
+
+                    return Task.CompletedTask;
+                };
+
+                OnMouseOut = (_, __) =>
+                {
+                    panel.Component.Tooltip.Hide();
+
+                    return Task.CompletedTask;
+                };
+            }
+            else if (OnMouseOver != null)
+            {
+                onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
+            }
 
             if (!inherit)
             {
@@ -179,7 +229,7 @@ namespace GGNet.Geoms
                 var bar = bars[i];
                 if (bar.x == x)
                 {
-                    bar.bars.Add((color, y, ymin, ymax));
+                    bar.bars.Add((color, y, ymin, ymax, item));
                     exist = true;
                     break;
                 }
@@ -187,8 +237,8 @@ namespace GGNet.Geoms
 
             if (!exist)
             {
-                var bar = new Buffer<(string color, double y, double ymin, double ymax)>(8, 1);
-                bar.Add((color, y, ymin, ymax));
+                var bar = new Buffer<(string color, double y, double ymin, double ymax, T item)>(8, 1);
+                bar.Add((color, y, ymin, ymax, item));
                 bars.Add((x, bar));
             }
         }
@@ -201,7 +251,7 @@ namespace GGNet.Geoms
 
                 for (var j = 0; j < bar.bars.Count; j++)
                 {
-                    var (color, y, ymin, ymax) = bar.bars[j];
+                    var (color, y, ymin, ymax, item) = bar.bars[j];
 
                     Layer.Add(new Line
                     {
@@ -218,8 +268,9 @@ namespace GGNet.Geoms
                         }
                     });
 
-                    Layer.Add(new Circle
+                    var circle = new Circle
                     {
+                        Classes = animation ? "animate-point" : string.Empty,
                         X = bar.x,
                         Y = y,
                         Aesthetic = new Elements.Circle
@@ -228,7 +279,24 @@ namespace GGNet.Geoms
                             Fill = color,
                             Alpha = Circle.Alpha
                         },
-                    });
+                    };
+
+                    if (OnClick != null)
+                    {
+                        circle.OnClick = e => OnClick(item, e);
+                    }
+
+                    if (onMouseOver != null)
+                    {
+                        circle.OnMouseOver = e => onMouseOver(item, bar.x, y, e);
+                    }
+
+                    if (OnMouseOut != null)
+                    {
+                        circle.OnMouseOut = e => OnMouseOut(item, e);
+                    }
+
+                    Layer.Add(circle);
 
                     if (scale.x)
                     {
@@ -271,7 +339,7 @@ namespace GGNet.Geoms
 
                 for (var j = 0; j < n; j++)
                 {
-                    var (color, y, ymin, ymax) = bar.bars[j];
+                    var (color, y, ymin, ymax, item) = bar.bars[j];
 
                     Layer.Add(new Line
                     {
@@ -288,8 +356,9 @@ namespace GGNet.Geoms
                         }
                     });
 
-                    Layer.Add(new Circle
+                    var circle = new Circle
                     {
+                        Classes = animation ? "animate-point" : string.Empty,
                         X = x,
                         Y = y,
                         Aesthetic = new Elements.Circle
@@ -298,7 +367,25 @@ namespace GGNet.Geoms
                             Fill = color,
                             Alpha = Circle.Alpha
                         },
-                    });
+                    };
+
+                    if (OnClick != null)
+                    {
+                        circle.OnClick = e => OnClick(item, e);
+                    }
+
+                    if (onMouseOver != null)
+                    {
+                        var _x = x;
+                        circle.OnMouseOver = e => onMouseOver(item, _x, y, e);
+                    }
+
+                    if (OnMouseOut != null)
+                    {
+                        circle.OnMouseOut = e => OnMouseOut(item, e);
+                    }
+
+                    Layer.Add(circle);
 
                     if (scale.x)
                     {

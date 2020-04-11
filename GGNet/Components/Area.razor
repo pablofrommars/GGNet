@@ -110,7 +110,10 @@
                   fill-opacity=@poly.Aesthetic.Alpha
                   stroke=@poly.Aesthetic.Color
                   stroke-width=@poly.Aesthetic.Width
-                  clip-path="url(#@(Clip))" />
+                  clip-path="url(#@(Clip))"
+                  @onclick=@(async e => await poly.OnClickHandler(e))
+                  @onmouseover=@(async e => await poly.OnMouseOverHandler(e))
+                  @onmouseout=@(async e => await poly.OnMouseOutHandler(e)) />
         }
         else if (shape is Shapes.MultiPolygon multi)
         {

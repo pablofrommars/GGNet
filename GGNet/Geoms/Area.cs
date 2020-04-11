@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Components.Web;
 
 using GGNet.Scales;
 using GGNet.Facets;
@@ -11,14 +14,14 @@ namespace GGNet.Geoms
         where TX : struct
         where TY : struct
     {
-        private class Comparer : Comparer<(double x, double y)>
+        private class Comparer : Comparer<(double x, double y, T item)>
         {
-            public override int Compare((double x, double y) a, (double x, double y) b) => a.x.CompareTo(b.x);
+            public override int Compare((double x, double y, T item) a, (double x, double y, T item) b) => a.x.CompareTo(b.x);
         }
 
         private static readonly Comparer comparer = new Comparer();
 
-        private readonly Buffer<(string fill, SortedBuffer<(double x, double y)> points)> series = new Buffer<(string fill, SortedBuffer<(double x, double y)>)>(16, 1);
+        private readonly Buffer<(string fill, SortedBuffer<(double x, double y, T item)> points)> series = new Buffer<(string fill, SortedBuffer<(double x, double y, T item)> points)>(16, 1);
 
         private readonly PositionAdjustment position;
 
@@ -27,6 +30,7 @@ namespace GGNet.Geoms
             Func<T, TX> x,
             Func<T, TY> y,
             IAestheticMapping<T, string> fill = null,
+            Func<T, string> tooltip = null,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null,
             bool inherit = true,
@@ -36,7 +40,8 @@ namespace GGNet.Geoms
             Selectors = new _Selectors
             {
                 X = x,
-                Y = y
+                Y = y,
+                Tooltip = tooltip
             };
 
             Aesthetics = new _Aesthetics
@@ -52,6 +57,8 @@ namespace GGNet.Geoms
             public Func<T, TX> X { get; set; }
 
             public Func<T, TY> Y { get; set; }
+
+            public Func<T, string> Tooltip { get; set; }
         }
 
         public _Selectors Selectors { get; }
@@ -71,6 +78,14 @@ namespace GGNet.Geoms
         }
 
         public _Positions Positions { get; } = new _Positions();
+
+        public Func<T, MouseEventArgs, Task> OnClick { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
+
+        public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
+
+        private Func<T, double, double, MouseEventArgs, Task> onMouseOver;
 
         public Elements.Rectangle Aesthetic { get; set; }
 
@@ -94,6 +109,33 @@ namespace GGNet.Geoms
             else
             {
                 Positions.Y = YMapping(Selectors.Y, panel.Y);
+            }
+
+            if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
+            {
+                onMouseOver = (item, x, y, _) =>
+                {
+                    panel.Component.Tooltip.Show(
+                        x,
+                        y,
+                        0,
+                        Selectors.Tooltip(item),
+                        Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
+                        Aesthetic.Alpha);
+
+                    return Task.CompletedTask;
+                };
+
+                OnMouseOut = (_, __) =>
+                {
+                    panel.Component.Tooltip.Hide();
+
+                    return Task.CompletedTask;
+                };
+            }
+            else if (OnMouseOver != null)
+            {
+                onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
             }
 
             if (!inherit)
@@ -133,7 +175,7 @@ namespace GGNet.Geoms
                 }
             }
 
-            SortedBuffer<(double x, double y)> points = null;
+            SortedBuffer<(double x, double y, T item)> points = null;
 
             for (var i = 0; i < series.Count; i++)
             {
@@ -147,7 +189,7 @@ namespace GGNet.Geoms
 
             if (points == null)
             {
-                points = new SortedBuffer<(double x, double y)>(comparer: comparer);
+                points = new SortedBuffer<(double x, double y, T item)>(comparer: comparer);
 
                 series.Add((fill, points));
             }
@@ -155,19 +197,62 @@ namespace GGNet.Geoms
             var x = Positions.X.Map(item);
             var y = Positions.Y.Map(item);
 
-            points.Add((x, y));
+            points.Add((x, y, item));
         }
+
+        private void Interactivity(Buffer<Shape> circles, T item, double x, double y)
+        {
+            if (OnClick != null || onMouseOver != null || OnMouseOut != null)
+            {
+                var circle = new Circle
+                {
+                    X = x,
+                    Y = y,
+                    Aesthetic = new Elements.Circle
+                    {
+                        Radius = 3.0,
+                        Alpha = 0,
+                        Fill = "transparent"
+                    }
+                };
+
+                if (OnClick != null)
+                {
+                    circle.OnClick = e => OnClick(item, e);
+                }
+
+                if (onMouseOver != null)
+                {
+                    circle.OnMouseOver = e => onMouseOver(item, x, y, e);
+                }
+
+                if (OnMouseOut != null)
+                {
+                    circle.OnMouseOut = e => OnMouseOut(item, e);
+                }
+
+                circles.Add(circle);
+            }
+        }
+
+        private class SumComparer : Comparer<(double x, double y)>
+        {
+            public override int Compare((double x, double y) a, (double x, double y) b) => a.x.CompareTo(b.x);
+        }
+
+        private static readonly SumComparer sumComparer = new SumComparer();
 
         private void Stack(bool flip)
         {
-            SortedBuffer<(double x, double y)> sum = new SortedBuffer<(double x, double y)>(comparer: comparer);
+            var sum = new SortedBuffer<(double x, double y)>(comparer: sumComparer);
+            var circles = new Buffer<Shape>();
 
             for (var i = 0; i < series.Count; i++)
             {
                 var (_, points) = series[i];
                 for (var j = 0; j < points.Count; j++)
                 {
-                    var (x, _) = points[j];
+                    var (x, _, _) = points[j];
 
                     sum.Add((x, 0));
                 }
@@ -186,6 +271,8 @@ namespace GGNet.Geoms
                     }
                 };
 
+                Layer.Add(area);
+
                 var ylast = 0.0;
                 var xlast = 0.0;
                 var slast = 0.0;
@@ -193,7 +280,7 @@ namespace GGNet.Geoms
                 var head = 0;
 
                 {
-                    var (x, y) = points[0];
+                    var (x, y, item) = points[0];
 
                     while (head < sum.Count)
                     {
@@ -220,6 +307,8 @@ namespace GGNet.Geoms
                         head++;
                     }
 
+                    Interactivity(circles, item, x, slast);
+
                     if (scale.x)
                     {
                         Positions.X.Position.Shape(x, x);
@@ -229,7 +318,7 @@ namespace GGNet.Geoms
                 for (var j = 1; j < points.Count; j++)
                 {
                     var k = head;
-                    var (x, y) = points[j];
+                    var (x, y, item) = points[j];
 
                     var (xk, _) = sum[k];
 
@@ -267,6 +356,7 @@ namespace GGNet.Geoms
                                 var delta = sy + (sx - xlast) / xdelta * ydelta;
                                 area.Points.Add((sx, sy, delta));
                                 sum[k] = (sx, delta);
+                                slast = delta;
                             }
                         }
                         else
@@ -277,11 +367,12 @@ namespace GGNet.Geoms
                                 var delta = sy + ylast + (sx - xlast) / xdelta * ydelta;
                                 area.Points.Add((sx, sy, delta));
                                 sum[k] = (sx, delta);
+                                slast = delta;
                             }
                         }
-                        
-                        slast += ydelta;
                     }
+
+                    Interactivity(circles, item, x, slast);
 
                     if (scale.y)
                     {
@@ -298,13 +389,15 @@ namespace GGNet.Geoms
 
                     head++;
                 }
-
-                Layer.Add(area);
             }
+
+            Layer.Add(circles);
         }
 
         private void Identity(bool flip)
         {
+            var circles = new Buffer<Shape>();
+
             for (var i = 0; i < series.Count; i++)
             {
                 var (fill, points) = series[i];
@@ -318,11 +411,15 @@ namespace GGNet.Geoms
                     }
                 };
 
+                Layer.Add(area);
+
                 for (var j = 0; j < points.Count; j++)
                 {
-                    var (x, y) = points[j];
+                    var (x, y, item) = points[j];
 
                     area.Points.Add((x, 0, y));
+
+                    Interactivity(circles, item, x, y);
 
                     if (scale.x)
                     {
@@ -334,9 +431,9 @@ namespace GGNet.Geoms
                         Positions.Y.Position.Shape(0, y);
                     }
                 }
-
-                Layer.Add(area);
             }
+
+            Layer.Add(circles);
         }
 
         protected override void Set(bool flip)

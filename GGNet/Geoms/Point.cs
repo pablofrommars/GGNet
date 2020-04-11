@@ -79,6 +79,8 @@ namespace GGNet.Geoms
 
         public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
 
+        private Func<T, double, double, MouseEventArgs, Task> onMouseOver;
+
         public Elements.Circle Aesthetic { get; set; }
 
         public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
@@ -105,7 +107,7 @@ namespace GGNet.Geoms
 
             if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
             {
-                OnMouseOver = (item, _) =>
+                onMouseOver = (item, x, y, _) =>
                 {
                     var radius = Aesthetic.Radius;
                     if (Aesthetics.Size != null)
@@ -119,8 +121,8 @@ namespace GGNet.Geoms
                     }
 
                     panel.Component.Tooltip.Show(
-                        Positions.X.Map(item),
-                        Positions.Y.Map(item),
+                        x,
+                        y,
                         radius,
                         Selectors.Tooltip(item),
                         Aesthetics.Color?.Map(item) ?? Aesthetic.Fill,
@@ -135,6 +137,10 @@ namespace GGNet.Geoms
 
                     return Task.CompletedTask;
                 };
+            }
+            else if (OnMouseOver != null)
+            {
+                onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
             }
 
             if (!inherit)
@@ -217,9 +223,9 @@ namespace GGNet.Geoms
                 circle.OnClick = e => OnClick(item, e);
             }
 
-            if (OnMouseOver != null)
+            if (onMouseOver != null)
             {
-                circle.OnMouseOver = e => OnMouseOver(item, e);
+                circle.OnMouseOver = e => onMouseOver(item, x, y, e);
             }
 
             if (OnMouseOut != null)

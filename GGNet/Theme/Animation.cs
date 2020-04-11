@@ -9,6 +9,7 @@
                 Point = new _Point();
                 Bar = new _Bar();
                 Map = new _Map();
+                Hex = new _Hex();
             }
 
             public class _Point
@@ -50,6 +51,18 @@
             }
 
             public _Map Map { get; set; }
+
+            public class _Hex
+            {
+                public _Hex()
+                {
+                    Transition = 0.2;
+                }
+
+                public double Transition { get; set; }
+            }
+
+            public _Hex Hex { get; set; }
         }
     }
 }
