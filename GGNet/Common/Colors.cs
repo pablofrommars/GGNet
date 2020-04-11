@@ -99,6 +99,9 @@ namespace GGNet
             "#d18975", "#8fd175", "#3f2d54", "#75b8d1", "#2d543d", "#c9d175", "#d1ab75", "#d175b8", "#758bd1"
         };
 
+        /*
+         * https://colorbrewer2.org 
+         */
         public static class Brewer
         {
             public static Dictionary<int, string[]> YlGnBu = new Dictionary<int, string[]>
@@ -123,5 +126,14 @@ namespace GGNet
                 [9] = new[] { "rgb(247,251,255)", "rgb(222,235,247)", "rgb(198,219,239)", "rgb(158,202,225)", "rgb(107,174,214)", "rgb(66,146,198)", "rgb(33,113,181)", "rgb(8,81,156)", "rgb(8,48,107)" }
             };
         }
+
+        /*
+         * https://github.com/nanxstats/ggsci
+         */
+
+        public static string[] Nature = new[]
+        {
+            "#E64B35", "4DBBD5", "#00A087", "#3C5488", "#F39B7F", "#8491B4", "#91D1C2", "#DC0000", "#7E6148", "#B09C85"
+        };
     }
 }

@@ -51,12 +51,8 @@
     <Plot Data=@area T=Beatles.Point TX=Double TY=Double />
 </div>
 
-<div class="border rounded-lg m-5 p-1" style="width: 720px; background-color: #343a40;">
-    <Plot Data=@stack T=Beatles.Point TX=Double TY=Double />
-</div>
-
 <div class="border rounded-lg m-5 p-1" style="width: 720px;">
-    <Plot Data=@debug T="(int, int)" TX=Double TY=Double />
+    <Plot Data=@stack T=Beatles.Point TX=Double TY=Double />
 </div>
 
 @code {
@@ -75,8 +71,6 @@
 
     Data<Beatles.Point, double, double> area;
     Data<Beatles.Point, double, double> stack;
-
-    Data<(int, int), double, double> debug;
 
     protected override void OnInitialized()
     {
@@ -306,24 +300,15 @@
         }
 
         {
-            var beatles = Beatles.Load().GroupBy(o => o.Year).Select(o => (year: o.Key, N: o.Sum(p => p.N))).OrderBy(o => o.year).ToList();
-            stack = Plot.New(Beatles.Load(), x: o => o.Year)
-                .Geom_Area(y: o => o.N, position: PositionAdjustment.Stack)
-                .Geom_Line(beatles, o => o.year, o => o.N, tooltip: o => o.year.ToString(), color: "red")
+            stack = Plot.New(Beatles.Load().OrderBy(o => o.Name), x: o => o.Year, o => o.N)
+                .Geom_Area(alpha: 0.7, position: PositionAdjustment.Stack)
+                .Scale_X_Continuous(expand: (0, 3, 0, 0))
                 .Scale_Y_Continuous(format: "#,##0")
-                .Scale_Fill_Discrete(o => o.Name, Colors.FT, guide: false)
+                .Scale_Fill_Discrete(o => o.Name, Colors.Nature)
                 .Title("Popularity of Beatles Names")
                 .YLab("#")
                 .XLab("Year")
-                .Theme();
-        }
-
-        {
-            var beatles = Beatles.Load().GroupBy(o => o.Year).Select(o => (year: o.Key, N: o.Sum(p => p.N))).OrderBy(o => o.year).ToList();
-
-            debug = Plot.New(beatles, o => (double)o.year, o => (double)o.N)
-                .Geom_Line()
-                .Theme();
+                .Theme(dark: false, legend: Position.Top);
         }
     }
 

@@ -3,9 +3,10 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 
+@using NodaTime
+
 @using GGNet
 @using GGNet.Components
-
 
 @if (plot != null)
 {
@@ -24,6 +25,10 @@
     <div style="width: 720px;">
         <Plot Data=@plot4 T="(TS, double)" TX=Double TY=Double Width=720 Height=576 />
     </div>
+
+    <div style="width: 720px;">
+        <Plot Data=@plot5 T="(string, LocalDate, double)" TX=LocalDate TY=Double Width=720 Height=576 />
+    </div>
 }
 
 @code {
@@ -31,6 +36,7 @@
     Data<(TS ts, double age), double, double> plot2;
     Data<(TS ts, double obesity), double, double> plot3;
     Data<(TS ts, double probability), double, double> plot4;
+    Data<(string continent, LocalDate date, double deaths), LocalDate, double> plot5;
 
     protected override async Task OnInitializedAsync()
     {
@@ -102,6 +108,22 @@
             .Scale_Y_Log10()
             .YLab("Confirmed Deaths / Million - Log")
             .Scale_Color_Discrete(o => o.ts.Country.Continent, Colors.Viridis)
+            .Theme(dark: false);
+
+        var continents = data
+            .Where(o => !string.IsNullOrEmpty(o.Country.Continent))
+            .SelectMany(o => o.Points.Select(p => (continent: o.Country.Continent, date: p.Date, deaths: p.DeathsCumulative)))
+            .GroupBy(o => o.continent)
+            .SelectMany(g => g.GroupBy(o => o.date).Select(o => (continent: g.Key, date: o.Key, deaths: o.Sum(p => p.deaths))))
+            .OrderBy(o => o.date)
+            .ThenBy(o => o.continent)
+            .ToList();
+
+        plot5 = Plot.New(continents, o => o.date, o => o.deaths)
+            .Geom_Area(position: PositionAdjustment.Stack)
+            //.XLim(new LocalDate(2020, 2, 15))
+            .Scale_Y_Continuous(format: "#,##0")
+            .Scale_Fill_Discrete(o => o.continent, Colors.Viridis)
             .Theme(dark: false);
     }
 }

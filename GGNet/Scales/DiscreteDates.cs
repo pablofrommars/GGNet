@@ -19,12 +19,23 @@ namespace GGNet.Scales
 
         protected void DayMonth(int start, int end)
         {
+            /*
             var delta = (int)Pretty.delta(start, end);
 
             if (delta == 0)
             {
                 return;
             }
+            */
+
+            var delta = (end - start + 1) switch
+            {
+                var _n when _n <= 7 => 1,
+                var _n when _n <= 14 => 2,
+                var _n when _n <= 35 => 5,
+                var _n when _n < 70 => 10,
+                _ => 15
+            };
 
             var breaks = new List<double>();
             var labels = new List<(double x, string day)>();
