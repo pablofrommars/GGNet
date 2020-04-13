@@ -428,7 +428,7 @@ namespace GGNet.Geoms
 
                     if (scale.y)
                     {
-                        Positions.Y.Position.Shape(0, y);
+                        Positions.Y.Position.Shape(y, y);
                     }
                 }
             }

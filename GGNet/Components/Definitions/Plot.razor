@@ -55,24 +55,28 @@
             stroke-width: @(Theme.Panel.Grid.Major.X.Width);
             stroke: @(Theme.Panel.Grid.Major.X.Fill);
             stroke-opacity: @(Theme.Panel.Grid.Major.X.Alpha);
+            stroke-dasharray: @(Theme.Panel.Grid.Major.X.LineType.DashArray());
         }
 
         #@(Id) .gridMinorX {
             stroke-width: @(Theme.Panel.Grid.Minor.X.Width);
             stroke: @(Theme.Panel.Grid.Minor.X.Fill);
             stroke-opacity: @(Theme.Panel.Grid.Minor.X.Alpha);
+            stroke-dasharray: @(Theme.Panel.Grid.Minor.X.LineType.DashArray());
         }
 
         #@(Id) .gridMajorY {
             stroke-width: @(Theme.Panel.Grid.Major.Y.Width);
             stroke: @(Theme.Panel.Grid.Major.Y.Fill);
             stroke-opacity: @(Theme.Panel.Grid.Major.Y.Alpha);
+            stroke-dasharray: @(Theme.Panel.Grid.Major.Y.LineType.DashArray());
         }
 
         #@(Id) .gridMinorY {
             stroke-width: @(Theme.Panel.Grid.Minor.Y.Width);
             stroke: @(Theme.Panel.Grid.Minor.Y.Fill);
             stroke-opacity: @(Theme.Panel.Grid.Minor.Y.Alpha);
+            stroke-dasharray: @(Theme.Panel.Grid.Minor.Y.LineType.DashArray());
         }
 
         #@(Id) .axisTextX {

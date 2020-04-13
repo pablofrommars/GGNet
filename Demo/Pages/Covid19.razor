@@ -62,7 +62,7 @@
             .ToList();
 
         var text = string.Join('\n', age
-            .Select(o => $"new Point {{ Age = {o.age / 100}, Deaths = {Math.Log10(o.ts.DeathsCumulative / o.ts.Population * 1000000.0)} }},")
+            .Select(o => $"(continent: \"{o.ts.Country.Continent}\", age: {o.age / 100}, deaths: {o.ts.DeathsCumulative / o.ts.Population * 1000000.0}),")
             .ToArray());
 
         var t = 1.9855;

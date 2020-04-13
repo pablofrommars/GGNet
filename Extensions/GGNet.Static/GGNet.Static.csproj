@@ -16,7 +16,7 @@
     <RepositoryUrl>https://github.com/pablofrommars/GGNet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp</PackageTags>
-    <Version>1.1.9</Version>
+    <Version>1.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

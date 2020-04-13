@@ -21,13 +21,15 @@
                     {
                         Width = 0.43,
                         Fill = color,
-                        Alpha = 1.0
+                        Alpha = 1.0,
+                        LineType = LineType.Solid
                     },
                     Y = new Line
                     {
                         Width = 0.43,
                         Fill = color,
-                        Alpha = 1.0
+                        Alpha = 1.0,
+                        LineType = LineType.Solid
                     }
                 },
                 Minor = new _Grid._GridXY
@@ -36,13 +38,15 @@
                     {
                         Width = 0.32,
                         Fill = color,
-                        Alpha = 1.0
+                        Alpha = 1.0,
+                        LineType = LineType.Solid
                     },
                     Y = new Line
                     {
                         Width = 0.32,
                         Fill = color,
-                        Alpha = 1.0
+                        Alpha = 1.0,
+                        LineType = LineType.Solid
                     }
                 },
             };
