@@ -142,7 +142,12 @@ namespace GGNet.Components
             {
                 try
                 {
-                    var channel = Channel.CreateUnbounded<int>();
+                    var channel = Channel.CreateUnbounded<int>(new UnboundedChannelOptions
+                    {
+                        SingleReader = true,
+                        SingleWriter = true
+                    });
+
                     var reader = channel.Reader;
                     writer = channel.Writer;
 

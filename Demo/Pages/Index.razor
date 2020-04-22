@@ -194,6 +194,10 @@
 
             var theme = Theme.Default(dark: false);
             theme.Panel.Grid.Major.X.Width = 0;
+            theme.Panel.Grid.Major.Y.Fill = "rgba(0, 0, 0, 0.5)";
+            theme.Panel.Grid.Major.Y.LineType = LineType.Dotted;
+            theme.Panel.Grid.Minor.Y.Fill = "rgba(0, 0, 0, 0.5)";
+            theme.Panel.Grid.Minor.Y.LineType = LineType.Dotted;
 
             beatles = Plot.New(source, x: X, y: o => o.N)
                  .Geom_Bar(tooltip: o => $"<b>{o.Name}:</b> {o.N}", position: PositionAdjustment.Stack, width: 0.5, alpha: 0.7)

@@ -5,17 +5,41 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
 using NodaTime;
+using NodaTime.Text;
 
 using GGNet.NaturalEarth;
-using System;
 
 namespace Demo.Pages
 {
     public partial class Covid19 : ComponentBase
     {
+
+        private static readonly LocalDatePattern pattern = LocalDatePattern.CreateWithInvariantCulture("yyyy-MM-dd");
+
         private async Task<List<TS>> GetData()
         {
-            var csv = await Http.GetStringAsync("https://raw.githubusercontent.com/owid/covid-19-data/master/input/ecdc/releases/latest.csv");
+            var pop = (await Http.GetStringAsync("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/ecdc/locations.csv"))
+                            .Split('\n')
+                            .Skip(1)
+                            .Select(line =>
+                            {
+                                var fields = line.Split(',');
+                                var n = fields.Length;
+
+                                if (n < 5)
+                                {
+                                    return default;
+                                }
+
+                                long.TryParse(fields[n - 1], out var population);
+
+                                return (location: fields[n - 4], population);
+                            })
+                            .Where(o => !string.IsNullOrEmpty(o.location))
+                            .ToList();
+
+            //iso_code,location,date,total_cases,new_cases,total_deaths,new_deaths,total_cases_per_million,new_cases_per_million,total_deaths_per_million,new_deaths_per_million,total_tests,new_tests,total_tests_per_thousand,new_tests_per_thousand,tests_units
+            var csv = await Http.GetStringAsync("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv").ConfigureAwait(false);
 
             static TS.DoubleStat ConfirmedDouble(TS.Point[] points, TS.Point last)
             {
@@ -82,28 +106,23 @@ namespace Demo.Pages
                 {
                     var fields = line.Split(',');
 
-                    if (fields.Count() != 10)
+                    if (fields.Count() <= 7)
                     {
                         return default;
                     }
 
-                    var a2 = fields[7];
+                    var iso = fields[0];
+                    var location = fields[1];
 
-                    var year = int.Parse(fields[3]);
-                    var month = int.Parse(fields[2]);
-                    var day = int.Parse(fields[1]);
-
-                    var date = new LocalDate(year, month, day);
+                    var date = pattern.Parse(fields[2]).Value;
 
                     var cases = double.Parse(fields[4]);
-                    var deaths = double.Parse(fields[5]);
+                    var deaths = double.Parse(fields[6]);
 
-                    long.TryParse(fields[9], out var population);
-
-                    return (a2, date, cases, deaths, population);
+                    return (iso, location, date, cases, deaths);
                 })
-                .Where(o => !string.IsNullOrEmpty(o.a2))
-                .GroupBy(o => o.a2)
+                .Where(o => !string.IsNullOrEmpty(o.iso))
+                .GroupBy(o => (o.iso, o.location))
                 .Select(g =>
                 {
                     var points = g
@@ -134,9 +153,9 @@ namespace Demo.Pages
 
                     var ts = new TS
                     {
-                        Country = Scale110.Countries.SingleOrDefault(o => o.A2 == g.Key),
+                        Country = Scale110.Countries.SingleOrDefault(o => o.A3 == g.Key.iso),
                         Points = points,
-                        Population = g.First().population,
+                        Population = pop.SingleOrDefault(o => o.location == g.Key.location).population,
                         ConfirmedDelta = last.ConfirmedDelta,
                         ConfirmedCumulative = last.ConfirmedCumulative,
                         DeathsDelta = last.DeathsDelta,
@@ -192,7 +211,7 @@ namespace Demo.Pages
                 DeathsDouble = DeathsDouble(tspoints, last)
             });
 
-            return data;
+            return data.OrderByDescending(o => o.ConfirmedCumulative).ToList();
         }
 
         private List<StatPoint> GetStatPoints(TS.Point[] points)

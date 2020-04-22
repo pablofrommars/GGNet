@@ -2,6 +2,8 @@
 {
     using Elements;
 
+    using static LineType;
+
     public class _Panel
     {
         public _Panel(bool dark)
@@ -22,14 +24,14 @@
                         Width = 0.43,
                         Fill = color,
                         Alpha = 1.0,
-                        LineType = LineType.Solid
+                        LineType = Solid
                     },
                     Y = new Line
                     {
                         Width = 0.43,
                         Fill = color,
                         Alpha = 1.0,
-                        LineType = LineType.Solid
+                        LineType = Solid
                     }
                 },
                 Minor = new _Grid._GridXY
@@ -39,14 +41,14 @@
                         Width = 0.32,
                         Fill = color,
                         Alpha = 1.0,
-                        LineType = LineType.Solid
+                        LineType = Solid
                     },
                     Y = new Line
                     {
                         Width = 0.32,
                         Fill = color,
                         Alpha = 1.0,
-                        LineType = LineType.Solid
+                        LineType = Solid
                     }
                 },
             };
