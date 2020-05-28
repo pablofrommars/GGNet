@@ -14,12 +14,12 @@
     <RepositoryUrl>https://github.com/pablofrommars/GGNet</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp;geospacial</PackageTags>
-    <Version>0.0.1</Version>
+    <Version>0.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GGNet" Version="1.3.9" />
-    <PackageReference Include="MessagePack" Version="2.1.90" />
+    <PackageReference Include="GGNet" Version="1.4.1" />
+    <PackageReference Include="MessagePack" Version="2.1.115" />
   </ItemGroup>
 
 </Project>
