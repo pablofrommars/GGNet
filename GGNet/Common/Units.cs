@@ -1,8 +1,7 @@
-﻿namespace GGNet
+﻿namespace GGNet;
+
+public enum Units
 {
-    public enum Units
-    {
-        em,
-        px
-    }
+	em,
+	px
 }

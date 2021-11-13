@@ -1,6 +1,4 @@
-﻿using System;
-
-using NodaTime;
+﻿using NodaTime;
 
 using static System.Math;
 

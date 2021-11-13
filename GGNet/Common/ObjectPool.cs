@@ -1,33 +1,32 @@
-﻿namespace GGNet
+﻿namespace GGNet;
+
+public class ObjectPool<T>
+	where T : new()
 {
-    public class ObjectPool<T>
-        where T : new()
-    {
-        private readonly Buffer<T> buffer;
+	private readonly Buffer<T> buffer;
 
-        public ObjectPool(int pageCapacity = 256, int pagesIncrement = 4)
-        {
-            buffer = new Buffer<T>(pageCapacity, pagesIncrement);
-        }
+	public ObjectPool(int pageCapacity = 256, int pagesIncrement = 4)
+	{
+		buffer = new Buffer<T>(pageCapacity, pagesIncrement);
+	}
 
-        private int index = 0;
+	private int index = 0;
 
-        public void Reset() => index = 0;
+	public void Reset() => index = 0;
 
-        public T Get()
-        {
-            if (index < buffer.Count)
-            {
-                return buffer[index++];
-            }
+	public T Get()
+	{
+		if (index < buffer.Count)
+		{
+			return buffer[index++];
+		}
 
-            var obj = new T();
+		var obj = new T();
 
-            buffer.Add(obj);
+		buffer.Add(obj);
 
-            index++;
+		index++;
 
-            return obj;
-        }
-    }
+		return obj;
+	}
 }

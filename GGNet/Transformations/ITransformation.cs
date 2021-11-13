@@ -1,9 +1,8 @@
-﻿namespace GGNet.Transformations
-{
-    public interface ITransformation<T>
-    {
-        T Apply(T value);
+﻿namespace GGNet.Transformations;
 
-        T Inverse(T value);
-    }
+public interface ITransformation<T>
+{
+	T Apply(T value);
+
+	T Inverse(T value);
 }

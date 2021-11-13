@@ -1,9 +1,8 @@
-﻿namespace GGNet.Geospacial
-{
-    public class Point
-    {
-        public double Longitude { get; set; }
+﻿namespace GGNet.Geospacial;
 
-        public double Latitude { get; set; }
-    }
+public class Point
+{
+	public double Longitude { get; set; }
+
+	public double Latitude { get; set; }
 }

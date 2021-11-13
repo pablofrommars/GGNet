@@ -1,4 +1,3 @@
-﻿namespace GGNet
-{
-    public interface IWaiver { }
-}
+﻿namespace GGNet;
+
+public interface IWaiver { }

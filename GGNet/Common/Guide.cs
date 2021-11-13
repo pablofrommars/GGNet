@@ -1,9 +1,8 @@
-﻿namespace GGNet
+﻿namespace GGNet;
+
+public enum Guide
 {
-    public enum Guide 
-    {
-        None,
-        Items,
-        ColorBar
-    }
+	None,
+	Items,
+	ColorBar
 }

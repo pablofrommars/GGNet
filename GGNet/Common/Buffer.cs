@@ -1,251 +1,247 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace GGNet;
 
-namespace GGNet
+public abstract class BufferBase<T>
 {
-    public abstract class BufferBase<T>
-    {
-        protected readonly IComparer<T> comparer;
+	protected readonly IComparer<T> comparer;
 
-        protected T[][] pages;
+	protected T[][] pages;
 
-        protected int pageCapacity;
-        protected int pagesIncrement;
-        protected int pagesCapacity;
+	protected int pageCapacity;
+	protected int pagesIncrement;
+	protected int pagesCapacity;
 
-        protected int count;
-        protected int page;
-        protected int element;
+	protected int count;
+	protected int page;
+	protected int element;
 
-        public BufferBase(int pageCapacity = 32, int pagesIncrement = 4, IComparer<T> comparer = null)
-        {
-            this.comparer = comparer ?? Comparer<T>.Default;
+	public BufferBase(int pageCapacity = 32, int pagesIncrement = 4, IComparer<T> comparer = null)
+	{
+		this.comparer = comparer ?? Comparer<T>.Default;
 
-            pages = new T[pagesIncrement][];
-            pages[0] = new T[pageCapacity];
+		pages = new T[pagesIncrement][];
+		pages[0] = new T[pageCapacity];
 
-            this.pageCapacity = pageCapacity;
-            this.pagesIncrement = pagesIncrement;
-            pagesCapacity = pagesIncrement;
+		this.pageCapacity = pageCapacity;
+		this.pagesIncrement = pagesIncrement;
+		pagesCapacity = pagesIncrement;
 
-            count = 0;
-            page = 0;
-            element = 0;
-        }
+		count = 0;
+		page = 0;
+		element = 0;
+	}
 
-        public int Count => count;
+	public int Count => count;
 
-        protected T Get(int i) => pages[i / pageCapacity][i % pageCapacity];
+	protected T Get(int i) => pages[i / pageCapacity][i % pageCapacity];
 
-        protected void Set(int i, T item) => pages[i / pageCapacity][i % pageCapacity] = item;
+	protected void Set(int i, T item) => pages[i / pageCapacity][i % pageCapacity] = item;
 
-        public T this[int i]
-        {
-            get => Get(i);
-            set => Set(i, value);
-        }
+	public T this[int i]
+	{
+		get => Get(i);
+		set => Set(i, value);
+	}
 
-        public abstract void Add(T item);
+	public abstract void Add(T item);
 
-        public void Add(IEnumerable<T> items)
-        {
-            foreach (var item in items)
-            {
-                Add(item);
-            }
-        }
+	public void Add(IEnumerable<T> items)
+	{
+		foreach (var item in items)
+		{
+			Add(item);
+		}
+	}
 
-        protected void Grow()
-        {
-            count++;
+	protected void Grow()
+	{
+		count++;
 
-            if (element == pageCapacity)
-            {
-                page++;
+		if (element == pageCapacity)
+		{
+			page++;
 
-                if (page == pagesCapacity)
-                {
-                    pagesCapacity += pagesIncrement;
-                    Array.Resize(ref pages, pagesCapacity);
-                }
+			if (page == pagesCapacity)
+			{
+				pagesCapacity += pagesIncrement;
+				Array.Resize(ref pages, pagesCapacity);
+			}
 
-                pages[page] ??= new T[pageCapacity];
+			pages[page] ??= new T[pageCapacity];
 
-                element = 0;
-            }
-        }
+			element = 0;
+		}
+	}
 
-        protected void Append(T item)
-        {
-            Grow();
-            pages[page][element++] = item;
-        }
+	protected void Append(T item)
+	{
+		Grow();
+		pages[page][element++] = item;
+	}
 
-        public abstract int IndexOf(T item);
+	public abstract int IndexOf(T item);
 
-        public void Clear()
-        {
-            count = 0;
-            page = 0;
-            element = 0;
-        }
-    }
+	public void Clear()
+	{
+		count = 0;
+		page = 0;
+		element = 0;
+	}
+}
 
-    public class Buffer<T> : BufferBase<T>
-    {
-        public Buffer(int pageCapacity = 32, int pagesIncrement = 4)
-            : base(pageCapacity, pagesIncrement) 
-        { 
-        }
-        
-        public override void Add(T item) => Append(item);
+public class Buffer<T> : BufferBase<T>
+{
+	public Buffer(int pageCapacity = 32, int pagesIncrement = 4)
+		: base(pageCapacity, pagesIncrement)
+	{
+	}
 
-        public void Add(Buffer<T> buffer)
-        {
-            for (var i = 0; i < buffer.Count; i++)
-            {
-                Add(buffer[i]);
-            }
-        }
+	public override void Add(T item) => Append(item);
 
-        public override int IndexOf(T item)
-        {
-            var i = 0;
+	public void Add(Buffer<T> buffer)
+	{
+		for (var i = 0; i < buffer.Count; i++)
+		{
+			Add(buffer[i]);
+		}
+	}
 
-            for (var p = 0; p < page; p++)
-            {
-                for (var j = 0; j < pageCapacity; j++)
-                {
-                    if (comparer.Compare(pages[p][j], item) == 0)
-                    {
-                        return i;
-                    }
+	public override int IndexOf(T item)
+	{
+		var i = 0;
 
-                    i++;
-                }
-            }
+		for (var p = 0; p < page; p++)
+		{
+			for (var j = 0; j < pageCapacity; j++)
+			{
+				if (comparer.Compare(pages[p][j], item) == 0)
+				{
+					return i;
+				}
 
-            return -1;
-        }
-    }
+				i++;
+			}
+		}
 
-    public class SortedBuffer<T> : BufferBase<T>
-    {
-        public SortedBuffer(int pageCapacity = 32, int pagesIncrement = 4, IComparer<T> comparer = null)
-            : base(pageCapacity, pagesIncrement, comparer)
-        {
-        }
+		return -1;
+	}
+}
 
-        public override void Add(T item)
-        {
-            if (Count == 0)
-            {
-                Append(item);
-                return;
-            }
+public class SortedBuffer<T> : BufferBase<T>
+{
+	public SortedBuffer(int pageCapacity = 32, int pagesIncrement = 4, IComparer<T> comparer = null)
+		: base(pageCapacity, pagesIncrement, comparer)
+	{
+	}
 
-            var cmp = comparer.Compare(pages[page][element - 1], item);
-            if (cmp == 0)
-            {
-                return;
-            }
-            else if (cmp < 0)
-            {
-                Append(item);
-                return;
-            }
+	public override void Add(T item)
+	{
+		if (Count == 0)
+		{
+			Append(item);
+			return;
+		}
 
-            var found = false;
-            var p = 0;
-            var i = 0;
+		var cmp = comparer.Compare(pages[page][element - 1], item);
+		if (cmp == 0)
+		{
+			return;
+		}
+		else if (cmp < 0)
+		{
+			Append(item);
+			return;
+		}
 
-            while (p <= page)
-            {
-                i = 0;
+		var found = false;
+		var p = 0;
+		var i = 0;
 
-                while (i < pageCapacity)
-                {
-                    cmp = comparer.Compare(item, pages[p][i]);
-                    if (cmp == 0)
-                    {
-                        return;
-                    }
-                    if (cmp < 0)
-                    {
-                        found = true;
-                        break;
-                    }
+		while (p <= page)
+		{
+			i = 0;
 
-                    i++;
-                }
+			while (i < pageCapacity)
+			{
+				cmp = comparer.Compare(item, pages[p][i]);
+				if (cmp == 0)
+				{
+					return;
+				}
+				if (cmp < 0)
+				{
+					found = true;
+					break;
+				}
 
-                if (found)
-                {
-                    break;
-                }
+				i++;
+			}
 
-                p++;
-            }
+			if (found)
+			{
+				break;
+			}
 
-            Grow();
+			p++;
+		}
 
-            while (p <= page)
-            {
-                while (i < pageCapacity)
-                {
-                    var tmp = pages[p][i];
-                    pages[p][i] = item;
-                    item = tmp;
+		Grow();
 
-                    i++;
-                }
+		while (p <= page)
+		{
+			while (i < pageCapacity)
+			{
+				var tmp = pages[p][i];
+				pages[p][i] = item;
+				item = tmp;
 
-                i = 0;
-                p++;
-            }
+				i++;
+			}
 
-            element++;
-        }
+			i = 0;
+			p++;
+		}
 
-        public override int IndexOf(T item)
-        {
-            var start = 0;
-            var n = Count;
+		element++;
+	}
 
-            while (n > 0)
-            {
-                var m = start + (n - 1) / 2;
-                var mvalue = this[m];
+	public override int IndexOf(T item)
+	{
+		var start = 0;
+		var n = Count;
 
-                var cmp = comparer.Compare(item, mvalue);
-                if (cmp == 0)
-                {
-                    return m;
-                }
-                else if (cmp > 0)
-                {
-                    start = m + 1;
-                }
+		while (n > 0)
+		{
+			var m = start + (n - 1) / 2;
+			var mvalue = this[m];
 
-                n /= 2;
-            }
+			var cmp = comparer.Compare(item, mvalue);
+			if (cmp == 0)
+			{
+				return m;
+			}
+			else if (cmp > 0)
+			{
+				start = m + 1;
+			}
 
-            if (element == pageCapacity)
-            {
-                page++;
+			n /= 2;
+		}
 
-                if (page == pagesCapacity)
-                {
-                    pagesCapacity += pagesIncrement;
-                    Array.Resize(ref pages, pagesCapacity);
-                }
+		if (element == pageCapacity)
+		{
+			page++;
 
-                pages[page] ??= new T[pageCapacity];
+			if (page == pagesCapacity)
+			{
+				pagesCapacity += pagesIncrement;
+				Array.Resize(ref pages, pagesCapacity);
+			}
 
-                element = 0;
-            }
+			pages[page] ??= new T[pageCapacity];
 
-            return -1;
-        }
-    }
+			element = 0;
+		}
+
+		return -1;
+	}
 }

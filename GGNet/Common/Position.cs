@@ -1,10 +1,9 @@
-﻿namespace GGNet
+﻿namespace GGNet;
+
+public enum Position
 {
-    public enum Position
-    {
-        Left, 
-        Right,
-        Top,
-        Bottom,
-    };
-}
+	Left,
+	Right,
+	Top,
+	Bottom,
+};

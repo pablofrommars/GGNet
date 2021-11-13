@@ -1,9 +1,8 @@
-﻿namespace GGNet
+﻿namespace GGNet;
+
+public enum PositionAdjustment
 {
-    public enum PositionAdjustment
-    {
-        Identity,
-        Stack,
-        Dodge
-    };
-}
+	Identity,
+	Stack,
+	Dodge
+};

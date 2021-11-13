@@ -1,9 +1,8 @@
-﻿namespace GGNet
+﻿namespace GGNet;
+
+public enum RenderPolicy
 {
-    public enum RenderPolicy
-    {
-        Auto,
-        Always,
-        Never
-    }
+	Auto,
+	Always,
+	Never
 }

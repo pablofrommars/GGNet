@@ -1,8 +1,7 @@
-﻿namespace GGNet
+﻿namespace GGNet;
+
+public enum Direction
 {
-    public enum Direction
-    {
-        Vertical,
-        Horizontal
-    };
-}
+	Vertical,
+	Horizontal
+};

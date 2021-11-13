@@ -1,13 +1,10 @@
-﻿using System;
+﻿namespace GGNet.Transformations;
 
-namespace GGNet.Transformations
+public class Sqrt : ITransformation<double>
 {
-    public class Sqrt : ITransformation<double>
-    {
-        public double Apply(double value) => Math.Sqrt(value);
+	public static Sqrt Instance = new();
 
-        public double Inverse(double value) => value * value;
+	public double Apply(double value) => Math.Sqrt(value);
 
-        public static Sqrt Instance = new Sqrt();
-    }
+	public double Inverse(double value) => value * value;
 }

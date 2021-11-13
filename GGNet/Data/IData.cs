@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace GGNet;
 
-namespace GGNet
+public interface IData
 {
-    public interface IData
-    {
-        Type PlotType { get; }
-    }
+	Type PlotType { get; }
 }

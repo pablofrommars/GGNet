@@ -1,13 +1,12 @@
-﻿namespace GGNet.Formats
+﻿namespace GGNet.Formats;
+
+public class DoubleFormatter : IFormatter<double>
 {
-    public class DoubleFormatter : IFormatter<double>
-    {
-        private readonly string format;
+	private readonly string format;
 
-        public DoubleFormatter(string format) => this.format = format;
+	public DoubleFormatter(string format) => this.format = format;
 
-        public string Format(double value) => value.ToString(format);
+	public string Format(double value) => value.ToString(format);
 
-        public static DoubleFormatter Instance => new DoubleFormatter("0.##");
-    }
+	public static DoubleFormatter Instance => new("0.##");
 }

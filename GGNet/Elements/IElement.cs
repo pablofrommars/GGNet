@@ -1,9 +1,8 @@
-﻿namespace GGNet.Elements
-{
-    public interface IElement
-    { 
-        string Fill { get; }
+﻿namespace GGNet.Elements;
 
-        double Alpha { get; }
-    }
+public interface IElement
+{
+	string Fill { get; }
+
+	double Alpha { get; }
 }

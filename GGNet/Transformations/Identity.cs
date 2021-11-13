@@ -1,11 +1,10 @@
-﻿namespace GGNet.Transformations
+﻿namespace GGNet.Transformations;
+
+public class Identity<T> : ITransformation<T>
 {
-    public class Identity<T> : ITransformation<T>
-    {
-        public T Apply(T value) => value;
+	public static Identity<T> Instance = new();
 
-        public T Inverse(T value) => value;
+	public T Apply(T value) => value;
 
-        public static Identity<T> Instance = new Identity<T>();
-    }
+	public T Inverse(T value) => value;
 }

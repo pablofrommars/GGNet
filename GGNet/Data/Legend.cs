@@ -1,230 +1,229 @@
 ﻿using static System.Math;
 
-namespace GGNet
+namespace GGNet;
+
+using Elements;
+using Scales;
+
+using static Direction;
+using static Guide;
+
+internal class Legend
 {
-    using Elements;
-    using Scales;
+	public Legend(Theme theme, IAestheticMapping aes)
+	{
+		Aes = aes;
 
-    using static Direction;
-    using static Guide;
+		if (!string.IsNullOrEmpty(aes.Name))
+		{
+			Title = new Dimension<string>
+			{
+				Value = aes.Name,
+				Width = aes.Name.Width(theme.Legend.Title.Size),
+				Height = aes.Name.Height(theme.Legend.Title.Size)
+			};
+		}
 
-    internal class Legend
-    {
-        public Legend(Theme theme, IAestheticMapping aes)
-        {
-            Aes = aes;
+		Items = new _Items(theme);
+	}
 
-            if (!string.IsNullOrEmpty(aes.Name))
-            {
-                Title = new Dimension<string>
-                {
-                    Value = aes.Name,
-                    Width = aes.Name.Width(theme.Legend.Title.Size),
-                    Height = aes.Name.Height(theme.Legend.Title.Size)
-                };
-            }
+	public IAestheticMapping Aes { get; }
 
-            Items = new _Items(theme);
-        }
+	public class Dimension<TValue>
+	{
+		public TValue Value { get; set; }
 
-        public IAestheticMapping Aes { get; }
+		public double Width { get; set; }
 
-        public class Dimension<TValue>
-        {
-            public TValue Value { get; set; }
+		public double Height { get; set; }
+	}
 
-            public double Width { get; set; }
+	public Dimension<string> Title { get; }
 
-            public double Height { get; set; }
-        }
+	internal class Elements : Buffer<Dimension<IElement>>
+	{
+		private readonly double size;
 
-        public Dimension<string> Title { get; }
+		public Elements(double size) : base(4, 1) => this.size = size;
 
-        internal class Elements : Buffer<Dimension<IElement>>
-        {
-            private readonly double size;
+		public double Width { get; set; }
 
-            public Elements(double size) : base(4, 1) => this.size = size;
+		public double Height { get; set; }
 
-            public double Width { get; set; }
+		public Dimension<IElement> Add(IElement element)
+		{
+			var dim = new Dimension<IElement>
+			{
+				Value = element,
+				Width = size,
+				Height = size
+			};
 
-            public double Height { get; set; }
+			if (element is Circle c)
+			{
+				var diam = 2 * c.Radius;
 
-            public Dimension<IElement> Add(IElement element)
-            {
-                var dim = new Dimension<IElement>
-                {
-                    Value = element,
-                    Width = size,
-                    Height = size
-                };
+				dim.Width = Max(dim.Width, diam);
+				dim.Height = Max(dim.Height, diam);
+			}
 
-                if (element is Circle c)
-                {
-                    var diam = 2 * c.Radius;
+			Width = Max(Width, dim.Width);
+			Height = Max(Height, dim.Height);
 
-                    dim.Width = Max(dim.Width, diam);
-                    dim.Height = Max(dim.Height, diam);
-                }
+			Add(dim);
 
-                Width = Max(Width, dim.Width);
-                Height = Max(Height, dim.Height);
+			return dim;
+		}
+	}
 
-                Add(dim);
+	internal class _Items : Buffer<(Dimension<string> label, Elements elements)>
+	{
+		private readonly Theme theme;
 
-                return dim;
-            }
-        }
+		public _Items(Theme theme) : base(8, 1) => this.theme = theme;
 
-        internal class _Items : Buffer<(Dimension<string> label, Elements elements)>
-        {
-            private readonly Theme theme;
+		public (Dimension<string> label, Elements elements) GetOrAdd(string label)
+		{
+			for (int i = 0; i < Count; i++)
+			{
+				var ret = Get(i);
+				if (ret.label.Value == label)
+				{
+					return ret;
+				}
+			}
 
-            public _Items(Theme theme) : base(8, 1) => this.theme = theme;
+			var height = label.Height(theme.Legend.Labels.Size);
 
-            public (Dimension<string> label, Elements elements) GetOrAdd(string label)
-            {
-                for (int i = 0; i < Count; i++)
-                {
-                    var ret = Get(i);
-                    if (ret.label.Value == label)
-                    {
-                        return ret;
-                    }
-                }
+			var item = (
+				label: new Dimension<string>
+				{
+					Value = label,
+					Width = label.Width(theme.Legend.Labels.Size),
+					Height = height
+				},
+				elements: new Elements(height)
+			);
 
-                var height = label.Height(theme.Legend.Labels.Size);
+			Add(item);
 
-                var item = (
-                    label: new Dimension<string>
-                    {
-                        Value = label,
-                        Width = label.Width(theme.Legend.Labels.Size),
-                        Height = height
-                    },
-                    elements: new Elements(height)
-                );
+			return item;
+		}
+	}
 
-                Add(item);
+	public _Items Items { get; set; }
 
-                return item;
-            }
-        }
+	public double Width { get; set; }
 
-        public _Items Items { get; set; }
+	public double Height { get; set; }
 
-        public double Width { get; set; }
+	public void Add(string label, IElement element)
+	{
+		var dim = Items.GetOrAdd(label).elements.Add(element);
 
-        public double Height { get; set; }
+		Width = Max(Width, dim.Width);
+		Height = Max(Height, dim.Height);
+	}
+}
 
-        public void Add(string label, IElement element)
-        {
-            var dim = Items.GetOrAdd(label).elements.Add(element);
+internal class Legends : Buffer<Legend>
+{
+	private readonly Theme theme;
 
-            Width = Max(Width, dim.Width);
-            Height = Max(Height, dim.Height);
-        }
-    }
+	public Legends(Theme theme) : base(8, 1) => this.theme = theme;
 
-    internal class Legends : Buffer<Legend>
-    {
-        private readonly Theme theme;
+	public Legend GetOrAdd(IAestheticMapping aes)
+	{
+		for (int i = 0; i < Count; i++)
+		{
+			var ret = Get(i);
+			if (ret.Aes == aes)
+			{
+				return ret;
+			}
+		}
 
-        public Legends(Theme theme) : base(8, 1) => this.theme = theme;
+		var legend = new Legend(theme, aes);
 
-        public Legend GetOrAdd(IAestheticMapping aes)
-        {
-            for (int i = 0; i < Count; i++)
-            {
-                var ret = Get(i);
-                if (ret.Aes == aes)
-                {
-                    return ret;
-                }
-            }
+		Add(legend);
 
-            var legend = new Legend(theme, aes);
+		return legend;
+	}
 
-            Add(legend);
+	public (double width, double height) Dimension()
+	{
+		var width = 0.0;
+		var height = 0.0;
 
-            return legend;
-        }
+		for (int i = 0; i < Count; i++)
+		{
+			var legend = Get(i);
 
-        public (double width, double height) Dimension()
-        {
-            var width = 0.0;
-            var height = 0.0;
+			if (legend.Title?.Width > 0)
+			{
+				var w = theme.Legend.Title.Margin.Left + legend.Title.Width + theme.Legend.Title.Margin.Left;
+				var h = theme.Legend.Title.Margin.Top + legend.Title.Height + theme.Legend.Title.Margin.Bottom;
 
-            for (int i = 0; i < Count; i++)
-            {
-                var legend = Get(i);
+				if (theme.Legend.Direction == Vertical)
+				{
+					width = Max(width, w);
+					height += h;
+				}
+				else
+				{
+					width += w;
+					height = Max(height, h);
+				}
+			}
 
-                if (legend.Title?.Width > 0)
-                {
-                    var w = theme.Legend.Title.Margin.Left + legend.Title.Width + theme.Legend.Title.Margin.Left;
-                    var h = theme.Legend.Title.Margin.Top + legend.Title.Height + theme.Legend.Title.Margin.Bottom;
+			if (legend.Aes.Type == Items)
+			{
+				for (int j = 0; j < legend.Items.Count; j++)
+				{
+					var (label, elements) = legend.Items[j];
 
-                    if (theme.Legend.Direction == Vertical)
-                    {
-                        width = Max(width, w);
-                        height += h;
-                    }
-                    else
-                    {
-                        width += w;
-                        height = Max(height, h);
-                    }
-                }
+					var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
+					var h = theme.Legend.Labels.Margin.Top + Max(elements.Height, label.Height) + theme.Legend.Labels.Margin.Bottom;
 
-                if (legend.Aes.Type == Items)
-                {
-                    for (int j = 0; j < legend.Items.Count; j++)
-                    {
-                        var (label, elements) = legend.Items[j];
+					if (theme.Legend.Direction == Vertical)
+					{
+						width = Max(width, w);
+						height += h;
+					}
+					else
+					{
+						width += w;
+						height = Max(height, h);
+					}
+				}
+			}
+			else if (legend.Aes.Type == ColorBar)
+			{
+				var n = legend.Items.Count;
 
-                        var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
-                        var h = theme.Legend.Labels.Margin.Top + Max(elements.Height, label.Height) + theme.Legend.Labels.Margin.Bottom;
+				if (theme.Legend.Direction == Vertical)
+				{
+					height += theme.Legend.Labels.Margin.Top;
 
-                        if (theme.Legend.Direction == Vertical)
-                        {
-                            width = Max(width, w);
-                            height += h;
-                        }
-                        else
-                        {
-                            width += w;
-                            height = Max(height, h);
-                        }
-                    }
-                }
-                else if (legend.Aes.Type == ColorBar)
-                {
-                    var n = legend.Items.Count;
+					for (int j = 0; j < legend.Items.Count; j++)
+					{
+						var (label, _) = legend.Items[j];
 
-                    if (theme.Legend.Direction == Vertical)
-                    {
-                        height += theme.Legend.Labels.Margin.Top;
+						var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
+						var h = Max(3.0 * legend.Height, label.Height);
 
-                        for (int j = 0; j < legend.Items.Count; j++)
-                        {
-                            var (label, _) = legend.Items[j];
+						width = Max(width, w);
+						height += h;
+					}
+				}
+				else
+				{
+					width += theme.Legend.Labels.Margin.Left + 3.0 * legend.Width * n;
+					height = Max(height, legend.Items[0].label.Height + theme.Legend.Labels.Margin.Bottom + legend.Height);
+				}
+			}
+		}
 
-                            var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
-                            var h = Max(3.0 * legend.Height, label.Height);
-
-                            width = Max(width, w);
-                            height += h;
-                        }
-                    }
-                    else
-                    {
-                        width += theme.Legend.Labels.Margin.Left + 3.0 * legend.Width * n;
-                        height = Max(height, legend.Items[0].label.Height + theme.Legend.Labels.Margin.Bottom + legend.Height);
-                    }
-                }
-            }
-
-            return (width, height);
-        }
-    }
+		return (width, height);
+	}
 }

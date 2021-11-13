@@ -1,9 +1,8 @@
-﻿namespace GGNet
+﻿namespace GGNet;
+
+public enum Anchor
 {
-    public enum Anchor
-    {
-        start,
-        middle,
-        end
-    }
+	start,
+	middle,
+	end
 }
