@@ -1,0 +1,170 @@
+﻿@using GGNet.Common
+
+@typeparam T
+@typeparam TX
+@typeparam TY
+
+@{ 
+    Render(firstRender);
+    firstRender = false;
+}
+
+@if (First)
+{
+    if (Plot.Title.Width > 0)
+    {
+        <g clip-path="url(#@(Plot.Id)-plot)">
+            <text x=@(Plot.Title.X + Area.X) y=@Plot.Title.Y class="title">@Plot.Data.Title</text>
+        </g>
+    }
+
+    if (Plot.SubTitle.Width > 0)
+    {
+        <g clip-path="url(#@(Plot.Id)-plot)">
+            <text x=@(Plot.SubTitle.X + Area.X) y=@Plot.SubTitle.Y class="SubTitle">@Plot.Data.SubTitle</text>
+        </g>
+    }
+}
+
+<defs>
+    <clipPath id=@(clip)>
+        <rect x=@X y=@Y width=@Width height=@Height />
+    </clipPath>
+
+    <clipPath id="@(clip)-area">
+        <rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height />
+    </clipPath>
+</defs>
+
+<rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height class="panel" />
+
+@if (!string.IsNullOrEmpty(Data.Strip.x))
+{
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text x=@xStrip.X y=@xStrip.Y class="stripTextX">@Data.Strip.x</text>
+    </g>
+}
+
+@if (!string.IsNullOrEmpty(Data.Strip.y))
+{
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text style="transform: translate(@(yStrip.X)px, @(yStrip.Y)px) rotate(@(Plot.Theme.Strip.Text.Y.Angle)deg);" class="stripTextY">@Data.Strip.y</text>
+    </g>
+}
+
+@{
+    var y1 = Area.Y;
+    var y2 = Area.Y + Area.Height;
+
+    if (Data.Data.Theme.Panel.Grid.Major.X.Width > 0)
+    {
+        foreach (var b in xscale.Breaks)
+        {
+            var x = CoordX(b);
+            <line x1=@x x2=@x y1=@y1 y2=@y2 class="gridMajorX" clip-path="url(#@(clip)-area)" />
+        }
+    }
+
+    if (Data.Data.Theme.Panel.Grid.Minor.X.Width > 0)
+    {
+        foreach (var b in xscale.MinorBreaks)
+        {
+            var x = CoordX(b);
+            <line x1=@x x2=@x y1=@y1 y2=@y2 class="gridMinorX" clip-path="url(#@(clip)-area)" />
+        }
+    }
+
+    if (Data.Axis.x)
+    {
+        foreach (var (value, label) in xscale.Labels)
+        {
+            var x = CoordX(value);
+
+            if (Area.X < x && x < (Area.X + Area.Width))
+            {
+                <g clip-path="url(#@(Plot.Id)-plot)">
+                    <text x=@x y=@xAxisText.Y class="axisTextX">@label</text>
+                </g>
+            }
+        }
+
+        foreach (var (value, label) in xscale.Titles)
+        {
+            var x = CoordX(value);
+
+            if (Area.X < x && x < (Area.X + Area.Width))
+            {
+                <g clip-path="url(#@(Plot.Id)-plot)">
+                    <text x=@x y=@xAxisTitle.Y class="axisTitleX" text-anchor="middle">@label</text>
+                </g>
+            }
+        }
+    }
+}
+
+@{
+    var x1 = Area.X;
+    var x2 = Area.X + Area.Width;
+
+
+    if (Data.Data.Theme.Panel.Grid.Major.Y.Width > 0)
+    {
+        foreach (var b in yscale.Breaks)
+        {
+            var y = CoordY(b);
+            <line x1=@x1 x2=@x2 y1=@y y2=@y class="gridMajorY" clip-path="url(#@(clip)-area)" />
+        }
+    }
+
+    if (Data.Data.Theme.Panel.Grid.Minor.Y.Width > 0)
+    {
+        foreach (var b in yscale.MinorBreaks)
+        {
+            var y = CoordY(b);
+            <line x1=@x1 x2=@x2 y1=@y y2=@y class="gridMinorY" clip-path="url(#@(clip)-area)" />
+        }
+    }
+
+    if (Data.Axis.y)
+    {
+        var height = Data.Data.Theme.Axis.Text.Y.Size.Height();
+        var offset = height / 4.0;
+
+        foreach (var (value, label) in yscale.Labels)
+        {
+            var y = CoordY(value) + offset;
+
+            if (Area.Y < (y - height / 2.0) && (y + offset) < (Area.Y + Area.Height))
+            {
+                <g clip-path="url(#@(clip)">
+                    <text x=@yAxisText.X y=@y class="axisTextY">@label</text>
+                </g>
+            }
+        }
+    }
+}
+
+<Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderPolicy=@areaPolicy/>
+
+@if (!string.IsNullOrEmpty(Data.XLab.text))
+{
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text x=@xAxisTitle.X y=@xAxisTitle.Y class="axisTitleX">@Data.XLab.text</text>
+    </g>
+}
+
+@if (!string.IsNullOrEmpty(Data.YLab.text))
+{
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text style="transform: translate(@(yAxisTitle.X)px, @(yAxisTitle.Y)px) rotate(@(Data.Data.Theme.Axis.Title.Y.Angle)deg);" class="axisTitleY">@Data.YLab.text</text>
+    </g>
+}
+
+@if (Last && Plot.Caption.Width > 0)
+{
+    <g clip-path="url(#@(Plot.Id)-plot)">
+        <text x=@(Area.X + Area.Width - Plot.Theme.Plot.Caption.Margin.Right) y=@Plot.Caption.Y class="caption">@Plot.Data.Caption</text>
+    </g>
+}
+
+<GGNet.Components.Tooltips.Plot Id=@Plot.Id Coord=@this Area=@Area Theme=@Plot.Theme @ref=@tooltip />

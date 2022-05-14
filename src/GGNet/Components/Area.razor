@@ -1,0 +1,385 @@
+﻿@using GGNet.Common
+
+@typeparam T
+@typeparam TX
+@typeparam TY
+
+@using Shapes
+
+@for (var g = 0; g < Panel.Geoms.Count; g++)
+{
+    var geom = Panel.Geoms[g];
+
+    for (var i = 0; i < geom.Layer.Count; i++)
+    {
+        var shape = geom.Layer[i];
+
+        if (shape is Shapes.Line l)
+        {
+            <line x1=@Coord.CoordX(l.X1)
+                  y1=@Coord.CoordY(l.Y1)
+                  x2=@Coord.CoordX(l.X2)
+                  y2=@Coord.CoordY(l.Y2)
+                  class=@l.Css()
+                  stroke-width=@l.Aesthetic.Width
+                  stroke=@l.Aesthetic.Fill
+                  stroke-opacity=@l.Aesthetic.Alpha
+                  stroke-dasharray=@(l.Aesthetic.LineType.DashArray())
+                  clip-path="url(#@(Clip))"
+                  @onclick=@l.OnClickHandler
+                  @onmouseover=@l.OnMouseOverHandler
+                  @onmouseout=@l.OnMouseOutHandler />
+        }
+        else if (shape is Shapes.Rectangle r)
+        {
+            var x = Coord.CoordX(r.X);
+            var y = Coord.CoordY(r.Y + r.Height);
+            var width = Coord.CoordX(r.X + r.Width) - x;
+            var height = Coord.CoordY(r.Y) - y;
+
+            <rect x=@x
+                  y=@y
+                  width=@width
+                  height=@height
+                  class=@r.Css()
+                  fill=@r.Aesthetic.Fill
+                  fill-opacity=@r.Aesthetic.Alpha
+                  clip-path="url(#@(Clip))"
+                  @onclick=@r.OnClickHandler
+                  @onmouseover=@r.OnMouseOverHandler
+                  @onmouseout=@r.OnMouseOutHandler />
+        }
+        else if (shape is Shapes.Circle c)
+        {
+            <g style="transform: translate(@Coord.CoordX(c.X)px, @Coord.CoordY(c.Y)px)">
+                <circle cx="0"
+                        cy="0"
+                        r=@c.Aesthetic.Radius
+                        class=@c.Css()
+                        stroke-width="0.71"
+                        stroke=@c.Aesthetic.Fill
+                        stroke-opacity=@c.Aesthetic.Alpha
+                        fill=@c.Aesthetic.Fill
+                        fill-opacity=@c.Aesthetic.Alpha
+                        @onclick=@c.OnClickHandler
+                        @onmouseover=@c.OnMouseOverHandler
+                        @onmouseout=@c.OnMouseOutHandler />
+            </g>
+        }
+        else if (shape is Shapes.VStrip v)
+        {
+            var x = Coord.CoordX(v.X);
+            var width = Coord.CoordY(v.X + v.Width) - x;
+
+            <rect x=@x
+                  y=@Zone.Y
+                  width=@width
+                  height=@Zone.Height
+                  fill="transparent"
+                  clip-path="url(#@(Clip))"
+                  @onclick=@v.OnClickHandler
+                  @onmouseover=@v.OnMouseOverHandler
+                  @onmouseout=@v.OnMouseOutHandler />
+        }
+        else if (shape is Shapes.Path p)
+        {
+            if (p.Points.Count > 0)
+            {
+                <path d=@(Path(p))
+                      fill="none"
+                      stroke-width=@p.Aesthetic.Width
+                      stroke=@p.Aesthetic.Fill
+                      stroke-opacity=@p.Aesthetic.Alpha
+                      stroke-dasharray=@(p.Aesthetic.LineType.DashArray())
+                      clip-path="url(#@(Clip))" />
+            }
+        }
+        else if (shape is Shapes.Area a)
+        {
+            if (a.Points.Count > 0)
+            {
+                <path d=@(Path(a))
+                      fill=@a.Aesthetic.Fill
+                      fill-opacity=@a.Aesthetic.Alpha
+                      clip-path="url(#@(Clip))" />
+            }
+        }
+        else if (shape is Shapes.Polygon poly)
+        {
+            <path d=@(Path(poly.Path))
+                  class=@poly.Css()
+                  fill=@poly.Aesthetic.Fill
+                  fill-opacity=@poly.Aesthetic.Alpha
+                  stroke=@poly.Aesthetic.Color
+                  stroke-width=@poly.Aesthetic.Width
+                  clip-path="url(#@(Clip))"
+                  @onclick=@poly.OnClickHandler
+                  @onmouseover=@poly.OnMouseOverHandler
+                  @onmouseout=@poly.OnMouseOutHandler />
+        }
+        else if (shape is Shapes.MultiPolygon multi)
+        {
+            <path d=@(Path(multi.Polygons))
+                  class=@multi.Css()
+                  fill=@multi.Aesthetic.Fill
+                  fill-opacity=@multi.Aesthetic.Alpha
+                  stroke=@multi.Aesthetic.Color
+                  stroke-width=@multi.Aesthetic.Width
+                  clip-path="url(#@(Clip))"
+                  @onclick=@multi.OnClickHandler
+                  @onmouseover=@multi.OnMouseOverHandler
+                  @onmouseout=@multi.OnMouseOutHandler />
+        }
+        else if (shape is Shapes.Text text)
+        {
+            <g style="pointer-events: none;" clip-path="url(#@(Clip))">
+                <text style="fill: @text.Aesthetic.Color; text-anchor: @text.Aesthetic.Anchor; font-size: @text.Aesthetic.Size; font-weigth: @text.Aesthetic.Weight; font-style: @text.Aesthetic.Style; transform: translate(@Coord.CoordX(text.X)px, @Coord.CoordY(text.Y)px) rotate(@(text.Aesthetic.Angle)deg);">
+                    @text.Value
+                </text>
+            </g>
+        }
+        else if (shape is Shapes.VLine vline)
+        {
+            var x = Coord.CoordX(vline.X);
+
+            <line x1=@x
+                  y1=@Zone.Y
+                  x2=@x
+                  y2=@(Zone.Y + Zone.Height)
+                  stroke-width=@vline.Line.Width
+                  stroke=@vline.Line.Fill
+                  stroke-opacity=@vline.Line.Alpha
+                  stroke-dasharray=@(vline.Line.LineType.DashArray())
+                  clip-path="url(#@(Clip))" />
+
+            if (!string.IsNullOrEmpty(vline.Label))
+            {
+                var offset = 0.025 * Zone.Height;
+
+                var y = 0.0;
+                var angle = 0.0;
+
+                if (vline.Text.Anchor == Anchor.end)
+                {
+                    x += 3;
+                    y = Zone.Y + offset;
+                    angle = 90;
+                }
+                else
+                {
+                    x -= 3;
+                    y = Zone.Y + Zone.Height - offset;
+                    angle = -90;
+                }
+
+                <g style="pointer-events: none;" clip-path="url(#@(Clip))">
+                    <text style="fill: @vline.Text.Color; fill-opacity: @vline.Text.Alpha; text-anchor: @Anchor.start; font-size: @vline.Text.Size; font-weigth: @vline.Text.Weight; font-style: @vline.Text.Style; transform: translate(@(x)px, @(y)px) rotate(@(angle)deg);">
+                        @vline.Label
+                    </text>
+                </g>
+            }
+        }
+        else if (shape is Shapes.HLine hline)
+        {
+            var y = Coord.CoordY(hline.Y);
+
+            <line x1=@Zone.X
+                  y1=@y
+                  x2=@(Zone.X + Zone.Width)
+                  y2=@y
+                  stroke-width=@hline.Line.Width
+                  stroke=@hline.Line.Fill
+                  stroke-opacity=@hline.Line.Alpha
+                  stroke-dasharray=@(hline.Line.LineType.DashArray())
+                  clip-path="url(#@(Clip))" />
+
+            if (!string.IsNullOrEmpty(hline.Label))
+            {
+                var offset = 0.025 * Zone.Width;
+
+                var x = 0.0;
+
+                if (hline.Text.Anchor == Anchor.end)
+                {
+                    x = Zone.X + Zone.Width - offset;
+                }
+                else
+                {
+                    x = Zone.X + offset;
+                }
+
+                y -= 3;
+
+                <g style="pointer-events: none;" clip-path="url(#@(Clip))">
+                    <text style="fill: @hline.Text.Color; fill-opacity: @hline.Text.Alpha; text-anchor: @hline.Text.Anchor; font-size: @hline.Text.Size; font-weigth: @hline.Text.Weight; font-style: @hline.Text.Style; transform: translate(@(x)px, @(y)px);">
+                        @hline.Label
+                    </text>
+                </g>
+            }
+        }
+        else if (shape is Shapes.ABLine abline)
+        {
+            var ymin = Coord.XRange.min;
+            var ymax = Coord.XRange.max;
+            if (abline.Transformation.x)
+            {
+                ymin = Coord.XTransformation.Inverse(ymin);
+                ymax = Coord.XTransformation.Inverse(ymax);
+            }
+
+            ymin = abline.A * ymin + abline.B;
+            ymax = abline.A * ymax + abline.B;
+
+            if (abline.Transformation.y)
+            {
+                ymin = Coord.YTransformation.Apply(ymin);
+                ymax = Coord.YTransformation.Apply(ymax);
+            }
+
+            var y1 = Coord.CoordY(ymin);
+            var y2 = Coord.CoordY(ymax);
+
+            <line x1=@Zone.X
+                  y1=@y1
+                  x2=@(Zone.X + Zone.Width)
+                  y2=@y2
+                  stroke-width=@abline.Line.Width
+                  stroke=@abline.Line.Fill
+                  stroke-opacity=@abline.Line.Alpha
+                  stroke-dasharray=@(abline.Line.LineType.DashArray())
+                  clip-path="url(#@(Clip))" />
+
+            if (!string.IsNullOrEmpty(abline.Label))
+            {
+                var x = 0.0;
+                var y = 0.0;
+                var offset = 0.05 * Zone.Width;
+
+                var tan = (y1 - y2) / Zone.Width;
+                var angle = Math.Atan(tan);
+
+                if (abline.Text.Anchor == Anchor.end)
+                {
+                    x = Zone.X + Zone.Width;
+                    y = y2;
+
+                    if (angle >= 0)
+                    {
+                        if (ymax > Coord.YRange.max)
+                        {
+                            x = Coord.YRange.max;
+
+                            if (abline.Transformation.y)
+                            {
+                                x = Coord.YTransformation.Inverse(x);
+                            }
+
+                            x = (x - abline.B) / abline.A;
+
+                            if (abline.Transformation.x)
+                            {
+                                x = Coord.XTransformation.Apply(x);
+
+                            }
+
+                            x = Coord.CoordX(x);
+
+                            y = Zone.Y;
+                        }
+                    }
+                    else
+                    {
+                        if (ymax < Coord.YRange.min)
+                        {
+                            x = Coord.YRange.min;
+
+                            if (abline.Transformation.y)
+                            {
+                                x = Coord.YTransformation.Inverse(x);
+                            }
+
+                            x = (x - abline.B) / abline.A;
+
+                            if (abline.Transformation.x)
+                            {
+                                x = Coord.XTransformation.Apply(x);
+
+                            }
+
+                            x = Coord.CoordX(x);
+
+                            y = Zone.Y + Zone.Height;
+                        }
+                    }
+
+                    x -= offset;
+                    y += offset * tan - 3;
+                }
+                else
+                {
+                    x = Zone.X;
+                    y = y1;
+
+                    if (angle >= 0)
+                    {
+                        if (ymin < Coord.YRange.min)
+                        {
+                            x = Coord.YRange.min;
+
+                            if (abline.Transformation.y)
+                            {
+                                x = Coord.YTransformation.Inverse(x);
+                            }
+
+                            x = (x - abline.B) / abline.A;
+
+                            if (abline.Transformation.x)
+                            {
+                                x = Coord.XTransformation.Apply(x);
+
+                            }
+
+                            x = Coord.CoordX(x);
+
+                            y = Zone.Y + Zone.Height;
+                        }
+                    }
+                    else
+                    {
+                        if (ymin < Coord.YRange.max)
+                        {
+                            x = Coord.YRange.max;
+
+                            if (abline.Transformation.y)
+                            {
+                                x = Coord.YTransformation.Inverse(x);
+                            }
+
+                            x = (x - abline.B) / abline.A;
+
+                            if (abline.Transformation.x)
+                            {
+                                x = Coord.XTransformation.Apply(x);
+
+                            }
+
+                            x = Coord.CoordX(x);
+
+                            y = Zone.Y;
+                        }
+                    }
+
+                    x += offset;
+                    y -= offset * tan + 3;
+
+                }
+
+                <g style="pointer-events: none;" clip-path="url(#@(Clip))">
+                    <text style="fill: @abline.Text.Color; fill-opacity: @abline.Text.Alpha; text-anchor: @abline.Text.Anchor; font-size: @abline.Text.Size; font-weigth: @abline.Text.Weight; font-style: @abline.Text.Style; transform: translate(@(x)px, @(y)px) rotate(@(-angle)rad);">
+                        @abline.Label
+                    </text>
+                </g>
+            }
+        }
+    }
+}

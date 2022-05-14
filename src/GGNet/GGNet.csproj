@@ -1,0 +1,56 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net6</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Owner>PabloFromMars</Owner>
+    <Authors>Pablo Belin</Authors>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Title>GG.Net Data Visualization</Title>
+    <Description>GG.Net lets Data Scientists and Developers create interactive and flexible charts for Blazor Web Apps and .Net in C# and F#.</Description>
+    <Summary>GG.Net lets Data Scientists and Developers create interactive and flexible charts for Blazor Web Apps and .Net in C# and F#</Summary>
+    <PackageTags>Blazor;plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp</PackageTags>
+    <RepositoryUrl>https://github.com/pablofrommars/GGNet</RepositoryUrl>
+    <PackageProjectUrl>https://pablofrommars.github.io/</PackageProjectUrl>
+    <Copyright>Copyright (c) 2020 Pablo Belin</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Product>GGNet Data Visualization</Product>
+    <RepositoryType>git</RepositoryType>
+    <Version>1.4.1</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Components\Panel.cs" />
+    <Compile Remove="Components\Plot.cs" />
+    <Compile Remove="Components\Tooltip.cs" />
+    <Compile Remove="Components\VTrack.cs" />
+    <Content Remove="Components\VTrack.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.5" />
+    <PackageReference Include="NodaTime" Version="3.0.5" />
+    <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Geoms\ABLine.cs" />
+    <Compile Remove="Geoms\Candlestick.cs" />
+    <Compile Remove="Geoms\ErrorBar.cs" />
+    <Compile Remove="Geoms\HLine.cs" />
+    <Compile Remove="Geoms\Hex.cs" />
+    <Compile Remove="Geoms\Map.cs" />
+    <Compile Remove="Geoms\OHLC.cs" />
+    <Compile Remove="Geoms\Rectangle.cs" />
+    <Compile Remove="Geoms\Ribbon.cs" />
+    <Compile Remove="Geoms\RidgeLine.cs" />
+    <Compile Remove="Geoms\Text.cs" />
+    <Compile Remove="Geoms\VLine.cs" />
+    <Compile Remove="Geoms\VStrip.cs" />
+    <Compile Remove="Geoms\Violin.cs" />
+    <Compile Remove="Geoms\Volume.cs" />
+  </ItemGroup>
+
+</Project>
