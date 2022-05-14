@@ -2,7 +2,7 @@
 @typeparam TX
 @typeparam TY
 
-@using GGNet.Shapes
+@using Shapes
 
 @for (var g = 0; g < Data.Geoms.Count; g++)
 {
@@ -24,9 +24,9 @@
                   stroke-opacity=@l.Aesthetic.Alpha
                   stroke-dasharray=@(l.Aesthetic.LineType.DashArray())
                   clip-path="url(#@(Clip))"
-                  @onclick=@(async e => await l.OnClickHandler(e))
-                  @onmouseover=@(async e => await l.OnMouseOverHandler(e))
-                  @onmouseout=@(async e => await l.OnMouseOutHandler(e)) />
+                  @onclick=@l.OnClickHandler
+                  @onmouseover=@l.OnMouseOverHandler
+                  @onmouseout=@l.OnMouseOutHandler />
         }
         else if (shape is Shapes.Rectangle r)
         {
@@ -43,9 +43,9 @@
                   fill=@r.Aesthetic.Fill
                   fill-opacity=@r.Aesthetic.Alpha
                   clip-path="url(#@(Clip))"
-                  @onclick=@(async e => await r.OnClickHandler(e))
-                  @onmouseover=@(async e => await r.OnMouseOverHandler(e))
-                  @onmouseout=@(async e => await r.OnMouseOutHandler(e)) />
+                  @onclick=@r.OnClickHandler
+                  @onmouseover=@r.OnMouseOverHandler
+                  @onmouseout=@r.OnMouseOutHandler />
         }
         else if (shape is Shapes.Circle c)
         {
@@ -59,9 +59,9 @@
                         stroke-opacity=@c.Aesthetic.Alpha
                         fill=@c.Aesthetic.Fill
                         fill-opacity=@c.Aesthetic.Alpha
-                        @onclick=@(async e => await c.OnClickHandler(e))
-                        @onmouseover=@(async e => await c.OnMouseOverHandler(e))
-                        @onmouseout=@(async e => await c.OnMouseOutHandler(e)) />
+                        @onclick=@c.OnClickHandler
+                        @onmouseover=@c.OnMouseOverHandler
+                        @onmouseout=@c.OnMouseOutHandler />
             </g>
         }
         else if (shape is Shapes.VStrip v)
@@ -75,9 +75,9 @@
                   height=@Zone.Height
                   fill="transparent"
                   clip-path="url(#@(Clip))"
-                  @onclick=@(async e => await v.OnClickHandler(e))
-                  @onmouseover=@(async e => await v.OnMouseOverHandler(e))
-                  @onmouseout=@(async e => await v.OnMouseOutHandler(e)) />
+                  @onclick=@v.OnClickHandler
+                  @onmouseover=@v.OnMouseOverHandler
+                  @onmouseout=@v.OnMouseOutHandler />
         }
         else if (shape is Shapes.Path p)
         {
@@ -111,9 +111,9 @@
                   stroke=@poly.Aesthetic.Color
                   stroke-width=@poly.Aesthetic.Width
                   clip-path="url(#@(Clip))"
-                  @onclick=@(async e => await poly.OnClickHandler(e))
-                  @onmouseover=@(async e => await poly.OnMouseOverHandler(e))
-                  @onmouseout=@(async e => await poly.OnMouseOutHandler(e)) />
+                  @onclick=@poly.OnClickHandler
+                  @onmouseover=@poly.OnMouseOverHandler
+                  @onmouseout=@poly.OnMouseOutHandler />
         }
         else if (shape is Shapes.MultiPolygon multi)
         {
@@ -124,9 +124,9 @@
                   stroke=@multi.Aesthetic.Color
                   stroke-width=@multi.Aesthetic.Width
                   clip-path="url(#@(Clip))"
-                  @onclick=@(async e => await multi.OnClickHandler(e))
-                  @onmouseover=@(async e => await multi.OnMouseOverHandler(e))
-                  @onmouseout=@(async e => await multi.OnMouseOutHandler(e)) />
+                  @onclick=@multi.OnClickHandler
+                  @onmouseover=@multi.OnMouseOverHandler
+                  @onmouseout=@multi.OnMouseOutHandler />
         }
         else if (shape is Shapes.Text text)
         {

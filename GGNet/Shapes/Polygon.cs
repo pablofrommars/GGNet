@@ -1,8 +1,8 @@
 ﻿namespace GGNet.Shapes;
 
-public class Polygon : Shape
+public record Polygon : Shape
 {
-	public Geospacial.Polygon Path { get; set; }
+	public Geospacial.Polygon Path { get; set; } = default!;
 
-	public Elements.Rectangle Aesthetic { get; set; }
+	public Elements.Rectangle Aesthetic { get; set; } = default!;
 }

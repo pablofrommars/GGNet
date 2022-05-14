@@ -3,19 +3,20 @@
 namespace GGNet.Scales;
 
 public class ColorDiscrete<TKey> : Discrete<TKey, string>
+	where TKey : notnull
 {
 	public ColorDiscrete(
 	   Palettes.Discrete<TKey, string> palette,
-		ITransformation<TKey> transformation = null)
-	   : base(palette, default, transformation)
+		ITransformation<TKey>? transformation = null)
+	   : base(palette, default!, transformation)
 	{
 	}
 
 	public ColorDiscrete(
 		string[] palette,
 		int direction = 1,
-		ITransformation<TKey> transformation = null)
-		: base(palette, direction, default, transformation)
+		ITransformation<TKey>? transformation = null)
+		: base(palette, direction, default!, transformation)
 	{
 	}
 

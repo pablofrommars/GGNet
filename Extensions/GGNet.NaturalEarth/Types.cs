@@ -1,53 +1,48 @@
-﻿using MessagePack;
+﻿namespace GGNet.NaturalEarth;
 
-using GGNet.Geospacial;
-
-namespace GGNet.NaturalEarth
+[MessagePackObject]
+public record City
 {
-    [MessagePackObject]
-    public class City
-    {
-        [Key(0)]
-        public string Name { get; set; }
+	[Key(0)]
+	public string Name { get; init; } = default!;
 
-        [Key(1)]
-        public Point Point { get; set; }
-    }
+	[Key(1)]
+	public Point Point { get; init; } = default!;
+}
 
-    [MessagePackObject]
-    public class Country
-    {
-        [Key(0)]
-        public string A2 { get; set; }
+[MessagePackObject]
+public record Country
+{
+	[Key(0)]
+	public string A2 { get; init; } = default!;
 
-        [Key(1)]
-        public string A3 { get; set; }
+	[Key(1)]
+	public string A3 { get; init; } = default!;
 
-        [Key(2)]
-        public string Name { get; set; }
+	[Key(2)]
+	public string Name { get; init; } = default!;
 
-        [Key(3)]
-        public string Continent { get; set; }
+	[Key(3)]
+	public string Continent { get; init; } = default!;
 
-        [Key(4)]
-        public Polygon[] Polygons { get; set; }
+	[Key(4)]
+	public Polygon[] Polygons { get; init; } = default!;
 
-        [Key(5)]
-        public City Capital { get; set; }
+	[Key(5)]
+	public City Capital { get; init; } = default!;
 
-        [Key(6)]
-        public Point Centroid { get; set; }
+	[Key(6)]
+	public Point Centroid { get; init; } = default!;
 
-        public override string ToString() => $"{A2} - {Name}";
-    }
+	public override string ToString() => $"{A2} - {Name}";
+}
 
-    [MessagePackObject]
-    public class Lake
-    {
-        [Key(0)]
-        public string Name { get; set; }
+[MessagePackObject]
+public record Lake
+{
+	[Key(0)]
+	public string Name { get; init; } = default!;
 
-        [Key(1)]
-        public Polygon[] Polygons { get; set; }
-    }
+	[Key(1)]
+	public Polygon[] Polygons { get; init; } = default!;
 }

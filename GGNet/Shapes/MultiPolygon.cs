@@ -1,8 +1,8 @@
 ﻿namespace GGNet.Shapes;
 
-public class MultiPolygon : Shape
+public record MultiPolygon : Shape
 {
-	public Geospacial.Polygon[] Polygons { get; set; }
+	public Geospacial.Polygon[] Polygons { get; set; } = default!;
 
-	public Elements.Rectangle Aesthetic { get; set; }
+	public Elements.Rectangle Aesthetic { get; set; } = default!;
 }

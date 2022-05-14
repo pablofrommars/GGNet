@@ -1,87 +1,79 @@
-﻿namespace GGNet
+﻿namespace GGNet.Theme;
+
+using Elements;
+
+using static Position;
+using static Direction;
+using static Anchor;
+
+public sealed class Legend
 {
-    using Elements;
+	public Legend(bool dark, Position legend)
+	{
+		if (legend == Right)
+		{
+			Position = Right;
+			Direction = Vertical;
+		}
+		else if (legend == Left)
+		{
+			Position = Left;
+			Direction = Vertical;
+		}
+		else if (legend == Top)
+		{
+			Position = Top;
+			Direction = Horizontal;
+		}
+		else
+		{
+			Position = Bottom;
+			Direction = Horizontal;
+		}
 
-    using static Position;
-    using static Direction;
-    using static Anchor;
-    using static Units;
+		var color = dark ? "#929299" : "#212529";
 
-    public partial class Theme
-    {
-        public class _Legend
-        {
-            public _Legend(bool dark, Position legend)
-            {
-                if (legend == Right)
-                {
-                    Position = Right;
-                    Direction = Vertical;
-                }
-                else if (legend == Left)
-                {
-                    Position = Left;
-                    Direction = Vertical;
-                }
-                else if (legend == Top)
-                {
-                    Position = Top;
-                    Direction = Horizontal;
-                }
-                else
-                {
-                    Position = Bottom;
-                    Direction = Horizontal;
-                }
+		Title = new()
+		{
+			Anchor = start,
+			Size = new() { Value = 0.75 },
+			Weight = "bold",
+			Color = color,
+			Margin = new()
+			{
+				Top = 4,
+				Right = Direction == Horizontal ? 16 : 0,
+				Bottom = 4
+			}
+		};
 
-                var color = dark ? "#929299" : "#212529";
+		Labels = new()
+		{
+			Anchor = start,
+			Size = new() { Value = 0.75 },
+			Color = color,
+			Margin = new()
+			{
+				Right = Direction == Horizontal ? 8 : 0,
+				Bottom = 4,
+				Left = 4
+			}
+		};
 
-                Title = new Text
-                {
-                    Anchor = start,
-                    Size = new Size(0.75),
-                    Weight = "bold",
-                    Color = color
-                };
+		Margin = new()
+		{
+			Right = Direction == Vertical ? 4 : 0,
+			Left = Direction == Vertical ? 4 : 0
+		};
+	}
 
-                Title.Margin.Top = 4;
-                Title.Margin.Bottom = 4;
+	public Position Position { get; set; }
 
-                Labels = new Text
-                {
-                    Anchor = start,
-                    Size = new Size(0.75),
-                    Color = color
-                };
+	public Direction Direction { get; set; }
 
-                Labels.Margin.Left = 4;
+	public Text Title { get; set; }
 
-                Margin = new Margin();
+	public Text Labels { get; set; }
 
-                if (Direction == Horizontal)
-                {
-                    Title.Margin.Right = 16;
-                    Labels.Margin.Right = 8;
-                    Labels.Margin.Bottom = 4;
-                }
-                else
-                {
-                    Labels.Margin.Bottom = 4;
-
-                    Margin.Left = 4;
-                    Margin.Right = 4;
-                }
-            }
-
-            public Position Position { get; set; }
-
-            public Direction Direction { get; set; }
-
-            public Text Title { get; set; }
-
-            public Text Labels { get; set; }
-
-            public Margin Margin { get; set; }
-        }
-    }
+	public Margin Margin { get; set; }
 }

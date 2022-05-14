@@ -2,7 +2,7 @@
 
 public class Facet<T>
 {
-	public Facet(Faceting<T> faceting, (int row, int column) coord, string xStrip = null, string yStrip = null)
+	public Facet(Faceting<T> faceting, (int row, int column) coord, string? xStrip = null, string? yStrip = null)
 	{
 		Faceting = faceting;
 
@@ -16,9 +16,9 @@ public class Facet<T>
 
 	public (int row, int column) Coord { get; }
 
-	public string XStrip { get; }
+	public string? XStrip { get; }
 
-	public string YStrip { get; }
+	public string? YStrip { get; }
 
 	public bool Include(T item) => Faceting.Map(item) == Coord;
 }

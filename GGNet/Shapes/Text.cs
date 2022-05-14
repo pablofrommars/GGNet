@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Shapes;
 
-public class Text : Shape
+public record Text : Shape
 {
 	public double X { get; set; }
 
@@ -10,7 +10,7 @@ public class Text : Shape
 
 	public double Width { get; set; }
 
-	public string Value { get; set; }
+	public string? Value { get; set; }
 
-	public Elements.Text Aesthetic { get; set; }
+	public Elements.Text Aesthetic { get; set; } = default!;
 }

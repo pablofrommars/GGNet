@@ -21,9 +21,8 @@ namespace GGNet.Geoms
             Func<T, TX> xend,
             Func<T, TY> y,
             Func<T, TY> yend,
-            (bool x, bool y)? scale = null,
-            Buffer<Shape> layer = null)
-            : base(source, scale, false, layer)
+            (bool x, bool y)? scale = null)
+            : base(source, scale, false)
         {
             Selectors = new _Selectors
             {
@@ -102,17 +101,17 @@ namespace GGNet.Geoms
                 Aesthetic = Aesthetic
             };
 
-            if (OnClick != null)
+            if (OnClick is not null)
             {
                 line.OnClick = e => OnClick(item, e);
             }
 
-            if (OnMouseOver != null)
+            if (OnMouseOver is not null)
             {
                 line.OnMouseOver = e => OnMouseOver(item, e);
             }
 
-            if (OnMouseOut != null)
+            if (OnMouseOut is not null)
             {
                 line.OnMouseOut = e => OnMouseOut(item, e);
             }

@@ -1,6 +1,6 @@
 ﻿namespace GGNet;
 
-public class Source<T> : Buffer<T>
+public sealed class Source<T> : Buffer<T>
 {
 	public Source()
 		: base()

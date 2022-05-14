@@ -2,7 +2,7 @@
 
 public class Log10 : ITransformation<double>
 {
-	public static Log10 Instance = new();
+	public static readonly Log10 Instance = new();
 
 	public double Apply(double value) => Math.Log10(value);
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Components.Web;
-
-using GGNet.Scales;
+﻿using GGNet.Scales;
 using GGNet.Facets;
 using GGNet.Shapes;
 
@@ -20,9 +15,8 @@ namespace GGNet.Geoms
             Func<T, (Geospacial.Point point, string content)> tooltip = null,
             bool animation = false,
             (bool x, bool y)? scale = null,
-            bool inherit = true,
-            Buffer<Shape> layer = null)
-            : base(source, scale, inherit, layer)
+            bool inherit = true)
+            : base(source, scale, inherit)
         {
             Selectors = new _Selectors
             {
@@ -78,13 +72,13 @@ namespace GGNet.Geoms
             Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
             Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
 
-            if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
+            if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
             {
                 OnMouseOver = (item, _) =>
                 {
                     var (point, content) = Selectors.Tooltip(item);
 
-                    if (point != null)
+                    if (point is not null)
                     {
                         panel.Component.Tooltip.Show(
                             point.Longitude,
@@ -134,7 +128,7 @@ namespace GGNet.Geoms
         {
             var fill = Aesthetic.Fill;
 
-            if (Aesthetics.Fill != null)
+            if (Aesthetics.Fill is not null)
             {
                 fill = Aesthetics.Fill.Map(item);
                 if (string.IsNullOrEmpty(fill))
@@ -194,17 +188,17 @@ namespace GGNet.Geoms
                 }
             };
 
-            if (OnClick != null)
+            if (OnClick is not null)
             {
                 multi.OnClick = e => OnClick(item, e);
             }
 
-            if (OnMouseOver != null)
+            if (OnMouseOver is not null)
             {
                 multi.OnMouseOver = e => OnMouseOver(item, e);
             }
 
-            if (OnMouseOut != null)
+            if (OnMouseOut is not null)
             {
                 multi.OnMouseOut = e => OnMouseOut(item, e);
             }

@@ -1,6 +1,4 @@
-﻿using System;
-
-using GGNet.Scales;
+﻿using GGNet.Scales;
 using GGNet.Facets;
 using GGNet.Shapes;
 
@@ -13,9 +11,8 @@ namespace GGNet.Geoms
         public VLine(
             Source<T> source,
             Func<T, TX> x,
-            Func<T, string> label,
-            Buffer<Shape> layer = null)
-            : base(source, null, false, layer)
+            Func<T, string> label)
+            : base(source, null, false)
         {
             Selectors = new _Selectors
             {
@@ -61,7 +58,7 @@ namespace GGNet.Geoms
             var x = Positions.X.Map(item);
 
             string label = null;
-            if (Selectors.Label != null)
+            if (Selectors.Label is not null)
             {
                 label = Selectors.Label(item);
             }

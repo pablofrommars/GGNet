@@ -20,9 +20,8 @@ namespace GGNet.Geoms
             Func<T, double> height,
             IAestheticMapping<T, string> fill = null,
             (bool x, bool y)? scale = null,
-            bool inherit = true,
-            Buffer<Shape> layer = null)
-            : base(source, scale, inherit, layer)
+            bool inherit = true)
+            : base(source, scale, inherit)
         {
             Selectors = new _Selectors
             {

@@ -1,10 +1,10 @@
 ﻿namespace GGNet.Elements;
 
-public class Circle : IElement
+public sealed record Circle : IElement
 {
-	public double Radius { get; set; }
+	public double Radius { get; init; }
 
-	public string Fill { get; set; }
+	public string Fill { get; init; } = default!;
 
-	public double Alpha { get; set; }
+	public double Alpha { get; init; }
 }

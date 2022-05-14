@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <Title>Geospatial data for GG.Net</Title>
     <Owner>PabloFromMars</Owner>
     <Authors>Pablo Belin</Authors>
@@ -18,8 +20,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GGNet" Version="1.4.1" />
-    <PackageReference Include="MessagePack" Version="2.1.115" />
+    <PackageReference Include="MessagePack" Version="2.3.85" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GGNet\GGNet.csproj" />
   </ItemGroup>
 
 </Project>

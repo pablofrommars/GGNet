@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Shapes;
 
-public class VStrip : Shape
+public record VStrip : Shape
 {
 	public double X { get; set; }
 

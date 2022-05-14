@@ -3,10 +3,13 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\GGNet.Static\GGNet.Static.csproj" />
+    <ProjectReference Include="..\GGNet.Datasets\GGNet.Datasets.csproj" />
   </ItemGroup>
 
 </Project>

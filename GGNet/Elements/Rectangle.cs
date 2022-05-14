@@ -1,24 +1,14 @@
 ﻿namespace GGNet.Elements;
 
-public class Rectangle : IElement
+public sealed record Rectangle : IElement
 {
-	public Rectangle()
-	{
-		Fill = "inhenit";
-		Alpha = 1.0;
-		Color = "inhenit";
-		Width = 0;
+	public string Fill { get; init; } = "inhenit";
 
-		Margin = new Margin();
-	}
+	public double Alpha { get; init; } = 1.0;
 
-	public string Fill { get; set; }
+	public string Color { get; init; } = "inhenit";
 
-	public double Alpha { get; set; }
+	public double Width { get; init; }
 
-	public string Color { get; set; }
-
-	public double Width { get; set; }
-
-	public Margin Margin { get; set; }
+	public Margin Margin { get; init; } = new();
 }

@@ -137,7 +137,7 @@ namespace GGNet.Components
             {
                 for (var i = 0; i < Data.Panels.Count; i++)
                 {
-                    Data.Panels[i].Component.Refresh();
+                    Data.Panels[i].Component?.Refresh();
                 }
             }
         }

@@ -1,9 +1,8 @@
-﻿namespace GGNet.Components
-{
-    public interface IPanel
-    {
-        void Refresh() { }
+﻿namespace GGNet.Components;
 
-        ITooltip Tooltip { get; }
-    }
+public interface IPanel
+{
+	void Refresh() { }
+
+	ITooltip? Tooltip { get; }
 }

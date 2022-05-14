@@ -167,7 +167,7 @@ namespace Demo.Pages
 
                     return ts;
                 })
-                .Where(o => o.Country != null && o.Country.Capital != null)
+                .Where(o => o.Country is not null && o.Country.Capital is not null)
                 .ToList();
 
             var points = new SortedDictionary<LocalDate, TS.Point>();

@@ -1,6 +1,8 @@
 ﻿namespace GGNet.Facets;
 
-public class Faceting2D<T, TRow, TColumn> : Faceting<T>
+using GGNet.Theme;
+
+public sealed class Faceting2D<T, TRow, TColumn> : Faceting<T>
 {
 	private readonly SortedBuffer<TRow> rows = new(4, 1);
 	private readonly SortedBuffer<TColumn> columns = new(4, 1);
@@ -56,11 +58,11 @@ public class Faceting2D<T, TRow, TColumn> : Faceting<T>
 			for (var c = 0; c < NColumns; c++)
 			{
 				var xStrip = r == 0
-					? columns[c].ToString()
+					? columns[c]?.ToString()
 					: string.Empty;
 
 				var yStrip = c == (NColumns - 1)
-					? rows[r].ToString()
+					? rows[r]?.ToString()
 					: string.Empty;
 
 				var showY = theme.Axis.Y == Position.Left

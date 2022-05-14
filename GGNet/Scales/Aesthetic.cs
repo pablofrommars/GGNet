@@ -1,51 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace GGNet.Scales;
 
-namespace GGNet.Scales
+public class Aesthetic<T, TKey, TValue> : IAestheticMapping<T, TValue>
 {
-    public interface IAestheticMapping
-    {
-        bool Guide { get; }
+	private readonly Func<T, TKey> selector;
+	private readonly Scale<TKey, TValue> scale;
 
-        string Name { get; }
+	public Aesthetic(Func<T, TKey> selector, Scale<TKey, TValue> scale, bool guide, string? name)
+	{
+		this.selector = selector;
+		this.scale = scale;
 
-        Guide Type { get; }
-    }
+		Guide = guide;
+		Name = name;
+	}
 
-    public interface IAestheticMapping<T, TValue> : IAestheticMapping
-    {
-        void Train(T item);
+	public bool Guide { get; }
 
-        TValue Map(T item);
+	public string? Name { get; }
 
-        IEnumerable<(TValue value, string label)> Labels { get; }
-    }
+	public Guide Type => scale.Guide;
 
-    public class Aesthetic<T, TKey, TValue> : IAestheticMapping<T, TValue>
-    {
-        private readonly Func<T, TKey> selector;
-        private readonly Scale<TKey, TValue> scale;
+	public void Train(T item) => scale.Train(selector(item));
 
-        public Aesthetic(Func<T, TKey> selector, Scale<TKey, TValue> scale, bool guide, string name)
-        {
-            this.selector = selector;
-            this.scale = scale;
+	public TValue Map(T item) => scale.Map(selector(item));
 
-            Guide = guide;
-            Name = name;
-        }
-
-        public bool Guide { get; }
-
-        public string Name { get; }
-
-        public Guide Type => scale.Guide;
-
-        public void Train(T item) => scale.Train(selector(item));
-
-        public TValue Map(T item) => scale.Map(selector(item));
-
-        public IEnumerable<(TValue value, string label)> Labels => scale.Labels;
-
-    }
+	public IEnumerable<(TValue value, string label)> Labels => scale.Labels;
 }

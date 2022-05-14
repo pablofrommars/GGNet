@@ -12,7 +12,7 @@ public class Binned<T>
 		this.values = values;
 	}
 
-	public bool TryGetValue(double key, out T value)
+	public bool TryGetValue(double key, [MaybeNullWhen(false)] out T value)
 	{
 		value = default;
 

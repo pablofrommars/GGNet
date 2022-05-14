@@ -1,47 +1,43 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using GGNet.Transformations;
 
-using GGNet.Transformations;
+namespace GGNet.Scales;
 
-namespace GGNet.Scales
+public interface IScale
 {
-    public interface IScale
-    {
-        public void Set(bool grid);
+	public void Set(bool grid);
 
-        public void Clear();
-    }
+	public void Clear();
+}
 
-    public abstract class Scale<TKey, TValue> : IScale
-    {
-        protected readonly ITransformation<TKey> transformation;
+public abstract class Scale<TKey, TValue> : IScale
+{
+	protected readonly ITransformation<TKey> transformation;
 
-        public Scale(ITransformation<TKey> transformation = null)
-        {
-            this.transformation = transformation ?? Transformations.Identity<TKey>.Instance;
+	public Scale(ITransformation<TKey>? transformation = null)
+	{
+		this.transformation = transformation ?? Transformations.Identity<TKey>.Instance;
 
-            Breaks = Enumerable.Empty<TValue>();
-            MinorBreaks = Enumerable.Empty<TValue>();
-            Labels = Enumerable.Empty<(TValue value, string text)>();
-            Titles = Enumerable.Empty<(TValue value, string text)>();
-        }
+		Breaks = Enumerable.Empty<TValue>();
+		MinorBreaks = Enumerable.Empty<TValue>();
+		Labels = Enumerable.Empty<(TValue value, string text)>();
+		Titles = Enumerable.Empty<(TValue value, string text)>();
+	}
 
-        public abstract Guide Guide { get; }
+	public abstract Guide Guide { get; }
 
-        public IEnumerable<TValue> Breaks { get; protected set; }
+	public IEnumerable<TValue> Breaks { get; protected set; }
 
-        public IEnumerable<TValue> MinorBreaks { get; protected set; }
+	public IEnumerable<TValue> MinorBreaks { get; protected set; }
 
-        public IEnumerable<(TValue value, string label)> Labels { get; protected set; }
+	public IEnumerable<(TValue value, string label)> Labels { get; protected set; }
 
-        public IEnumerable<(TValue value, string title)> Titles { get; protected set; }
+	public IEnumerable<(TValue value, string title)> Titles { get; protected set; }
 
-        public abstract void Train(TKey key);
+	public abstract void Train(TKey key);
 
-        public abstract void Set(bool grid);
+	public abstract void Set(bool grid);
 
-        public abstract TValue Map(TKey key);
+	public abstract TValue Map(TKey key);
 
-        public abstract void Clear();
-    }
+	public abstract void Clear();
 }

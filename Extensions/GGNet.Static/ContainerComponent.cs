@@ -1,44 +1,38 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
+﻿namespace GGNet.Static;
 
-using Microsoft.AspNetCore.Components;
-
-namespace GGNet.Static
+[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "<Pending>")]
+internal sealed class ContainerComponent : IComponent
 {
-    [SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "<Pending>")]
-    internal class ContainerComponent : IComponent
-    {
-        private readonly StaticRenderer renderer;
-        private readonly int id;
+	private readonly StaticRenderer renderer;
+	private readonly int id;
 
-        public ContainerComponent(StaticRenderer renderer)
-        {
-            this.renderer = renderer;
-            id = renderer.AttachContainer(this);
-        }
+	public ContainerComponent(StaticRenderer renderer)
+	{
+		this.renderer = renderer;
+        
+		id = renderer.AttachContainer(this);
+	}
 
-        private RenderHandle handle;
+	private RenderHandle handle;
 
-        public void Attach(RenderHandle renderHandle) => handle = renderHandle;
+	public void Attach(RenderHandle renderHandle) => handle = renderHandle;
 
-        public Task SetParametersAsync(ParameterView parameters) => throw new NotImplementedException();
+	public Task SetParametersAsync(ParameterView parameters) => throw new NotImplementedException();
 
-        public Task RenderAsync(Type componentType, ParameterView parameters) => renderer.Dispatch(() =>
-        {
-            handle.Render(builder =>
-            {
-                builder.OpenComponent(0, componentType);
+	public Task RenderAsync(Type componentType, ParameterView parameters) => renderer.Dispatch(() =>
+	{
+		handle.Render(builder =>
+		{
+			builder.OpenComponent(0, componentType);
 
-                foreach (var parameterValue in parameters)
-                {
-                    builder.AddAttribute(1, parameterValue.Name, parameterValue.Value);
-                }
+			foreach (var parameterValue in parameters)
+			{
+				builder.AddAttribute(1, parameterValue.Name, parameterValue.Value);
+			}
 
-                builder.CloseComponent();
-            });
-        });
+			builder.CloseComponent();
+		});
+	});
 
-        public int Child() => renderer.GetCurrentRenderTreeFrames(id).Array[0].ComponentId;
-    }
+	public int Child() => renderer.GetCurrentRenderTreeFrames(id).Array[0].ComponentId;
 }

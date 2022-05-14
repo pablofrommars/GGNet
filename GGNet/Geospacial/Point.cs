@@ -1,8 +1,8 @@
 ﻿namespace GGNet.Geospacial;
 
-public class Point
+public sealed record Point
 {
-	public double Longitude { get; set; }
+	public double Longitude { get; init; }
 
-	public double Latitude { get; set; }
+	public double Latitude { get; init; }
 }

@@ -6,7 +6,7 @@ using Geoms;
 
 public partial class Data<T, TX, TY>
 {
-	public class Panel
+	public sealed class Panel
 	{
 		public Panel((int row, int col) coord, Data<T, TX, TY> data, double width, double height)
 		{
@@ -30,15 +30,15 @@ public partial class Data<T, TX, TY>
 
 		public Buffer<IGeom> Geoms { get; } = new Buffer<IGeom>(8, 1);
 
-		internal (string x, string y) Strip { get; set; }
+		internal (string? x, string? y) Strip { get; set; } = default;
 
 		internal (bool x, bool y) Axis { get; set; }
 
-		internal (double height, string text) XLab { get; set; }
+		internal (double height, string? text) XLab { get; set; }
 
-		internal (double width, string text) YLab { get; set; }
+		internal (double width, string? text) YLab { get; set; }
 
-		internal Components.IPanel Component { get; set; }
+		internal Components.IPanel? Component { get; set; }
 
 		internal void Register(Components.IPanel component)
 		{
@@ -76,9 +76,9 @@ public partial class Data<T, TX, TY>
 		}
 	}
 
-	public class PanelFactory
+	public sealed class PanelFactory
 	{
-		private readonly List<Func<Panel, Facet<T>, IGeom>> geoms = new List<Func<Panel, Facet<T>, IGeom>>();
+		private readonly List<Func<Panel, Facet<T>?, IGeom>> geoms = new();
 
 		public PanelFactory(Data<T, TX, TY> data, double width = 1, double height = 1)
 		{
@@ -93,13 +93,13 @@ public partial class Data<T, TX, TY>
 
 		public double Height { get; }
 
-		public Func<Position<TY>> Y { get; set; }
+		public Func<Position<TY>>? Y { get; set; }
 
-		internal string YLab { get; set; }
+		internal string? YLab { get; set; }
 
-		public void Add(Func<Panel, Facet<T>, IGeom> geom) => geoms.Add(geom);
+		public void Add(Func<Panel, Facet<T>?, IGeom> geom) => geoms.Add(geom);
 
-		public Panel Build((int, int) coord, Facet<T> facet = null, double? width = null, double? height = null)
+		public Panel Build((int, int) coord, Facet<T>? facet = null, double? width = null, double? height = null)
 		{
 			var panel = new Panel(coord, Data, width ?? Width, height ?? Height);
 

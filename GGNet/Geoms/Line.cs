@@ -1,14 +1,14 @@
-﻿using GGNet.Scales;
-using GGNet.Facets;
-using GGNet.Shapes;
+﻿namespace GGNet.Geoms;
 
-namespace GGNet.Geoms;
+using Scales;
+using Facets;
+using Shapes;
 
 public class Line<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	private readonly Dictionary<(string, LineType), Shapes.Path> paths = new();
+	private readonly Dictionary<(string, LineType), Path> paths = new();
 
 	public Line(
 		Source<T> source,
@@ -18,9 +18,8 @@ public class Line<T, TX, TY> : Geom<T, TX, TY>
 		IAestheticMapping<T, LineType> lineType = null,
 		Func<T, string> tooltip = null,
 		(bool x, bool y)? scale = null,
-		bool inherit = true,
-		Buffer<Shape> layer = null)
-		: base(source, scale, inherit, layer)
+		bool inherit = true)
+		: base(source, scale, inherit)
 	{
 		Selectors = new _Selectors
 		{
@@ -79,7 +78,7 @@ public class Line<T, TX, TY> : Geom<T, TX, TY>
 	{
 		base.Init(panel, facet);
 
-		if (Selectors.X == null)
+		if (Selectors.X is null)
 		{
 			Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
 		}
@@ -88,7 +87,7 @@ public class Line<T, TX, TY> : Geom<T, TX, TY>
 			Positions.X = XMapping(Selectors.X, panel.X);
 		}
 
-		if (Selectors.Y == null)
+		if (Selectors.Y is null)
 		{
 			Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
 		}
@@ -97,7 +96,7 @@ public class Line<T, TX, TY> : Geom<T, TX, TY>
 			Positions.Y = YMapping(Selectors.Y, panel.Y);
 		}
 
-		if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
+		if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
 		{
 			onMouseOver = (item, x, y, _) =>
 			{
@@ -119,7 +118,7 @@ public class Line<T, TX, TY> : Geom<T, TX, TY>
 				return Task.CompletedTask;
 			};
 		}
-		else if (OnMouseOver != null)
+		else if (OnMouseOver is not null)
 		{
 			onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
 		}
@@ -165,7 +164,7 @@ public class Line<T, TX, TY> : Geom<T, TX, TY>
 	{
 		var color = Aesthetic.Fill;
 
-		if (Aesthetics.Color != null)
+		if (Aesthetics.Color is not null)
 		{
 			color = Aesthetics.Color.Map(item);
 			if (string.IsNullOrEmpty(color))
@@ -175,7 +174,7 @@ public class Line<T, TX, TY> : Geom<T, TX, TY>
 		}
 
 		var lineType = Aesthetic.LineType;
-		if (Aesthetics.LineType != null)
+		if (Aesthetics.LineType is not null)
 		{
 			lineType = Aesthetics.LineType.Map(item);
 		}
@@ -203,7 +202,7 @@ public class Line<T, TX, TY> : Geom<T, TX, TY>
 
 		path.Points.Add((x, y));
 
-		if (OnClick != null || OnMouseOver != null || OnMouseOut != null)
+		if (OnClick is not null || OnMouseOver is not null || OnMouseOut is not null)
 		{
 			var circle = new Circle
 			{
@@ -217,17 +216,17 @@ public class Line<T, TX, TY> : Geom<T, TX, TY>
 				}
 			};
 
-			if (OnClick != null)
+			if (OnClick is not null)
 			{
 				circle.OnClick = e => OnClick(item, e);
 			}
 
-			if (onMouseOver != null)
+			if (onMouseOver is not null)
 			{
 				circle.OnMouseOver = e => onMouseOver(item, x, y, e);
 			}
 
-			if (OnMouseOut != null)
+			if (OnMouseOut is not null)
 			{
 				circle.OnMouseOut = e => OnMouseOut(item, e);
 			}

@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Facets;
 
-public class Faceting1D<T, TKey> : Faceting<T>
+public sealed class Faceting1D<T, TKey> : Faceting<T>
 {
 	private readonly SortedBuffer<TKey> buffer = new(8, 1);
 
@@ -41,7 +41,7 @@ public class Faceting1D<T, TKey> : Faceting<T>
 
 	public override void Clear() => buffer.Clear();
 
-	public override (Facet<T> facet, bool showX, bool showY)[] Facets(Theme theme)
+	public override (Facet<T> facet, bool showX, bool showY)[] Facets(Theme.Theme theme)
 	{
 		var n = buffer.Count;
 		var facets = new (Facet<T> facet, bool showX, bool showY)[n];
@@ -51,7 +51,7 @@ public class Faceting1D<T, TKey> : Faceting<T>
 
 		for (var i = 0; i < n; i++)
 		{
-			var xStrip = buffer[i].ToString();
+			var xStrip = buffer[i]?.ToString();
 
 			var showY = theme.Axis.Y == Position.Left ? c == 0 : (c == (NColumns - 1) || i == (n - 1));
 

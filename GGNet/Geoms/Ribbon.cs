@@ -24,9 +24,8 @@ namespace GGNet.Geoms
             IAestheticMapping<T, string> fill = null,
             Func<T, string> tooltip = null,
             (bool x, bool y)? scale = null,
-            bool inherit = true,
-            Buffer<Shape> layer = null)
-            : base(source, scale, inherit, layer)
+            bool inherit = true)
+            : base(source, scale, inherit)
         {
             Selectors = new _Selectors
             {
@@ -87,7 +86,7 @@ namespace GGNet.Geoms
         {
             base.Init(panel, facet);
 
-            if (Selectors.X == null)
+            if (Selectors.X is null)
             {
                 Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
             }
@@ -100,7 +99,7 @@ namespace GGNet.Geoms
 
             Positions.YMax = YMapping(Selectors.YMax, panel.Y);
 
-            if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
+            if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
             {
                 onMouseOver = (item, x, y, _) =>
                 {
@@ -122,7 +121,7 @@ namespace GGNet.Geoms
                     return Task.CompletedTask;
                 };
             }
-            else if (OnMouseOver != null)
+            else if (OnMouseOver is not null)
             {
                 onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
             }
@@ -159,9 +158,9 @@ namespace GGNet.Geoms
         {
             Area area;
 
-            if (Aesthetics.Fill == null)
+            if (Aesthetics.Fill is null)
             {
-                if (_area == null)
+                if (_area is null)
                 {
                     _area = new Area { Aesthetic = Aesthetic };
 
@@ -201,7 +200,7 @@ namespace GGNet.Geoms
 
             area.Points.Add((x, ymin, ymax));
 
-            if (OnClick != null || onMouseOver != null || OnMouseOut != null)
+            if (OnClick is not null || onMouseOver is not null || OnMouseOut is not null)
             {
                 var aes = new Elements.Circle
                 {
@@ -224,19 +223,19 @@ namespace GGNet.Geoms
                     Aesthetic = aes
                 };
 
-                if (OnClick != null)
+                if (OnClick is not null)
                 {
                     circle1.OnClick = e => OnClick(item, e);
                     circle2.OnClick = e => OnClick(item, e);
                 }
 
-                if (onMouseOver != null)
+                if (onMouseOver is not null)
                 {
                     circle1.OnMouseOver = e => onMouseOver(item, x, ymin, e);
                     circle2.OnMouseOver = e => onMouseOver(item, x, ymax, e);
                 }
 
-                if (OnMouseOut != null)
+                if (OnMouseOut is not null)
                 {
                     circle1.OnMouseOut = e => OnMouseOut(item, e);
                     circle2.OnMouseOut = e => OnMouseOut(item, e);

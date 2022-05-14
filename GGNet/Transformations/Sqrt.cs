@@ -2,7 +2,7 @@
 
 public class Sqrt : ITransformation<double>
 {
-	public static Sqrt Instance = new();
+	public static readonly Sqrt Instance = new();
 
 	public double Apply(double value) => Math.Sqrt(value);
 

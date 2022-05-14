@@ -1,39 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿namespace GGNet.Static;
 
-using Microsoft.AspNetCore.Components;
-
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging.Abstractions;
-
-namespace GGNet.Static
+public sealed class Host
 {
-    public class Host
-    {
-        private readonly ServiceCollection _serviceCollection = new ServiceCollection();
+	private readonly ServiceCollection _serviceCollection = new();
 
-        private readonly Lazy<StaticRenderer> renderer;
-        private readonly Lazy<IServiceProvider> provider;
+	private readonly Lazy<IServiceProvider> provider;
+	private readonly Lazy<StaticRenderer> renderer;
 
-        private Host()
-        {
-            provider = new Lazy<IServiceProvider>(() => _serviceCollection.BuildServiceProvider());
+	private Host()
+	{
+		provider = new Lazy<IServiceProvider>(() => _serviceCollection.BuildServiceProvider());
 
-            renderer = new Lazy<StaticRenderer>(() => new StaticRenderer(provider.Value, new NullLoggerFactory()));
-        }
+		renderer = new Lazy<StaticRenderer>(() => new StaticRenderer(provider.Value, new NullLoggerFactory()));
+	}
 
-        internal async Task<RenderedComponent> RenderAsync(Type type, IDictionary<string, object> parameters = null)
-        {
-            var component = new RenderedComponent(renderer.Value);
+	internal async Task<RenderedComponent> RenderAsync(Type type, IDictionary<string, object?>? parameters = null)
+	{
+		var component = new RenderedComponent(renderer.Value);
 
-            await component.RenderAsync(type, parameters == null ? ParameterView.Empty : ParameterView.FromDictionary(parameters));
+		await component.RenderAsync(type, parameters is null ? ParameterView.Empty : ParameterView.FromDictionary(parameters));
 
-            return component;
-        }
+		return component;
+	}
 
-        private static readonly Lazy<Host> lazy = new Lazy<Host>(() => new Host());
+	private static readonly Lazy<Host> lazy = new(() => new());
 
-        public static Host Instance => lazy.Value;
-    }
+	public static Host Instance => lazy.Value;
 }

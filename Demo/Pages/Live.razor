@@ -96,7 +96,7 @@
         cancellation?.Cancel();
         cancellation?.Dispose();
 
-        if (task != null)
+        if (task is not null)
         {
             await task.ConfigureAwait(false);
         }

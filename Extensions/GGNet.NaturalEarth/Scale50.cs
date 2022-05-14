@@ -1,14 +1,12 @@
-﻿using System;
+﻿namespace GGNet.NaturalEarth;
 
-namespace GGNet.NaturalEarth
+public static class Scale50
 {
-    public static class Scale50
-    {
-        private static readonly Lazy<Country[]> countries = new Lazy<Country[]>(() => Serialization.Load<Country[]>(_countries));
+	private static readonly Lazy<Country[]> countries = new Lazy<Country[]>(() => Serialization.Load<Country[]>(_countries!));
 
-        public static Country[] Countries => countries.Value;
+	public static Country[] Countries => countries.Value;
 
-        private static readonly string _countries =
+	private static readonly string _countries =
 @"3ADsl6JBUaNBVEGqQW50YXJjdGljYapBbnRhcmN0aWNh3ABsk8LcCvXLwEyCpkwvg3vLwEx2scQy
 yljLwExkEgW8AaPLwExq2rn1WbTLwEx8ojOcDr/LwEyPQfIS13PLwEyTe0ojOcHLwEyMgW8AaNzL
 wEyTe0ojOcHLwEykVtXPqs7LwEy69PDYRNDLwEzKbpeNT9/LwEzeUr08NhHLwEztqFh5PdnLwE0h
@@ -32632,11 +32630,11 @@ y0BF4Fh5Pdl/l6JWQaNWQVSnVmF0aWNhbqZFdXJvcGWRk8KWy0Ao4N7SiM5wy0Ao3Heaa1Cxy0Ao
 IznA7MtARPPnbItDlstARPP+XJHRTstARPL+xW1c+5KsVmF0aWNhbiBDaXR5kstAKOVGCqZMMMtA
 RPMzMzMzM5LLQCjeKCQLeAPLQETzaufVZs8=";
 
-        private static readonly Lazy<Lake[]> lakes = new Lazy<Lake[]>(() => Serialization.Load<Lake[]>(_lakes));
+	private static readonly Lazy<Lake[]> lakes = new Lazy<Lake[]>(() => Serialization.Load<Lake[]>(_lakes!));
 
-        public static Lake[] Lakes => lakes.Value;
+	public static Lake[] Lakes => lakes.Value;
 
-        private static readonly string _lakes =
+	private static readonly string _lakes =
 @"3AETkq1MYWtlIFN1cGVyaW9ympPC3AE1y8BVG6xxDLKWy8BVFgJ1JUYLy8BVFul41P30y8BVGMSb
 peNUy8BVGyYXwb2ly8BVHeaa1Cw9y8BVIdFOO802y8BVJdsi0OVgy8BVKKIznA6/y8BVLKCQLeAN
 y8BVMdfb9If9y8BVNnoPkJa8y8BVOoPkJa7my8BVQjH4oJAuy8BVQxxDLKV6y8BVQvaURnOCy8BV
@@ -37012,5 +37010,4 @@ jU/fO8vAXeZFocrAg8vAXeaXjU/fO8vAXekGJN0vG8vAXexbwBo248vAXer7fpD/l8vAXefdl/Yr
 a8vAXeaXjU/fO8vAXeaXjU/fO8vAXeaXjU/fO5rLQEKHWOIZZSzLQEKGgJ1JUYPLQEKD987ZFofL
 QEKA/5ckdFTLQEJ/8uSOinLLQEKDiGWUr0/LQEKF3MY/FBLLQEKHWOIZZSzLQEKHWOIZZSzLQEKH
 WOIZZSw=";
-    }
 }

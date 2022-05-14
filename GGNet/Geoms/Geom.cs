@@ -1,224 +1,217 @@
-﻿using System;
-
-using GGNet.Scales;
+﻿using GGNet.Scales;
 using GGNet.Facets;
 using GGNet.Shapes;
-using System.Linq;
 
-namespace GGNet.Geoms
+namespace GGNet.Geoms;
+
+public abstract class Geom<T, TX, TY> : IGeom
+	where TX : struct
+	where TY : struct
 {
-    public interface IGeom
-    {
-        Buffer<Shape> Layer { get; }
+	protected readonly Source<T> source;
+	protected readonly (bool x, bool y) scale;
+	protected readonly bool inherit;
 
-        void Train();
+	private Facet<T>? facet;
+	private Legends? legends;
 
-        void Legend();
+	public Geom(Source<T> source, (bool x, bool y)? scale, bool inherit)
+	{
+		this.source = source;
+		this.scale = scale ?? (true, true);
+		this.inherit = inherit;
 
-        void Shape(bool flip);
+		Layer = new Buffer<Shape>();
+	}
 
-        void Clear();
-    }
+	public Buffer<Shape> Layer { get; }
 
-    public abstract class Geom<T, TX, TY> : IGeom
-        where TX : struct
-        where TY : struct
-    {
-        protected readonly Source<T> source;
-        protected readonly (bool x, bool y) scale;
-        protected readonly bool inherit;
+	protected IPositionMapping<T> XMapping<T1, TX1>(Func<T1, TX1> selector, Position<TX1> position)
+		where TX1 : struct
+	{
+		if (typeof(T) != typeof(T1))
+		{
+			throw new Exception();
+		}
 
-        private Facet<T> facet;
-        internal Legends legends;
+		if (typeof(TX1) == typeof(TX))
+		{
+			return new PositionMapping<T, TX1>((selector as Func<T, TX1>)!, position);
+		}
+		else if (typeof(TX1).IsNumeric() && typeof(TX).IsNumeric())
+		{
+			return new NumericalPositionMapping<T, TX1>((selector as Func<T, TX1>)!, (position as Position<double>)!);
+		}
+		else
+		{
+			throw new Exception();
+		}
+	}
 
-        public Geom(Source<T> source, (bool x, bool y)? scale, bool inherit, Buffer<Shape> layer)
-        {
-            this.source = source;
-            this.scale = scale ?? (true, true);
-            this.inherit = inherit;
+	protected IPositionMapping<T> XMapping<TX1>(Func<T, TX> selector, Position<TX1> position)
+		where TX1 : struct
+	{
+		if (typeof(TX1) == typeof(TX))
+		{
+			return new PositionMapping<T, TX>(selector, (position as Position<TX>)!);
+		}
+		else if (typeof(TX1).IsNumeric() && typeof(TX).IsNumeric())
+		{
+			return new NumericalPositionMapping<T, TX>(selector, (position as Position<double>)!);
+		}
+		else
+		{
+			throw new Exception();
+		}
+	}
 
-            Layer = layer ?? new Buffer<Shape>();
-        }
+	protected IPositionMapping<T> YMapping<T1, TY1>(Func<T1, TY1> selector, Position<TY1> position)
+		where TY1 : struct
+	{
+		if (typeof(T) != typeof(T1))
+		{
+			throw new Exception();
+		}
 
-        public Buffer<Shape> Layer { get; }
+		if (typeof(TY1) == typeof(TY))
+		{
+			return new PositionMapping<T, TY1>((selector as Func<T, TY1>)!, position);
+		}
+		else if (typeof(TY1).IsNumeric() && typeof(TX).IsNumeric())
+		{
+			return new NumericalPositionMapping<T, TY1>((selector as Func<T, TY1>)!, (position as Position<double>)!);
+		}
+		else
+		{
+			throw new Exception();
+		}
+	}
 
-        protected IPositionMapping<T> XMapping<T1, TX1>(Func<T1, TX1> selector, Position<TX1> position)
-            where TX1 : struct
-        {
-            if (typeof(T) != typeof(T1))
-            {
-                //TODO: throw
-            }
+	protected IPositionMapping<T> YMapping<TY1>(Func<T, TY> selector, Position<TY1> position)
+		where TY1 : struct
+	{
+		if (typeof(TY1) == typeof(TY))
+		{
+			return new PositionMapping<T, TY>(selector, (position as Position<TY>)!);
+		}
+		else if (typeof(TY1).IsNumeric() && typeof(TY).IsNumeric())
+		{
+			return new NumericalPositionMapping<T, TY>(selector, (position as Position<double>)!);
+		}
+		else
+		{
+			throw new Exception();
+		}
+	}
 
-            if (typeof(TX1) == typeof(TX))
-            {
-                return new PositionMapping<T, TX1>(selector as Func<T, TX1>, position);
-            }
-            else if (typeof(TX1).IsNumeric() && typeof(TX).IsNumeric())
-            {
-                return new NumericalPositionMapping<T, TX1>(selector as Func<T, TX1>, position as Position<double>);
-            }
-            else
-            {
-                return null; //TODO: throw
-            }
-        }
+	public virtual void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1>? facet)
+		where TX1 : struct
+		where TY1 : struct
+	{
+		if (facet is not null && panel.Data.Source is not null && panel.Data.Source.Equals(source))
+		{
+			this.facet = (facet as Facet<T>)!;
+		}
 
-        protected IPositionMapping<T> XMapping<TX1>(Func<T, TX> selector, Position<TX1> position)
-            where TX1 : struct
-        {
-            if (typeof(TX1) == typeof(TX))
-            {
-                return new PositionMapping<T, TX>(selector, position as Position<TX>);
-            }
-            else if (typeof(TX1).IsNumeric() && typeof(TX).IsNumeric())
-            {
-                return new NumericalPositionMapping<T, TX>(selector, position as Position<double>);
-            }
-            else
-            {
-                return null; //TODO: throw
-            }
-        }
+		legends = panel.Data.Legends;
+	}
 
-        protected IPositionMapping<T> YMapping<T1, TY1>(Func<T1, TY1> selector, Position<TY1> position)
-            where TY1 : struct
-        {
-            if (typeof(T) != typeof(T1))
-            {
-                //TODO: throw
-            }
+	public abstract void Train(T item);
 
-            if (typeof(TY1) == typeof(TY))
-            {
-                return new PositionMapping<T, TY1>(selector as Func<T, TY1>, position);
-            }
-            else if (typeof(TY1).IsNumeric() && typeof(TX).IsNumeric())
-            {
-                return new NumericalPositionMapping<T, TY1>(selector as Func<T, TY1>, position as Position<double>);
-            }
-            else
-            {
-                return null; //TODO: throw
-            }
-        }
+	public void Train()
+	{
+		for (var i = 0; i < source.Count; i++)
+		{
+			var item = source[i];
 
-        protected IPositionMapping<T> YMapping<TY1>(Func<T, TY> selector, Position<TY1> position)
-            where TY1 : struct
-        {
-            if (typeof(TY1) == typeof(TY))
-            {
-                return new PositionMapping<T, TY>(selector, position as Position<TY>);
-            }
-            else if (typeof(TY1).IsNumeric() && typeof(TY).IsNumeric())
-            {
-                return new NumericalPositionMapping<T, TY>(selector, position as Position<double>);
-            }
-            else
-            {
-                return null; //TODO: throw
-            }
-        }
+			if (facet is not null && !facet.Include(item))
+			{
+				continue;
+			}
 
-        public virtual void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
-            where TX1 : struct
-            where TY1 : struct
-        {
-            if (facet != null && panel.Data.Source.Equals(source))
-            {
-                this.facet = facet as Facet<T>;
-            }
+			Train(item);
+		}
+	}
 
-            legends = panel.Data.Legends;
-        }
+	protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.IElement> element)
+	{
+		if (legends is null)
+		{
+			return;
+		}
 
-        public abstract void Train(T item);
+		if (aes is null || !aes.Guide)
+		{
+			return;
+		}
 
-        public void Train()
-        {
-            for (int i = 0; i < source.Count; i++)
-            {
-                var item = source[i];
+		var legend = legends.GetOrAdd(aes);
 
-                if (facet != null && !facet.Include(item))
-                {
-                    continue;
-                }
+		var n = aes.Labels.Count();
 
-                Train(item);
-            }
-        }
+		for (int i = 0; i < n; i++)
+		{
+			var (value, label) = aes.Labels.ElementAt(i);
 
-        protected void Legend<TV>(IAestheticMapping<T, TV> aes, Func<TV, Elements.IElement> element)
-        {
-            if (aes == null || !aes.Guide)
-            {
-                return;
-            }
+			legend.Add(label, element(value));
+		}
+	}
 
-            var legend = legends.GetOrAdd(aes);
+	protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.IElement[]> elements)
+	{
+		if (legends is null)
+		{
+			return;
+		}
 
-            var n = aes.Labels.Count();
+		if (aes is null || !aes.Guide)
+		{
+			return;
+		}
 
-            for (int i = 0; i < n; i++)
-            {
-                var (value, label) = aes.Labels.ElementAt(i);
+		var legend = legends.GetOrAdd(aes);
 
-                legend.Add(label, element(value));
-            }
-        }
+		var n = aes.Labels.Count();
 
-        protected void Legend<TV>(IAestheticMapping<T, TV> aes, Func<TV, Elements.IElement[]> elements)
-        {
-            if (aes == null || !aes.Guide)
-            {
-                return;
-            }
+		for (var i = 0; i < n; i++)
+		{
+			var (value, label) = aes.Labels.ElementAt(i);
 
-            var legend = legends.GetOrAdd(aes);
+			var array = elements(value);
 
-            var n = aes.Labels.Count();
+			for (var j = 0; j < array.Length; j++)
+			{
+				legend.Add(label, array[j]);
+			}
+		}
+	}
 
-            for (int i = 0; i < n; i++)
-            {
-                var (value, label) = aes.Labels.ElementAt(i);
+	public virtual void Legend()
+	{
+	}
 
-                var array = elements(value);
+	protected abstract void Shape(T item, bool flip);
 
-                for (int j = 0; j < array.Length; j++)
-                {
-                    legend.Add(label, array[j]);
-                }
-            }
-        }
+	protected virtual void Set(bool flip)
+	{
+	}
 
-        public virtual void Legend()
-        {
-        }
+	public void Shape(bool flip)
+	{
+		for (var i = 0; i < source.Count; i++)
+		{
+			var item = source[i];
 
-        protected abstract void Shape(T item, bool flip);
+			if (facet is not null && !facet.Include(item))
+			{
+				continue;
+			}
 
-        protected virtual void Set(bool flip)
-        {
-        }
+			Shape(item, flip);
+		}
 
-        public void Shape(bool flip)
-        {
-            for (int i = 0; i < source.Count; i++)
-            {
-                var item = source[i];
+		Set(flip);
+	}
 
-                if (facet != null && !facet.Include(item))
-                {
-                    continue;
-                }
-
-                Shape(item, flip);
-            }
-
-            Set(flip);
-        }
-
-        public virtual void Clear() => Layer?.Clear();
-    }
+	public virtual void Clear() => Layer?.Clear();
 }

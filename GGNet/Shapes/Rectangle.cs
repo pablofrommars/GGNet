@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Shapes;
 
-public class Rectangle : Shape
+public record Rectangle : Shape
 {
 	public double X { get; set; }
 
@@ -10,5 +10,5 @@ public class Rectangle : Shape
 
 	public double Height { get; set; }
 
-	public Elements.Rectangle Aesthetic { get; set; }
+	public Elements.Rectangle Aesthetic { get; set; } = default!;
 }

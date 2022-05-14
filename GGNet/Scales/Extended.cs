@@ -1,6 +1,4 @@
-﻿using System;
-
-using GGNet.Transformations;
+﻿using GGNet.Transformations;
 using GGNet.Formats;
 
 using static System.Math;
@@ -9,207 +7,217 @@ using static System.Math;
  *  Talbot, Lin, and Hanrahan. An Extension of Wilkinson’s Algorithm for Positioning Tick Labels on Axes, Infovis 2010.
  */
 
-namespace GGNet.Scales
+namespace GGNet.Scales;
+
+public class Extended : Position<double>
 {
-    public class Extended : Position<double>
-    {
-        private readonly IFormatter<double> formatter;
+	private readonly IFormatter<double> formatter;
 
-        public Extended(ITransformation<double> transformation = null,
-            (double? min, double? max)? limits = null,
-            (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-            IFormatter<double> formatter = null)
-            : base(transformation, expand ?? (0.05, 0, 0.05, 0))
-        {
-            Limits = limits ?? (null, null);
+	public Extended(ITransformation<double>? transformation = null,
+		(double? min, double? max)? limits = null,
+		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
+		IFormatter<double>? formatter = null)
+		: base(transformation, expand ?? (0.05, 0, 0.05, 0))
+	{
+		Limits = limits ?? (null, null);
 
-            this.formatter = formatter ?? Standard<double>.Instance;
-        }
+		this.formatter = formatter ?? Standard<double>.Instance;
+	}
 
-        public override Guide Guide => Guide.None;
+	public override Guide Guide => Guide.None;
 
-        public override void Set(bool grid)
-        {
-            SetRange(Limits.min ?? _min ?? 0.0, Limits.max ?? _max ?? 0.0);
+	public override void Set(bool grid)
+	{
+		SetRange(Limits.min ?? _min ?? 0.0, Limits.max ?? _max ?? 0.0);
 
-            if (!grid)
-            {
-                return;
-            }
+		if (!grid)
+		{
+			return;
+		}
 
-            var breaks = Wilkinson.extended(Range.min, Range.max);
-            if (breaks == null)
-            {
-                breaks = Pretty.pretty(Range.min, Range.max);
-            }
+		var breaks = Wilkinson.extended(Range.min, Range.max);
+		if (breaks is null)
+		{
+			breaks = Pretty.pretty(Range.min, Range.max);
+		}
+		
+		if (breaks is null)
+		{
+			return;
+		}
 
-            var minorBreaks = Utils.minor_breaks(breaks, Range.min, Range.max);
+		Breaks = breaks;
 
-            var labels = new (double, string)[breaks.Length];
+		var minorBreaks = Utils.MinorBreaks(breaks, Range.min, Range.max);
 
-            for (var i = 0; i < labels.Length; i++)
-            {
-                labels[i] = (breaks[i], formatter.Format(transformation.Inverse(breaks[i])));
-            }
+		if (minorBreaks is null)
+		{
+			return;
+		}
 
-            for (var i = 0; i < minorBreaks.Length; i++)
-            {
-                minorBreaks[i] = minorBreaks[i];
-            }
+		var labels = new (double, string)[breaks.Length];
 
-            Breaks = breaks;
-            MinorBreaks = minorBreaks;
-            Labels = labels;
-        }
+		for (var i = 0; i < labels.Length; i++)
+		{
+			labels[i] = (breaks[i], formatter.Format(transformation.Inverse(breaks[i])));
+		}
 
-        public override double Map(double key) => transformation.Apply(key);
+		for (var i = 0; i < minorBreaks.Length; i++)
+		{
+			minorBreaks[i] = minorBreaks[i];
+		}
 
-        public override ITransformation<double> RangeTransformation => transformation;
-    }
+		MinorBreaks = minorBreaks;
+		Labels = labels;
+	}
 
-    public static class Wilkinson
-    {
-        private static readonly double[] Q = new[] { 1.0, 5.0, 2.0, 2.5, 4.0, 3.0 };
-        private static readonly double[] w = new[] { 0.25, 0.2, 0.5, 0.05 };
-        private static double floored_mod(double a, double n) => a - n * Floor(a / n);
+	public override double Map(double key) => transformation.Apply(key);
 
-        private static double pow10(int i)
-        {
-            var a = 1.0;
-            for (int j = 0; j < i; j++)
-            {
-                a *= 10;
-            }
+	public override ITransformation<double> RangeTransformation => transformation;
+}
 
-            return a;
-        }
+public static class Wilkinson
+{
+	private static readonly double[] Q = new[] { 1.0, 5.0, 2.0, 2.5, 4.0, 3.0 };
+	private static readonly double[] w = new[] { 0.25, 0.2, 0.5, 0.05 };
+	private static double floored_mod(double a, double n) => a - n * Floor(a / n);
 
-        private static readonly double eps = double.Epsilon * 100;
+	private static double pow10(int i)
+	{
+		var a = 1.0;
+		for (int j = 0; j < i; j++)
+		{
+			a *= 10;
+		}
 
-        private static double simplicity(double q, int j, double lmin, double lmax, double lstep)
-        {
-            var v = (floored_mod(lmin, lstep) < eps && lmin <= 0 && lmax >= 0) ? 1 : 0;
-            return 1.0 - Array.IndexOf(Q, q) / (Q.Length - 1.0) - j + v;
-        }
+		return a;
+	}
 
-        private static double max_simplicity(double q, int j) =>
-            1.0 - Array.IndexOf(Q, q) / (Q.Length - 1.0) - j + 1.0;
+	private static readonly double eps = double.Epsilon * 100;
 
-        private static double coverage(double dmin, double dmax, double lmin, double lmax) =>
-            1.0 - 0.5 * (((dmax - lmax) * (dmax - lmax) + (dmin - lmin) * (dmin - lmin)) / ((0.1 * (dmax - dmin)) * (0.1 * (dmax - dmin))));
+	private static double simplicity(double q, int j, double lmin, double lmax, double lstep)
+	{
+		var v = (floored_mod(lmin, lstep) < eps && lmin <= 0 && lmax >= 0) ? 1 : 0;
+		return 1.0 - Array.IndexOf(Q, q) / (Q.Length - 1.0) - j + v;
+	}
 
-        private static double max_coverage(double dmin, double dmax, double span)
-        {
-            var range = dmax - dmin;
+	private static double max_simplicity(double q, int j) =>
+		1.0 - Array.IndexOf(Q, q) / (Q.Length - 1.0) - j + 1.0;
 
-            if (span > range)
-            {
-                return 1.0 - 0.25 * (span - range) * (span - range) / (0.01 * range * range);
-            }
-            else
-            {
-                return 1.0;
-            }
-        }
+	private static double coverage(double dmin, double dmax, double lmin, double lmax) =>
+		1.0 - 0.5 * (((dmax - lmax) * (dmax - lmax) + (dmin - lmin) * (dmin - lmin)) / ((0.1 * (dmax - dmin)) * (0.1 * (dmax - dmin))));
 
-        private static double density(int k, int m, double dmin, double dmax, double lmin, double lmax)
-        {
-            var r = -(k - 1.0) / (lmax - lmin);
-            var rt = -(m - 1.0) / (Max(lmax, dmax) - Min(dmin, lmin));
+	private static double max_coverage(double dmin, double dmax, double span)
+	{
+		var range = dmax - dmin;
 
-            return 2.0 - Max(r / rt, rt / r);
-        }
+		if (span > range)
+		{
+			return 1.0 - 0.25 * (span - range) * (span - range) / (0.01 * range * range);
+		}
+		else
+		{
+			return 1.0;
+		}
+	}
 
-        private static double max_density(int k, int m) => k >= m ? 2.0 - (k - 1.0) / (m - 1.0) : 1.0;
+	private static double density(int k, int m, double dmin, double dmax, double lmin, double lmax)
+	{
+		var r = -(k - 1.0) / (lmax - lmin);
+		var rt = -(m - 1.0) / (Max(lmax, dmax) - Min(dmin, lmin));
 
-        public static double[] extended(double dmin, double dmax, int m = 5, bool onlyLoose = false)
-        {
-            var bscore = -2.0;
-            var from = 0.0;
-            var to = 0.0;
-            var by = 0.0;
+		return 2.0 - Max(r / rt, rt / r);
+	}
 
-            if (dmax - dmin < eps)
-            {
-                //return(seq(from=dmin, to=dmax, length.out=m))
-                return null;
-            }
+	private static double max_density(int k, int m) => k >= m ? 2.0 - (k - 1.0) / (m - 1.0) : 1.0;
 
-            var j = 1;
-            while (j < int.MaxValue)
-            {
-                foreach (var q in Q)
-                {
-                    var sm = max_simplicity(q, j);
-                    if (w[0] * sm + w[1] + w[2] + w[3] < bscore)
-                    {
-                        j = int.MaxValue - 1;
-                        break;
-                    }
+	public static double[]? extended(double dmin, double dmax, int m = 5, bool onlyLoose = false)
+	{
+		var bscore = -2.0;
+		var from = 0.0;
+		var to = 0.0;
+		var by = 0.0;
 
-                    var k = 2;
-                    while (k < int.MaxValue)
-                    {
-                        var dm = max_density(k, m);
+		if (dmax - dmin < eps)
+		{
+			//return(seq(from=dmin, to=dmax, length.out=m))
+			return null;
+		}
 
-                        if (w[0] * sm + w[1] + w[2] * dm + w[3] < bscore)
-                            break;
+		var j = 1;
+		while (j < int.MaxValue)
+		{
+			foreach (var q in Q)
+			{
+				var sm = max_simplicity(q, j);
+				if (w[0] * sm + w[1] + w[2] + w[3] < bscore)
+				{
+					j = int.MaxValue - 1;
+					break;
+				}
 
-                        var delta = (dmax - dmin) / (k + 1.0) / (j * q);
-                        var z = (int)Ceiling(Log10(delta));
+				var k = 2;
+				while (k < int.MaxValue)
+				{
+					var dm = max_density(k, m);
 
-                        while (z < int.MaxValue)
-                        {
-                            var step = j * q * pow10(z);
-                            var cm = max_coverage(dmin, dmax, step * (k - 1.0));
+					if (w[0] * sm + w[1] + w[2] * dm + w[3] < bscore)
+						break;
 
-                            if (w[0] * sm + w[1] * cm + w[2] * dm + w[3] < bscore)
-                                break;
+					var delta = (dmax - dmin) / (k + 1.0) / (j * q);
+					var z = (int)Ceiling(Log10(delta));
 
-                            for (int start = (int)(Floor(dmax / step - (k - 1)) * j); start <= (int)(Ceiling(dmin / step)) * j; start++)
-                            {
-                                var lmin = start * step / j;
-                                var lmax = lmin + step * (k - 1);
+					while (z < int.MaxValue)
+					{
+						var step = j * q * pow10(z);
+						var cm = max_coverage(dmin, dmax, step * (k - 1.0));
 
-                                var s = simplicity(q, j, lmin, lmax, step);
-                                var d = density(k, m, dmin, dmax, lmin, lmax);
-                                var c = coverage(dmin, dmax, lmin, lmax);
+						if (w[0] * sm + w[1] * cm + w[2] * dm + w[3] < bscore)
+							break;
 
-                                var score = w[0] * s + w[1] * c + w[2] * d + w[3];
+						for (int start = (int)(Floor(dmax / step - (k - 1)) * j); start <= (int)(Ceiling(dmin / step)) * j; start++)
+						{
+							var lmin = start * step / j;
+							var lmax = lmin + step * (k - 1);
 
-                                if (score > bscore && (!onlyLoose || (lmin <= dmin && lmax >= dmax)))
-                                {
-                                    from = lmin;
-                                    to = lmax;
-                                    by = step;
-                                    bscore = score;
-                                }
-                            }
+							var s = simplicity(q, j, lmin, lmax, step);
+							var d = density(k, m, dmin, dmax, lmin, lmax);
+							var c = coverage(dmin, dmax, lmin, lmax);
 
-                            z++;
-                        }
+							var score = w[0] * s + w[1] * c + w[2] * d + w[3];
 
-                        k++;
-                    }
-                }
+							if (score > bscore && (!onlyLoose || (lmin <= dmin && lmax >= dmax)))
+							{
+								from = lmin;
+								to = lmax;
+								by = step;
+								bscore = score;
+							}
+						}
 
-                j++;
-            }
+						z++;
+					}
 
-            if (by == 0.0)
-            {
-                return null;
-            }
+					k++;
+				}
+			}
 
-            var n = (int)((to - from) / by) + 1;
-            var results = new double[n];
+			j++;
+		}
 
-            for (var i = 0; i < n; i++)
-            {
-                results[i] = from + i * by;
-            }
+		if (by == 0.0)
+		{
+			return null;
+		}
 
-            return results;
-        }
-    }
+		var n = (int)((to - from) / by) + 1;
+		var results = new double[n];
+
+		for (var i = 0; i < n; i++)
+		{
+			results[i] = from + i * by;
+		}
+
+		return results;
+	}
 }

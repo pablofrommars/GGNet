@@ -1,9 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Components.Web;
-
-using GGNet.Scales;
+﻿using GGNet.Scales;
 using GGNet.Facets;
 using GGNet.Shapes;
 
@@ -19,9 +14,8 @@ namespace GGNet.Geoms
             Func<T, TY> y,
             Func<T, double> width,
             Func<T, double> height,
-            (bool x, bool y)? scale = null,
-            Buffer<Shape> layer = null)
-            : base(source, scale, false, layer)
+            (bool x, bool y)? scale = null)
+            : base(source, scale, false)
         {
             Selectors = new _Selectors
             {
@@ -73,7 +67,7 @@ namespace GGNet.Geoms
         {
             base.Init(panel, facet);
 
-            if (Selectors.X == null)
+            if (Selectors.X is null)
             {
                 Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
             }
@@ -82,7 +76,7 @@ namespace GGNet.Geoms
                 Positions.X = XMapping(Selectors.X, panel.X);
             }
 
-            if (Selectors.Y == null)
+            if (Selectors.Y is null)
             {
                 Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
             }
@@ -114,17 +108,17 @@ namespace GGNet.Geoms
                 Aesthetic = Aesthetic
             };
 
-            if (OnClick != null)
+            if (OnClick is not null)
             {
                 rectangle.OnClick = e => OnClick(item, e);
             }
 
-            if (OnMouseOver != null)
+            if (OnMouseOver is not null)
             {
                 rectangle.OnMouseOver = e => OnMouseOver(item, e);
             }
 
-            if (OnMouseOut != null)
+            if (OnMouseOut is not null)
             {
                 rectangle.OnMouseOut = e => OnMouseOut(item, e);
             }

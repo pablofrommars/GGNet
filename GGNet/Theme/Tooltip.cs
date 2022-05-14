@@ -1,35 +1,37 @@
-﻿namespace GGNet
+﻿namespace GGNet.Theme;
+
+using Elements;
+
+using static Units;
+
+public sealed class Tooltip
 {
-    using Elements;
+	public Tooltip()
+	{
+		Margin = new()
+		{
+			Top = 5,
+			Right = 10,
+			Bottom = 5,
+			Left = 10
+		};
 
-    using static Units;
+		Text = new()
+		{
+			Color = "#FFFFFF",
+			Size = new() { Value = 0.75 }
+		};
 
-    public partial class Theme
-    {
-        public class _Tooltip
-        {
-            public _Tooltip()
-            {
-                Margin = new Margin(5, 10, 5, 10);
+		Radius = new() { Value = 4, Units = px };
+	}
 
-                Text = new Text
-                {
-                    Color = "#FFFFFF",
-                    Size = new Size(0.75)
-                };
+	public Margin Margin { get; set; }
 
-                Radius = new Size(4, px);
-            }
+	public Text Text { get; set; }
 
-            public Margin Margin { get; set; }
+	public string Background { get; set; } = default!;
 
-            public Text Text { get; set; }
+	public double? Alpha { get; set; }
 
-            public string Background { get; set; }
-
-            public double? Alpha { get; set; }
-
-            public Size Radius { get; set; }
-        }
-    }
+	public Size Radius { get; set; }
 }

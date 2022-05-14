@@ -5,12 +5,9 @@ namespace GGNet;
 using Elements;
 using Scales;
 
-using static Direction;
-using static Guide;
-
-internal class Legend
+internal sealed class Legend
 {
-	public Legend(Theme theme, IAestheticMapping aes)
+	public Legend(Theme.Theme theme, IAestheticMapping aes)
 	{
 		Aes = aes;
 
@@ -29,22 +26,25 @@ internal class Legend
 
 	public IAestheticMapping Aes { get; }
 
-	public class Dimension<TValue>
+	public sealed class Dimension<TValue>
 	{
-		public TValue Value { get; set; }
+		public TValue Value { get; set; } = default!;
 
 		public double Width { get; set; }
 
 		public double Height { get; set; }
 	}
 
-	public Dimension<string> Title { get; }
+	public Dimension<string>? Title { get; }
 
-	internal class Elements : Buffer<Dimension<IElement>>
+	internal sealed class Elements : Buffer<Dimension<IElement>>
 	{
 		private readonly double size;
 
-		public Elements(double size) : base(4, 1) => this.size = size;
+		public Elements(double size) : base(4, 1)
+		{
+			this.size = size;
+		}
 
 		public double Width { get; set; }
 
@@ -76,15 +76,15 @@ internal class Legend
 		}
 	}
 
-	internal class _Items : Buffer<(Dimension<string> label, Elements elements)>
+	internal sealed class _Items : Buffer<(Dimension<string> label, Elements elements)>
 	{
-		private readonly Theme theme;
+		private readonly Theme.Theme theme;
 
-		public _Items(Theme theme) : base(8, 1) => this.theme = theme;
+		public _Items(Theme.Theme theme) : base(8, 1) => this.theme = theme;
 
 		public (Dimension<string> label, Elements elements) GetOrAdd(string label)
 		{
-			for (int i = 0; i < Count; i++)
+			for (var i = 0; i < Count; i++)
 			{
 				var ret = Get(i);
 				if (ret.label.Value == label)
@@ -123,107 +123,5 @@ internal class Legend
 
 		Width = Max(Width, dim.Width);
 		Height = Max(Height, dim.Height);
-	}
-}
-
-internal class Legends : Buffer<Legend>
-{
-	private readonly Theme theme;
-
-	public Legends(Theme theme) : base(8, 1) => this.theme = theme;
-
-	public Legend GetOrAdd(IAestheticMapping aes)
-	{
-		for (int i = 0; i < Count; i++)
-		{
-			var ret = Get(i);
-			if (ret.Aes == aes)
-			{
-				return ret;
-			}
-		}
-
-		var legend = new Legend(theme, aes);
-
-		Add(legend);
-
-		return legend;
-	}
-
-	public (double width, double height) Dimension()
-	{
-		var width = 0.0;
-		var height = 0.0;
-
-		for (int i = 0; i < Count; i++)
-		{
-			var legend = Get(i);
-
-			if (legend.Title?.Width > 0)
-			{
-				var w = theme.Legend.Title.Margin.Left + legend.Title.Width + theme.Legend.Title.Margin.Left;
-				var h = theme.Legend.Title.Margin.Top + legend.Title.Height + theme.Legend.Title.Margin.Bottom;
-
-				if (theme.Legend.Direction == Vertical)
-				{
-					width = Max(width, w);
-					height += h;
-				}
-				else
-				{
-					width += w;
-					height = Max(height, h);
-				}
-			}
-
-			if (legend.Aes.Type == Items)
-			{
-				for (int j = 0; j < legend.Items.Count; j++)
-				{
-					var (label, elements) = legend.Items[j];
-
-					var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
-					var h = theme.Legend.Labels.Margin.Top + Max(elements.Height, label.Height) + theme.Legend.Labels.Margin.Bottom;
-
-					if (theme.Legend.Direction == Vertical)
-					{
-						width = Max(width, w);
-						height += h;
-					}
-					else
-					{
-						width += w;
-						height = Max(height, h);
-					}
-				}
-			}
-			else if (legend.Aes.Type == ColorBar)
-			{
-				var n = legend.Items.Count;
-
-				if (theme.Legend.Direction == Vertical)
-				{
-					height += theme.Legend.Labels.Margin.Top;
-
-					for (int j = 0; j < legend.Items.Count; j++)
-					{
-						var (label, _) = legend.Items[j];
-
-						var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
-						var h = Max(3.0 * legend.Height, label.Height);
-
-						width = Max(width, w);
-						height += h;
-					}
-				}
-				else
-				{
-					width += theme.Legend.Labels.Margin.Left + 3.0 * legend.Width * n;
-					height = Max(height, legend.Items[0].label.Height + theme.Legend.Labels.Margin.Bottom + legend.Height);
-				}
-			}
-		}
-
-		return (width, height);
 	}
 }

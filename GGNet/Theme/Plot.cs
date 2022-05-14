@@ -1,69 +1,54 @@
-﻿namespace GGNet
+﻿namespace GGNet.Theme;
+
+using Elements;
+
+using static Anchor;
+
+public sealed class Plot
 {
-    using Elements;
+	public Plot(bool dark)
+	{
+		Background = new()
+		{
+			Fill = dark ? "#343a40" : "#FFFFFF"
+		};
 
-    using static Anchor;
-    using static Units;
+		Title = new()
+		{
+			Size = new() { Value = 1.125 },
+			Weight = "bold",
+			Color = dark ? "#FFFFFF" : "#212529",
+			Margin = new() { Bottom = 8 }
+		};
 
-    public partial class Theme
-    {
-        public class _Plot
-        {
-            public _Plot(bool dark)
-            {
-                Background = new Rectangle
-                {
-                    Fill = dark ? "#343a40" : "#FFFFFF"
-                };
+		SubTitle = new()
+		{
+			Size = new() { Value = 0.8125 },
+			Color = dark ? "#929299" : "#212529",
+			Margin = new() { Bottom = 8 }
+		};
 
-                Title = new Text
-                {
-                    Size = new Size(1.125),
-                    Anchor = start,
-                    Weight = "bold",
-                    Color = dark ? "#FFFFFF" : "#212529"
-                };
+		Caption = new()
+		{
+			Size = new() { Value = 0.75 },
+			Anchor = end,
+			Style = "italic",
+			Color = dark ? "#929299" : "#212529",
+			Margin = new()
+			{
+				Top = 4,
+				Right = 4,
+				Bottom = 4,
+				Left = 4
+			}
+		};
+	}
 
-                Title.Margin.Bottom = 8;
+	public Rectangle Background { get; set; }
 
-                SubTitle = new Text
-                {
-                    Size = new Size(0.8125),
-                    Anchor = start
-                };
+	public Text Title { get; set; }
 
-                if (!dark)
-                {
-                    SubTitle.Color = "#212529";
-                }
+	public Text SubTitle { get; set; }
 
-                SubTitle.Margin.Bottom = 8;
-
-                Caption = new Text
-                {
-                    Size = new Size(0.75),
-                    Anchor = end,
-                    Style = "italic"
-                };
-
-                Caption.Margin.Top = 4;
-                Caption.Margin.Right = 4;
-                Caption.Margin.Bottom = 4;
-                Caption.Margin.Left = 4;
-
-                if (!dark)
-                {
-                    Caption.Color = "#212529";
-                }
-            }
-
-            public Rectangle Background { get; set; }
-
-            public Text Title { get; set; }
-
-            public Text SubTitle { get; set; }
-
-            public Text Caption { get; set; }
-        }
-    }
+	public Text Caption { get; set; }
 }

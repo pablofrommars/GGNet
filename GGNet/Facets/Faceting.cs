@@ -1,5 +1,7 @@
 ﻿namespace GGNet.Facets;
 
+using Theme;
+
 public abstract class Faceting<T>
 {
 	public Faceting(bool freeX, bool freeY)

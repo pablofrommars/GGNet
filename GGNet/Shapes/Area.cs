@@ -1,11 +1,11 @@
 ﻿namespace GGNet.Shapes;
 
-public class Area : Shape
+public record Area : Shape
 {
 	public SortedBuffer<(double x, double ymin, double ymax)> Points { get; }
 		= new(comparer: Comparer.Instance);
 
-	private class Comparer : Comparer<(double x, double ymin, double ymax)>
+	private sealed class Comparer : Comparer<(double x, double ymin, double ymax)>
 	{
 		public static readonly Comparer Instance = new();
 
@@ -13,5 +13,5 @@ public class Area : Shape
             => a.x.CompareTo(b.x);
 	}
 
-	public Elements.Rectangle Aesthetic { get; set; }
+	public Elements.Rectangle Aesthetic { get; set; } = default!;
 }

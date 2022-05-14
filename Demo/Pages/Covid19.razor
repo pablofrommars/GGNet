@@ -8,7 +8,7 @@
 @using GGNet
 @using GGNet.Components
 
-@if (plot != null)
+@if (plot is not null)
 {
     <div style="width: 720px;">
         <Plot Data=@plot T=TS TX=Double TY=Double Width=720 Height=576 />

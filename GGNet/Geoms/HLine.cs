@@ -11,9 +11,8 @@ public class HLine<T, TX, TY> : Geom<T, TX, TY>
 	public HLine(
 		Source<T> source,
 		Func<T, TY> y,
-		Func<T, string> label,
-		Buffer<Shape> layer = null)
-		: base(source, null, false, layer)
+		Func<T, string> label)
+		: base(source, null, false)
 	{
 		Selectors = new _Selectors
 		{

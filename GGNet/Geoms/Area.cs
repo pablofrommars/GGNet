@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Components.Web;
-
-using GGNet.Scales;
+﻿using GGNet.Scales;
 using GGNet.Facets;
 using GGNet.Shapes;
 
@@ -33,9 +27,8 @@ namespace GGNet.Geoms
             Func<T, string> tooltip = null,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null,
-            bool inherit = true,
-            Buffer<Shape> layer = null)
-            : base(source, scale, inherit, layer)
+            bool inherit = true)
+            : base(source, scale, inherit)
         {
             Selectors = new _Selectors
             {
@@ -93,7 +86,7 @@ namespace GGNet.Geoms
         {
             base.Init(panel, facet);
 
-            if (Selectors.X == null)
+            if (Selectors.X is null)
             {
                 Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
             }
@@ -102,7 +95,7 @@ namespace GGNet.Geoms
                 Positions.X = XMapping(Selectors.X, panel.X);
             }
 
-            if (Selectors.Y == null)
+            if (Selectors.Y is null)
             {
                 Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
             }
@@ -111,7 +104,7 @@ namespace GGNet.Geoms
                 Positions.Y = YMapping(Selectors.Y, panel.Y);
             }
 
-            if (OnMouseOver == null && OnMouseOut == null && Selectors.Tooltip != null)
+            if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
             {
                 onMouseOver = (item, x, y, _) =>
                 {
@@ -133,7 +126,7 @@ namespace GGNet.Geoms
                     return Task.CompletedTask;
                 };
             }
-            else if (OnMouseOver != null)
+            else if (OnMouseOver is not null)
             {
                 onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
             }
@@ -166,7 +159,7 @@ namespace GGNet.Geoms
         protected override void Shape(T item, bool flip)
         {
             var fill = Aesthetic.Fill;
-            if (Aesthetics.Fill != null)
+            if (Aesthetics.Fill is not null)
             {
                 fill = Aesthetics.Fill.Map(item);
                 if (string.IsNullOrEmpty(fill))
@@ -187,7 +180,7 @@ namespace GGNet.Geoms
                 }
             }
 
-            if (points == null)
+            if (points is null)
             {
                 points = new SortedBuffer<(double x, double y, T item)>(comparer: comparer);
 
@@ -202,7 +195,7 @@ namespace GGNet.Geoms
 
         private void Interactivity(Buffer<Shape> circles, T item, double x, double y)
         {
-            if (OnClick != null || onMouseOver != null || OnMouseOut != null)
+            if (OnClick is not null || onMouseOver is not null || OnMouseOut is not null)
             {
                 var circle = new Circle
                 {
@@ -216,17 +209,17 @@ namespace GGNet.Geoms
                     }
                 };
 
-                if (OnClick != null)
+                if (OnClick is not null)
                 {
                     circle.OnClick = e => OnClick(item, e);
                 }
 
-                if (onMouseOver != null)
+                if (onMouseOver is not null)
                 {
                     circle.OnMouseOver = e => onMouseOver(item, x, y, e);
                 }
 
-                if (OnMouseOut != null)
+                if (OnMouseOut is not null)
                 {
                     circle.OnMouseOut = e => OnMouseOut(item, e);
                 }

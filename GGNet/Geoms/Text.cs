@@ -18,9 +18,8 @@ namespace GGNet.Geoms
             Func<T, TT> text,
             IAestheticMapping<T, string> color = null,
             (bool x, bool y)? scale = null,
-            bool inherit = true,
-            Buffer<Shape> layer = null)
-            : base(source, scale, inherit, layer)
+            bool inherit = true)
+            : base(source, scale, inherit)
         {
             Selectors = new _Selectors
             {
@@ -75,7 +74,7 @@ namespace GGNet.Geoms
         {
             base.Init(panel, facet);
 
-            if (Selectors.X == null)
+            if (Selectors.X is null)
             {
                 Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
             }
@@ -84,7 +83,7 @@ namespace GGNet.Geoms
                 Positions.X = XMapping(Selectors.X, panel.X);
             }
 
-            if (Selectors.Y == null)
+            if (Selectors.Y is null)
             {
                 Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
             }
@@ -115,11 +114,10 @@ namespace GGNet.Geoms
                 return;
             }
 
-
             var clone = false;
 
             var color = Aesthetic.Color;
-            if (Aesthetics.Color != null)
+            if (Aesthetics.Color is not null)
             {
                 color = Aesthetics.Color.Map(item);
                 if (string.IsNullOrEmpty(color))
@@ -131,7 +129,7 @@ namespace GGNet.Geoms
             }
 
             var angle = Aesthetic.Angle;
-            if (Selectors.Angle != null)
+            if (Selectors.Angle is not null)
             {
                 angle = Selectors.Angle(item);
 

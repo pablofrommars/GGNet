@@ -32,9 +32,8 @@
 			"args": [
 				"watch",
 				"run",
-				"${workspaceFolder}/GGNet.Static.Demo.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary"
+				"--project",
+				"${workspaceFolder}/GGNet.Static.Demo.csproj"
 			],
 			"problemMatcher": "$msCompile"
 		}

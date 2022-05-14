@@ -11,7 +11,7 @@ public class Log10 : Position<double>
 
 	public Log10((double? min, double? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-		IFormatter<double> formatter = null)
+		IFormatter<double>? formatter = null)
 		: base(Transformations.Log10.Instance, expand ?? (0.05, 0, 0.05, 0))
 	{
 		Limits = limits ?? (null, null);
@@ -34,7 +34,7 @@ public class Log10 : Position<double>
 		if (breaks.Length > 0)
 		{
 			Breaks = breaks;
-			MinorBreaks = Utils.minor_breaks(breaks, Range.min, Range.max);
+			MinorBreaks = Utils.MinorBreaks(breaks, Range.min, Range.max)!;
 		}
 		else
 		{
@@ -46,15 +46,15 @@ public class Log10 : Position<double>
 		for (var i = 0; i < labels.Length; i++)
 		{
 			var b = Breaks.ElementAt(i);
-			labels[i] = (b, formatter.Format(transformation.Inverse(b)));
+			labels[i] = (b, formatter.Format(transformation!.Inverse(b)));
 		}
 
 		Labels = labels;
 	}
 
-	public override double Map(double key) => transformation.Apply(key);
+	public override double Map(double key) => transformation!.Apply(key);
 
-	public override ITransformation<double> RangeTransformation => transformation;
+	public override ITransformation<double> RangeTransformation => transformation!;
 }
 
 public static class Log10Utils

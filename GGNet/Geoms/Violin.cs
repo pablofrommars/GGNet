@@ -31,9 +31,8 @@ namespace GGNet.Geoms
             IAestheticMapping<T, string> fill = null,
             PositionAdjustment position = PositionAdjustment.Identity,
             (bool x, bool y)? scale = null,
-            bool inherit = true,
-            Buffer<Shape> layer = null)
-            : base(source, scale, inherit, layer)
+            bool inherit = true)
+            : base(source, scale, inherit)
         {
             Selectors = new _Selectors
             {
@@ -83,7 +82,7 @@ namespace GGNet.Geoms
         {
             base.Init(panel, facet);
 
-            if (Selectors.X == null)
+            if (Selectors.X is null)
             {
                 Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
             }
@@ -92,7 +91,7 @@ namespace GGNet.Geoms
                 Positions.X = XMapping(Selectors.X, panel.X);
             }
 
-            if (Selectors.Y == null)
+            if (Selectors.Y is null)
             {
                 Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
             }
@@ -132,7 +131,7 @@ namespace GGNet.Geoms
         {
             var fill = Aesthetic.Fill;
 
-            if (Aesthetics.Fill != null)
+            if (Aesthetics.Fill is not null)
             {
                 fill = Aesthetics.Fill.Map(item);
                 if (string.IsNullOrEmpty(fill))
