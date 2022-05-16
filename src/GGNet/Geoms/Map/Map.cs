@@ -1,30 +1,31 @@
-﻿using GGNet.Scales;
+﻿using GGNet.Common;
+using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
 using GGNet.Shapes;
-
 namespace GGNet.Geoms.Map;
 
-public class Map<T> : Geom<T, double, double>
+internal sealed class Map<T> : Geom<T, double, double>
 {
 	private readonly bool animation;
 
 	public Map(
 		Source<T> source,
 		Func<T, Geospacial.Polygon[]> polygons,
-		IAestheticMapping<T, string> fill = null,
-		Func<T, (Geospacial.Point point, string content)> tooltip = null,
+		IAestheticMapping<T, string>? fill = null,
+		Func<T, (Geospacial.Point point, string content)>? tooltip = null,
 		bool animation = false,
 		(bool x, bool y)? scale = null,
 		bool inherit = true)
 		: base(source, scale, inherit)
 	{
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			Polygons = polygons,
 			Tooltip = tooltip
 		};
 
-		Aesthetics = new _Aesthetics
+		Aesthetics = new()
 		{
 			Fill = fill
 		};
@@ -32,45 +33,26 @@ public class Map<T> : Geom<T, double, double>
 		this.animation = animation;
 	}
 
-	public class _Selectors
-	{
-		public Func<T, Geospacial.Polygon[]> Polygons { get; set; }
+	public Selectors<T> Selectors { get; }
 
-		public Func<T, (Geospacial.Point point, string content)> Tooltip { get; set; }
-	}
+	public Aesthetics<T> Aesthetics { get; }
 
-	public _Selectors Selectors { get; }
+	public Positions<T> Positions { get; } = new();
 
-	public class _Aesthetics
-	{
-		public IAestheticMapping<T, string> Fill { get; set; }
-	}
+	public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
 
-	public _Aesthetics Aesthetics { get; }
+	public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
 
-	public class _Positions
-	{
-		public IPositionMapping<T> X { get; set; }
+	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
 
-		public IPositionMapping<T> Y { get; set; }
-	}
+	public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-	public _Positions Positions { get; } = new _Positions();
-
-	public Func<T, MouseEventArgs, Task> OnClick { get; set; }
-
-	public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
-
-	public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
-
-	public Elements.Rectangle Aesthetic { get; set; }
-
-	public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
+	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
-		Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
-		Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
+		Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
+		Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
 
 		if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
 		{
@@ -80,7 +62,7 @@ public class Map<T> : Geom<T, double, double>
 
 				if (point is not null)
 				{
-					panel.Component.Tooltip.Show(
+					panel.Component?.Tooltip?.Show(
 						point.Longitude,
 						point.Latitude,
 						0,
@@ -94,7 +76,7 @@ public class Map<T> : Geom<T, double, double>
 
 			OnMouseOut = (_, __) =>
 			{
-				panel.Component.Tooltip.Hide();
+				panel.Component?.Tooltip?.Hide();
 
 				return Task.CompletedTask;
 			};
@@ -179,7 +161,7 @@ public class Map<T> : Geom<T, double, double>
 		{
 			Classes = animation ? "animate-map" : string.Empty,
 			Polygons = polygons,
-			Aesthetic = new Elements.Rectangle
+			Aesthetic = new()
 			{
 				Fill = fill,
 				Alpha = Aesthetic.Alpha,

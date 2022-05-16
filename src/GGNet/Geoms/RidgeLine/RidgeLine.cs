@@ -1,74 +1,55 @@
-﻿using GGNet.Scales;
+﻿using GGNet.Common;
+using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms.RidgeLine;
 
-public class RidgeLine<T, TX, TY> : Geom<T, TX, TY>
+internal sealed class RidgeLine<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	private readonly Dictionary<(double y, string fille), Area> areas = new Dictionary<(double y, string fille), Area>();
+	private readonly Dictionary<(double y, string fille), Shapes.Area> areas = new();
 
 	public RidgeLine(
 		Source<T> source,
-		Func<T, TX> x,
-		Func<T, TY> y,
+		Func<T, TX>? x,
+		Func<T, TY>? y,
 		Func<T, double> height,
-		IAestheticMapping<T, string> fill = null,
+		IAestheticMapping<T, string>? fill = null,
 		(bool x, bool y)? scale = null,
 		bool inherit = true)
 		: base(source, scale, inherit)
 	{
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			X = x,
 			Y = y,
 			Height = height
 		};
 
-		Aesthetics = new _Aesthetics
+		Aesthetics = new()
 		{
 			Fill = fill
 		};
 	}
 
-	public class _Selectors
-	{
-		public Func<T, TX> X { get; set; }
+	public Selectors<T, TX, TY> Selectors { get; }
 
-		public Func<T, TY> Y { get; set; }
+	public Aesthetics<T> Aesthetics { get; }
 
-		public Func<T, double> Height { get; set; }
-	}
+	public Positions<T> Positions { get; } = new();
 
-	public _Selectors Selectors { get; }
+	public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-	public class _Aesthetics
-	{
-		public IAestheticMapping<T, string> Fill { get; set; }
-	}
-
-	public _Aesthetics Aesthetics { get; }
-
-	public class _Positions
-	{
-		public IPositionMapping<T> X { get; set; }
-
-		public IPositionMapping<T> Y { get; set; }
-	}
-
-	public _Positions Positions { get; } = new _Positions();
-
-	public Elements.Rectangle Aesthetic { get; set; }
-
-	public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
+	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
 		if (Selectors.X == null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
+			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
 		}
 		else
 		{
@@ -77,7 +58,7 @@ public class RidgeLine<T, TX, TY> : Geom<T, TX, TY>
 
 		if (Selectors.Y == null)
 		{
-			Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
+			Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
 		}
 		else
 		{
@@ -111,18 +92,18 @@ public class RidgeLine<T, TX, TY> : Geom<T, TX, TY>
 
 	protected override void Shape(T item, bool flip)
 	{
-		Area area;
+		Shapes.Area? area;
 
 		var x = Positions.X.Map(item);
 		var y = Positions.Y.Map(item);
 
-		if (Aesthetics.Fill == null)
+		if (Aesthetics.Fill is null)
 		{
 			var key = (y, Aesthetic.Fill);
 
 			if (!areas.TryGetValue(key, out area))
 			{
-				area = new Area { Aesthetic = Aesthetic };
+				area = new Shapes.Area { Aesthetic = Aesthetic };
 
 				Layer.Add(area);
 
@@ -141,9 +122,9 @@ public class RidgeLine<T, TX, TY> : Geom<T, TX, TY>
 
 			if (!areas.TryGetValue(key, out area))
 			{
-				area = new Area
+				area = new Shapes.Area
 				{
-					Aesthetic = new Elements.Rectangle
+					Aesthetic = new()
 					{
 						Fill = fill,
 						Alpha = Aesthetic.Alpha

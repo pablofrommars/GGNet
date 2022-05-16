@@ -1,7 +1,7 @@
 ﻿namespace GGNet.Static;
 
 [SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "<Pending>")]
-internal class SVGRenderer
+internal sealed class SVGRenderer
 {
 	private static readonly HtmlEncoder encoder = HtmlEncoder.Default;
 

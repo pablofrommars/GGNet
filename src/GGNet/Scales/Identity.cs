@@ -2,7 +2,7 @@
 
 namespace GGNet.Scales;
 
-public class Identity<T> : Scale<T, T>
+public sealed class Identity<T> : Scale<T, T>
 {
 	public Identity() : base(null) { }
 

@@ -1,6 +1,6 @@
 namespace GGNet.Theme;
 
-public class PanelSpacing
+public sealed class PanelSpacing
 {
 	public double X { get; set; }
 

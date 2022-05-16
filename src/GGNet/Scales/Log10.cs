@@ -4,7 +4,7 @@ using GGNet.Transformations;
 
 namespace GGNet.Scales;
 
-public class Log10 : Position<double>
+public sealed class Log10 : Position<double>
 {
 	private readonly IFormatter<double> formatter;
 

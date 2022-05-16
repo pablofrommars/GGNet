@@ -1,20 +1,21 @@
-﻿using GGNet.Scales;
+﻿using GGNet.Common;
+using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms.Volume;
 
-public class Volume<T, TX, TY> : Geom<T, TX, TY>
+internal sealed class Volume<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
 	public Volume(
 		Source<T> source,
-		Func<T, TX> x,
+		Func<T, TX>? x,
 		Func<T, TY> volume)
 		: base(source, null, false)
 	{
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			X = x,
 			Volume = volume
@@ -52,39 +53,25 @@ public class Volume<T, TX, TY> : Geom<T, TX, TY>
 		*/
 	}
 
-	public class _Selectors
-	{
-		public Func<T, TX> X { get; set; }
+	public Selectors<T, TX, TY> Selectors { get; } = new();
 
-		public Func<T, TY> Volume { get; set; }
-	}
+	public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
 
-	public _Selectors Selectors { get; }
+	public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
 
-	public Func<T, MouseEventArgs, Task> OnClick { get; set; }
+	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
 
-	public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
+	public Positions<T> Positions { get; } = new();
 
-	public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
+	public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-	public class _Positions
-	{
-		public IPositionMapping<T> X { get; set; }
-
-		public IPositionMapping<T> Volume { get; set; }
-	}
-
-	public _Positions Positions { get; } = new _Positions();
-
-	public Elements.Rectangle Aesthetic { get; set; }
-
-	public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
+	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
 		if (Selectors.X is null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
+			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
 		}
 		else
 		{
@@ -105,21 +92,19 @@ public class Volume<T, TX, TY> : Geom<T, TX, TY>
 		var x = Positions.X.Map(item);
 		var volume = Positions.Volume.Map(item);
 
-		Func<MouseEventArgs, Task> onmouseover = null;
-
+		Func<MouseEventArgs, Task>? onmouseover = null;
 		if (OnMouseOver is not null)
 		{
 			onmouseover = e => OnMouseOver(item, e);
 		}
 
-		Func<MouseEventArgs, Task> onmouseout = null;
-
+		Func<MouseEventArgs, Task>? onmouseout = null;
 		if (OnMouseOut is not null)
 		{
 			onmouseout = e => OnMouseOut(item, e);
 		}
 
-		Layer.Add(new Rectangle
+		Layer.Add(new Shapes.Rectangle
         {
             X = x - 0.45,
             Y = 0,

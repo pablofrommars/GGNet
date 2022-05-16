@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Formats;
 
-public class Standard<T> : IFormatter<T>
+public sealed class Standard<T> : IFormatter<T>
 	where T : notnull
 {
 	public static Standard<T> Instance => new();

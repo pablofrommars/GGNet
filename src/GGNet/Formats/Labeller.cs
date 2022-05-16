@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Formats;
 
-public class Labeller<T> : IFormatter<T>
+public sealed class Labeller<T> : IFormatter<T>
 	where T : notnull
 {
 	private readonly IDictionary<T, string> labels;

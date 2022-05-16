@@ -1,16 +1,17 @@
-﻿using GGNet.Scales;
+﻿using GGNet.Common;
+using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms.Candlestick;
 
-public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
+internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
 	public Candlestick(
 		Source<T> source,
-		Func<T, TX> x,
+		Func<T, TX>? x,
 		Func<T, TY> open,
 		Func<T, TY> high,
 		Func<T, TY> low,
@@ -18,7 +19,7 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 		(bool x, bool y)? scale = null)
 		: base(source, scale, false)
 	{
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			X = x,
 			Open = open,
@@ -28,46 +29,20 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 		};
 	}
 
-	public class _Selectors
-	{
-		public Func<T, TX> X { get; set; }
+	public Selectors<T, TX, TY> Selectors { get; }
 
-		public Func<T, TY> Open { get; set; }
+	public Positions<T> Positions { get; } = new();
 
-		public Func<T, TY> High { get; set; }
+	public Elements.Line Line { get; set; } = default!;
+	public Elements.Rectangle Rectangle { get; set; } = default!;
 
-		public Func<T, TY> Low { get; set; }
-
-		public Func<T, TY> Close { get; set; }
-	}
-
-	public _Selectors Selectors { get; }
-
-	public class _Positions
-	{
-		public IPositionMapping<T> X { get; set; }
-
-		public IPositionMapping<T> Open { get; set; }
-
-		public IPositionMapping<T> High { get; set; }
-
-		public IPositionMapping<T> Low { get; set; }
-
-		public IPositionMapping<T> Close { get; set; }
-	}
-
-	public _Positions Positions { get; } = new _Positions();
-
-	public Elements.Line Line { get; set; }
-	public Elements.Rectangle Rectangle { get; set; }
-
-	public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
+	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
 		if (Selectors.X == null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
+			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
 		}
 		else
 		{
@@ -100,7 +75,7 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 
 		if (close >= open)
 		{
-			Layer.Add(new Line()
+			Layer.Add(new Shapes.Line()
 			{
 				X1 = x - 0.45,
 				X2 = x + 0.45,
@@ -109,7 +84,7 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				Aesthetic = Line
 			});
 
-			Layer.Add(new Line()
+			Layer.Add(new Shapes.Line()
 			{
 				X1 = x + 0.45,
 				X2 = x + 0.45,
@@ -118,7 +93,7 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				Aesthetic = Line
 			});
 
-			Layer.Add(new Line()
+			Layer.Add(new Shapes.Line()
 			{
 				X1 = x + 0.45,
 				X2 = x - 0.45,
@@ -127,7 +102,7 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				Aesthetic = Line
 			});
 
-			Layer.Add(new Line()
+			Layer.Add(new Shapes.Line()
 			{
 				X1 = x - 0.45,
 				X2 = x - 0.45,
@@ -136,7 +111,7 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				Aesthetic = Line
 			});
 
-			Layer.Add(new Line()
+			Layer.Add(new Shapes.Line()
 			{
 				X1 = x,
 				X2 = x,
@@ -145,7 +120,7 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				Aesthetic = Line
 			});
 
-			Layer.Add(new Line()
+			Layer.Add(new Shapes.Line()
 			{
 				X1 = x,
 				X2 = x,
@@ -156,7 +131,7 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 		}
 		else
 		{
-			Layer.Add(new Line()
+			Layer.Add(new Shapes.Line()
 			{
 				X1 = x,
 				X2 = x,
@@ -165,7 +140,7 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				Aesthetic = Line
 			});
 
-			Layer.Add(new Line()
+			Layer.Add(new Shapes.Line()
 			{
 				X1 = x,
 				X2 = x,
@@ -174,7 +149,7 @@ public class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				Aesthetic = Line
 			});
 
-			Layer.Add(new Rectangle()
+			Layer.Add(new Shapes.Rectangle()
 			{
 				X = x - 0.45,
 				Y = close,

@@ -1,40 +1,43 @@
-﻿using GGNet.Scales;
+﻿using GGNet.Common;
+using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms.ErrorBar;
 
-public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
+internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	private class Comparer : IComparer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)>
+	private sealed class Comparer : IComparer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)>
 	{
-		public int Compare((double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars) x, (double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars) y) => x.x.CompareTo(y.x);
+		public static readonly Comparer Instance = new();
 
-		public static readonly Comparer Instance = new Comparer();
+		public int Compare((double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars) x, (double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars) y)
+			=> x.x.CompareTo(y.x);
 	}
 
-	private readonly SortedBuffer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)> bars = new SortedBuffer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)>(32, 1, Comparer.Instance);
+	private readonly SortedBuffer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)> bars = new(32, 1, Comparer.Instance);
 
 	private readonly PositionAdjustment position;
 	private readonly bool animation;
 
 	public ErrorBar(
 		Source<T> source,
-		Func<T, TX> x,
-		Func<T, TY> y,
-		Func<T, TY> ymin,
-		Func<T, TY> ymax,
-		IAestheticMapping<T, string> color = null,
-		Func<T, string> tooltip = null,
+		Func<T, TX>? x,
+		Func<T, TY>? y,
+		Func<T, TY>? ymin,
+		Func<T, TY>? ymax,
+		IAestheticMapping<T, string>? color = null,
+		Func<T, string>? tooltip = null,
 		PositionAdjustment position = PositionAdjustment.Identity,
 		bool animation = false,
 		(bool x, bool y)? scale = null,
 		bool inherit = true)
 		: base(source, scale, inherit)
 	{
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			X = x,
 			Y = y,
@@ -43,7 +46,7 @@ public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 			Tooltip = tooltip
 		};
 
-		Aesthetics = new _Aesthetics
+		Aesthetics = new()
 		{
 			Color = color
 		};
@@ -52,60 +55,31 @@ public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 		this.position = position;
 	}
 
-	public class _Selectors
-	{
-		public Func<T, TX> X { get; set; }
+	public Selectors<T, TX, TY> Selectors { get; }
 
-		public Func<T, TY> Y { get; set; }
+	public Aesthetics<T> Aesthetics { get; }
 
-		public Func<T, TY> YMin { get; set; }
+	public Positions<T> Positions { get; } = new();
 
-		public Func<T, TY> YMax { get; set; }
+	public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
 
-		public Func<T, string> Tooltip { get; set; }
-	}
+	public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
 
-	public _Selectors Selectors { get; }
+	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
 
-	public class _Aesthetics
-	{
-		public IAestheticMapping<T, string> Color { get; set; }
-	}
+	private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
 
-	public _Aesthetics Aesthetics { get; }
+	public Elements.Line Line { get; set; } = default!;
 
-	public class _Positions
-	{
-		public IPositionMapping<T> X { get; set; }
+	public Elements.Circle Circle { get; set; } = default!;
 
-		public IPositionMapping<T> Y { get; set; }
-
-		public IPositionMapping<T> YMin { get; set; }
-
-		public IPositionMapping<T> YMax { get; set; }
-	}
-
-	public _Positions Positions { get; } = new _Positions();
-
-	public Func<T, MouseEventArgs, Task> OnClick { get; set; }
-
-	public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
-
-	public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
-
-	private Func<T, double, double, MouseEventArgs, Task> onMouseOver;
-
-	public Elements.Line Line { get; set; }
-
-	public Elements.Circle Circle { get; set; }
-
-	public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
+	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
 		if (Selectors.X is null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
+			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
 		}
 		else
 		{
@@ -114,16 +88,30 @@ public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 
 		if (Selectors.Y is null)
 		{
-			Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
+			Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
 		}
 		else
 		{
 			Positions.Y = YMapping(Selectors.Y, panel.Y);
 		}
 
-		Positions.YMin = YMapping(Selectors.YMin, panel.Y);
+		if (Selectors.YMin is null)
+		{
+			Positions.YMin = YMapping(panel.Data.Selectors.Y!, panel.Y);
+		}
+		else
+		{
+			Positions.YMin = YMapping(Selectors.YMin, panel.Y);
+		}
 
-		Positions.YMax = YMapping(Selectors.YMax, panel.Y);
+		if (Selectors.YMax is null)
+		{
+			Positions.YMax = YMapping(panel.Data.Selectors.Y!, panel.Y);
+		}
+		else
+		{
+			Positions.YMax = YMapping(Selectors.YMax, panel.Y);
+		}
 
 		if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
 		{
@@ -135,7 +123,7 @@ public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 					radius *= panel.Data.Theme.Animation.Point.Scale;
 				}
 
-				panel.Component.Tooltip.Show(
+				panel.Component?.Tooltip?.Show(
 					x,
 					y,
 					radius,
@@ -148,7 +136,7 @@ public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 
 			OnMouseOut = (_, __) =>
 			{
-				panel.Component.Tooltip.Hide();
+				panel.Component?.Tooltip?.Hide();
 
 				return Task.CompletedTask;
 			};
@@ -246,13 +234,13 @@ public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 			{
 				var (color, y, ymin, ymax, item) = bar.bars[j];
 
-				Layer.Add(new Line
+				Layer.Add(new Shapes.Line
 				{
 					X1 = bar.x,
 					X2 = bar.x,
 					Y1 = ymin,
 					Y2 = ymax,
-					Aesthetic = new Elements.Line
+					Aesthetic = new()
 					{
 						Width = Line.Width,
 						Fill = color,
@@ -261,12 +249,12 @@ public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 					}
 				});
 
-				var circle = new Circle
+				var circle = new Shapes.Circle
 				{
 					Classes = animation ? "animate-point" : string.Empty,
 					X = bar.x,
 					Y = y,
-					Aesthetic = new Elements.Circle
+					Aesthetic = new()
 					{
 						Radius = Circle.Radius,
 						Fill = color,
@@ -307,7 +295,6 @@ public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 
 	private void Dodge(bool flip)
 	{
-
 		var delta = 0.6;
 
 		if (bars.Count > 1)
@@ -334,13 +321,13 @@ public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 			{
 				var (color, y, ymin, ymax, item) = bar.bars[j];
 
-				Layer.Add(new Line
+				Layer.Add(new Shapes.Line
 				{
 					X1 = x,
 					X2 = x,
 					Y1 = ymin,
 					Y2 = ymax,
-					Aesthetic = new Elements.Line
+					Aesthetic = new()
 					{
 						Width = Line.Width,
 						Fill = color,
@@ -349,12 +336,12 @@ public class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 					}
 				});
 
-				var circle = new Circle
+				var circle = new Shapes.Circle
 				{
 					Classes = animation ? "animate-point" : string.Empty,
 					X = x,
 					Y = y,
-					Aesthetic = new Elements.Circle
+					Aesthetic = new()
 					{
 						Radius = Circle.Radius,
 						Fill = color,

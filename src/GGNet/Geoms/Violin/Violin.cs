@@ -1,43 +1,45 @@
-﻿using GGNet.Scales;
+﻿using GGNet.Common;
+using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms.Violin;
 
-public class Violin<T, TX, TY> : Geom<T, TX, TY>
+internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	private class Comparer : IComparer<(double y, double width)>
+	private sealed class Comparer : IComparer<(double y, double width)>
 	{
-		public int Compare((double y, double width) a, (double y, double width) b) => a.y.CompareTo(b.y);
+		public static readonly Comparer Instance = new();
 
-		public static readonly Comparer Instance = new Comparer();
+		public int Compare((double y, double width) a, (double y, double width) b) => a.y.CompareTo(b.y);
 	}
 
-	private readonly SortedDictionary<double, Dictionary<string, SortedBuffer<(double y, double width)>>> violins = new SortedDictionary<double, Dictionary<string, SortedBuffer<(double y, double width)>>>();
+	private readonly SortedDictionary<double, Dictionary<string, SortedBuffer<(double y, double width)>>> violins = new();
 
 	private readonly PositionAdjustment position;
 
 	public Violin(
 		Source<T> source,
-		Func<T, TX> x,
-		Func<T, TY> y,
+		Func<T, TX>? x,
+		Func<T, TY>? y,
 		Func<T, double> width,
-		IAestheticMapping<T, string> fill = null,
+		IAestheticMapping<T, string>? fill = null,
 		PositionAdjustment position = PositionAdjustment.Identity,
 		(bool x, bool y)? scale = null,
 		bool inherit = true)
 		: base(source, scale, inherit)
 	{
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			X = x,
 			Y = y,
 			Width = width
 		};
 
-		Aesthetics = new _Aesthetics
+		Aesthetics = new()
 		{
 			Fill = fill
 		};
@@ -45,42 +47,21 @@ public class Violin<T, TX, TY> : Geom<T, TX, TY>
 		this.position = position;
 	}
 
-	public class _Selectors
-	{
-		public Func<T, TX> X { get; set; }
+	public Selectors<T, TX, TY> Selectors { get; }
 
-		public Func<T, TY> Y { get; set; }
+	public Aesthetics<T> Aesthetics { get; }
 
-		public Func<T, double> Width { get; set; }
-	}
+	public Positions<T> Positions { get; } = new();
 
-	public _Selectors Selectors { get; }
+	public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-	public class _Aesthetics
-	{
-		public IAestheticMapping<T, string> Fill { get; set; }
-	}
-
-	public _Aesthetics Aesthetics { get; }
-
-	public class _Positions
-	{
-		public IPositionMapping<T> X { get; set; }
-
-		public IPositionMapping<T> Y { get; set; }
-	}
-
-	public _Positions Positions { get; } = new _Positions();
-
-	public Elements.Rectangle Aesthetic { get; set; }
-
-	public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
+	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
 		if (Selectors.X is null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
+			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
 		}
 		else
 		{
@@ -89,7 +70,7 @@ public class Violin<T, TX, TY> : Geom<T, TX, TY>
 
 		if (Selectors.Y is null)
 		{
-			Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
+			Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
 		}
 		else
 		{
@@ -139,21 +120,21 @@ public class Violin<T, TX, TY> : Geom<T, TX, TY>
 		var x = Positions.X.Map(item);
 		var y = Positions.Y.Map(item);
 
-		SortedBuffer<(double y, double width)> violin;
+		SortedBuffer<(double y, double width)>? violin;
 
 		if (violins.TryGetValue(x, out var xviolins))
 		{
 			if (!xviolins.TryGetValue(fill, out violin))
 			{
-				violin = new SortedBuffer<(double y, double width)>(64, 1, Comparer.Instance);
+				violin = new(64, 1, Comparer.Instance);
 				xviolins[fill] = violin;
 			}
 		}
 		else
 		{
-			violin = new SortedBuffer<(double y, double width)>(64, 1, Comparer.Instance);
+			violin = new(64, 1, Comparer.Instance);
 
-			violins[x] = new Dictionary<string, SortedBuffer<(double y, double width)>>
+			violins[x] = new()
 			{
 				[fill] = violin
 			};
@@ -210,14 +191,14 @@ public class Violin<T, TX, TY> : Geom<T, TX, TY>
 					j++;
 				}
 
-				var poly = new Polygon
+				var poly = new Shapes.Polygon
 				{
-					Path = new Geospacial.Polygon
+					Path = new()
 					{
 						Longitude = longitude,
 						Latitude = latitude
 					},
-					Aesthetic = new Elements.Rectangle
+					Aesthetic = new()
 					{
 						Fill = violin.Key,
 						Alpha = Aesthetic.Alpha,
@@ -301,12 +282,12 @@ public class Violin<T, TX, TY> : Geom<T, TX, TY>
 
 				var poly = new Polygon
 				{
-					Path = new Geospacial.Polygon
+					Path = new()
 					{
 						Longitude = longitude,
 						Latitude = latitude
 					},
-					Aesthetic = new Elements.Rectangle
+					Aesthetic = new()
 					{
 						Fill = violin.Key,
 						Alpha = Aesthetic.Alpha,

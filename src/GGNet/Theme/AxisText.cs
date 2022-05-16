@@ -6,7 +6,7 @@ using Elements;
 using static Common.Position;
 using static Common.Anchor;
 
-public class AxisText
+public sealed class AxisText
 {
 	public AxisText(bool dark, Position axisY)
 	{

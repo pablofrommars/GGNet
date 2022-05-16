@@ -1,8 +1,9 @@
-﻿using GGNet.Shapes.ABLine;
+﻿using GGNet.Common;
+using GGNet.Data;
 
-namespace GGNet.Geoms;
+namespace GGNet.Geoms.ABLine;
 
-public class ABLine<T> : Geom<T, double, double>
+internal sealed class ABLine<T> : Geom<T, double, double>
 {
 	private readonly (bool x, bool y) transformation;
 
@@ -10,13 +11,13 @@ public class ABLine<T> : Geom<T, double, double>
 		Source<T> source,
 		Func<T, double> a,
 		Func<T, double> b,
-		Func<T, string> label,
+		Func<T, string>? label,
 		(bool x, bool y)? transformation = null)
 		: base(source, null, false)
 	{
 		this.transformation = transformation ?? (true, true);
 
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			A = a,
 			B = b,
@@ -24,20 +25,11 @@ public class ABLine<T> : Geom<T, double, double>
 		};
 	}
 
-	public class _Selectors
-	{
-		public Func<T, double> A { get; set; }
+	public Selectors<T> Selectors { get; }
 
-		public Func<T, double> B { get; set; }
+	public Elements.Line Line { get; set; } = default!; 
 
-		public Func<T, string> Label { get; set; }
-	}
-
-	public _Selectors Selectors { get; }
-
-	public Elements.Line Line { get; set; }
-
-	public Elements.Text Text { get; set; }
+	public Elements.Text Text { get; set; } = default!;
 
 	public override void Train(T item) { }
 
@@ -46,13 +38,18 @@ public class ABLine<T> : Geom<T, double, double>
 		var a = Selectors.A(item);
 		var b = Selectors.B(item);
 
-		string label = null;
+		string? label = null;
 		if (Selectors.Label is not null)
 		{
 			label = Selectors.Label(item);
 		}
 
-		Layer.Add(new ABLine
+		if (string.IsNullOrEmpty(label))
+		{
+			return;
+		}
+
+		Layer.Add(new Shapes.ABLine
 		{
 			A = a,
 			B = b,

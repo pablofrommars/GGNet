@@ -6,7 +6,7 @@ namespace GGNet.Theme;
 using static Common.Position;
 using static Common.Anchor;
 
-public class AxisTitle
+public sealed class AxisTitle
 {
 	public AxisTitle(bool dark, Position axisY)
 	{

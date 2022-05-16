@@ -1,25 +1,27 @@
-﻿using GGNet.Scales;
+﻿using GGNet.Common;
+using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms.Text;
 
-public class Text<T, TX, TY, TT> : Geom<T, TX, TY>
+internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
 	public Text(
 		Source<T> source,
-		Func<T, TX> x,
-		Func<T, TY> y,
-		Func<T, double> angle,
-		Func<T, TT> text,
-		IAestheticMapping<T, string> color = null,
+		Func<T, TX>? x,
+		Func<T, TY>? y,
+		Func<T, double>? angle,
+		Func<T, TT>? text,
+		IAestheticMapping<T, string>? color = null,
 		(bool x, bool y)? scale = null,
 		bool inherit = true)
 		: base(source, scale, inherit)
 	{
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			X = x,
 			Y = y,
@@ -27,54 +29,27 @@ public class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 			Text = text
 		};
 
-		Aesthetics = new _Aesthetics
+		Aesthetics = new()
 		{
 			Color = color
 		};
 	}
 
-	public class _Selectors
-	{
-		public Func<T, TX> X { get; set; }
+	public Selectors<T, TX, TY, TT> Selectors { get; }
 
-		public Func<T, TY> Y { get; set; }
+	public Aesthetics<T> Aesthetics { get; }
 
-		public Func<T, double> Angle { get; set; }
+	public Positions<T> Positions { get; } = new();
 
-		public Func<T, TT> Text { get; set; }
-	}
+	public Elements.Text Aesthetic { get; set; } = default!;
 
-	public _Selectors Selectors { get; }
-
-	public class _Aesthetics
-	{
-		public IAestheticMapping<T, string> Color { get; set; }
-	}
-
-	public _Aesthetics Aesthetics { get; }
-
-	public class _Positions
-	{
-		public IPositionMapping<T> X { get; set; }
-
-		public IPositionMapping<T> XEnd { get; set; }
-
-		public IPositionMapping<T> Y { get; set; }
-
-		public IPositionMapping<T> YEnd { get; set; }
-	}
-
-	public _Positions Positions { get; } = new _Positions();
-
-	public Elements.Text Aesthetic { get; set; }
-
-	public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
+	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
 		if (Selectors.X is null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
+			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
 		}
 		else
 		{
@@ -83,7 +58,7 @@ public class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 
 		if (Selectors.Y is null)
 		{
-			Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
+			Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
 		}
 		else
 		{
@@ -106,13 +81,16 @@ public class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 
 	protected override void Shape(T item, bool flip)
 	{
+		if (Selectors.Text is null)
+		{
+			return;
+		}
+		
 		var value = Selectors.Text(item)?.ToString();
 		if (string.IsNullOrEmpty(value))
 		{
 			return;
 		}
-
-		var clone = false;
 
 		var color = Aesthetic.Color;
 		if (Aesthetics.Color is not null)
@@ -122,16 +100,12 @@ public class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 			{
 				return;
 			}
-
-			clone = true;
 		}
 
 		var angle = Aesthetic.Angle;
 		if (Selectors.Angle is not null)
 		{
 			angle = Selectors.Angle(item);
-
-			clone = true;
 		}
 
 		var x = Positions.X.Map(item);
@@ -140,23 +114,18 @@ public class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 		var width = value.Width(Aesthetic.Size);
 		var height = value.Height(Aesthetic.Size);
 
-		var aes = Aesthetic;
-		if (clone)
-		{
-			aes = aes.Clone();
-
-			aes.Color = color;
-			aes.Angle = angle;
-		}
-
-		var text = new Text
+		var text = new Shapes.Text
 		{
 			X = x,
 			Y = y,
 			Width = width,
 			Height = height,
 			Value = value,
-			Aesthetic = aes
+			Aesthetic = Aesthetic with
+			{
+				Color = color,
+				Angle = angle
+			}
 		};
 
 		Layer.Add(text);

@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Formats;
 
-public class DoubleFormatter : IFormatter<double>
+public sealed class DoubleFormatter : IFormatter<double>
 {
 	private readonly string format;
 

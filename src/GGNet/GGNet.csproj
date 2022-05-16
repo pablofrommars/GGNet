@@ -36,21 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Geoms\ABLine.cs" />
-    <Compile Remove="Geoms\Candlestick.cs" />
-    <Compile Remove="Geoms\ErrorBar.cs" />
-    <Compile Remove="Geoms\HLine.cs" />
-    <Compile Remove="Geoms\Hex.cs" />
-    <Compile Remove="Geoms\Map.cs" />
-    <Compile Remove="Geoms\OHLC.cs" />
-    <Compile Remove="Geoms\Rectangle.cs" />
-    <Compile Remove="Geoms\Ribbon.cs" />
-    <Compile Remove="Geoms\RidgeLine.cs" />
-    <Compile Remove="Geoms\Text.cs" />
-    <Compile Remove="Geoms\VLine.cs" />
-    <Compile Remove="Geoms\VStrip.cs" />
-    <Compile Remove="Geoms\Violin.cs" />
-    <Compile Remove="Geoms\Volume.cs" />
+    <Compile Remove="Geoms/Rectangle/Rectangle.cs" />
   </ItemGroup>
 
 </Project>

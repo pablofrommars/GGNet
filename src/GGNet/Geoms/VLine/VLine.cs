@@ -1,10 +1,11 @@
-﻿using GGNet.Scales;
+﻿using GGNet.Common;
+using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms.VLine;
 
-public class VLine<T, TX, TY> : Geom<T, TX, TY>
+internal sealed class VLine<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
@@ -14,34 +15,22 @@ public class VLine<T, TX, TY> : Geom<T, TX, TY>
 		Func<T, string> label)
 		: base(source, null, false)
 	{
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			X = x,
 			Label = label
 		};
 	}
 
-	public class _Selectors
-	{
-		public Func<T, TX> X { get; set; }
+	public Selectors<T, TX> Selectors { get; }
 
-		public Func<T, string> Label { get; set; }
-	}
+	public Positions<T> Positions { get; } = new();
 
-	public _Selectors Selectors { get; }
+	public Elements.Line Line { get; set; } = default!;
 
-	public class _Positions
-	{
-		public IPositionMapping<T> X { get; set; }
-	}
+	public Elements.Text Text { get; set; } = default!;
 
-	public _Positions Positions { get; } = new _Positions();
-
-	public Elements.Line Line { get; set; }
-
-	public Elements.Text Text { get; set; }
-
-	public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
+	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
@@ -57,13 +46,18 @@ public class VLine<T, TX, TY> : Geom<T, TX, TY>
 	{
 		var x = Positions.X.Map(item);
 
-		string label = null;
+		string? label = null;
 		if (Selectors.Label is not null)
 		{
 			label = Selectors.Label(item);
 		}
 
-		Layer.Add(new VLine
+		if (string.IsNullOrEmpty(label))
+		{
+			return;
+		}
+
+		Layer.Add(new Shapes.VLine
 		{
 			X = x,
 			Label = label,

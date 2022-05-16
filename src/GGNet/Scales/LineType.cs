@@ -3,7 +3,7 @@ using GGNet.Transformations;
 
 namespace GGNet.Scales;
 
-public class LineTypeDiscrete<TKey> : Discrete<TKey, LineType>
+public sealed class LineTypeDiscrete<TKey> : Discrete<TKey, LineType>
 	where TKey : notnull
 {
 	private static readonly LineType[] lineTypes = (LineType[])Enum.GetValues(typeof(LineType));

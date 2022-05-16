@@ -1,27 +1,29 @@
-﻿using GGNet.Scales;
+﻿using GGNet.Common;
+using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms.Ribbon;
 
-public class Ribbon<T, TX, TY> : Geom<T, TX, TY>
+internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	private readonly Dictionary<object, Area> areas = new Dictionary<object, Area>();
+	private readonly Dictionary<object, Shapes.Area> areas = new();
 
 	public Ribbon(
 		Source<T> source,
-		Func<T, TX> x,
-		Func<T, TY> ymin,
-		Func<T, TY> ymax,
-		IAestheticMapping<T, string> fill = null,
-		Func<T, string> tooltip = null,
+		Func<T, TX>? x,
+		Func<T, TY>? ymin,
+		Func<T, TY>? ymax,
+		IAestheticMapping<T, string>? fill = null,
+		Func<T, string>? tooltip = null,
 		(bool x, bool y)? scale = null,
 		bool inherit = true)
 		: base(source, scale, inherit)
 	{
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			X = x,
 			YMin = ymin,
@@ -29,75 +31,64 @@ public class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 			Tooltip = tooltip
 		};
 
-		Aesthetics = new _Aesthetics
+		Aesthetics = new()
 		{
 			Fill = fill
 		};
 	}
 
-	public class _Selectors
-	{
-		public Func<T, TX> X { get; set; }
+	public Selectors<T, TX, TY> Selectors { get; }
 
-		public Func<T, TY> YMin { get; set; }
+	public Aesthetics<T> Aesthetics { get; }
 
-		public Func<T, TY> YMax { get; set; }
+	public Positions<T> Positions { get; } = new();
 
-		public Func<T, string> Tooltip { get; set; }
-	}
+	public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
 
-	public _Selectors Selectors { get; }
+	public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
 
-	public class _Aesthetics
-	{
-		public IAestheticMapping<T, string> Fill { get; set; }
-	}
+	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
 
-	public _Aesthetics Aesthetics { get; }
+	private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
 
-	public class _Positions
-	{
-		public IPositionMapping<T> X { get; set; }
+	public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-		public IPositionMapping<T> YMin { get; set; }
-
-		public IPositionMapping<T> YMax { get; set; }
-	}
-
-	public _Positions Positions { get; } = new _Positions();
-
-	public Func<T, MouseEventArgs, Task> OnClick { get; set; }
-
-	public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
-
-	public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
-
-	private Func<T, double, double, MouseEventArgs, Task> onMouseOver;
-
-	public Elements.Rectangle Aesthetic { get; set; }
-
-	public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
+	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
 		if (Selectors.X is null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
+			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
 		}
 		else
 		{
 			Positions.X = XMapping(Selectors.X, panel.X);
 		}
 
-		Positions.YMin = YMapping(Selectors.YMin, panel.Y);
+		if (Selectors.YMin is null)
+		{
+			Positions.YMin = YMapping(panel.Data.Selectors.Y!, panel.Y);
+		}
+		else
+		{
+			Positions.YMin = YMapping(Selectors.YMin, panel.Y);
+		}
 
-		Positions.YMax = YMapping(Selectors.YMax, panel.Y);
+		if (Selectors.YMax is null)
+		{
+			Positions.YMax = YMapping(panel.Data.Selectors.Y!, panel.Y);
+		}
+		else
+		{
+			Positions.YMax = YMapping(Selectors.YMax, panel.Y);
+		}
 
 		if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
 		{
 			onMouseOver = (item, x, y, _) =>
 			{
-				panel.Component.Tooltip.Show(
+				panel.Component?.Tooltip?.Show(
 					x,
 					y,
 					0,
@@ -110,7 +101,7 @@ public class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 
 			OnMouseOut = (_, __) =>
 			{
-				panel.Component.Tooltip.Hide();
+				panel.Component?.Tooltip?.Hide();
 
 				return Task.CompletedTask;
 			};
@@ -146,17 +137,17 @@ public class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 		});
 	}
 
-	private Area _area = null;
+	private Shapes.Area? _area = null;
 
 	protected override void Shape(T item, bool flip)
 	{
-		Area area;
+		Shapes.Area? area;
 
 		if (Aesthetics.Fill is null)
 		{
 			if (_area is null)
 			{
-				_area = new Area { Aesthetic = Aesthetic };
+				_area = new Shapes.Area { Aesthetic = Aesthetic };
 
 				Layer.Add(_area);
 			}
@@ -173,9 +164,9 @@ public class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 
 			if (!areas.TryGetValue(fill, out area))
 			{
-				area = new Area
+				area = new Shapes.Area
 				{
-					Aesthetic = new Elements.Rectangle
+					Aesthetic = new()
 					{
 						Fill = fill,
 						Alpha = Aesthetic.Alpha

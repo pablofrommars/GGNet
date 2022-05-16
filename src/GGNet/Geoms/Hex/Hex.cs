@@ -1,15 +1,12 @@
-﻿using System;
-using System.Threading.Tasks;
-
-using Microsoft.AspNetCore.Components.Web;
-
-using GGNet.Scales;
+﻿using GGNet.Common;
+using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms.Hex;
 
-public class Hex<T, TX, TY> : Geom<T, TX, TY>
+internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
@@ -17,18 +14,18 @@ public class Hex<T, TX, TY> : Geom<T, TX, TY>
 
 	public Hex(
 		Source<T> source,
-		Func<T, TX> x,
-		Func<T, TY> y,
+		Func<T, TX>? x,
+		Func<T, TY>? y,
 		Func<T, TX> Dx,
 		Func<T, TY> Dy,
-		IAestheticMapping<T, string> fill = null,
-		Func<T, string> tooltip = null,
+		IAestheticMapping<T, string>? fill = null,
+		Func<T, string>? tooltip = null,
 		bool animation = false,
 		(bool x, bool y)? scale = null,
 		bool inherit = true)
 		: base(source, scale, inherit)
 	{
-		Selectors = new _Selectors
+		Selectors = new()
 		{
 			X = x,
 			Y = y,
@@ -37,7 +34,7 @@ public class Hex<T, TX, TY> : Geom<T, TX, TY>
 			Tooltip = tooltip
 		};
 
-		Aesthetics = new _Aesthetics
+		Aesthetics = new()
 		{
 			Fill = fill
 		};
@@ -45,58 +42,29 @@ public class Hex<T, TX, TY> : Geom<T, TX, TY>
 		this.animation = animation;
 	}
 
-	public class _Selectors
-	{
-		public Func<T, TX> X { get; set; }
+	public Selectors<T, TX, TY> Selectors { get; }
 
-		public Func<T, TY> Y { get; set; }
+	public Aesthetics<T> Aesthetics { get; }
 
-		public Func<T, TX> Dx { get; set; }
+	public Positions<T> Positions { get; } = new();
 
-		public Func<T, TY> Dy { get; set; }
+	public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
 
-		public Func<T, string> Tooltip { get; set; }
-	}
+	public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
 
-	public _Selectors Selectors { get; }
+	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
 
-	public class _Aesthetics
-	{
-		public IAestheticMapping<T, string> Fill { get; set; }
-	}
+	private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
 
-	public _Aesthetics Aesthetics { get; }
+	public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-	public class _Positions
-	{
-		public IPositionMapping<T> X { get; set; }
-
-		public IPositionMapping<T> Y { get; set; }
-
-		public IPositionMapping<T> Dx { get; set; }
-
-		public IPositionMapping<T> Dy { get; set; }
-	}
-
-	public _Positions Positions { get; } = new _Positions();
-
-	public Func<T, MouseEventArgs, Task> OnClick { get; set; }
-
-	public Func<T, MouseEventArgs, Task> OnMouseOver { get; set; }
-
-	public Func<T, MouseEventArgs, Task> OnMouseOut { get; set; }
-
-	private Func<T, double, double, MouseEventArgs, Task> onMouseOver;
-
-	public Elements.Rectangle Aesthetic { get; set; }
-
-	public override void Init<T1, TX1, TY1>(Data<T1, TX1, TY1>.Panel panel, Facet<T1> facet)
+	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
 		if (Selectors.X is null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X, panel.X);
+			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
 		}
 		else
 		{
@@ -105,7 +73,7 @@ public class Hex<T, TX, TY> : Geom<T, TX, TY>
 
 		if (Selectors.Y is null)
 		{
-			Positions.Y = YMapping(panel.Data.Selectors.Y, panel.Y);
+			Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
 		}
 		else
 		{
@@ -119,7 +87,7 @@ public class Hex<T, TX, TY> : Geom<T, TX, TY>
 		{
 			onMouseOver = (item, x, y, _) =>
 			{
-				panel.Component.Tooltip.Show(
+				panel.Component?.Tooltip?.Show(
 					x,
 					y,
 					0,
@@ -132,7 +100,7 @@ public class Hex<T, TX, TY> : Geom<T, TX, TY>
 
 			OnMouseOut = (_, __) =>
 			{
-				panel.Component.Tooltip.Hide();
+				panel.Component?.Tooltip?.Hide();
 
 				return Task.CompletedTask;
 			};
@@ -187,15 +155,15 @@ public class Hex<T, TX, TY> : Geom<T, TX, TY>
 		var dx = Positions.Dx.Map(item) / 2.0;
 		var dy = Positions.Dy.Map(item) / Math.Sqrt(3.0) / 2.0 * 1.15;
 
-		var hex = new Polygon
+		var hex = new Shapes.Polygon
 		{
 			Classes = animation ? "animate-hex" : string.Empty,
-			Path = new Geospacial.Polygon
+			Path = new()
 			{
 				Longitude = new[] { x + dx, x + dx, x, x - dx, x - dx, x },
 				Latitude = new[] { y + dy, y - dy, y - 2.0 * dy, y - dy, y + dy, y + 2.0 * dy }
 			},
-			Aesthetic = new Elements.Rectangle
+			Aesthetic = new()
 			{
 				Fill = fill,
 				Alpha = Aesthetic.Alpha
