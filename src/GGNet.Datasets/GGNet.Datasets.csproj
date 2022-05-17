@@ -8,11 +8,12 @@
     <IsPackable>true</IsPackable>
 
     <Authors>Pablo Belin</Authors>
-    <Title>Datasets for GG.Net Data Visualization</Title>
-    <Description>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</Description>
+    <Title>GG.Net Data Visualization</Title>
     <Copyright>Copyright (c) 2020-2022 Pablo Belin</Copyright>
+    <PackageDescription>Datasets for GG.Net Data Visualization</PackageDescription>
     <PackageTags>plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp;blazor;geospacial</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</Description>
 
     <Version>2.0.0-beta.0.1</Version>
 

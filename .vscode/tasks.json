@@ -52,7 +52,7 @@
 			"problemMatcher": "$msCompile"
 		},
 		{
-			"label": "build",
+			"label": "build all",
 			"dependsOn": [
 				"build GGNet",
 				"build GGNet.Static",
@@ -178,7 +178,7 @@
 			}
 		},
 		{
-			"label": "pack",
+			"label": "pack all",
 			"dependsOn": [
 				"pack GGNet",
 				"pack GGNet.Static",
@@ -187,6 +187,29 @@
 				"pack GGNet.InteractiveExtension"
 			],
 			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "nuget push",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"nuget", "push", "${input:package}",
+				"--skip-duplicate",
+				"--api-key", "${env:NUGET_API_KEY}",
+				"--source", "https://api.nuget.org/v3/index.json"
+			],
+			"options": {
+				"cwd": "packages"
+			},
+			"problemMatcher": "$msCompile"
+		}
+	],
+	"inputs": [
+		{
+			"id": "package",
+			"type": "promptString",
+			"description": "Package file(s)",
+			"default": "*.nupkg"
 		}
 	]
 }
