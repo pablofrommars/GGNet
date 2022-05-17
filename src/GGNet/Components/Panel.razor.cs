@@ -4,7 +4,7 @@ using GGNet.Transformations;
 
 using static System.Math;
 
-using static GGNet.Common.Position;
+using static GGNet.Position;
 
 namespace GGNet.Components;
 
@@ -82,13 +82,13 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 		if (!string.IsNullOrEmpty(Data.Strip.x))
 		{
-			var width = Data.Strip.x.Width(Data.Data.Theme.Strip.Text.X.Size);
-			var height = Data.Strip.x.Height(Data.Data.Theme.Strip.Text.X.Size);
+			var width = Data.Strip.x.Width(Data.Data.Theme!.Strip.Text.X.Size);
+			var height = Data.Strip.x.Height(Data.Data.Theme!.Strip.Text.X.Size);
 
 			//xStrip.X = X + Data.Data.Theme.Strip.Text.X.Margin.Left;
-			xStrip.Y = Y + Data.Data.Theme.Strip.Text.X.Margin.Top + height;
-			xStrip.Width = Data.Data.Theme.Strip.Text.X.Margin.Left + width + Data.Data.Theme.Strip.Text.X.Margin.Right;
-			xStrip.Height = Data.Data.Theme.Strip.Text.X.Margin.Top + height + Data.Data.Theme.Strip.Text.X.Margin.Bottom;
+			xStrip.Y = Y + Data.Data.Theme!.Strip.Text.X.Margin.Top + height;
+			xStrip.Width = Data.Data.Theme!.Strip.Text.X.Margin.Left + width + Data.Data.Theme!.Strip.Text.X.Margin.Right;
+			xStrip.Height = Data.Data.Theme!.Strip.Text.X.Margin.Top + height + Data.Data.Theme!.Strip.Text.X.Margin.Bottom;
 
 			Area.Y += xStrip.Height;
 			Area.Height -= xStrip.Height;
@@ -96,13 +96,13 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 		if (!string.IsNullOrEmpty(Data.Strip.y))
 		{
-			var width = Data.Strip.y.Height(Data.Data.Theme.Strip.Text.Y.Size);
-			var height = Data.Strip.y.Width(Data.Data.Theme.Strip.Text.Y.Size);
+			var width = Data.Strip.y.Height(Data.Data.Theme!.Strip.Text.Y.Size);
+			var height = Data.Strip.y.Width(Data.Data.Theme!.Strip.Text.Y.Size);
 
-			yStrip.X = Area.X + Area.Width - Data.Data.Theme.Strip.Text.X.Margin.Right - width;
-			yStrip.Y = Area.Y + Data.Data.Theme.Strip.Text.Y.Margin.Top;
-			yStrip.Width = Data.Data.Theme.Strip.Text.Y.Margin.Left + width + Data.Data.Theme.Strip.Text.Y.Margin.Right;
-			yStrip.Height = Data.Data.Theme.Strip.Text.Y.Margin.Top + height + Data.Data.Theme.Strip.Text.Y.Margin.Bottom;
+			yStrip.X = Area.X + Area.Width - Data.Data.Theme!.Strip.Text.X.Margin.Right - width;
+			yStrip.Y = Area.Y + Data.Data.Theme!.Strip.Text.Y.Margin.Top;
+			yStrip.Width = Data.Data.Theme!.Strip.Text.Y.Margin.Left + width + Data.Data.Theme!.Strip.Text.Y.Margin.Right;
+			yStrip.Height = Data.Data.Theme!.Strip.Text.Y.Margin.Top + height + Data.Data.Theme!.Strip.Text.Y.Margin.Bottom;
 
 			Area.Width -= yStrip.Width;
 		}
@@ -111,7 +111,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 		{
 			var axisWidth = Data.Data.Axis.width;
 
-			if (Data.Data.Theme.Axis.Y == Left)
+			if (Data.Data.Theme!.Axis.Y == Left)
 			{
 				if (Data.YLab.width > 0.0 || Data.Y.Titles.Any())
 				{
@@ -157,15 +157,15 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 			if (Data.X.Titles.Any())
 			{
-				xTitlesHeight = Max(xTitlesHeight, Data.Data.Theme.Axis.Title.X.Size.Height());
+				xTitlesHeight = Max(xTitlesHeight, Data.Data.Theme!.Axis.Title.X.Size.Height());
 			}
 
 			if (xTitlesHeight > 0.0)
 			{
-				xAxisTitle.X = Area.X + Area.Width - Data.Data.Theme.Axis.Title.X.Margin.Right;
-				xAxisTitle.Y = Area.Y + Area.Height - Data.Data.Theme.Axis.Title.X.Margin.Bottom;
-				xAxisTitle.Width = Data.Data.Theme.Axis.Title.X.Margin.Left + Area.Width + Data.Data.Theme.Axis.Title.X.Margin.Right;
-				xAxisTitle.Height = Data.Data.Theme.Axis.Title.X.Margin.Top + xTitlesHeight + Data.Data.Theme.Axis.Title.X.Margin.Bottom;
+				xAxisTitle.X = Area.X + Area.Width - Data.Data.Theme!.Axis.Title.X.Margin.Right;
+				xAxisTitle.Y = Area.Y + Area.Height - Data.Data.Theme!.Axis.Title.X.Margin.Bottom;
+				xAxisTitle.Width = Data.Data.Theme.Axis.Title.X.Margin.Left + Area.Width + Data.Data.Theme!.Axis.Title.X.Margin.Right;
+				xAxisTitle.Height = Data.Data.Theme.Axis.Title.X.Margin.Top + xTitlesHeight + Data.Data.Theme!.Axis.Title.X.Margin.Bottom;
 
 				Area.Height -= xAxisTitle.Height;
 			}
@@ -173,7 +173,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 			var axisHeight = Data.Data.Axis.height;
 
 			xAxisText.X = Area.X;
-			xAxisText.Y = Area.Y + Area.Height - Data.Data.Theme.Axis.Text.X.Margin.Bottom;
+			xAxisText.Y = Area.Y + Area.Height - Data.Data.Theme!.Axis.Text.X.Margin.Bottom;
 			xAxisText.Width = Area.Width;
 			xAxisText.Height = Data.Data.Theme.Axis.Text.X.Margin.Top + axisHeight + Data.Data.Theme.Axis.Text.X.Margin.Bottom;
 
@@ -182,7 +182,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 		if (xStrip.Width > 0)
 		{
-			xStrip.X = Area.X + Data.Data.Theme.Strip.Text.X.Margin.Left;
+			xStrip.X = Area.X + Data.Data.Theme!.Strip.Text.X.Margin.Left;
 		}
 
 		if (yAxisText.Width > 0)

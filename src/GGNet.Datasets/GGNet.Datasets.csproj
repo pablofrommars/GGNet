@@ -1,9 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <OutputType>Library</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+
+    <Authors>Pablo Belin</Authors>
+    <Title>Datasets for GG.Net Data Visualization</Title>
+    <Description>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</Description>
+    <Copyright>Copyright (c) 2020-2022 Pablo Belin</Copyright>
+    <PackageTags>plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp;blazor;geospacial</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <Version>2.0.0-beta.0.1</Version>
+
   </PropertyGroup>
 
   <ItemGroup>

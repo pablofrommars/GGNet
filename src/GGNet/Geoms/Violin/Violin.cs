@@ -143,7 +143,7 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 		violin.Add((y, Selectors.Width(item)));
 	}
 
-	private void Identity(bool flip)
+	private void Identity()
 	{
 		foreach (var xviolins in violins)
 		{
@@ -215,7 +215,7 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 		}
 	}
 
-	private void Dodge(bool flip)
+	private void Dodge()
 	{
 		var delta = 0.8;
 
@@ -317,11 +317,11 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 	{
 		if (position == PositionAdjustment.Identity)
 		{
-			Identity(flip);
+			Identity();
 		}
 		else if (position == PositionAdjustment.Dodge)
 		{
-			Dodge(flip);
+			Dodge();
 		}
 		else
 		{

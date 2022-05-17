@@ -38,7 +38,7 @@ public partial class Data<T, TX, TY> : IData
 
 	public bool Flip { get; set; }
 
-	internal Theme.Theme Theme { get; set; } = default!;
+	public Theme.Theme? Theme { get; set; }
 
 	public PanelFactory<T, TX, TY>? DefaultFactory { get; set; }
 
@@ -130,7 +130,7 @@ public partial class Data<T, TX, TY> : IData
 					var lab = PanelFactories[i].YLab;
 					if (!string.IsNullOrEmpty(lab))
 					{
-						ylab = lab.Height(Theme.Axis.Title.Y.Size);
+						ylab = lab.Height(Theme!.Axis.Title.Y.Size);
 
 						break;
 					}
@@ -157,7 +157,7 @@ public partial class Data<T, TX, TY> : IData
 
 						if (!string.IsNullOrEmpty(XLab))
 						{
-							panel.XLab = (XLab.Height(Theme.Axis.Title.X.Size), XLab);
+							panel.XLab = (XLab.Height(Theme!.Axis.Title.X.Size), XLab);
 						}
 					}
 					else
@@ -183,12 +183,12 @@ public partial class Data<T, TX, TY> : IData
 
 				if (!string.IsNullOrEmpty(XLab))
 				{
-					panel.XLab = (XLab.Height(Theme.Axis.Title.X.Size), XLab);
+					panel.XLab = (XLab.Height(Theme!.Axis.Title.X.Size), XLab);
 				}
 
 				if (!string.IsNullOrEmpty(DefaultFactory.YLab))
 				{
-					panel.YLab = (DefaultFactory.YLab.Height(Theme.Axis.Title.Y.Size), DefaultFactory.YLab);
+					panel.YLab = (DefaultFactory.YLab.Height(Theme!.Axis.Title.Y.Size), DefaultFactory.YLab);
 				}
 
 				Panels.Add(panel);
@@ -227,7 +227,7 @@ public partial class Data<T, TX, TY> : IData
 
 		Faceting!.Set();
 
-		var facets = Faceting.Facets(Theme);
+		var facets = Faceting.Facets(Theme!);
 
 		N = (Faceting.NRows, Faceting.NColumns);
 
@@ -236,7 +236,7 @@ public partial class Data<T, TX, TY> : IData
 
 		if (Faceting.Strip)
 		{
-			Strip = Theme.Strip.Text.X.Size.Height();
+			Strip = Theme!.Strip.Text.X.Size.Height();
 		}
 
 		if (!Faceting.FreeX)
@@ -254,13 +254,13 @@ public partial class Data<T, TX, TY> : IData
 		var xlab = 0.0;
 		if (!string.IsNullOrEmpty(XLab))
 		{
-			xlab = XLab.Height(Theme.Axis.Title.X.Size);
+			xlab = XLab.Height(Theme!.Axis.Title.X.Size);
 		}
 
 		var ylab = 0.0;
 		if (!string.IsNullOrEmpty(DefaultFactory!.YLab))
 		{
-			ylab = DefaultFactory.YLab.Height(Theme.Axis.Title.Y.Size);
+			ylab = DefaultFactory.YLab.Height(Theme!.Axis.Title.Y.Size);
 		}
 
 		for (var i = 0; i < facets.Length; i++)
@@ -297,7 +297,7 @@ public partial class Data<T, TX, TY> : IData
 
 			if (ylab > 0)
 			{
-				if (Theme.Axis.Y == Position.Left && panel.Coord.col == 0)
+				if (Theme!.Axis.Y == Position.Left && panel.Coord.col == 0)
 				{
 					if (panel.Coord.row == 0)
 					{
@@ -308,7 +308,7 @@ public partial class Data<T, TX, TY> : IData
 						panel.YLab = (ylab, null);
 					}
 				}
-				else if (Theme.Axis.Y == Position.Right && panel.Coord.col == (Faceting.NColumns - 1))
+				else if (Theme!.Axis.Y == Position.Right && panel.Coord.col == (Faceting.NColumns - 1))
 				{
 					if (panel.Coord.row == 0)
 					{
@@ -425,19 +425,19 @@ public partial class Data<T, TX, TY> : IData
 			{
 				foreach (var (_, label) in scale.Labels)
 				{
-					height = Max(height, label.Height(Theme.Axis.Text.X.Size));
+					height = Max(height, label.Height(Theme!.Axis.Text.X.Size));
 				}
 
 				foreach (var (_, title) in scale.Titles)
 				{
-					xtitles = Max(xtitles, title.Height(Theme.Axis.Title.X.Size));
+					xtitles = Max(xtitles, title.Height(Theme!.Axis.Title.X.Size));
 				}
 			}
 		}
 
 		var xtitlesVisibility = xtitles > 0.0;
 
-		xtitles = Max(xtitles, XLab.Height(Theme.Axis.Title.X.Size));
+		xtitles = Max(xtitles, XLab.Height(Theme!.Axis.Title.X.Size));
 
 		var width = 0.0;
 		var ytitles = 0.0;

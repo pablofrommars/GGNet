@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+
+    <OutputType>Library</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IncludeBuildOutput>true</IncludeBuildOutput>
+    <IsPackable>true</IsPackable>
+
+    <Authors>Pablo Belin</Authors>
+    <Title>GG.Net Data Visualization Extension for .Net Interactive</Title>
+    <Description>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</Description>
+    <PackageDescription>GG.Net Data Visualization Extension for .Net Interactive</PackageDescription>
+    <Copyright>Copyright (c) 2020-2022 Pablo Belin</Copyright>
+    <PackageTags>plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp;geospacial</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <Version>2.0.0-beta.0.1</Version>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.DotNet.Interactive" Version="1.0.0-beta.22256.1" />
+    <!-- <PackageReference Include="Microsoft.DotNet.Interactive.csharp" Version="1.0.0-beta.22256.1" /> -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../GGNet.Static/GGNet.Static.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(OutputPath)/*.dll" Pack="true" PackagePath="interactive-extensions/dotnet" />
+  </ItemGroup>
+
+</Project>

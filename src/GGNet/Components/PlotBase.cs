@@ -16,7 +16,7 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IAsyncDisposab
 
 	public string Id => Data.Id;
 
-	public Theme Theme => Data.Theme;
+	public Theme Theme => Data.Theme!;
 
 	protected override void OnInitialized()
 	{

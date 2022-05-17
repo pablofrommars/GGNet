@@ -4,7 +4,7 @@ namespace GGNet.NaturalEarth;
 
 public static class Scale110
 {
-	private static readonly Lazy<Country[]> countries = new Lazy<Country[]>(() => Serialization.Load<Country[]>(data!));
+	private static readonly Lazy<Country[]> countries = new(() => Serialization.Load<Country[]>(data!));
 
 	public static Country[] Countries => countries.Value;
 
@@ -3652,7 +3652,7 @@ QBi+xW1c+q3LQBeXWOIZZSzLQBayR0U47zXLQBchLXcxj8XLQBgsImgJ1JWXy0BJEGWUr08Oy0BI
 83tKIznBy0BIu13MY/FBy0BIuKpkwvg4y0BIw8an752yy0BJC47zTWoWy0BJEGWUr08OkqpMdXhl
 bWJvdXJnkstAGIUeuFHrhctASM5ML4N7SpLLQBhJhfBvaUTLQEjiNuLrHEM=";
 
-	private static readonly Lazy<Lake[]> lakes = new Lazy<Lake[]>(() => Serialization.Load<Lake[]>(_lakes!));
+	private static readonly Lazy<Lake[]> lakes = new(() => Serialization.Load<Lake[]>(_lakes!));
 
 	public static Lake[] Lakes => lakes.Value;
 
@@ -3952,7 +3952,7 @@ y0A6yfvnbItEy0A60sPJ7sv7y0A7EaNuLrHEy0A7CNuLrHENy0A6yfvnbItEy0A6yfvnbItE";
 			new Polygon { Longitude = new double[] { -106.6, -105.26, -104.5, -105.38, -106.94, -106.6 }, Latitude = new double[] { 73.6, 73.64, 73.42, 72.76, 73.46, 73.6 } }
 		};
 
-	private static readonly Lazy<Polygon[]> oceans = new Lazy<Polygon[]>(() => Serialization.Load<Polygon[]>(_oceans!));
+	private static readonly Lazy<Polygon[]> oceans = new(() => Serialization.Load<Polygon[]>(_oceans!));
 
 	public static Polygon[] Oceans => oceans.Value;
 

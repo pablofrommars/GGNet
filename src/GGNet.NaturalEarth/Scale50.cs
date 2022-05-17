@@ -2,7 +2,7 @@
 
 public static class Scale50
 {
-	private static readonly Lazy<Country[]> countries = new Lazy<Country[]>(() => Serialization.Load<Country[]>(_countries!));
+	private static readonly Lazy<Country[]> countries = new(() => Serialization.Load<Country[]>(_countries!));
 
 	public static Country[] Countries => countries.Value;
 
@@ -32630,7 +32630,7 @@ y0BF4Fh5Pdl/l6JWQaNWQVSnVmF0aWNhbqZFdXJvcGWRk8KWy0Ao4N7SiM5wy0Ao3Heaa1Cxy0Ao
 IznA7MtARPPnbItDlstARPP+XJHRTstARPL+xW1c+5KsVmF0aWNhbiBDaXR5kstAKOVGCqZMMMtA
 RPMzMzMzM5LLQCjeKCQLeAPLQETzaufVZs8=";
 
-	private static readonly Lazy<Lake[]> lakes = new Lazy<Lake[]>(() => Serialization.Load<Lake[]>(_lakes!));
+	private static readonly Lazy<Lake[]> lakes = new(() => Serialization.Load<Lake[]>(_lakes!));
 
 	public static Lake[] Lakes => lakes.Value;
 

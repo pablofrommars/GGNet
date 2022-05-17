@@ -1,10 +1,9 @@
 namespace GGNet.Theme;
 
-using Common;
 using Elements;
 
-using static Common.Position;
-using static Common.Anchor;
+using static Position;
+using static Anchor;
 
 public sealed class AxisText
 {

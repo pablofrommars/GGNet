@@ -1,23 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
+    <OutputType>Library</OutputType>
     <TargetFramework>net6</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Owner>PabloFromMars</Owner>
+    <IsPackable>true</IsPackable>
+
     <Authors>Pablo Belin</Authors>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Title>GG.Net Data Visualization</Title>
-    <Description>GG.Net lets Data Scientists and Developers create interactive and flexible charts for Blazor Web Apps and .Net in C# and F#.</Description>
-    <Summary>GG.Net lets Data Scientists and Developers create interactive and flexible charts for Blazor Web Apps and .Net in C# and F#</Summary>
-    <PackageTags>Blazor;plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp</PackageTags>
-    <RepositoryUrl>https://github.com/pablofrommars/GGNet</RepositoryUrl>
-    <PackageProjectUrl>https://pablofrommars.github.io/</PackageProjectUrl>
-    <Copyright>Copyright (c) 2020 Pablo Belin</Copyright>
+    <Description>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</Description>
+    <Copyright>Copyright (c) 2020-2022 Pablo Belin</Copyright>
+    <PackageTags>plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp;blazor;geospacial</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Product>GGNet Data Visualization</Product>
-    <RepositoryType>git</RepositoryType>
-    <Version>1.4.1</Version>
+
+    <Version>2.0.0-beta.0.1</Version>
+
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,17 +24,15 @@
     <Compile Remove="Components\Tooltip.cs" />
     <Compile Remove="Components\VTrack.cs" />
     <Content Remove="Components\VTrack.razor" />
+
+    <Compile Remove="Geoms/Rectangle/Rectangle.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.5" />
-    <PackageReference Include="NodaTime" Version="3.0.5" />
+    <PackageReference Include="NodaTime" Version="3.1.0" />
     <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Geoms/Rectangle/Rectangle.cs" />
   </ItemGroup>
 
 </Project>

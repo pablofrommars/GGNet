@@ -1,4 +1,6 @@
-﻿namespace GGNet.Common;
+﻿using GGNet.Common;
+
+namespace GGNet;
 
 public sealed class Source<T> : Buffer<T>
 {

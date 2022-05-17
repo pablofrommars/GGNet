@@ -1,4 +1,4 @@
-﻿namespace GGNet.Common;
+﻿namespace GGNet;
 
 public enum Units
 {

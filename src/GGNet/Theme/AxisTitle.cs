@@ -1,10 +1,9 @@
-using GGNet.Common;
 using GGNet.Elements;
 
 namespace GGNet.Theme;
 
-using static Common.Position;
-using static Common.Anchor;
+using static Position;
+using static Anchor;
 
 public sealed class AxisTitle
 {

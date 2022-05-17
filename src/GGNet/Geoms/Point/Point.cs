@@ -90,7 +90,7 @@ internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>
 
 				if (animation)
 				{
-					radius *= panel.Data.Theme.Animation.Point.Scale;
+					radius *= panel.Data.Theme!.Animation.Point.Scale;
 				}
 
 				panel.Component?.Tooltip?.Show(

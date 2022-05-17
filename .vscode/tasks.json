@@ -1,0 +1,192 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build GGNet",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/src/GGNet/GGNet.csproj"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build GGNet.Static",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/src/GGNet.Static/GGNet.Static.csproj"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build GGNet.Datasets",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/src/GGNet.Datasets/GGNet.Datasets.csproj"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build GGNet.NaturalEarth",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/src/GGNet.NaturalEarth/GGNet.NaturalEarth.csproj"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build GGNet.InteractiveExtension",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build",
+				"${workspaceFolder}/src/GGNet.InteractiveExtension/GGNet.InteractiveExtension.csproj"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "build",
+			"dependsOn": [
+				"build GGNet",
+				"build GGNet.Static",
+				"build GGNet.Datasets",
+				"build GGNet.NaturalEarth",
+				"build GGNet.InteractiveExtension"
+			],
+			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "pack GGNet",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"pack",
+				"--configuration",
+				"release",
+				"--output",
+				"${workspaceFolder}/packages",
+				"${workspaceFolder}/src/GGNet/GGNet.csproj"
+			],
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"echo": true,
+				"revealProblems": "onProblem",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false,
+				"close": true
+			}
+		},
+		{
+			"label": "pack GGNet.Static",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"pack",
+				"--configuration",
+				"release",
+				"--output",
+				"${workspaceFolder}/packages",
+				"${workspaceFolder}/src/GGNet.Static/GGNet.Static.csproj"
+			],
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"echo": true,
+				"revealProblems": "onProblem",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false,
+				"close": true
+			}
+		},
+		{
+			"label": "pack GGNet.Datasets",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"pack",
+				"--configuration",
+				"release",
+				"--output",
+				"${workspaceFolder}/packages",
+				"${workspaceFolder}/src/GGNet.Datasets/GGNet.Datasets.csproj"
+			],
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"echo": true,
+				"revealProblems": "onProblem",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false,
+				"close": true
+			}
+		},
+		{
+			"label": "pack GGNet.NaturalEarth",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"pack",
+				"--configuration",
+				"release",
+				"--output",
+				"${workspaceFolder}/packages",
+				"${workspaceFolder}/src/GGNet.NaturalEarth/GGNet.NaturalEarth.csproj"
+			],
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"echo": true,
+				"revealProblems": "onProblem",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false,
+				"close": true
+			}
+		},
+		{
+			"label": "pack GGNet.InteractiveExtension",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"pack",
+				"--configuration",
+				"release",
+				"--output",
+				"${workspaceFolder}/packages",
+				"${workspaceFolder}/src/GGNet.InteractiveExtension/GGNet.InteractiveExtension.csproj"
+			],
+			"problemMatcher": "$msCompile",
+			"presentation": {
+				"echo": true,
+				"revealProblems": "onProblem",
+				"focus": false,
+				"panel": "dedicated",
+				"showReuseMessage": true,
+				"clear": false,
+				"close": true
+			}
+		},
+		{
+			"label": "pack",
+			"dependsOn": [
+				"pack GGNet",
+				"pack GGNet.Static",
+				"pack GGNet.Datasets",
+				"pack GGNet.NaturalEarth",
+				"pack GGNet.InteractiveExtension"
+			],
+			"problemMatcher": "$msCompile"
+		}
+	]
+}

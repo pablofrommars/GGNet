@@ -1,6 +1,5 @@
 ﻿namespace GGNet;
 
-using Common;
 using Elements;
 using Exceptions;
 using Facets;
@@ -27,9 +26,9 @@ using Geoms.Map;
 using Scales;
 using Transformations;
 
-using static Common.Position;
-using static Common.Anchor;
-using static Common.LineType;
+using static Position;
+using static Anchor;
+using static LineType;
 
 public static class Plot
 {

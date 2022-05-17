@@ -120,7 +120,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 				var radius = Circle.Radius;
 				if (animation)
 				{
-					radius *= panel.Data.Theme.Animation.Point.Scale;
+					radius *= panel.Data.Theme!.Animation.Point.Scale;
 				}
 
 				panel.Component?.Tooltip?.Show(
@@ -224,7 +224,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 		}
 	}
 
-	private void Identity(bool flip)
+	private void Identity()
 	{
 		for (var i = 0; i < bars.Count; i++)
 		{
@@ -293,7 +293,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 		}
 	}
 
-	private void Dodge(bool flip)
+	private void Dodge()
 	{
 		var delta = 0.6;
 
@@ -387,11 +387,11 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 	{
 		if (position == PositionAdjustment.Identity)
 		{
-			Identity(flip);
+			Identity();
 		}
 		else if (position == PositionAdjustment.Dodge)
 		{
-			Dodge(flip);
+			Dodge();
 		}
 		else
 		{

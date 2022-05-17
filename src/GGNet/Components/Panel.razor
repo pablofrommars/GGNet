@@ -56,7 +56,7 @@
     var y1 = Area.Y;
     var y2 = Area.Y + Area.Height;
 
-    if (Data.Data.Theme.Panel.Grid.Major.X.Width > 0)
+    if (Data.Data.Theme!.Panel.Grid.Major.X.Width > 0)
     {
         foreach (var b in xscale.Breaks)
         {
@@ -65,7 +65,7 @@
         }
     }
 
-    if (Data.Data.Theme.Panel.Grid.Minor.X.Width > 0)
+    if (Data.Data.Theme!.Panel.Grid.Minor.X.Width > 0)
     {
         foreach (var b in xscale.MinorBreaks)
         {
