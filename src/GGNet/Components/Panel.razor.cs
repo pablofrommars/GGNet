@@ -36,8 +36,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 	[Parameter]
 	public bool Last { get; set; }
 
-	private RenderChildPolicyBase policy = default!;
-	private RenderChildPolicyBase areaPolicy = default!;
+	private IChildRenderPolicy policy = default!;
+	private IChildRenderPolicy areaPolicy = default!;
 
 	private Position<TX> xscale = default!;
 	private Position<TY> yscale = default!;
@@ -192,11 +192,11 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 		if (!firstRender)
 		{
-			areaPolicy.Refresh();
+			areaPolicy.Refresh(RenderTarget.Data);
 		}
 	}
 
-	public void Refresh() => policy.Refresh();
+	public void Refresh(RenderTarget target) => policy.Refresh(target);
 
 	protected override bool ShouldRender() => policy.ShouldRender();
 

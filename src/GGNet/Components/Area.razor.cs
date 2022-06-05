@@ -10,7 +10,7 @@ public partial class Area<T, TX, TY> : ComponentBase
 	public Data.Panel<T, TX, TY> Panel { get; set; } = default!;
 
 	[Parameter]
-	public RenderChildPolicyBase RenderPolicy { get; set; } = default!;
+	public IChildRenderPolicy RenderPolicy { get; set; } = default!;
 
 	[Parameter]
 	public ICoord Coord { get; set; } = default!;

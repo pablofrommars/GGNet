@@ -1,10 +1,8 @@
-﻿using GGNet.Common;
-
-namespace GGNet.Components;
+﻿namespace GGNet.Components;
 
 using Theme = Theme.Theme;
 
-public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IAsyncDisposable
+public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAsyncDisposable
 	where TX : struct
 	where TY : struct
 {
@@ -23,17 +21,17 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IAsyncDisposab
 		Policy = RenderPolicyBase.Factory(RenderPolicy, this);
 	}
 
-	public RenderPolicyBase Policy { get; private set; } = default!;
+	public IRenderPolicy Policy { get; set; } = default!;
 
-	public abstract void Render();
+	public abstract void Render(RenderTarget target);
 
-	public Task StateHasChangedAsync() => InvokeAsync(() => StateHasChanged());
+	public Task StateHasChangedAsync() => InvokeAsync(StateHasChanged);
 
 	protected override bool ShouldRender() => Policy.ShouldRender();
 
 	protected override void OnAfterRender(bool firstRender) => Policy.OnAfterRender(firstRender);
 
-	public Task RefreshAsync() => Policy.RefreshAsync();
+	public Task RefreshAsync(RenderTarget target) => Policy.RefreshAsync(target);
 
 	public ValueTask DisposeAsync() => Policy.DisposeAsync();
 }

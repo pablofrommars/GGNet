@@ -6,20 +6,20 @@ public sealed class AutoRenderPolicy : RenderPolicyBase
 
 	private readonly SemaphoreSlim semaphore = new(0, 1);
 
-	private ChannelWriter<int> writer = default!;
+	private ChannelWriter<RenderTarget> writer = default!;
 
 	private volatile int render = 0;
 
 	private readonly Task task;
 
-	public AutoRenderPolicy(IPlot plot)
+	public AutoRenderPolicy(IPlotRendering plot)
 		: base(plot)
 	{
 		task = Task.Factory.StartNew(async () =>
 		{
 			try
 			{
-				var channel = Channel.CreateUnbounded<int>(new()
+				var channel = Channel.CreateUnbounded<RenderTarget>(new()
 				{
 					SingleReader = true,
 					SingleWriter = true
@@ -32,11 +32,19 @@ public sealed class AutoRenderPolicy : RenderPolicyBase
 
 				while (await reader.WaitToReadAsync(token).ConfigureAwait(false))
 				{
-					while (reader.TryRead(out _))
+					var mask = RenderTarget.None;
+
+					while (reader.TryRead(out var target))
 					{
+						mask |= target;
 					}
 
-					plot.Render();
+					if (mask == RenderTarget.None)
+					{
+						continue;
+					}
+
+					plot.Render(mask);
 
 					Interlocked.Exchange(ref render, 1);
 
@@ -57,9 +65,9 @@ public sealed class AutoRenderPolicy : RenderPolicyBase
 		}, TaskCreationOptions.LongRunning);
 	}
 
-	public override async Task RefreshAsync()
+	public override async Task RefreshAsync(RenderTarget target)
 	{
-		await writer.WriteAsync(1, cancellationTokenSource.Token);
+		await writer.WriteAsync(target, cancellationTokenSource.Token);
 	}
 
 	public override bool ShouldRender() => Interlocked.Exchange(ref render, 0) == 1;
@@ -74,19 +82,28 @@ public sealed class AutoRenderPolicy : RenderPolicyBase
 		semaphore.Release();
 	}
 
-	public sealed class RenderChildPolicy : RenderChildPolicyBase
+	public sealed class ChildRenderPolicy : IChildRenderPolicy
 	{
 		private volatile int render = 0;
 
-		public override void Refresh() => Interlocked.Exchange(ref render, 1);
+		public void Refresh(RenderTarget target)
+			=> Interlocked.Exchange(ref render, (int)target);
 
-		public override bool ShouldRender() => Interlocked.Exchange(ref render, 0) == 1;
+		public bool ShouldRender(RenderTarget target = RenderTarget.All)
+			=> ((RenderTarget)Interlocked.Exchange(ref render, 0) & target) != RenderTarget.None;
 	}
 
-	public override RenderChildPolicyBase Child() => new RenderChildPolicy();
+	public override IChildRenderPolicy Child() => new ChildRenderPolicy();
+	
+	private int disposing = 0;
 
 	public override async ValueTask DisposeAsync()
 	{
+		if (Interlocked.CompareExchange(ref disposing, 1, 0) == 1)
+		{
+			return;
+		}
+
 		cancellationTokenSource?.Cancel();
 		cancellationTokenSource?.Dispose();
 

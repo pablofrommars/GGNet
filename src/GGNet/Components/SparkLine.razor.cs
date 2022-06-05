@@ -13,7 +13,8 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 	[Parameter]
 	public double Height { get; set; } = 50;
 
-	private RenderChildPolicyBase renderChildPolicy = default!;
+	private IChildRenderPolicy renderChildPolicy = default!;
+	private IChildRenderPolicy definitionsPolicy = default!;
 
 	private Zone Area;
 	private Data.Panel<T, TX, TY> Panel = default!;
@@ -28,6 +29,7 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 		base.OnInitialized();
 
 		renderChildPolicy = Policy.Child();
+		definitionsPolicy = Policy.Child();
 
 		Area.Width = Width;
 		Area.Height = Height;
@@ -43,10 +45,11 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 		Panel.Register(this);
 	}
 
-	public override void Render()
+	public override void Render(RenderTarget target)
 	{
 		Data.Render(false);
-		renderChildPolicy.Refresh();
+		definitionsPolicy.Refresh(target);
+		renderChildPolicy.Refresh(target);
 	}
 
 	public double CoordX(double value) => Area.X + xscale.Coord(value) * Area.Width;

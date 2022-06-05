@@ -6,9 +6,9 @@
 
 @inherits PlotBase<T, TX, TY>
 
-<svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
+<svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height" class=@Class>
 
-    <GGNet.Components.Definitions.Plot Id=@Id Theme=@Theme />
+    <GGNet.Components.Definitions.Plot Id=@Id Theme=@Theme RenderPolicy=@definitionsPolicy />
 
     <defs>
         @for (int i = 0; i < Data.Legends.Count; i++)

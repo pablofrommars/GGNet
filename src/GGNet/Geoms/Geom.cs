@@ -1,5 +1,6 @@
 ﻿using GGNet.Common;
 using GGNet.Data;
+using GGNet.Exceptions;
 using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;
@@ -33,7 +34,7 @@ internal abstract class Geom<T, TX, TY> : IGeom
 	{
 		if (typeof(T) != typeof(T1))
 		{
-			throw new Exception();
+			throw new GGNetUserException("Type mismatch");
 		}
 
 		if (typeof(TX1) == typeof(TX))
@@ -46,7 +47,7 @@ internal abstract class Geom<T, TX, TY> : IGeom
 		}
 		else
 		{
-			throw new Exception();
+			throw new GGNetUserException("Type could not be infered");
 		}
 	}
 
@@ -63,7 +64,7 @@ internal abstract class Geom<T, TX, TY> : IGeom
 		}
 		else
 		{
-			throw new Exception();
+			throw new GGNetUserException("Type could not be infered");
 		}
 	}
 
@@ -72,7 +73,7 @@ internal abstract class Geom<T, TX, TY> : IGeom
 	{
 		if (typeof(T) != typeof(T1))
 		{
-			throw new Exception();
+			throw new GGNetUserException("Type mismatch");
 		}
 
 		if (typeof(TY1) == typeof(TY))
@@ -85,7 +86,7 @@ internal abstract class Geom<T, TX, TY> : IGeom
 		}
 		else
 		{
-			throw new Exception();
+			throw new GGNetUserException("Type could not be infered");
 		}
 	}
 
@@ -102,7 +103,7 @@ internal abstract class Geom<T, TX, TY> : IGeom
 		}
 		else
 		{
-			throw new Exception();
+			throw new GGNetUserException("Type could not be infered");
 		}
 	}
 

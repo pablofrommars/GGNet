@@ -1,30 +1,34 @@
-using GGNet.Common;
+using GGNet.Exceptions;
 
 namespace GGNet.Components;
 
-public abstract class RenderPolicyBase : IAsyncDisposable
+public abstract class RenderPolicyBase : IRenderPolicy
 {
-	protected readonly IPlot plot;
+	protected readonly IPlotRendering plot;
 
-	public RenderPolicyBase(IPlot plot)
+	public RenderPolicyBase(IPlotRendering plot)
 	{
 		this.plot = plot;
 	}
 
-	public virtual Task RefreshAsync() => Task.CompletedTask;
+	public virtual Task RefreshAsync(RenderTarget target)
+		=> Task.CompletedTask;
 
 	public virtual bool ShouldRender() => false;
 
 	public virtual void OnAfterRender(bool firstRender) { }
 
-	public virtual ValueTask DisposeAsync() => default;
+	public abstract IChildRenderPolicy Child();
 
-	public abstract RenderChildPolicyBase Child();
+	public virtual ValueTask DisposeAsync()
+		=> ValueTask.CompletedTask;
 
-	public static RenderPolicyBase Factory(RenderPolicy policy, IPlot component) => policy switch
-	{
-		RenderPolicy.Always => new AlwaysRenderPolicy(component),
-		RenderPolicy.Never => new NeverRenderPolicy(component),
-		_ => new AutoRenderPolicy(component),
-	};
+	public static IRenderPolicy Factory(RenderPolicy policy, IPlotRendering component)
+		=> policy switch
+		{
+			RenderPolicy.Always => new AlwaysRenderPolicy(component),
+			RenderPolicy.Never => new NeverRenderPolicy(component),
+			RenderPolicy.Auto => new AutoRenderPolicy(component),
+			_ => throw new GGNetInternalException("Not Implemented")
+		};
 }

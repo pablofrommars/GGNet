@@ -1,4 +1,3 @@
-using GGNet.Common;
 using GGNet.Transformations;
 
 namespace GGNet.Scales;

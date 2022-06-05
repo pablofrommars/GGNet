@@ -10,5 +10,8 @@ public partial class SparkLine : ComponentBase
 	[Parameter]
 	public Theme Theme { get; set; } = default!;
 
-	protected override bool ShouldRender() => false;
+	[Parameter]
+	public IChildRenderPolicy RenderPolicy { get; set; } = default!;
+
+	protected override bool ShouldRender() => RenderPolicy.ShouldRender(RenderTarget.Theme);
 }

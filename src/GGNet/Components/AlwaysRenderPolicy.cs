@@ -2,24 +2,29 @@ namespace GGNet.Components;
 
 public sealed class AlwaysRenderPolicy : RenderPolicyBase
 {
-	public AlwaysRenderPolicy(IPlot plot)
+	public AlwaysRenderPolicy(IPlotRendering plot)
 		: base(plot)
 	{
 	}
 
-	public override Task RefreshAsync()
+	public override Task RefreshAsync(RenderTarget target)
 	{
-		plot.Render();
+		plot.Render(RenderTarget.All);
 
-		return plot.StateHasChangedAsync();
+		//return plot.StateHasChangedAsync();
+		return Task.CompletedTask;
 	}
 
 	public override bool ShouldRender() => true;
 
-	public sealed class RenderChildPolicy : RenderChildPolicyBase
+	public sealed class ChildRenderPolicy : IChildRenderPolicy
 	{
-		public override bool ShouldRender() => true;
+		public void Refresh(RenderTarget target = RenderTarget.All)
+		{
+		}
+
+		public bool ShouldRender(RenderTarget target) => true;
 	}
 
-	public override RenderChildPolicyBase Child() => new RenderChildPolicy();
+	public override IChildRenderPolicy Child() => new ChildRenderPolicy();
 }

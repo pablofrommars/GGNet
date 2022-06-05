@@ -14,6 +14,9 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 	[Parameter]
 	public double Height { get; set; } = 576;
 
+	[Parameter]
+	public string? Class { get; set; }
+
 	public Zone Title;
 	public Zone SubTitle;
 
@@ -23,16 +26,20 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
 	private Zone wrapper;
 
+	private IChildRenderPolicy definitionsPolicy = default!;
+
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
 		Data.Init();
 
-		Render(true);
+		definitionsPolicy = Policy.Child();
+
+		Render(true, RenderTarget.All);
 	}
 
-	protected void Render(bool firstRender)
+	protected void Render(bool firstRender, RenderTarget target)
 	{
 		Data.Render(firstRender);
 
@@ -135,12 +142,14 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
 		if (!firstRender)
 		{
+			definitionsPolicy?.Refresh(target);
+
 			for (var i = 0; i < Data.Panels.Count; i++)
 			{
-				Data.Panels[i].Component?.Refresh();
+				Data.Panels[i].Component?.Refresh(target);
 			}
 		}
 	}
 
-	public override void Render() => Render(false);
+	public override void Render(RenderTarget target) => Render(false, target);
 }

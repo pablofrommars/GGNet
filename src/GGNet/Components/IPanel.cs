@@ -2,7 +2,7 @@
 
 public interface IPanel
 {
-	void Refresh() { }
+	void Refresh(RenderTarget target) { }
 
 	ITooltip? Tooltip { get; }
 }

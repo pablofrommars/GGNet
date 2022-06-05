@@ -1,5 +1,4 @@
-﻿using GGNet.Common;
-using GGNet.Formats;
+﻿using GGNet.Formats;
 using GGNet.Transformations;
 
 using static System.Math;

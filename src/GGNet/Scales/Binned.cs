@@ -1,5 +1,4 @@
-﻿using GGNet.Common;
-namespace GGNet.Scales;
+﻿namespace GGNet.Scales;
 
 public sealed class Binned<T> : Scale<double, T>
 {

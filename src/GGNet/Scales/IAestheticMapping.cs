@@ -1,5 +1,3 @@
-using GGNet.Common;
-
 namespace GGNet.Scales;
 
 public interface IAestheticMapping

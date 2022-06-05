@@ -1,6 +1,4 @@
-﻿using GGNet.Common;
-
-namespace GGNet.Scales;
+﻿namespace GGNet.Scales;
 
 public sealed class Identity<T> : Scale<T, T>
 {
