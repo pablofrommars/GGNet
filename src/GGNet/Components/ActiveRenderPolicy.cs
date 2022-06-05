@@ -1,6 +1,6 @@
 namespace GGNet.Components;
 
-public sealed class AutoRenderPolicy : RenderPolicyBase
+public sealed class ActiveRenderPolicy : RenderPolicyBase
 {
 	private readonly CancellationTokenSource cancellationTokenSource = new();
 
@@ -12,7 +12,7 @@ public sealed class AutoRenderPolicy : RenderPolicyBase
 
 	private readonly Task task;
 
-	public AutoRenderPolicy(IPlotRendering plot)
+	public ActiveRenderPolicy(IPlotRendering plot)
 		: base(plot)
 	{
 		task = Task.Factory.StartNew(async () =>

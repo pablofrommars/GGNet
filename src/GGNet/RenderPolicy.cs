@@ -2,7 +2,7 @@
 
 public enum RenderPolicy
 {
-	Auto,
 	Always,
+	Active,
 	Never
 }

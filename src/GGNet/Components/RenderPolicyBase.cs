@@ -26,9 +26,9 @@ public abstract class RenderPolicyBase : IRenderPolicy
 	public static IRenderPolicy Factory(RenderPolicy policy, IPlotRendering component)
 		=> policy switch
 		{
+			RenderPolicy.Active => new ActiveRenderPolicy(component),
 			RenderPolicy.Always => new AlwaysRenderPolicy(component),
 			RenderPolicy.Never => new NeverRenderPolicy(component),
-			RenderPolicy.Auto => new AutoRenderPolicy(component),
 			_ => throw new GGNetInternalException("Not Implemented")
 		};
 }
