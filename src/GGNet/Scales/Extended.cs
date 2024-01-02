@@ -104,7 +104,7 @@ public static class Wilkinson
 		1.0 - Array.IndexOf(Q, q) / (Q.Length - 1.0) - j + 1.0;
 
 	private static double Coverage(double dmin, double dmax, double lmin, double lmax) =>
-		1.0 - 0.5 * (((dmax - lmax) * (dmax - lmax) + (dmin - lmin) * (dmin - lmin)) / ((0.1 * (dmax - dmin)) * (0.1 * (dmax - dmin))));
+		1.0 - 0.5 * (((dmax - lmax) * (dmax - lmax) + (dmin - lmin) * (dmin - lmin)) / (0.1 * (dmax - dmin) * (0.1 * (dmax - dmin))));
 
 	private static double MaxCoverage(double dmin, double dmax, double span)
 	{

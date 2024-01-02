@@ -1,5 +1,4 @@
-﻿using GGNet.Common;
-using GGNet.Data;
+﻿using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;
@@ -10,7 +9,7 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	private readonly Dictionary<object, Shapes.Area> areas = new();
+	private readonly Dictionary<object, Shapes.Area> areas = [];
 
 	public Ribbon(
 		Source<T> source,

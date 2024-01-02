@@ -2,13 +2,13 @@
 
 public record Line : Shape
 {
-	public double X1 { get; set; }
+	public double X1 { get; init; }
 
-	public double X2 { get; set; }
+	public double X2 { get; init; }
 
-	public double Y1 { get; set; }
+	public double Y1 { get; init; }
 
-	public double Y2 { get; set; }
+	public double Y2 { get; init; }
 
-	public Elements.Line Aesthetic { get; set; } = default!;
+	public required Elements.Line Aesthetic { get; init; }
 }

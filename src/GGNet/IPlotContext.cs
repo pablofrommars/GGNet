@@ -1,6 +1,6 @@
 ﻿namespace GGNet;
 
-public interface IData
+public interface IPlotContext
 {
 	Type PlotType { get; }
 

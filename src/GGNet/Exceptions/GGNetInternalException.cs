@@ -1,6 +1,5 @@
 namespace GGNet.Exceptions;
 
-public class GGNetInternalException : GGNetException
+public class GGNetInternalException(string message) : GGNetException(message)
 {
-	public GGNetInternalException(string message) : base(message) { }
 }

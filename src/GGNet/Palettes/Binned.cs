@@ -1,18 +1,11 @@
 ﻿namespace GGNet.Palettes;
 
-public sealed class Binned<T>
+public sealed class Binned<T>(double[] breaks, T[] values)
 {
-	private readonly double[] breaks;
-	private readonly T[] values;
+	private readonly double[] breaks = breaks;
+	private readonly T[] values = values;
 
-	public Binned(double[] breaks, T[] values)
-	{
-		//Valid: breaks.Length >= 2 && breaks.Lenght == (values.Lenght + 1)
-		this.breaks = breaks;
-		this.values = values;
-	}
-
-	public bool TryGetValue(double key, [MaybeNullWhen(false)] out T value)
+    public bool TryGetValue(double key, [MaybeNullWhen(false)] out T value)
 	{
 		value = default;
 

@@ -4,22 +4,15 @@ namespace GGNet.Facets;
 
 using GGNet.Theme;
 
-public sealed class Faceting2D<T, TRow, TColumn> : Faceting<T>
+public sealed class Faceting2D<T, TRow, TColumn>(Func<T, TRow> row, Func<T, TColumn> column, bool freeX, bool freeY) : Faceting<T>(freeX, freeY)
 {
 	private readonly SortedBuffer<TRow> rows = new(4, 1);
 	private readonly SortedBuffer<TColumn> columns = new(4, 1);
 
-	private readonly Func<T, TRow> row;
-	private readonly Func<T, TColumn> column;
+	private readonly Func<T, TRow> row = row;
+	private readonly Func<T, TColumn> column = column;
 
-	public Faceting2D(Func<T, TRow> row, Func<T, TColumn> column, bool freeX, bool freeY)
-		: base(freeX, freeY)
-	{
-		this.row = row;
-		this.column = column;
-	}
-
-	public override bool Strip => true;
+    public override bool Strip => true;
 
 	public override void Train(T item)
 	{

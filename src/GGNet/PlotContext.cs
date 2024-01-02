@@ -7,13 +7,13 @@ using static System.Math;
 
 namespace GGNet;
 
-public partial class Data<T, TX, TY> : IData
+public partial class PlotContext<T, TX, TY> : IPlotContext
 	where TX : struct
 	where TY : struct
 {
-	public Data()
+	public PlotContext()
 	{
-		Id = "gg" + Convert.ToBase64String(BitConverter.GetBytes(this.GetHashCode()))[0..^2].Replace('+', '-').Replace('/', '_');
+		Id = "gg" + Convert.ToBase64String(BitConverter.GetBytes(GetHashCode()))[0..^2].Replace('+', '-').Replace('/', '_');
 	}
 
 	public string Id { get; }
@@ -70,15 +70,15 @@ public partial class Data<T, TX, TY> : IData
 		{
 			if (typeof(TX) == typeof(LocalDate))
 			{
-				(this as Data<T, LocalDate, TY>)!.Scale_X_Discrete_Date();
+				(this as PlotContext<T, LocalDate, TY>)!.Scale_X_Discrete_Date();
 			}
 			else if (typeof(TX) == typeof(LocalDateTime))
 			{
-				(this as Data<T, LocalDateTime, TY>)!.Scale_X_Discrete_DateTime();
+				(this as PlotContext<T, LocalDateTime, TY>)!.Scale_X_Discrete_DateTime();
 			}
 			else if (typeof(TX) == typeof(double))
 			{
-				(this as Data<T, double, TY>)!.Scale_X_Continuous();
+				(this as PlotContext<T, double, TY>)!.Scale_X_Continuous();
 			}
 			else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
 			{
@@ -94,7 +94,7 @@ public partial class Data<T, TX, TY> : IData
 		{
 			if (typeof(TY) == typeof(double))
 			{
-				(this as Data<T, TX, double>)!.Scale_Y_Continuous();
+				(this as PlotContext<T, TX, double>)!.Scale_Y_Continuous();
 			}
 			else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
 			{

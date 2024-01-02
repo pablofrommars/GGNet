@@ -1,44 +1,25 @@
-﻿using GGNet.Common;
-
-namespace GGNet.Theme;
+﻿namespace GGNet.Theme;
 
 using static Position;
 
-public sealed class Theme
+public sealed class Theme(bool dark, Position axisY, Position legend)
 {
-	public Theme(bool dark, Position axisY, Position legend)
-	{
-		Plot = new(dark);
+    public string FontFamily { get; set; } = "-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,\"Helvetica Neue\",Arial,\"Noto Sans\",sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Segoe UI Symbol\",\"Noto Color Emoji\"";
 
-		Panel = new(dark);
+    public Plot Plot { get; set; } = new(dark);
 
-		Axis = new(dark, axisY);
+    public Panel Panel { get; set; } = new(dark);
 
-		Legend = new(dark, legend);
+    public Axis Axis { get; set; } = new(dark, axisY);
 
-		Strip = new(dark);
+    public Legend Legend { get; set; } = new(dark, legend);
 
-		Animation = new();
+    public Strip Strip { get; set; } = new(dark);
 
-		Tooltip = new();
-	}
+    public Animation Animation { get; set; } = new();
 
-	public string FontFamily { get; set; } = "-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,\"Helvetica Neue\",Arial,\"Noto Sans\",sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Segoe UI Symbol\",\"Noto Color Emoji\"";
+    public Tooltip Tooltip { get; set; } = new();
 
-	public Plot Plot { get; set; }
-
-	public Panel Panel { get; set; }
-
-	public Axis Axis { get; set; }
-
-	public Legend Legend { get; set; }
-
-	public Strip Strip { get; set; }
-
-	public Animation Animation { get; set; }
-
-	public Tooltip Tooltip { get; set; }
-
-	public static Theme Default(bool dark = true, Position axisY = Left, Position legend = Right)
+    public static Theme Default(bool dark = true, Position axisY = Left, Position legend = Right)
 		=> new(dark, axisY, legend);
 }

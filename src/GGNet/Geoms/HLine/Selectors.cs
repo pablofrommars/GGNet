@@ -1,8 +1,8 @@
 namespace GGNet.Geoms.HLine;
 
-internal sealed class Selectors<T, TY>
+internal sealed record Selectors<T, TY>
 {
-	public Func<T, TY> Y { get; set; } = default!;
+	public required Func<T, TY> Y { get; init; }
 
-	public Func<T, string> Label { get; set; } = default!;
+	public required Func<T, string> Label { get; init; }
 }

@@ -1,7 +1,4 @@
-﻿using GGNet.Common;
-using GGNet.Data;
-
-namespace GGNet.Geoms.ABLine;
+﻿namespace GGNet.Geoms.ABLine;
 
 internal sealed class ABLine<T> : Geom<T, double, double>
 {

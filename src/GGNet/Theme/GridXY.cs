@@ -2,9 +2,9 @@ namespace GGNet.Theme;
 
 using Elements;
 
-public sealed class GridXY
+public sealed record GridXY
 {
-	public Line X { get; set; } = default!;
+	public required Line X { get; init; }
 
-	public Line Y { get; set; } = default!;
+	public required Line Y { get; init; } 
 }

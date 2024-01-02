@@ -1,5 +1,4 @@
-﻿using GGNet.Common;
-using GGNet.Data;
+﻿using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;
@@ -10,7 +9,7 @@ internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	private readonly Dictionary<(string, LineType), Shapes.Path> paths = new();
+	private readonly Dictionary<(string, LineType), Shapes.Path> paths = [];
 
 	public Line(
 		Source<T> source,

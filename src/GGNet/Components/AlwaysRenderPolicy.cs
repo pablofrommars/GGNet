@@ -1,13 +1,8 @@
 namespace GGNet.Components;
 
-public sealed class AlwaysRenderPolicy : RenderPolicyBase
+public sealed class AlwaysRenderPolicy(IPlotRendering plot) : RenderPolicyBase(plot)
 {
-	public AlwaysRenderPolicy(IPlotRendering plot)
-		: base(plot)
-	{
-	}
-
-	public override Task RefreshAsync(RenderTarget target)
+    public override Task RefreshAsync(RenderTarget target)
 	{
 		plot.Render(RenderTarget.All);
 

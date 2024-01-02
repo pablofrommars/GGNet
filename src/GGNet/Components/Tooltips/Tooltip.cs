@@ -7,16 +7,16 @@ using Theme = Theme.Theme;
 public abstract class Tooltip : ComponentBase, ITooltip
 {
 	[Parameter]
-	public string Id { get; set; } = default!;
+	public required string Id { get; set; }
 
 	[Parameter]
-	public ICoord Coord { get; set; } = default!;
+	public required ICoord Coord { get; set; }
 
 	[Parameter]
 	public Zone Area { get; set; }
 
 	[Parameter]
-	public Theme Theme { get; set; } = default!;
+	public required Theme Theme { get; set; }
 
 	protected bool visibility = false;
 

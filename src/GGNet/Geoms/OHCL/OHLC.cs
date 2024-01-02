@@ -1,7 +1,5 @@
-﻿using GGNet.Common;
-using GGNet.Data;
+﻿using GGNet.Data;
 using GGNet.Facets;
-using GGNet.Shapes;
 
 namespace GGNet.Geoms.OHLC;
 

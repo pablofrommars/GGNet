@@ -2,13 +2,11 @@ using GGNet.Common;
 
 namespace GGNet.Data;
 
-internal sealed class Items : Buffer<(Dimension<string> label, Elements elements)>
+internal sealed class Items(Theme.Theme theme) : Buffer<(Dimension<string> label, Elements elements)>(8, 1)
 {
-	private readonly Theme.Theme theme;
+	private readonly Theme.Theme theme = theme;
 
-	public Items(Theme.Theme theme) : base(8, 1) => this.theme = theme;
-
-	public (Dimension<string> label, Elements elements) GetOrAdd(string label)
+    public (Dimension<string> label, Elements elements) GetOrAdd(string label)
 	{
 		for (var i = 0; i < Count; i++)
 		{

@@ -2,13 +2,13 @@
 
 public record Rectangle : Shape
 {
-	public double X { get; set; }
+	public double X { get; init; }
 
-	public double Y { get; set; }
+	public double Y { get; init; }
 
-	public double Width { get; set; }
+	public double Width { get; init; }
 
-	public double Height { get; set; }
+	public double Height { get; init; }
 
-	public Elements.Rectangle Aesthetic { get; set; } = default!;
+	public required Elements.Rectangle Aesthetic { get; init; }
 }

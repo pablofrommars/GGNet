@@ -2,16 +2,13 @@
 
 namespace GGNet.Scales;
 
-public class DiscretDates : DiscretePosition<LocalDate>
+public class DiscretDates(
+	ITransformation<LocalDate>? transformation = null,
+	(LocalDate? min, LocalDate? max)? limits = null,
+	(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null
+) : DiscretePosition<LocalDate>(transformation, limits, expand)
 {
-	private static readonly string[] Abbreviations = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-
-	public DiscretDates(ITransformation<LocalDate>? transformation = null,
-		(LocalDate? min, LocalDate? max)? limits = null,
-		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
-		: base(transformation, limits, expand)
-	{
-	}
+	private static readonly string[] Abbreviations = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 	protected void DayMonth(int start, int end)
 	{

@@ -2,7 +2,6 @@
 using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
-using GGNet.Shapes;
 
 namespace GGNet.Geoms.Text;
 

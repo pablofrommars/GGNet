@@ -1,13 +1,8 @@
 namespace GGNet.Common;
 
-public sealed class SortedBuffer<T> : BufferBase<T>
+public sealed class SortedBuffer<T>(int pageCapacity = 32, int pagesIncrement = 4, IComparer<T>? comparer = null) : BufferBase<T>(pageCapacity, pagesIncrement, comparer)
 {
-	public SortedBuffer(int pageCapacity = 32, int pagesIncrement = 4, IComparer<T>? comparer = null)
-		: base(pageCapacity, pagesIncrement, comparer)
-	{
-	}
-
-	public override void Add(T item)
+    public override void Add(T item)
 	{
 		if (Count == 0)
 		{

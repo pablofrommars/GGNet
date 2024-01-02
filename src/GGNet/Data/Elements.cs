@@ -5,16 +5,11 @@ using static System.Math;
 
 namespace GGNet.Data;
 
-internal sealed class Elements : Buffer<Dimension<IElement>>
+internal sealed class Elements(double size) : Buffer<Dimension<IElement>>(4, 1)
 {
-	private readonly double size;
+	private readonly double size = size;
 
-	public Elements(double size) : base(4, 1)
-	{
-		this.size = size;
-	}
-
-	public double Width { get; set; }
+    public double Width { get; set; }
 
 	public double Height { get; set; }
 

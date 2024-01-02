@@ -1,14 +1,12 @@
-﻿using GGNet.Common;
-
-namespace GGNet.Elements;
+﻿namespace GGNet.Elements;
 
 public record Line : IElement
 {
-	public double Width { get; set; }
+	public double Width { get; init; }
 
-	public string Fill { get; set; } = default!;
+	public required string Fill { get; init; }
 
-	public double Alpha { get; set; }
+	public double Alpha { get; init; }
 
-	public LineType LineType { get; set; }
+	public LineType LineType { get; init; }
 }

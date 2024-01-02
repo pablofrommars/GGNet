@@ -2,9 +2,9 @@
 
 public record VStrip : Shape
 {
-	public double X { get; set; }
+	public double X { get; init; }
 
-	public double Y { get; set; }
+	public double Y { get; init; }
 
-	public double Width { get; set; }
+	public double Width { get; init; }
 }

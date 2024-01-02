@@ -1,8 +1,6 @@
-﻿using GGNet.Common;
-using GGNet.Data;
+﻿using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
-using GGNet.Shapes;
 
 namespace GGNet.Geoms.RidgeLine;
 
@@ -10,7 +8,7 @@ internal sealed class RidgeLine<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	private readonly Dictionary<(double y, string fille), Shapes.Area> areas = new();
+	private readonly Dictionary<(double y, string fille), Shapes.Area> areas = [];
 
 	public RidgeLine(
 		Source<T> source,

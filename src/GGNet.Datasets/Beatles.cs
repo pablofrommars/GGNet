@@ -4,9 +4,9 @@ public static class Beatles
 {
 	public record Point
 	{
-		public int Year { get; set; }
-		public string Name { get; set; } = default!;
-		public int N { get; set; }
+		public int Year { get; init; }
+		public required string Name { get; init; }
+		public int N { get; init; }
 	}
 
 	public static Point[] Load() => new[]
@@ -117,7 +117,6 @@ public static class Beatles
 		new Point { Year = 1914, Name = "George", N = 17603 },
 		new Point { Year = 1914, Name = "Paul", N = 7733 },
 		new Point { Year = 1915, Name = "John", N = 47577 },
-
 		new Point {Year = 1915, Name = "George", N = 22308  },
 		new Point {Year = 1915, Name = "Paul", N = 10328  },
 		new Point {Year = 1916, Name = "John", N = 50045  },

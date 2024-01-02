@@ -1,8 +1,8 @@
 namespace GGNet.Data;
 
-internal sealed class Dimension<TValue>
+internal sealed record Dimension<TValue>
 {
-	public TValue Value { get; set; } = default!;
+	public required TValue Value { get; set; }
 
 	public double Width { get; set; }
 

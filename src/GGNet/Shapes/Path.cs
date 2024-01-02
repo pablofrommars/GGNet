@@ -14,5 +14,5 @@ public record Path : Shape
 		public override int Compare([AllowNull] (double x, double y) a, [AllowNull] (double x, double y) b) => a.x.CompareTo(b.x);
 	}
 
-	public Elements.Line Aesthetic { get; set; } = default!;
+	public required Elements.Line Aesthetic { get; init; }
 }

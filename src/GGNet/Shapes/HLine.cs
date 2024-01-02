@@ -2,11 +2,11 @@ namespace GGNet.Shapes;
 
 public record HLine : Shape
 {
-	public double Y { get; set; }
+	public double Y { get; init; }
 
-	public string Label { get; set; } = default!;
+	public required string Label { get; init; }
 
-	public Elements.Line Line { get; set; } = default!;
+	public required Elements.Line Line { get; init; }
 
-	public Elements.Text Text { get; set; } = default!;
+	public required Elements.Text Text { get; init; }
 }

@@ -5,10 +5,10 @@ using Theme = Theme.Theme;
 public partial class Animation : ComponentBase
 {
 	[Parameter]
-	public string Id { get; set; } = default!;
+	public required string Id { get; init; }
 
 	[Parameter]
-	public Theme Theme { get; set; } = default!;
+	public required Theme Theme { get; init; }
 
 	protected override bool ShouldRender() => false;
 }

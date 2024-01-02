@@ -2,31 +2,21 @@
 
 namespace GGNet.Scales;
 
-public abstract class Scale<TKey, TValue> : IScale
+public abstract class Scale<TKey, TValue>(ITransformation<TKey>? transformation = null) : IScale
 {
-	protected readonly ITransformation<TKey> transformation;
+	protected readonly ITransformation<TKey> transformation = transformation ?? Transformations.Identity<TKey>.Instance;
 
-	public Scale(ITransformation<TKey>? transformation = null)
-	{
-		this.transformation = transformation ?? Transformations.Identity<TKey>.Instance;
+    public abstract Guide Guide { get; }
 
-		Breaks = Enumerable.Empty<TValue>();
-		MinorBreaks = Enumerable.Empty<TValue>();
-		Labels = Enumerable.Empty<(TValue value, string text)>();
-		Titles = Enumerable.Empty<(TValue value, string text)>();
-	}
+    public IEnumerable<TValue> Breaks { get; protected set; } = Enumerable.Empty<TValue>();
 
-	public abstract Guide Guide { get; }
+    public IEnumerable<TValue> MinorBreaks { get; protected set; } = Enumerable.Empty<TValue>();
 
-	public IEnumerable<TValue> Breaks { get; protected set; }
+    public IEnumerable<(TValue value, string label)> Labels { get; protected set; } = Enumerable.Empty<(TValue value, string text)>();
 
-	public IEnumerable<TValue> MinorBreaks { get; protected set; }
+    public IEnumerable<(TValue value, string title)> Titles { get; protected set; } = Enumerable.Empty<(TValue value, string text)>();
 
-	public IEnumerable<(TValue value, string label)> Labels { get; protected set; }
-
-	public IEnumerable<(TValue value, string title)> Titles { get; protected set; }
-
-	public abstract void Train(TKey key);
+    public abstract void Train(TKey key);
 
 	public abstract void Set(bool grid);
 

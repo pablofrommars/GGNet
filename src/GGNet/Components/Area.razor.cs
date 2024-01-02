@@ -7,21 +7,21 @@ public partial class Area<T, TX, TY> : ComponentBase
    where TY : struct
 {
 	[Parameter]
-	public Data.Panel<T, TX, TY> Panel { get; set; } = default!;
+	public required Data.Panel<T, TX, TY> Panel { get; init; }
 
 	[Parameter]
-	public IChildRenderPolicy RenderPolicy { get; set; } = default!;
+	public required IChildRenderPolicy RenderPolicy { get; init; }
 
 	[Parameter]
-	public ICoord Coord { get; set; } = default!;
+	public required ICoord Coord { get; init; }
 
 	[Parameter]
 	public Zone Zone { get; set; }
 
 	[Parameter]
-	public string Clip { get; set; } = default!;
+	public required string Clip { get; init; }
 
-	private readonly StringBuilder sb = new();
+	private readonly StringBuilder sb = new(); // TODO: SB pool
 
 	protected override bool ShouldRender() => RenderPolicy.ShouldRender();
 

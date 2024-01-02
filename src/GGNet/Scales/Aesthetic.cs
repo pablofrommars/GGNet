@@ -1,22 +1,18 @@
 ﻿namespace GGNet.Scales;
 
-public sealed class Aesthetic<T, TKey, TValue> : IAestheticMapping<T, TValue>
+public sealed class Aesthetic<T, TKey, TValue>(
+	Func<T, TKey> selector,
+	Scale<TKey, TValue> scale,
+	bool guide,
+	string? name
+) : IAestheticMapping<T, TValue>
 {
-	private readonly Func<T, TKey> selector;
-	private readonly Scale<TKey, TValue> scale;
+	private readonly Func<T, TKey> selector = selector;
+	private readonly Scale<TKey, TValue> scale = scale;
 
-	public Aesthetic(Func<T, TKey> selector, Scale<TKey, TValue> scale, bool guide, string? name)
-	{
-		this.selector = selector;
-		this.scale = scale;
+	public bool Guide { get; } = guide;
 
-		Guide = guide;
-		Name = name;
-	}
-
-	public bool Guide { get; }
-
-	public string? Name { get; }
+	public string? Name { get; } = name;
 
 	public Guide Type => scale.Guide;
 

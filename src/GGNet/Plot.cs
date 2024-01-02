@@ -32,145 +32,145 @@ using static LineType;
 
 public static class Plot
 {
-	private static Data<T, TX, TY> NewBase<T, TX, TY>(Source<T>? source, Func<T, TX>? x, Func<T, TY>? y)
+	private static PlotContext<T, TX, TY> NewBase<T, TX, TY>(Source<T>? source, Func<T, TX>? x, Func<T, TY>? y)
 		where TX : struct
 		where TY : struct
 	{
-		var data = new Data<T, TX, TY>()
+		var context = new PlotContext<T, TX, TY>()
 		{
 			Source = source,
 		};
 
-		data.Selectors.X = x;
-		data.Selectors.Y = y;
+		context.Selectors.X = x;
+		context.Selectors.Y = y;
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, LocalDate, double> New<T>(Source<T> source, Func<T, LocalDate> x, Func<T, double>? y = null) => NewBase(source, x, y);
+	public static PlotContext<T, LocalDate, double> New<T>(Source<T> source, Func<T, LocalDate> x, Func<T, double>? y = null) => NewBase(source, x, y);
 
-	public static Data<T, LocalDate, double> New<T>(IEnumerable<T> items, Func<T, LocalDate> x, Func<T, double>? y = null) => NewBase(new Source<T>(items), x, y);
+	public static PlotContext<T, LocalDate, double> New<T>(IEnumerable<T> items, Func<T, LocalDate> x, Func<T, double>? y = null) => NewBase(new Source<T>(items), x, y);
 
-	public static Data<T, LocalDateTime, double> New<T>(Source<T> source, Func<T, LocalDateTime> x, Func<T, double>? y = null) => NewBase(source, x, y);
+	public static PlotContext<T, LocalDateTime, double> New<T>(Source<T> source, Func<T, LocalDateTime> x, Func<T, double>? y = null) => NewBase(source, x, y);
 
-	public static Data<T, LocalDateTime, double> New<T>(IEnumerable<T> items, Func<T, LocalDateTime> x, Func<T, double>? y = null) => NewBase(new Source<T>(items), x, y);
+	public static PlotContext<T, LocalDateTime, double> New<T>(IEnumerable<T> items, Func<T, LocalDateTime> x, Func<T, double>? y = null) => NewBase(new Source<T>(items), x, y);
 
-	public static Data<T, TX, double> New<T, TX>(Source<T> source, Func<T, TX> x, Func<T, double>? y = null)
+	public static PlotContext<T, TX, double> New<T, TX>(Source<T> source, Func<T, TX> x, Func<T, double>? y = null)
 		where TX : struct, Enum
 	{
 		return NewBase(source, x, y);
 	}
 
-	public static Data<T, TX, double> New<T, TX>(IEnumerable<T> items, Func<T, TX> x, Func<T, double>? y = null)
+	public static PlotContext<T, TX, double> New<T, TX>(IEnumerable<T> items, Func<T, TX> x, Func<T, double>? y = null)
 	   where TX : struct, Enum
 	{
 		return NewBase(new Source<T>(items), x, y);
 	}
 
-	public static Data<T, TX, TY> New<T, TX, TY>(Source<T> source, Func<T, TX> x, Func<T, TY> y)
+	public static PlotContext<T, TX, TY> New<T, TX, TY>(Source<T> source, Func<T, TX> x, Func<T, TY> y)
 		where TX : struct, Enum
 		where TY : struct, Enum
 	{
 		return NewBase(source, x, y);
 	}
 
-	public static Data<T, TX, TY> New<T, TX, TY>(IEnumerable<T> items, Func<T, TX> x, Func<T, TY> y)
+	public static PlotContext<T, TX, TY> New<T, TX, TY>(IEnumerable<T> items, Func<T, TX> x, Func<T, TY> y)
 		where TX : struct, Enum
 		where TY : struct, Enum
 	{
 		return NewBase(new Source<T>(items), x, y);
 	}
 
-	public static Data<T, double, TY> New<T, TY>(Source<T> source, Func<T, double> x, Func<T, TY> y)
+	public static PlotContext<T, double, TY> New<T, TY>(Source<T> source, Func<T, double> x, Func<T, TY> y)
 		where TY : struct, Enum
 	{
 		return NewBase(source, x, y);
 	}
 
-	public static Data<T, double, TY> New<T, TY>(IEnumerable<T> items, Func<T, double> x, Func<T, TY> y)
+	public static PlotContext<T, double, TY> New<T, TY>(IEnumerable<T> items, Func<T, double> x, Func<T, TY> y)
 		where TY : struct, Enum
 	{
 		return NewBase(new Source<T>(items), x, y);
 	}
 
-	public static Data<T, double, double> New<T>(Source<T> source, Func<T, double>? x = null, Func<T, double>? y = null) => NewBase(source, x, y);
+	public static PlotContext<T, double, double> New<T>(Source<T> source, Func<T, double>? x = null, Func<T, double>? y = null) => NewBase(source, x, y);
 
-	public static Data<T, double, double> New<T>(IEnumerable<T> items, Func<T, double>? x = null, Func<T, double>? y = null) => NewBase(new Source<T>(items), x, y);
+	public static PlotContext<T, double, double> New<T>(IEnumerable<T> items, Func<T, double>? x = null, Func<T, double>? y = null) => NewBase(new Source<T>(items), x, y);
 
-	public static Data<IWaiver, double, double> New() => NewBase<IWaiver, double, double>(null, null, null);
+	public static PlotContext<IWaiver, double, double> New() => NewBase<IWaiver, double, double>(null, null, null);
 
-	public static Data<T, LocalDate, TY> Scale_X_Discrete_Date<T, TY>(
-		this Data<T, LocalDate, TY> data,
+	public static PlotContext<T, LocalDate, TY> Scale_X_Discrete_Date<T, TY>(
+		this PlotContext<T, LocalDate, TY> context,
 		(LocalDate? min, LocalDate? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
 		where TY : struct
 	{
-		data.Positions.X.Factory = () => new DiscretDates(null, limits, expand);
+		context.Positions.X.Factory = () => new DiscretDates(null, limits, expand);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, LocalDateTime, TY> Scale_X_Discrete_DateTime<T, TY>(
-		this Data<T, LocalDateTime, TY> data,
+	public static PlotContext<T, LocalDateTime, TY> Scale_X_Discrete_DateTime<T, TY>(
+		this PlotContext<T, LocalDateTime, TY> context,
 		(LocalDateTime? min, LocalDateTime? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
 		where TY : struct
 	{
-		data.Positions.X.Factory = () => new DateTimePosition(null, limits, expand);
+		context.Positions.X.Factory = () => new DateTimePosition(null, limits, expand);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, double, TY> Scale_X_Continuous<T, TY>(
-		this Data<T, double, TY> data,
+	public static PlotContext<T, double, TY> Scale_X_Continuous<T, TY>(
+		this PlotContext<T, double, TY> context,
 		ITransformation<double>? transformation = null,
 		(double? min, double? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 		IFormatter<double>? formatter = null)
 		where TY : struct
 	{
-		data.Positions.X.Factory = () => new Extended(transformation, limits, expand, formatter);
+		context.Positions.X.Factory = () => new Extended(transformation, limits, expand, formatter);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, double, TY> Scale_X_Continuous<T, TY>(
-		this Data<T, double, TY> data,
+	public static PlotContext<T, double, TY> Scale_X_Continuous<T, TY>(
+		this PlotContext<T, double, TY> context,
 		string? format,
 		ITransformation<double>? transformation = null,
 		(double? min, double? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
 		where TY : struct
 	{
-		data.Scale_X_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+		context.Scale_X_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_X_Discrete<T, TX, TY>(
-	   this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Scale_X_Discrete<T, TX, TY>(
+	   this PlotContext<T, TX, TY> context,
 	   (TX? min, TX? max)? limits = null,
 	   (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 	   IFormatter<TX>? formatter = null)
 	   where TX : struct
 	   where TY : struct
 	{
-		data.Positions.X.Factory = () => new DiscretePosition<TX>(null, limits, expand, formatter);
+		context.Positions.X.Factory = () => new DiscretePosition<TX>(null, limits, expand, formatter);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, double, TY> XLim<T, TY>(this Data<T, double, TY> data, double? min = null, double? max = null)
+	public static PlotContext<T, double, TY> XLim<T, TY>(this PlotContext<T, double, TY> context, double? min = null, double? max = null)
 		where TY : struct
 	{
-		if (data.Positions.X.Factory is null)
+		if (context.Positions.X.Factory is null)
 		{
-			data.Scale_X_Continuous();
+			context.Scale_X_Continuous();
 		}
 
-		var old = data.Positions.X.Factory!;
+		var old = context.Positions.X.Factory!;
 
-		data.Positions.X.Factory = () =>
+		context.Positions.X.Factory = () =>
 		{
 			var scale = old();
 
@@ -179,20 +179,20 @@ public static class Plot
 			return scale;
 		};
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, LocalDate, TY> XLim<T, TY>(this Data<T, LocalDate, TY> data, LocalDate? min = null, LocalDate? max = null)
+	public static PlotContext<T, LocalDate, TY> XLim<T, TY>(this PlotContext<T, LocalDate, TY> context, LocalDate? min = null, LocalDate? max = null)
 		where TY : struct
 	{
-		if (data.Positions.X.Factory is null)
+		if (context.Positions.X.Factory is null)
 		{
-			data.Scale_X_Discrete_Date();
+			context.Scale_X_Discrete_Date();
 		}
 
-		var old = data.Positions.X.Factory!;
+		var old = context.Positions.X.Factory!;
 
-		data.Positions.X.Factory = () =>
+		context.Positions.X.Factory = () =>
 		{
 			var scale = old();
 
@@ -201,33 +201,33 @@ public static class Plot
 			return scale;
 		};
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, double> Scale_Y_Continuous<T, TX>(
-		this Data<T, TX, double> data,
+	public static PlotContext<T, TX, double> Scale_Y_Continuous<T, TX>(
+		this PlotContext<T, TX, double> context,
 		ITransformation<double>? transformation = null,
 		(double? min, double? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 		IFormatter<double>? formatter = null)
 		where TX : struct
 	{
-		data.Positions.Y.Factory = () => new Extended(transformation, limits, expand, formatter);
+		context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, formatter);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, double> Scale_Y_Continuous<T, TX>(
-	   this Data<T, TX, double> data,
+	public static PlotContext<T, TX, double> Scale_Y_Continuous<T, TX>(
+	   this PlotContext<T, TX, double> context,
 	   string? format,
 	   ITransformation<double>? transformation = null,
 	   (double? min, double? max)? limits = null,
 	   (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
 	   where TX : struct
 	{
-		data.Positions.Y.Factory = () => new Extended(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+		context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T, TX, double> Scale_Y_Continuous<T, TX>(
@@ -256,24 +256,24 @@ public static class Plot
 		return panel;
 	}
 
-	public static Data<T, double, TY> Scale_X_Sqrt<T, TY>(
-		this Data<T, double, TY> data,
+	public static PlotContext<T, double, TY> Scale_X_Sqrt<T, TY>(
+		this PlotContext<T, double, TY> context,
 		(double? min, double? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 		string? format = null)
 		where TY : struct
-		=> data.Scale_X_Continuous(format, Sqrt.Instance, limits, expand);
+		=> context.Scale_X_Continuous(format, Sqrt.Instance, limits, expand);
 
-	public static Data<T, double, TY> Scale_X_Log10<T, TY>(
-		this Data<T, double, TY> data,
+	public static PlotContext<T, double, TY> Scale_X_Log10<T, TY>(
+		this PlotContext<T, double, TY> context,
 		(double? min, double? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 		string? format = null)
 		where TY : struct
 	{
-		data.Positions.X.Factory = () => new Scales.Log10(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+		context.Positions.X.Factory = () => new Scales.Log10(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T, TX, double> Scale_Y_Sqrt<T, TX>(
@@ -284,13 +284,13 @@ public static class Plot
 		where TX : struct
 		=> panel.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand);
 
-	public static Data<T, TX, double> Scale_Y_Sqrt<T, TX>(
-		this Data<T, TX, double> data,
+	public static PlotContext<T, TX, double> Scale_Y_Sqrt<T, TX>(
+		this PlotContext<T, TX, double> context,
 		(double? min, double? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 		string? format = null)
 		where TX : struct
-		=> data.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand);
+		=> context.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand);
 
 	public static PanelFactory<T, TX, double> Scale_Y_Log10<T, TX>(
 		this PanelFactory<T, TX, double> panel,
@@ -304,36 +304,36 @@ public static class Plot
 		return panel;
 	}
 
-	public static Data<T, TX, double> Scale_Y_Log10<T, TX>(
-		this Data<T, TX, double> data,
+	public static PlotContext<T, TX, double> Scale_Y_Log10<T, TX>(
+		this PlotContext<T, TX, double> context,
 		(double? min, double? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 		string? format = null)
 		where TX : struct
 	{
-		data.Positions.Y.Factory = () => new Scales.Log10(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+		context.Positions.Y.Factory = () => new Scales.Log10(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_Y_Discrete<T, TX, TY>(
-	   this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Scale_Y_Discrete<T, TX, TY>(
+	   this PlotContext<T, TX, TY> context,
 	   (TY? min, TY? max)? limits = null,
 	   (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 	   IFormatter<TY>? formatter = null)
 	   where TX : struct
 	   where TY : struct
 	{
-		data.Positions.Y.Factory = () => new DiscretePosition<TY>(null, limits, expand, formatter);
+		context.Positions.Y.Factory = () => new DiscretePosition<TY>(null, limits, expand, formatter);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, double, TY> Scale_Longitude<T, TY>(
-		this Data<T, double, TY> data,
+	public static PlotContext<T, double, TY> Scale_Longitude<T, TY>(
+		this PlotContext<T, double, TY> context,
 		(double? min, double? max)? limits = null)
 		where TY : struct
-		=> data.Scale_X_Continuous(null, limits ?? (-180, 180), (0, 0, 0, 0), Longitude.Instance);
+		=> context.Scale_X_Continuous(null, limits ?? (-180, 180), (0, 0, 0, 0), Longitude.Instance);
 
 	public static PanelFactory<T, TX, double> Scale_Latitude<T, TX>(
 	   this PanelFactory<T, TX, double> panel,
@@ -341,23 +341,23 @@ public static class Plot
 	   where TX : struct
 	   => panel.Scale_Y_Continuous(null, limits ?? (-90, 90), (0, 0, 0, 0), Latitude.Instance);
 
-	public static Data<T, TX, double> Scale_Latitude<T, TX>(
-		this Data<T, TX, double> data,
+	public static PlotContext<T, TX, double> Scale_Latitude<T, TX>(
+		this PlotContext<T, TX, double> context,
 		(double? min, double? max)? limits = null)
 		where TX : struct
-		=> data.Scale_Y_Continuous(null, limits ?? (-90, 90), (0, 0, 0, 0), Latitude.Instance);
+		=> context.Scale_Y_Continuous(null, limits ?? (-90, 90), (0, 0, 0, 0), Latitude.Instance);
 
-	public static Data<T, TX, double> YLim<T, TX>(this Data<T, TX, double> data, double? min = null, double? max = null)
+	public static PlotContext<T, TX, double> YLim<T, TX>(this PlotContext<T, TX, double> context, double? min = null, double? max = null)
 	   where TX : struct
 	{
-		if (data.Positions.Y.Factory is null)
+		if (context.Positions.Y.Factory is null)
 		{
-			data.Scale_Y_Continuous();
+			context.Scale_Y_Continuous();
 		}
 
-		var old = data.Positions.Y.Factory!;
+		var old = context.Positions.Y.Factory!;
 
-		data.Positions.Y.Factory = () =>
+		context.Positions.Y.Factory = () =>
 		{
 			var scale = old();
 
@@ -366,7 +366,7 @@ public static class Plot
 			return scale;
 		};
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T, TX, double> YLim<T, TX>(this PanelFactory<T, TX, double> panel, double? min = null, double? max = null)
@@ -391,60 +391,60 @@ public static class Plot
 		return panel;
 	}
 
-	internal static PanelFactory<T, TX, TY> Default_Panel<T, TX, TY>(this Data<T, TX, TY> data)
+	internal static PanelFactory<T, TX, TY> Default_Panel<T, TX, TY>(this PlotContext<T, TX, TY> context)
 		where TX : struct
 		where TY : struct
 	{
-		data.DefaultFactory ??= new PanelFactory<T, TX, TY>(data);
+		context.DefaultFactory ??= new PanelFactory<T, TX, TY>(context);
 
-		return data.DefaultFactory;
+		return context.DefaultFactory;
 	}
 
-	public static Data<T, TX, TY> Panel<T, TX, TY>(this Data<T, TX, TY> data, Func<PanelFactory<T, TX, TY>, PanelFactory<T, TX, TY>> factory, double width = 1.0, double height = 1.0)
+	public static PlotContext<T, TX, TY> Panel<T, TX, TY>(this PlotContext<T, TX, TY> context, Func<PanelFactory<T, TX, TY>, PanelFactory<T, TX, TY>> factory, double width = 1.0, double height = 1.0)
 		where TX : struct
 		where TY : struct
 	{
-		var panel = factory(new PanelFactory<T, TX, TY>(data, width, height));
+		var panel = factory(new PanelFactory<T, TX, TY>(context, width, height));
 
-		data.PanelFactories.Add(panel);
+		context.PanelFactories.Add(panel);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Title<T, TX, TY>(this Data<T, TX, TY> data, string title)
+	public static PlotContext<T, TX, TY> Title<T, TX, TY>(this PlotContext<T, TX, TY> context, string title)
 		where TX : struct
 		where TY : struct
 	{
-		data.Title = title;
+		context.Title = title;
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> SubTitle<T, TX, TY>(this Data<T, TX, TY> data, string subtitle)
+	public static PlotContext<T, TX, TY> SubTitle<T, TX, TY>(this PlotContext<T, TX, TY> context, string subtitle)
 		where TX : struct
 		where TY : struct
 	{
-		data.SubTitle = subtitle;
+		context.SubTitle = subtitle;
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Caption<T, TX, TY>(this Data<T, TX, TY> data, string caption)
+	public static PlotContext<T, TX, TY> Caption<T, TX, TY>(this PlotContext<T, TX, TY> context, string caption)
 		where TX : struct
 		where TY : struct
 	{
-		data.Caption = caption;
+		context.Caption = caption;
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> XLab<T, TX, TY>(this Data<T, TX, TY> data, string xlab)
+	public static PlotContext<T, TX, TY> XLab<T, TX, TY>(this PlotContext<T, TX, TY> context, string xlab)
 		where TX : struct
 		where TY : struct
 	{
-		data.XLab = xlab;
+		context.XLab = xlab;
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T, TX, TY> YLab<T, TX, TY>(this PanelFactory<T, TX, TY> panel, string ylab)
@@ -456,23 +456,23 @@ public static class Plot
 		return panel;
 	}
 
-	public static Data<T, TX, TY> YLab<T, TX, TY>(this Data<T, TX, TY> data, string ylab)
+	public static PlotContext<T, TX, TY> YLab<T, TX, TY>(this PlotContext<T, TX, TY> context, string ylab)
 		where TX : struct
 		where TY : struct
 	{
 
-		data.Default_Panel().YLab(ylab);
+		context.Default_Panel().YLab(ylab);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Flip<T, TX, TY>(this Data<T, TX, TY> data)
+	public static PlotContext<T, TX, TY> Flip<T, TX, TY>(this PlotContext<T, TX, TY> context)
 		where TX : struct
 		where TY : struct
 	{
-		data.Flip = true;
+		context.Flip = true;
 
-		return data;
+		return context;
 	}
 
 	internal static PanelFactory<T1, TX1, TY1> Add<T1, TX1, TY1, T2, TX2, TY2>(this PanelFactory<T1, TX1, TY1> panel, Func<Geom<T2, TX2, TY2>> builder)
@@ -555,8 +555,8 @@ public static class Plot
 		return panel.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -574,13 +574,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
+		context.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -598,7 +598,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
+		return context.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Point<T, TX, TY>(
@@ -617,11 +617,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Point(panel, panel.Data.Source!, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
+		return Geom_Point(panel, panel.Context.Source!, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_Point<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Point<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? y = null,
 		IAestheticMapping<T, double>? _size = null,
@@ -636,9 +636,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Point(x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
+		context.Default_Panel().Geom_Point(x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
@@ -702,8 +702,8 @@ public static class Plot
 		return panel.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -720,13 +720,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
+		context.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -743,7 +743,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
+		return context.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Line<T, TX, TY>(
@@ -761,11 +761,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Line(panel, panel.Data.Source!, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
+		return Geom_Line(panel, panel.Context.Source!, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_Line<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Line<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? y = null,
 		IAestheticMapping<T, string>? _color = null,
@@ -779,9 +779,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
+		context.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
@@ -847,8 +847,8 @@ public static class Plot
 		return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -867,13 +867,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
+		context.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -892,7 +892,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
+		return context.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Bar<T, TX, TY>(
@@ -912,11 +912,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Bar(panel, panel.Data.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
+		return Geom_Bar(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_Bar<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Bar<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? y = null,
 		IAestheticMapping<T, string>? _fill = null,
@@ -932,9 +932,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
+		context.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2, TX2, TY2>(
@@ -969,8 +969,8 @@ public static class Plot
 		return panel;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2> x,
 		Func<T2, TX2> xend,
@@ -982,13 +982,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Segment(source, x, xend, y, yend, width, color, alpha, lineType);
+		context.Default_Panel().Geom_Segment(source, x, xend, y, yend, width, color, alpha, lineType);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2> x,
 		Func<T2, TX2> xend,
@@ -999,7 +999,7 @@ public static class Plot
 		where TX2 : struct
 		where TY1 : struct
 		where TY2 : struct
-		=> data.Geom_Segment(new Source<T2>(source), x, xend, y, yend, width, color, alpha, lineType);
+		=> context.Geom_Segment(new Source<T2>(source), x, xend, y, yend, width, color, alpha, lineType);
 
 	public static PanelFactory<T, TX, TY> Geom_Segment<T, TX, TY>(
 		this PanelFactory<T, TX, TY> panel,
@@ -1011,11 +1011,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Segment(panel, panel.Data.Source!, x, xend, y, yend, width, color, alpha, lineType);
+		return Geom_Segment(panel, panel.Context.Source!, x, xend, y, yend, width, color, alpha, lineType);
 	}
 
-	public static Data<T, TX, TY> Geom_Segment<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Segment<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX> x,
 		Func<T, TX> xend,
 		Func<T, TY> y,
@@ -1024,9 +1024,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Segment(x, xend, y, yend, width, color, alpha, lineType);
+		context.Default_Panel().Geom_Segment(x, xend, y, yend, width, color, alpha, lineType);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1088,8 +1088,8 @@ public static class Plot
 		return panel.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -1106,13 +1106,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Area(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
+		context.Default_Panel().Geom_Area(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -1129,7 +1129,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
+		return context.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Area<T, TX, TY>(
@@ -1147,11 +1147,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Area(panel, panel.Data.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
+		return Geom_Area(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_Area<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Area<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? y = null,
 		IAestheticMapping<T, string>? _fill = null,
@@ -1165,9 +1165,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Area(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
+		context.Default_Panel().Geom_Area(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1229,8 +1229,8 @@ public static class Plot
 		return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? ymin = null,
@@ -1247,13 +1247,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
+		context.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? ymin = null,
@@ -1270,7 +1270,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
+		return context.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Ribbon<T, TX, TY>(
@@ -1288,11 +1288,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Ribbon(panel, panel.Data.Source!, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
+		return Geom_Ribbon(panel, panel.Context.Source!, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_Ribbon<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Ribbon<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? ymin = null,
 		Func<T, TY>? ymax = null,
@@ -1306,9 +1306,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
+		context.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1386,8 +1386,8 @@ public static class Plot
 		return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -1408,13 +1408,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
+		context.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -1435,7 +1435,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
+		return context.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
@@ -1457,11 +1457,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_ErrorBar(panel, panel.Data.Source!, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
+		return Geom_ErrorBar(panel, panel.Context.Source!, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? y = null,
 		Func<T, TY>? ymin = null,
@@ -1479,9 +1479,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
+		context.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
@@ -1538,8 +1538,8 @@ public static class Plot
 		return panel.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -1553,13 +1553,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Text(source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
+		context.Default_Panel().Geom_Text(source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -1573,7 +1573,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
+		return context.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Text<T, TX, TY, TT>(
@@ -1588,11 +1588,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Text(panel, panel.Data.Source!, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
+		return Geom_Text(panel, panel.Context.Source!, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_Text<T, TX, TY, TT>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Text<T, TX, TY, TT>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? y = null,
 		Func<T, double>? _angle = null,
@@ -1603,9 +1603,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Text(x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
+		context.Default_Panel().Geom_Text(x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
@@ -1661,8 +1661,8 @@ public static class Plot
 		return panel.Geom_VLine(new Source<T2>(source), x, label, width, color, alpha, lineType, size, anchor, weight, style);
 	}
 
-	public static Data<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
-		this Data<T1, TX1, TY> data,
+	public static PlotContext<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
+		this PlotContext<T1, TX1, TY> context,
 		Source<T2> source,
 		Func<T2, TX2> x,
 		Func<T2, string> label,
@@ -1672,13 +1672,13 @@ public static class Plot
 		where TX2 : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_VLine(source, x, label, width, color, alpha, lineType, size, anchor, weight, style);
+		context.Default_Panel().Geom_VLine(source, x, label, width, color, alpha, lineType, size, anchor, weight, style);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
-		this Data<T1, TX1, TY> data,
+	public static PlotContext<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
+		this PlotContext<T1, TX1, TY> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2> x,
 		Func<T2, string> label,
@@ -1688,7 +1688,7 @@ public static class Plot
 		where TX2 : struct
 		where TY : struct
 	{
-		return data.Geom_VLine(new Source<T2>(source), x, label, width, color, alpha, lineType, size, anchor, weight, style);
+		return context.Geom_VLine(new Source<T2>(source), x, label, width, color, alpha, lineType, size, anchor, weight, style);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_VLine<T, TX, TY>(
@@ -1700,11 +1700,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_VLine(panel, panel.Data.Source!, x, label, width, color, alpha, lineType, size, anchor, weight, style);
+		return Geom_VLine(panel, panel.Context.Source!, x, label, width, color, alpha, lineType, size, anchor, weight, style);
 	}
 
-	public static Data<T, TX, TY> Geom_VLine<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_VLine<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX> x,
 		Func<T, string> label,
 		double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
@@ -1712,9 +1712,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_VLine(x, label, width, color, alpha, lineType, size, anchor, weight, style);
+		context.Default_Panel().Geom_VLine(x, label, width, color, alpha, lineType, size, anchor, weight, style);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
@@ -1770,8 +1770,8 @@ public static class Plot
 		return panel.Geom_HLine(new Source<T2>(source), y, label, width, color, alpha, lineType, size, anchor, weight, style);
 	}
 
-	public static Data<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
-		this Data<T1, TX, TY1> data,
+	public static PlotContext<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
+		this PlotContext<T1, TX, TY1> context,
 		Source<T2> source,
 		Func<T2, TY2> y,
 		Func<T2, string> label,
@@ -1781,13 +1781,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_HLine(source, y, label, width, color, alpha, lineType, size, anchor, weight, style);
+		context.Default_Panel().Geom_HLine(source, y, label, width, color, alpha, lineType, size, anchor, weight, style);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
-		this Data<T1, TX, TY1> data,
+	public static PlotContext<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
+		this PlotContext<T1, TX, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TY2> y,
 		Func<T2, string> label,
@@ -1797,7 +1797,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_HLine(new Source<T2>(source), y, label, width, color, alpha, lineType, size, anchor, weight, style);
+		return context.Geom_HLine(new Source<T2>(source), y, label, width, color, alpha, lineType, size, anchor, weight, style);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_HLine<T, TX, TY>(
@@ -1809,11 +1809,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_HLine(panel, panel.Data.Source!, y, label, width, color, alpha, lineType, size, anchor, weight, style);
+		return Geom_HLine(panel, panel.Context.Source!, y, label, width, color, alpha, lineType, size, anchor, weight, style);
 	}
 
-	public static Data<T, TX, TY> Geom_HLine<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_HLine<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TY> y,
 		Func<T, string> label,
 		double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
@@ -1821,9 +1821,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_HLine(y, label, width, color, alpha, lineType, size, anchor, weight, style);
+		context.Default_Panel().Geom_HLine(y, label, width, color, alpha, lineType, size, anchor, weight, style);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
@@ -1881,8 +1881,8 @@ public static class Plot
 		return panel.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
 	}
 
-	public static Data<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
-		this Data<T1, TX, TY> data,
+	public static PlotContext<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
+		this PlotContext<T1, TX, TY> context,
 		Source<T2> source,
 		Func<T2, double> a,
 		Func<T2, double> b,
@@ -1893,13 +1893,13 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_ABLine(source, a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
+		context.Default_Panel().Geom_ABLine(source, a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
-		this Data<T1, TX, TY> data,
+	public static PlotContext<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
+		this PlotContext<T1, TX, TY> context,
 		IEnumerable<T2> source,
 		Func<T2, double> a,
 		Func<T2, double> b,
@@ -1910,7 +1910,7 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return data.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
+		return context.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_ABLine<T, TX, TY>(
@@ -1924,11 +1924,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_ABLine(panel, panel.Data.Source!, a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
+		return Geom_ABLine(panel, panel.Context.Source!, a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
 	}
 
-	public static Data<T, TX, TY> Geom_ABLine<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_ABLine<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, double> a,
 		Func<T, double> b,
 		Func<T, string>? label = null,
@@ -1938,9 +1938,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_ABLine(a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
+		context.Default_Panel().Geom_ABLine(a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_OHLC<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1999,8 +1999,8 @@ public static class Plot
 		return panel;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_OHLC<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_OHLC<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? open = null,
@@ -2014,9 +2014,9 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_OHLC(source, x, open, high, low, close, onclick, width, color, alpha, lineType);
+		context.Default_Panel().Geom_OHLC(source, x, open, high, low, close, onclick, width, color, alpha, lineType);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_OHLC<T, TX, TY>(
@@ -2031,11 +2031,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_OHLC(panel, panel.Data.Source!, x, open, high, low, close, onclick, width, color, alpha, lineType);
+		return Geom_OHLC(panel, panel.Context.Source!, x, open, high, low, close, onclick, width, color, alpha, lineType);
 	}
 
-	public static Data<T, TX, TY> Geom_OHLC<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_OHLC<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? open = null,
 		Func<T, TY>? high = null,
@@ -2046,9 +2046,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_OHLC(x, open, high, low, close, onclick, width, color, alpha, lineType);
+		context.Default_Panel().Geom_OHLC(x, open, high, low, close, onclick, width, color, alpha, lineType);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2109,8 +2109,8 @@ public static class Plot
 		return panel;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? open = null,
@@ -2123,9 +2123,9 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Candlestick(source, x, open, high, low, close, width, color, alpha, lineType);
+		context.Default_Panel().Geom_Candlestick(source, x, open, high, low, close, width, color, alpha, lineType);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Candlestick<T, TX, TY>(
@@ -2139,11 +2139,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Candlestick(panel, panel.Data.Source!, x, open, high, low, close, width, color, alpha, lineType);
+		return Geom_Candlestick(panel, panel.Context.Source!, x, open, high, low, close, width, color, alpha, lineType);
 	}
 
-	public static Data<T, TX, TY> Geom_Candlestick<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Candlestick<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? open = null,
 		Func<T, TY>? high = null,
@@ -2153,9 +2153,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Candlestick(x, open, high, low, close, width, color, alpha, lineType);
+		context.Default_Panel().Geom_Candlestick(x, open, high, low, close, width, color, alpha, lineType);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Volume<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2193,8 +2193,8 @@ public static class Plot
 		return panel;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Volume<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Volume<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? volume = null,
@@ -2205,9 +2205,9 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Volume(source, x, volume, onclick, fill, alpha);
+		context.Default_Panel().Geom_Volume(source, x, volume, onclick, fill, alpha);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Volume<T, TX, TY>(
@@ -2219,11 +2219,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Volume(panel, panel.Data.Source!, x, volume, onclick, fill, alpha);
+		return Geom_Volume(panel, panel.Context.Source!, x, volume, onclick, fill, alpha);
 	}
 
-	public static Data<T, TX, TY> Geom_Volume<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Volume<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? volume = null,
 		Func<T, MouseEventArgs, Task>? onclick = null,
@@ -2231,9 +2231,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Volume(x, volume, onclick, fill, alpha);
+		context.Default_Panel().Geom_Volume(x, volume, onclick, fill, alpha);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2309,8 +2309,8 @@ public static class Plot
 		return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -2329,13 +2329,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
+		context.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -2354,7 +2354,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
+		return context.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Hex<T, TX, TY>(
@@ -2374,11 +2374,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Hex(panel, panel.Data.Source!, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
+		return Geom_Hex(panel, panel.Context.Source!, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_Hex<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Hex<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? y = null,
 		Func<T, TX>? dx = null,
@@ -2394,9 +2394,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
+		context.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2452,8 +2452,8 @@ public static class Plot
 		return panel.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -2466,13 +2466,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_RidgeLine(source, x, y, height, _fill, fill, alpha, scale, inherit);
+		context.Default_Panel().Geom_RidgeLine(source, x, y, height, _fill, fill, alpha, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -2485,7 +2485,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, scale, inherit);
+		return context.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_RidgeLine<T, TX, TY>(
@@ -2499,11 +2499,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_RidgeLine(panel, panel.Data.Source!, x, y, height, _fill, fill, alpha, scale, inherit);
+		return Geom_RidgeLine(panel, panel.Context.Source!, x, y, height, _fill, fill, alpha, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_RidgeLine<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_RidgeLine<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? y = null,
 		Func<T, double>? height = null,
@@ -2513,9 +2513,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_RidgeLine(x, y, height, _fill, fill, alpha, scale, inherit);
+		context.Default_Panel().Geom_RidgeLine(x, y, height, _fill, fill, alpha, scale, inherit);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2575,8 +2575,8 @@ public static class Plot
 		return panel.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -2590,13 +2590,13 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		data.Default_Panel().Geom_Violin(source, x, y, width, _fill, fill, alpha, color, position, scale, inherit);
+		context.Default_Panel().Geom_Violin(source, x, y, width, _fill, fill, alpha, color, position, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, TX2>? x = null,
 		Func<T2, TY2>? y = null,
@@ -2610,7 +2610,7 @@ public static class Plot
 		where TY1 : struct
 		where TY2 : struct
 	{
-		return data.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, scale, inherit);
+		return context.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Violin<T, TX, TY>(
@@ -2625,11 +2625,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Violin(panel, panel.Data.Source!, x, y, width, _fill, fill, alpha, color, position, scale, inherit);
+		return Geom_Violin(panel, panel.Context.Source!, x, y, width, _fill, fill, alpha, color, position, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_Violin<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Violin<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TX>? x = null,
 		Func<T, TY>? y = null,
 		Func<T, double>? width = null,
@@ -2640,9 +2640,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Violin(x, y, width, _fill, fill, alpha, color, position, scale, inherit);
+		context.Default_Panel().Geom_Violin(x, y, width, _fill, fill, alpha, color, position, scale, inherit);
 
-		return data;
+		return context;
 	}
 
 	public static PanelFactory<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
@@ -2717,8 +2717,8 @@ public static class Plot
 		return Geom_Map(panel, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
+		this PlotContext<T1, TX1, TY1> context,
 		Source<T2> source,
 		Func<T2, Geospacial.Polygon[]> polygons,
 		IAestheticMapping<T2, string>? _fill = null,
@@ -2732,13 +2732,13 @@ public static class Plot
 		where TX1 : struct
 		where TY1 : struct
 	{
-		data.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+		context.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
-		this Data<T1, TX1, TY1> data,
+	public static PlotContext<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
+		this PlotContext<T1, TX1, TY1> context,
 		IEnumerable<T2> source,
 		Func<T2, Geospacial.Polygon[]> polygons,
 		IAestheticMapping<T2, string>? _fill = null,
@@ -2752,11 +2752,11 @@ public static class Plot
 		where TX1 : struct
 		where TY1 : struct
 	{
-		return Geom_Map(data, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+		return Geom_Map(context, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_Map<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Map<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Geospacial.Polygon[] polygons,
 		IAestheticMapping<Geospacial.Polygon[], string>? _fill = null,
 		Func<Geospacial.Polygon[], MouseEventArgs, Task>? onclick = null,
@@ -2769,7 +2769,7 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Map(data, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+		return Geom_Map(context, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Map<T, TX, TY>(
@@ -2786,11 +2786,11 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		return Geom_Map(panel, panel.Data.Source!, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+		return Geom_Map(panel, panel.Context.Source!, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
 	}
 
-	public static Data<T, TX, TY> Geom_Map<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Geom_Map<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, Geospacial.Polygon[]> polygons,
 		IAestheticMapping<T, string>? _fill = null,
 		Func<T, MouseEventArgs, Task>? onclick = null,
@@ -2803,13 +2803,13 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+		context.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_Color_Discrete<T, TX, TY, TKey>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Scale_Color_Discrete<T, TX, TY, TKey>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TKey> selector,
 		Palettes.Discrete<TKey, string> palette,
 		bool guide = true,
@@ -2820,15 +2820,15 @@ public static class Plot
 	{
 		var scale = new ColorDiscrete<TKey>(palette);
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.Color = new Aesthetic<T, TKey, string>(selector, scale, guide, name);
+		context.Aesthetics.Color = new Aesthetic<T, TKey, string>(selector, scale, guide, name);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_Color_Discrete<T, TX, TY, TKey>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Scale_Color_Discrete<T, TX, TY, TKey>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TKey> selector,
 		string[] palette,
 		int direction = 1,
@@ -2840,28 +2840,28 @@ public static class Plot
 	{
 		var scale = new ColorDiscrete<TKey>(palette, direction);
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.Color = new Aesthetic<T, TKey, string>(selector, scale, guide, name);
+		context.Aesthetics.Color = new Aesthetic<T, TKey, string>(selector, scale, guide, name);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_Color_Identity<T, TX, TY>(this Data<T, TX, TY> data, Func<T, string> selector)
+	public static PlotContext<T, TX, TY> Scale_Color_Identity<T, TX, TY>(this PlotContext<T, TX, TY> context, Func<T, string> selector)
 		where TX : struct
 		where TY : struct
 	{
 		var scale = new Scales.Identity<string>();
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.Color = new Aesthetic<T, string, string>(selector, scale, false, null);
+		context.Aesthetics.Color = new Aesthetic<T, string, string>(selector, scale, false, null);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_Fill_Discrete<T, TX, TY, TKey>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Scale_Fill_Discrete<T, TX, TY, TKey>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TKey> selector,
 		Palettes.Discrete<TKey, string> palette,
 		bool guide = true,
@@ -2872,15 +2872,15 @@ public static class Plot
 	{
 		var scale = new FillDiscrete<TKey>(palette);
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.Fill = new Aesthetic<T, TKey, string>(selector, scale, guide, name);
+		context.Aesthetics.Fill = new Aesthetic<T, TKey, string>(selector, scale, guide, name);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_Fill_Discrete<T, TX, TY, TKey>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Scale_Fill_Discrete<T, TX, TY, TKey>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TKey> selector,
 		string[] palette,
 		int direction = 1,
@@ -2892,14 +2892,14 @@ public static class Plot
 	{
 		var scale = new FillDiscrete<TKey>(palette, direction);
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.Fill = new Aesthetic<T, TKey, string>(selector, scale, guide, name);
+		context.Aesthetics.Fill = new Aesthetic<T, TKey, string>(selector, scale, guide, name);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_Fill_Continuous<T, TX, TY>(this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Scale_Fill_Continuous<T, TX, TY>(this PlotContext<T, TX, TY> context,
 		Func<T, double> selector,
 		string[] palette,
 		int m = 5,
@@ -2911,28 +2911,28 @@ public static class Plot
 	{
 		var scale = new FillContinuous(palette, m, format);
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.Fill = new Aesthetic<T, double, string>(selector, scale, guide, name);
+		context.Aesthetics.Fill = new Aesthetic<T, double, string>(selector, scale, guide, name);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_Fill_Identity<T, TX, TY>(this Data<T, TX, TY> data, Func<T, string> selector)
+	public static PlotContext<T, TX, TY> Scale_Fill_Identity<T, TX, TY>(this PlotContext<T, TX, TY> context, Func<T, string> selector)
 		where TX : struct
 		where TY : struct
 	{
 		var scale = new Scales.Identity<string>();
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.Fill = new Aesthetic<T, string, string>(selector, scale, false, null);
+		context.Aesthetics.Fill = new Aesthetic<T, string, string>(selector, scale, false, null);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_Size_Continuous<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Scale_Size_Continuous<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, double> selector,
 		(double min, double max)? limits = null,
 		(double min, double max)? range = null,
@@ -2945,28 +2945,28 @@ public static class Plot
 	{
 		var scale = new SizeContinuous(limits, range, oob, format);
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.Size = new Aesthetic<T, double, double>(selector, scale, guide, name);
+		context.Aesthetics.Size = new Aesthetic<T, double, double>(selector, scale, guide, name);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_Size_Identity<T, TX, TY>(this Data<T, TX, TY> data, Func<T, double> selector)
+	public static PlotContext<T, TX, TY> Scale_Size_Identity<T, TX, TY>(this PlotContext<T, TX, TY> context, Func<T, double> selector)
 		where TX : struct
 		where TY : struct
 	{
 		var scale = new Scales.Identity<double>();
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.Size = new Aesthetic<T, double, double>(selector, scale, false, null);
+		context.Aesthetics.Size = new Aesthetic<T, double, double>(selector, scale, false, null);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_LineType_Discrete<T, TX, TY, TKey>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Scale_LineType_Discrete<T, TX, TY, TKey>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TKey> selector,
 		Palettes.Discrete<TKey, LineType> palette,
 		bool guide = true,
@@ -2977,15 +2977,15 @@ public static class Plot
 	{
 		var scale = new LineTypeDiscrete<TKey>(palette);
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.LineType = new Aesthetic<T, TKey, LineType>(selector, scale, guide, name);
+		context.Aesthetics.LineType = new Aesthetic<T, TKey, LineType>(selector, scale, guide, name);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_LineType_Discrete<T, TX, TY, TKey>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Scale_LineType_Discrete<T, TX, TY, TKey>(
+		this PlotContext<T, TX, TY> context,
 		Func<T, TKey> selector,
 		LineType[]? palette = null,
 		int direction = 1,
@@ -2997,46 +2997,46 @@ public static class Plot
 	{
 		var scale = new LineTypeDiscrete<TKey>(palette, direction);
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.LineType = new Aesthetic<T, TKey, LineType>(selector, scale, guide, name);
+		context.Aesthetics.LineType = new Aesthetic<T, TKey, LineType>(selector, scale, guide, name);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Scale_LineType_Identity<T, TX, TY>(this Data<T, TX, TY> data, Func<T, LineType> selector)
+	public static PlotContext<T, TX, TY> Scale_LineType_Identity<T, TX, TY>(this PlotContext<T, TX, TY> context, Func<T, LineType> selector)
 		where TX : struct
 		where TY : struct
 	{
 		var scale = new Scales.Identity<LineType>();
 
-		data.Aesthetics.Scales.Add(scale);
+		context.Aesthetics.Scales.Add(scale);
 
-		data.Aesthetics.LineType = new Aesthetic<T, LineType, LineType>(selector, scale, false, null);
+		context.Aesthetics.LineType = new Aesthetic<T, LineType, LineType>(selector, scale, false, null);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Facet_Wrap<T, TX, TY, TKey>(this Data<T, TX, TY> data, Func<T, TKey> selector, bool freeX = false, bool freeY = false, int? nrows = null, int? ncolumns = null)
+	public static PlotContext<T, TX, TY> Facet_Wrap<T, TX, TY, TKey>(this PlotContext<T, TX, TY> context, Func<T, TKey> selector, bool freeX = false, bool freeY = false, int? nrows = null, int? ncolumns = null)
 		where TX : struct
 		where TY : struct
 	{
-		data.Faceting = new Faceting1D<T, TKey>(selector, freeX, freeY, nrows, ncolumns);
+		context.Faceting = new Faceting1D<T, TKey>(selector, freeX, freeY, nrows, ncolumns);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Facet_Grid<T, TX, TY, TRow, TColumn>(this Data<T, TX, TY> data, Func<T, TRow> row, Func<T, TColumn> column, bool freeX = false, bool freeY = false)
+	public static PlotContext<T, TX, TY> Facet_Grid<T, TX, TY, TRow, TColumn>(this PlotContext<T, TX, TY> context, Func<T, TRow> row, Func<T, TColumn> column, bool freeX = false, bool freeY = false)
 		where TX : struct
 		where TY : struct
 	{
-		data.Faceting = new Faceting2D<T, TRow, TColumn>(row, column, freeX, freeY);
+		context.Faceting = new Faceting2D<T, TRow, TColumn>(row, column, freeX, freeY);
 
-		return data;
+		return context;
 	}
 
-	public static Data<T, TX, TY> Theme<T, TX, TY>(
-		this Data<T, TX, TY> data,
+	public static PlotContext<T, TX, TY> Theme<T, TX, TY>(
+		this PlotContext<T, TX, TY> context,
 		Theme.Theme? theme = null,
 		bool dark = true,
 		Position axisY = Left,
@@ -3044,9 +3044,9 @@ public static class Plot
 		where TX : struct
 		where TY : struct
 	{
-		data.Theme = theme ?? GGNet.Theme.Theme.Default(dark, axisY, legend);
+		context.Theme = theme ?? GGNet.Theme.Theme.Default(dark, axisY, legend);
 
-		return data;
+		return context;
 	}
 
 	#region F# Helpers

@@ -2,26 +2,18 @@
 
 namespace GGNet.Scales;
 
-public class FillContinuous : Scale<double, string>
+public class FillContinuous(
+    string[] colors,
+    int m = 5,
+    string format = "0.##") : Scale<double, string>()
 {
-	private readonly string[] colors;
-	private readonly int m;
-	private readonly string format;
+	private readonly string[] colors = colors;
+	private readonly int m = m;
+	private readonly string format = format;
 
 	protected (double min, double max) limits = (0.0, 0.0);
 
-	public FillContinuous(
-		string[] colors,
-		int m = 5,
-		string format = "0.##")
-		: base()
-	{
-		this.colors = colors;
-		this.m = m;
-		this.format = format;
-	}
-
-	public override Guide Guide => Guide.ColorBar;
+    public override Guide Guide => Guide.ColorBar;
 
 	public override void Train(double key)
 	{
@@ -68,7 +60,7 @@ public class FillContinuous : Scale<double, string>
 	{
 		if (limits.max > limits.min)
 		{
-			return colors[Max(Min((int)(((key - limits.min) / (limits.max - limits.min)) * (colors.Length - 1)), colors.Length - 1), 0)];
+			return colors[Max(Min((int)((key - limits.min) / (limits.max - limits.min) * (colors.Length - 1)), colors.Length - 1), 0)];
 		}
 		else
 		{

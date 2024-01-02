@@ -7,29 +7,20 @@ using GGNet.Shapes;
 
 namespace GGNet.Geoms;
 
-internal abstract class Geom<T, TX, TY> : IGeom
+internal abstract class Geom<T, TX, TY>(Source<T> source, (bool x, bool y)? scale, bool inherit) : IGeom
 	where TX : struct
 	where TY : struct
 {
-	protected readonly Source<T> source;
-	protected readonly (bool x, bool y) scale;
-	protected readonly bool inherit;
+	protected readonly Source<T> source = source;
+	protected readonly (bool x, bool y) scale = scale ?? (true, true);
+	protected readonly bool inherit = inherit;
 
 	private Facet<T>? facet;
 	private Legends? legends;
 
-	public Geom(Source<T> source, (bool x, bool y)? scale, bool inherit)
-	{
-		this.source = source;
-		this.scale = scale ?? (true, true);
-		this.inherit = inherit;
+    public Buffer<Shape> Layer { get; } = new();
 
-		Layer = new();
-	}
-
-	public Buffer<Shape> Layer { get; }
-
-	protected static IPositionMapping<T> XMapping<T1, TX1>(Func<T1, TX1> selector, Scales.Position<TX1> position)
+    protected static IPositionMapping<T> XMapping<T1, TX1>(Func<T1, TX1> selector, Scales.Position<TX1> position)
 		where TX1 : struct
 	{
 		if (typeof(T) != typeof(T1))

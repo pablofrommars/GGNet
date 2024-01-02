@@ -1,10 +1,10 @@
 namespace GGNet.Geoms.ABLine;
 
-internal sealed class Selectors<T>
+internal sealed record Selectors<T>
 {
-	public Func<T, double> A { get; set; } = default!;
+	public required Func<T, double> A { get; init; }
 
-	public Func<T, double> B { get; set; } = default!;
+	public required Func<T, double> B { get; init; }
 
-	public Func<T, string>? Label { get; set; }
+	public Func<T, string>? Label { get; init; }
 }

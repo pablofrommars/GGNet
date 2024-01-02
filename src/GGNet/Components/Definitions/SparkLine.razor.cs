@@ -5,13 +5,13 @@ using Theme = Theme.Theme;
 public partial class SparkLine : ComponentBase
 {
 	[Parameter]
-	public string Id { get; set; } = default!;
+	public required string Id { get; set; }
 
 	[Parameter]
-	public Theme Theme { get; set; } = default!;
+	public required Theme Theme { get; set; }
 
 	[Parameter]
-	public IChildRenderPolicy RenderPolicy { get; set; } = default!;
+	public required IChildRenderPolicy RenderPolicy { get; set; }
 
 	protected override bool ShouldRender() => RenderPolicy.ShouldRender(RenderTarget.Theme);
 }

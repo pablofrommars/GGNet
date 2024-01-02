@@ -2,7 +2,7 @@
 
 public record Polygon : Shape
 {
-	public Geospacial.Polygon Path { get; set; } = default!;
+	public required Geospacial.Polygon Path { get; init; }
 
-	public Elements.Rectangle Aesthetic { get; set; } = default!;
+	public required Elements.Rectangle Aesthetic { get; init; }
 }

@@ -1,13 +1,8 @@
 namespace GGNet.Components;
 
-public sealed class NeverRenderPolicy : RenderPolicyBase
+public sealed class NeverRenderPolicy(IPlotRendering plot) : RenderPolicyBase(plot)
 {
-	public NeverRenderPolicy(IPlotRendering plot)
-		: base(plot)
-	{
-	}
-
-	public sealed class ChildRenderPolicy : IChildRenderPolicy
+    public sealed class ChildRenderPolicy : IChildRenderPolicy
 	{
 		public void Refresh(RenderTarget target = RenderTarget.All)
 		{

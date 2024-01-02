@@ -1,14 +1,14 @@
 namespace GGNet.Geoms.OHLC;
 
-internal sealed class Selectors<T, TX, TY>
+internal sealed record Selectors<T, TX, TY>
 {
 	public Func<T, TX>? X { get; set; }
 
-	public Func<T, TY> Open { get; set; } = default!;
+	public required Func<T, TY> Open { get; set; }
 
-	public Func<T, TY> High { get; set; } = default!;
+	public required Func<T, TY> High { get; set; }
 
-	public Func<T, TY> Low { get; set; } = default!;
+	public required Func<T, TY> Low { get; set; }
 
-	public Func<T, TY> Close { get; set; } = default!;
+	public required Func<T, TY> Close { get; set; }
 }

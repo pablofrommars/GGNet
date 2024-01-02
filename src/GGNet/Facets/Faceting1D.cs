@@ -2,25 +2,16 @@
 
 namespace GGNet.Facets;
 
-public sealed class Faceting1D<T, TKey> : Faceting<T>
+public sealed class Faceting1D<T, TKey>(Func<T, TKey> selector, bool freeX, bool freeY, int? nrows, int? ncolumns) : Faceting<T>(freeX, freeY)
 {
 	private readonly SortedBuffer<TKey> buffer = new(8, 1);
 
-	private readonly Func<T, TKey> selector;
+	private readonly Func<T, TKey> selector = selector;
 
-	private readonly int? nrows;
-	private readonly int? ncolumns;
+	private readonly int? nrows = nrows;
+	private readonly int? ncolumns = ncolumns;
 
-	public Faceting1D(Func<T, TKey> selector, bool freeX, bool freeY, int? nrows, int? ncolumns)
-		: base(freeX, freeY)
-	{
-		this.selector = selector;
-
-		this.nrows = nrows;
-		this.ncolumns = ncolumns;
-	}
-
-	public override bool Strip => false;
+    public override bool Strip => false;
 
 	public override void Train(T item) => buffer.Add(selector(item));
 

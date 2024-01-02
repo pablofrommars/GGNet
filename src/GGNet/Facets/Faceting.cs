@@ -2,19 +2,13 @@
 
 using Theme;
 
-public abstract class Faceting<T>
+public abstract class Faceting<T>(bool freeX, bool freeY)
 {
-	public Faceting(bool freeX, bool freeY)
-	{
-		FreeX = freeX;
-		FreeY = freeY;
-	}
+    public bool FreeX { get; } = freeX;
 
-	public bool FreeX { get; }
+    public bool FreeY { get; } = freeY;
 
-	public bool FreeY { get; }
-
-	public int N { get; protected set; }
+    public int N { get; protected set; }
 
 	public int NRows { get; protected set; }
 

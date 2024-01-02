@@ -1,4 +1,3 @@
-using GGNet.Common;
 using GGNet.Scales;
 
 namespace GGNet.Geoms.Line;

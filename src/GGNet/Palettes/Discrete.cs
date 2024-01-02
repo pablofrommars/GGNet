@@ -1,21 +1,15 @@
 ﻿namespace GGNet.Palettes;
 
-public sealed class Discrete<TKey, TValue>
+public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
     where TKey : notnull
 {
-	private readonly TValue[] palette;
-	private readonly int direction;
+	private readonly TValue[] palette = palette;
+	private readonly int direction = direction;
 
 	private int i = 0;
-	private readonly Dictionary<TKey, (int i, TValue value)> map = new();
+	private readonly Dictionary<TKey, (int i, TValue value)> map = [];
 
-	public Discrete(TValue[] palette, int direction = 1)
-	{
-		this.palette = palette;
-		this.direction = direction;
-	}
-
-	public TValue this[TKey key]
+    public TValue this[TKey key]
 	{
 		get => map[key].value;
 	}

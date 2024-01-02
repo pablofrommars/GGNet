@@ -2,16 +2,11 @@ using GGNet.Exceptions;
 
 namespace GGNet.Components;
 
-public abstract class RenderPolicyBase : IRenderPolicy
+public abstract class RenderPolicyBase(IPlotRendering plot) : IRenderPolicy
 {
-	protected readonly IPlotRendering plot;
+	protected readonly IPlotRendering plot = plot;
 
-	public RenderPolicyBase(IPlotRendering plot)
-	{
-		this.plot = plot;
-	}
-
-	public virtual Task RefreshAsync(RenderTarget target)
+    public virtual Task RefreshAsync(RenderTarget target)
 		=> Task.CompletedTask;
 
 	public virtual bool ShouldRender() => false;

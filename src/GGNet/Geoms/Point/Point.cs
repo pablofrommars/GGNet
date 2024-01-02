@@ -1,5 +1,4 @@
-﻿using GGNet.Common;
-using GGNet.Data;
+﻿using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;

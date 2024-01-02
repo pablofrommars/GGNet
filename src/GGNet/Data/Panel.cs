@@ -3,31 +3,21 @@ using GGNet.Geoms;
 
 namespace GGNet.Data;
 
-public sealed class Panel<T, TX, TY>
-	where TX : struct
+public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX, TY> context, double width, double height)
+    where TX : struct
 	where TY : struct
 {
-	public Panel((int row, int col) coord, Data<T, TX, TY> data, double width, double height)
-	{
-		Coord = coord;
-		Data = data;
-		Width = width;
-		Height = height;
+    public (int row, int col) Coord { get; } = coord;
 
-		Id = $"{coord.row}_{coord.col}";
-	}
+    public PlotContext<T, TX, TY> Data { get; } = context;
 
-	public (int row, int col) Coord { get; }
+    public double Width { get; } = width;
 
-	public Data<T, TX, TY> Data { get; }
+    public double Height { get; } = height;
 
-	public double Width { get; }
+    public string Id { get; } = $"{coord.row}_{coord.col}";
 
-	public double Height { get; }
-
-	public string Id { get; }
-
-	public Buffer<IGeom> Geoms { get; } = new(8, 1);
+    public Buffer<IGeom> Geoms { get; } = new(8, 1);
 
 	public (string? x, string? y) Strip { get; set; } = default;
 

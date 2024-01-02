@@ -4,11 +4,11 @@ internal sealed class Selectors<T, TX, TY>
 {
 	public Func<T, TX>? X { get; set; }
 
-	public Func<T, TY> Open { get; set; } = default!;
+	public required Func<T, TY> Open { get; init; }
 
-	public Func<T, TY> High { get; set; } = default!;
+	public required Func<T, TY> High { get; init; }
 
-	public Func<T, TY> Low { get; set; } = default!;
+	public required Func<T, TY> Low { get; init; }
 
-	public Func<T, TY> Close { get; set; } = default!;
+	public required Func<T, TY> Close { get; init; }
 }

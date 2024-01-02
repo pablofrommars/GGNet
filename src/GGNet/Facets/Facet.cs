@@ -1,24 +1,14 @@
 ﻿namespace GGNet.Facets;
 
-public sealed class Facet<T>
+public sealed class Facet<T>(Faceting<T> faceting, (int row, int column) coord, string? xStrip = null, string? yStrip = null)
 {
-	public Facet(Faceting<T> faceting, (int row, int column) coord, string? xStrip = null, string? yStrip = null)
-	{
-		Faceting = faceting;
+    public Faceting<T> Faceting { get; } = faceting;
 
-		Coord = coord;
+    public (int row, int column) Coord { get; } = coord;
 
-		XStrip = xStrip;
-		YStrip = yStrip;
-	}
+    public string? XStrip { get; } = xStrip;
 
-	public Faceting<T> Faceting { get; }
+    public string? YStrip { get; } = yStrip;
 
-	public (int row, int column) Coord { get; }
-
-	public string? XStrip { get; }
-
-	public string? YStrip { get; }
-
-	public bool Include(T item) => Faceting.Map(item) == Coord;
+    public bool Include(T item) => Faceting.Map(item) == Coord;
 }

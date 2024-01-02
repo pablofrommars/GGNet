@@ -1,11 +1,6 @@
 ﻿namespace GGNet.Theme;
 
-public sealed class Strip
+public sealed class Strip(bool dark)
 {
-	public Strip(bool dark)
-	{
-		Text = new(dark);
-	}
-
-	public StripText Text { get; set; }
+    public StripText Text { get; set; } = new(dark);
 }

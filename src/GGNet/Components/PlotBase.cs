@@ -7,10 +7,10 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
 	where TY : struct
 {
 	[Parameter]
-	public Data<T, TX, TY> Data { get; set; } = default!;
+	public required PlotContext<T, TX, TY> Data { get; init; }
 
 	[Parameter]
-	public RenderPolicy RenderPolicy { get; set; } = RenderPolicy.Never;
+	public required RenderPolicy RenderPolicy { get; init; }
 
 	public string Id => Data.Id;
 

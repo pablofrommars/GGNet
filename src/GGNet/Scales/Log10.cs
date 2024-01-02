@@ -1,5 +1,4 @@
-﻿using GGNet.Common;
-using GGNet.Formats;
+﻿using GGNet.Formats;
 using GGNet.Transformations;
 
 namespace GGNet.Scales;
@@ -64,11 +63,10 @@ public static class Log10Utils
 	{
 		var mult = Math.Pow(10.0, Math.Ceiling(max));
 
-		return new[]
-		{
-				Math.Log10(0.01 * mult), Math.Log10(0.03 * mult), Math.Log10(0.05 * mult),
-				Math.Log10(0.1 * mult), Math.Log10(0.3 * mult), Math.Log10(0.5 * mult)
-			};
+		return [
+			Math.Log10(0.01 * mult), Math.Log10(0.03 * mult), Math.Log10(0.05 * mult),
+			Math.Log10(0.1 * mult), Math.Log10(0.3 * mult), Math.Log10(0.5 * mult)
+		];
 	}
 
 	public static double[] Breaks(double min, double max, int n = 5)
@@ -78,7 +76,7 @@ public static class Log10Utils
 
 		if (bmin == bmax)
 		{
-			return new[] { Math.Pow(10.0, bmin) };
+			return [Math.Pow(10.0, bmin)];
 		}
 
 		var by = Math.Floor((bmax - bmin) / n) + 1.0;
@@ -110,6 +108,6 @@ public static class Log10Utils
 			by -= 1.0;
 		}
 
-		return Array.Empty<double>();
+		return [];
 	}
 }

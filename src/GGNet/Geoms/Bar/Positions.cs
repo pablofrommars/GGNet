@@ -2,7 +2,7 @@ using GGNet.Scales;
 
 namespace GGNet.Geoms.Bar;
 
-internal sealed class Positions<T>
+internal sealed record Positions<T>
 {
 	public IPositionMapping<T> X { get; set; } = default!;
 

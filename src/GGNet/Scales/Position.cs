@@ -12,18 +12,12 @@ public interface IPosition : IScale
 	double Coord(double value);
 }
 
-public abstract class Position<TKey> : Continuous<TKey>, IPosition
+public abstract class Position<TKey>(ITransformation<TKey>? transformation, (double minMult, double minAdd, double maxMult, double maxAdd) expand) : Continuous<TKey>(transformation), IPosition
 	where TKey : struct
 {
-	protected readonly (double minMult, double minAdd, double maxMult, double maxAdd) expand;
+	protected readonly (double minMult, double minAdd, double maxMult, double maxAdd) expand = expand;
 
-	public Position(ITransformation<TKey>? transformation, (double minMult, double minAdd, double maxMult, double maxAdd) expand)
-		   : base(transformation)
-	{
-		this.expand = expand;
-	}
-
-	public override void Train(TKey key) { }
+    public override void Train(TKey key) { }
 
 	public (double min, double max) Range { get; protected set; }
 
@@ -92,37 +86,25 @@ public interface IPositionMapping<T>
 	double Map(T item);
 }
 
-public class PositionMapping<T, TKey> : IPositionMapping<T>
+public class PositionMapping<T, TKey>(Func<T, TKey> selector, Position<TKey> position) : IPositionMapping<T>
 	where TKey : struct
 {
-	private readonly Func<T, TKey> selector;
-	private readonly Position<TKey> position;
+	private readonly Func<T, TKey> selector = selector;
+	private readonly Position<TKey> position = position;
 
-	public PositionMapping(Func<T, TKey> selector, Position<TKey> position)
-	{
-		this.selector = selector;
-		this.position = position;
-	}
-
-	public IPosition Position => position;
+    public IPosition Position => position;
 
 	public void Train(T item) => position.Train(selector(item));
 
 	public double Map(T item) => position.Map(selector(item));
 }
 
-public class NumericalPositionMapping<T, TKey> : IPositionMapping<T>
+public class NumericalPositionMapping<T, TKey>(Func<T, TKey> selector, Position<double> scale) : IPositionMapping<T>
 {
-	private readonly Func<T, TKey> selector;
-	private readonly Position<double> scale;
+	private readonly Func<T, TKey> selector = selector;
+	private readonly Position<double> scale = scale;
 
-	public NumericalPositionMapping(Func<T, TKey> selector, Position<double> scale)
-	{
-		this.selector = selector;
-		this.scale = scale;
-	}
-
-	public IPosition Position => scale;
+    public IPosition Position => scale;
 
 	public void Train(T item) => scale.Train(Convert<TKey>.ToDouble(selector(item)));
 

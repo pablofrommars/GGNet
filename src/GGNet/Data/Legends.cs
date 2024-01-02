@@ -7,13 +7,11 @@ namespace GGNet.Data;
 
 using static Direction;
 
-internal sealed class Legends : Buffer<Legend>
+internal sealed class Legends(Theme.Theme theme) : Buffer<Legend>(8, 1)
 {
-	private readonly Theme.Theme theme;
+	private readonly Theme.Theme theme = theme;
 
-	public Legends(Theme.Theme theme) : base(8, 1) => this.theme = theme;
-
-	public Legend GetOrAdd(IAestheticMapping aes)
+    public Legend GetOrAdd(IAestheticMapping aes)
 	{
 		for (var i = 0; i < Count; i++)
 		{

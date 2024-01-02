@@ -1,14 +1,14 @@
 namespace GGNet.Geoms.Hex;
 
-internal sealed class Selectors<T, TX, TY>
+internal sealed record Selectors<T, TX, TY>
 {
 	public Func<T, TX>? X { get; init; }
 
 	public Func<T, TY>? Y { get; init; }
 
-	public Func<T, TX> Dx { get; init; } = default!;
+	public required Func<T, TX> Dx { get; init; }
 
-	public Func<T, TY> Dy { get; init; } = default!;
+	public required Func<T, TY> Dy { get; init; }
 
 	public Func<T, string>? Tooltip { get; init; }
 }

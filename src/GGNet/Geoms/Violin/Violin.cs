@@ -17,7 +17,7 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 		public int Compare((double y, double width) a, (double y, double width) b) => a.y.CompareTo(b.y);
 	}
 
-	private readonly SortedDictionary<double, Dictionary<string, SortedBuffer<(double y, double width)>>> violins = new();
+	private readonly SortedDictionary<double, Dictionary<string, SortedBuffer<(double y, double width)>>> violins = [];
 
 	private readonly PositionAdjustment position;
 

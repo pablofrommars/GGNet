@@ -1,6 +1,4 @@
-﻿using GGNet.Common;
-
-namespace GGNet.Theme;
+﻿namespace GGNet.Theme;
 
 using Elements;
 

@@ -1,13 +1,8 @@
 namespace GGNet.Common;
 
-public class Buffer<T> : BufferBase<T>
+public class Buffer<T>(int pageCapacity = 32, int pagesIncrement = 4) : BufferBase<T>(pageCapacity, pagesIncrement)
 {
-	public Buffer(int pageCapacity = 32, int pagesIncrement = 4)
-		: base(pageCapacity, pagesIncrement)
-	{
-	}
-
-	public override void Add(T item) => Append(item);
+    public override void Add(T item) => Append(item);
 
 	public void Add(Buffer<T> buffer)
 	{

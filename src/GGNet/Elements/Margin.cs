@@ -1,6 +1,4 @@
-﻿using GGNet.Common;
-
-namespace GGNet.Elements;
+﻿namespace GGNet.Elements;
 
 public sealed record Margin
 {

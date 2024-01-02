@@ -13,10 +13,10 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 	where TY : struct
 {
 	[CascadingParameter]
-	public Plot<T, TX, TY> Plot { get; set; } = default!;
+	public required Plot<T, TX, TY> Plot { get; init; }
 
 	[Parameter]
-	public Data.Panel<T, TX, TY> Data { get; set; } = default!;
+	public required Data.Panel<T, TX, TY> Data { get; init; }
 
 	[Parameter]
 	public double X { get; set; }
