@@ -21,7 +21,7 @@ public partial class Plot : Tooltip
 
 		return $@"
 <foreignObject role=""{role}"" x=""{tx}"" y=""{ty}"" width=""1"" height=""1"">
-        <div>
+        <div class=""position: fixed"">
             <div class=""arrow""></div>
             <div class=""bubble"">{content}</div>
         </div>
