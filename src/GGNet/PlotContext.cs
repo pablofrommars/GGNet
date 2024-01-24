@@ -18,6 +18,8 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	public string Id { get; }
 
+	public Source<T>? Source { get; init; }
+
 	internal string? Title { get; set; }
 
 	internal string? SubTitle { get; set; }
@@ -25,8 +27,6 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 	internal string? XLab { get; set; }
 
 	internal string? Caption { get; set; }
-
-	public Source<T>? Source { get; set; }
 
 	internal Selectors<T, TX, TY> Selectors { get; } = new();
 
@@ -75,6 +75,10 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			else if (typeof(TX) == typeof(LocalDateTime))
 			{
 				(this as PlotContext<T, LocalDateTime, TY>)!.Scale_X_Discrete_DateTime();
+			}
+			else if (typeof(TX) == typeof(Instant))
+			{
+        throw new GGNetUserException("Scale_X_Instant required");
 			}
 			else if (typeof(TX) == typeof(double))
 			{

@@ -3,7 +3,8 @@ namespace GGNet;
 public enum RenderTarget
 {
 	None = 0,
-	Data = 1,
-	Theme = 2,
-	All = 3
+	Loading = 1,
+	Data = 2,
+	Theme = 4,
+	All = 7
 }

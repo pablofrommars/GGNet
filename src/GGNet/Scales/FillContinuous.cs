@@ -1,4 +1,5 @@
-﻿using static System.Math;
+﻿using GGNet.Scales.Common;
+using static System.Math;
 
 namespace GGNet.Scales;
 

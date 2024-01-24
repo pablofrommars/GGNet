@@ -16,7 +16,7 @@ public record Text
 
 	public double Alpha { get; init; } = 1.0;
 
-	public double Angle { get; init; } = 0.0;
+	public double Angle { get; init; }
 
 	public Margin Margin { get; init; } = new();
 }

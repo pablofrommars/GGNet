@@ -2,6 +2,8 @@
 
 namespace GGNet.Components;
 
+using Rendering;
+
 public partial class Area<T, TX, TY> : ComponentBase
    where TX : struct
    where TY : struct

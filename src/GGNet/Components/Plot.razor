@@ -6,14 +6,14 @@
 
 @inherits PlotBase<T, TX, TY>
 
-<svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height" class=@Class>
+<svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height" class="@DynamicClass">
 
     <GGNet.Components.Definitions.Plot Id=@Id Theme=@Theme RenderPolicy=@definitionsPolicy />
 
     <defs>
-        @for (int i = 0; i < Data.Legends.Count; i++)
+        @for (int i = 0; i < Context.Legends.Count; i++)
         {
-            var l = Data.Legends[i];
+            var l = Context.Legends[i];
 
             @if (l.Aes.Type != Guide.ColorBar)
             {
@@ -66,9 +66,9 @@
         {
             var offset = Legend.Y;
 
-            for (int i = 0; i < Data.Legends.Count; i++)
+            for (int i = 0; i < Context.Legends.Count; i++)
             {
-                var l = Data.Legends[i];
+                var l = Context.Legends[i];
 
                 if (l.Title?.Width > 0)
                 {
@@ -182,9 +182,9 @@
             var offset = Legend.X;
             var middle = Legend.Y + Legend.Height / 2.0;
 
-            for (int i = 0; i < Data.Legends.Count; i++)
+            for (int i = 0; i < Context.Legends.Count; i++)
             {
-                var l = Data.Legends[i];
+                var l = Context.Legends[i];
 
                 if (l.Title?.Height > 0)
                 {
@@ -302,23 +302,23 @@
 
     <CascadingValue Value=@this IsFixed=true>
         @{
-            var width = wrapper.Width - Data.Strip - (Data.N.cols - 1.0) * Theme.Panel.Spacing.X;
+            var width = wrapper.Width - Context.Strip - (Context.N.cols - 1.0) * Theme.Panel.Spacing.X;
 
-            if (!Data.AxisVisibility.y)
+            if (!Context.AxisVisibility.y)
             {
-                width -= Data.Axis.width;
+                width -= Context.Axis.width;
             }
 
-            var height = wrapper.Height - Data.Strip - (Data.N.rows - 1.0) * Theme.Panel.Spacing.Y;
+            var height = wrapper.Height - Context.Strip - (Context.N.rows - 1.0) * Theme.Panel.Spacing.Y;
 
-            if (!Data.AxisVisibility.x)
+            if (!Context.AxisVisibility.x)
             {
-                height -= Data.Axis.height;
+                height -= Context.Axis.height;
             }
 
-            if (!Data.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Data.XLab))
+            if (!Context.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Context.XLab))
             {
-                height -= Data.AxisTitles.x;
+                height -= Context.AxisTitles.x;
             }
 
             var xOffsetReset = wrapper.X;
@@ -326,9 +326,9 @@
             var xOffset = xOffsetReset;
             var yOffset = wrapper.Y;
 
-            for (var i = 0; i < Data.Panels.Count; i++)
+            for (var i = 0; i < Context.Panels.Count; i++)
             {
-                var panel = Data.Panels[i];
+                var panel = Context.Panels[i];
 
                 var x = xOffset;
                 var y = yOffset;
@@ -338,34 +338,34 @@
 
                 if (panel.Coord.row == 0)
                 {
-                    h += Data.Strip;
+                    h += Context.Strip;
                 }
 
-                if (panel.Coord.col == 0 && !Data.AxisVisibility.y && Theme.Axis.Y == Position.Left)
+                if (panel.Coord.col == 0 && !Context.AxisVisibility.y && Theme.Axis.Y == Position.Left)
                 {
-                    w += Data.Axis.width;
+                    w += Context.Axis.width;
                 }
 
-                if (panel.Coord.row == (Data.N.rows - 1))
+                if (panel.Coord.row == (Context.N.rows - 1))
                 {
-                    if (!Data.AxisVisibility.x)
+                    if (!Context.AxisVisibility.x)
                     {
-                        h += Data.Axis.height;
+                        h += Context.Axis.height;
                     }
 
-                    if (!Data.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Data.XLab))
+                    if (!Context.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Context.XLab))
                     {
-                        h += Data.AxisTitles.x;
+                        h += Context.AxisTitles.x;
                     }
                 }
 
-                if (panel.Coord.col == (Data.N.cols - 1))
+                if (panel.Coord.col == (Context.N.cols - 1))
                 {
-                    w += Data.Strip;
+                    w += Context.Strip;
 
-                    if (!Data.AxisVisibility.y && Theme.Axis.Y == Position.Right)
+                    if (!Context.AxisVisibility.y && Theme.Axis.Y == Position.Right)
                     {
-                        w += Data.Axis.width;
+                        w += Context.Axis.width;
                     }
 
                     xOffset = xOffsetReset;
@@ -382,7 +382,7 @@
                        Width=@w
                        Height=@h
                        First=@(i == 0)
-                       Last=@(i == (Data.Panels.Count - 1))
+                       Last=@(i == (Context.Panels.Count - 1))
                        T=T TX=TX TY=TY />
             }
         }

@@ -16,6 +16,12 @@
             cursor: pointer;
         }
 
+        #@(Id).loading {
+            opacity: 0.25;
+            transition: opacity linear 100ms;
+            transition-delay: 25ms;
+        }
+
         #@(Id) text {
             font-family: @(Theme.FontFamily);
             fill: #929299;

@@ -1,5 +1,6 @@
 ﻿using GGNet.Formats;
 using GGNet.Transformations;
+using GGNet.Scales.Common;
 
 namespace GGNet.Scales;
 

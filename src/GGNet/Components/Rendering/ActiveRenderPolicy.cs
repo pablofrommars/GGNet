@@ -1,4 +1,4 @@
-namespace GGNet.Components;
+namespace GGNet.Components.Rendering;
 
 public sealed class ActiveRenderPolicy : RenderPolicyBase
 {
@@ -6,7 +6,7 @@ public sealed class ActiveRenderPolicy : RenderPolicyBase
 
 	private readonly SemaphoreSlim semaphore = new(0, 1);
 
-	private ChannelWriter<RenderTarget> writer = default!;
+	private readonly ChannelWriter<RenderTarget> writer;
 
 	private volatile int render = 0;
 
@@ -15,18 +15,21 @@ public sealed class ActiveRenderPolicy : RenderPolicyBase
 	public ActiveRenderPolicy(IPlotRendering plot)
 		: base(plot)
 	{
+		var channel = Channel.CreateUnbounded<RenderTarget>(new()
+		{
+			SingleReader = true,
+			SingleWriter = true
+		});
+
+		writer = channel.Writer;
+
 		task = Task.Factory.StartNew(async () =>
 		{
 			try
 			{
-				var channel = Channel.CreateUnbounded<RenderTarget>(new()
-				{
-					SingleReader = true,
-					SingleWriter = true
-				});
+
 
 				var reader = channel.Reader;
-				writer = channel.Writer;
 
 				var token = cancellationTokenSource.Token;
 
@@ -94,7 +97,7 @@ public sealed class ActiveRenderPolicy : RenderPolicyBase
 	}
 
 	public override IChildRenderPolicy Child() => new ChildRenderPolicy();
-	
+
 	private int disposing = 0;
 
 	public override async ValueTask DisposeAsync()

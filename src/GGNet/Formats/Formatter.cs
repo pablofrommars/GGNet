@@ -6,5 +6,5 @@ public sealed class DoubleFormatter(string format) : IFormatter<double>
 
     public string Format(double value) => value.ToString(format);
 
-	public static DoubleFormatter Instance => new("0.##");
+	public static DoubleFormatter Instance => new("N2");
 }

@@ -1,4 +1,4 @@
-namespace GGNet.Components;
+namespace GGNet.Components.Rendering;
 
 public interface IPlotRendering
 {

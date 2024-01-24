@@ -1,6 +1,6 @@
 using GGNet.Exceptions;
 
-namespace GGNet.Components;
+namespace GGNet.Components.Rendering;
 
 public abstract class RenderPolicyBase(IPlotRendering plot) : IRenderPolicy
 {

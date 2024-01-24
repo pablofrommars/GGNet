@@ -3,6 +3,8 @@ using GGNet.Transformations;
 
 namespace GGNet.Components;
 
+using Rendering;
+
 public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 	where TX : struct
 	where TY : struct
@@ -34,11 +36,11 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 		Area.Width = Width;
 		Area.Height = Height;
 
-		Data.Init(false);
+		Context.Init(false);
 
-		Data.Render(true);
+		Context.Render(true);
 
-		Panel = Data.Panels[0];
+		Panel = Context.Panels[0];
 		xscale = Panel.X;
 		yscale = Panel.Y;
 
@@ -47,7 +49,7 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 
 	public override void Render(RenderTarget target)
 	{
-		Data.Render(false);
+		Context.Render(false);
 		definitionsPolicy.Refresh(target);
 		renderChildPolicy.Refresh(target);
 	}

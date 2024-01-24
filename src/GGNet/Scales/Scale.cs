@@ -8,13 +8,13 @@ public abstract class Scale<TKey, TValue>(ITransformation<TKey>? transformation 
 
     public abstract Guide Guide { get; }
 
-    public IEnumerable<TValue> Breaks { get; protected set; } = Enumerable.Empty<TValue>();
+    public IEnumerable<TValue> Breaks { get; protected set; } = [];
 
-    public IEnumerable<TValue> MinorBreaks { get; protected set; } = Enumerable.Empty<TValue>();
+    public IEnumerable<TValue> MinorBreaks { get; protected set; } = [];
 
-    public IEnumerable<(TValue value, string label)> Labels { get; protected set; } = Enumerable.Empty<(TValue value, string text)>();
+    public IEnumerable<(TValue value, string label)> Labels { get; protected set; } = [];
 
-    public IEnumerable<(TValue value, string title)> Titles { get; protected set; } = Enumerable.Empty<(TValue value, string text)>();
+    public IEnumerable<(TValue value, string title)> Titles { get; protected set; } = [];
 
     public abstract void Train(TKey key);
 

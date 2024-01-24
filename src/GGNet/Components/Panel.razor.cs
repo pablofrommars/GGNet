@@ -8,6 +8,8 @@ using static GGNet.Position;
 
 namespace GGNet.Components;
 
+using Rendering;
+
 public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 	where TX : struct
 	where TY : struct

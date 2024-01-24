@@ -14,14 +14,14 @@
     if (Plot.Title.Width > 0)
     {
         <g clip-path="url(#@(Plot.Id)-plot)">
-            <text x=@(Plot.Title.X + Area.X) y=@Plot.Title.Y class="title">@Plot.Data.Title</text>
+            <text x=@(Plot.Title.X + Area.X) y=@Plot.Title.Y class="title">@Plot.Context.Title</text>
         </g>
     }
 
     if (Plot.SubTitle.Width > 0)
     {
         <g clip-path="url(#@(Plot.Id)-plot)">
-            <text x=@(Plot.SubTitle.X + Area.X) y=@Plot.SubTitle.Y class="SubTitle">@Plot.Data.SubTitle</text>
+            <text x=@(Plot.SubTitle.X + Area.X) y=@Plot.SubTitle.Y class="SubTitle">@Plot.Context.SubTitle</text>
         </g>
     }
 }
@@ -163,7 +163,7 @@
 @if (Last && Plot.Caption.Width > 0)
 {
     <g clip-path="url(#@(Plot.Id)-plot)">
-        <text x=@(Area.X + Area.Width - Plot.Theme.Plot.Caption.Margin.Right) y=@Plot.Caption.Y class="caption">@Plot.Data.Caption</text>
+        <text x=@(Area.X + Area.Width - Plot.Theme.Plot.Caption.Margin.Right) y=@Plot.Caption.Y class="caption">@Plot.Context.Caption</text>
     </g>
 }
 

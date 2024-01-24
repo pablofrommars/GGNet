@@ -1,5 +1,7 @@
 ﻿namespace GGNet.Components;
 
+using Rendering;
+
 using Theme = Theme.Theme;
 
 public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAsyncDisposable
@@ -7,14 +9,14 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
 	where TY : struct
 {
 	[Parameter]
-	public required PlotContext<T, TX, TY> Data { get; init; }
+	public required PlotContext<T, TX, TY> Context { get; init; }
 
 	[Parameter]
 	public required RenderPolicy RenderPolicy { get; init; }
 
-	public string Id => Data.Id;
+	public string Id => Context.Id;
 
-	public Theme Theme => Data.Theme!;
+	public Theme Theme => Context.Theme!;
 
 	protected override void OnInitialized()
 	{

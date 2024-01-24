@@ -1,6 +1,6 @@
-﻿using static System.Math;
+﻿namespace GGNet.Scales.Common;
 
-namespace GGNet.Scales;
+using static System.Math;
 
 public static class Utils
 {
