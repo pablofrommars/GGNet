@@ -20,6 +20,8 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	public Source<T>? Source { get; init; }
 
+	internal bool Initialized { get; set; }
+
 	internal string? Title { get; set; }
 
 	internal string? SubTitle { get; set; }
@@ -64,55 +66,62 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	public void Init(bool grid = true)
 	{
-		this.grid = grid;
+    try
+    {
+      this.grid = grid;
 
-		if (Positions.X.Factory is null)
-		{
-			if (typeof(TX) == typeof(LocalDate))
-			{
-				(this as PlotContext<T, LocalDate, TY>)!.Scale_X_Discrete_Date();
-			}
-			else if (typeof(TX) == typeof(LocalDateTime))
-			{
-				(this as PlotContext<T, LocalDateTime, TY>)!.Scale_X_Discrete_DateTime();
-			}
-			else if (typeof(TX) == typeof(Instant))
-			{
-        throw new GGNetUserException("Scale_X_Instant required");
-			}
-			else if (typeof(TX) == typeof(double))
-			{
-				(this as PlotContext<T, double, TY>)!.Scale_X_Continuous();
-			}
-			else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
-			{
-				this.Scale_X_Discrete();
-			}
-			else
-			{
-				throw new GGNetUserException("Type could not be infered");
-			}
-		}
+      if (Positions.X.Factory is null)
+      {
+        if (typeof(TX) == typeof(LocalDate))
+        {
+          (this as PlotContext<T, LocalDate, TY>)!.Scale_X_Discrete_Date();
+        }
+        else if (typeof(TX) == typeof(LocalDateTime))
+        {
+          (this as PlotContext<T, LocalDateTime, TY>)!.Scale_X_Discrete_DateTime();
+        }
+        else if (typeof(TX) == typeof(Instant))
+        {
+          throw new GGNetUserException("Scale_X_Instant required");
+        }
+        else if (typeof(TX) == typeof(double))
+        {
+          (this as PlotContext<T, double, TY>)!.Scale_X_Continuous();
+        }
+        else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
+        {
+          this.Scale_X_Discrete();
+        }
+        else
+        {
+          throw new GGNetUserException("Type could not be infered");
+        }
+      }
 
-		if (Positions.Y.Factory is null)
-		{
-			if (typeof(TY) == typeof(double))
-			{
-				(this as PlotContext<T, TX, double>)!.Scale_Y_Continuous();
-			}
-			else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
-			{
-				this.Scale_Y_Discrete();
-			}
-			else
-			{
-				throw new GGNetUserException("Type could not be infered");
-			}
-		}
+      if (Positions.Y.Factory is null)
+      {
+        if (typeof(TY) == typeof(double))
+        {
+          (this as PlotContext<T, TX, double>)!.Scale_Y_Continuous();
+        }
+        else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
+        {
+          this.Scale_Y_Discrete();
+        }
+        else
+        {
+          throw new GGNetUserException("Type could not be infered");
+        }
+      }
 
-		Theme ??= GGNet.Theme.Theme.Default();
+      Theme ??= GGNet.Theme.Theme.Default();
 
-		Legends = new(Theme);
+      Legends = new(Theme);
+    }
+    finally
+    {
+      Initialized = true;
+    }
 	}
 
 	protected void RunDefaultPanel(bool first)

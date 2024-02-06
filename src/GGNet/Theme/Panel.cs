@@ -13,7 +13,7 @@ public sealed partial class Panel
 			Fill = dark ? "#343a40" : "#FFFFFF"
 		};
 
-		var color = dark ? "#464950" : "#cccccc";
+		var color = dark ? "#464950" : "#d1d5db";
 
 		Grid = new()
 		{

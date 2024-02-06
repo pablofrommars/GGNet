@@ -15,28 +15,28 @@ public sealed class Plot
 
 		Title = new()
 		{
-			Size = new() { Value = 1.125 },
+			Size = new() { Value = 1.25 },
 			Weight = "bold",
-			Color = dark ? "#FFFFFF" : "#212529",
-			Margin = new() { Bottom = 8 }
+			Color = dark ? "#FFFFFF" : "#111827",
+			Margin = new() { Bottom = 16 }
 		};
 
 		SubTitle = new()
 		{
-			Size = new() { Value = 0.8125 },
-			Color = dark ? "#929299" : "#212529",
-			Margin = new() { Bottom = 8 }
+			Size = new() { Value = 1.125 },
+			Color = dark ? "#929299" : "#374151",
+			Margin = new() { Bottom = 16 }
 		};
 
 		Caption = new()
 		{
-			Size = new() { Value = 0.75 },
+			Size = new() { Value = 0.875 },
 			Anchor = end,
 			Style = "italic",
-			Color = dark ? "#929299" : "#212529",
+			Color = dark ? "#929299" : "#6b7280",
 			Margin = new()
 			{
-				Top = 4,
+				Top = 8,
 				Right = 4,
 				Bottom = 4,
 				Left = 4

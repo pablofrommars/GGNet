@@ -183,9 +183,9 @@ public static class Wilkinson
     var scaled = new double[breaks.Length];
     for (var i = 0; i < breaks.Length; i++)
     {
-      scaled[i] = scale * breaks[i];
+      scaled[i] = 1_000.0 * scale * breaks[i];
     }
 
-    return breaks.Select(o => scale * o).ToArray();
+    return scaled;
 	}
 }

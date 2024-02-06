@@ -3054,7 +3054,7 @@ public static class Plot
   public static PlotContext<T, TX, TY> Theme<T, TX, TY>(
     this PlotContext<T, TX, TY> context,
     Theme.Theme? theme = null,
-    bool dark = true,
+    bool dark = false,
     Position axisY = Left,
     Position legend = Right)
     where TX : struct

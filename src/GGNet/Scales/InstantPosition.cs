@@ -43,7 +43,7 @@ public class InstantPosition : Position<Instant>
 
     for (var i = 0; i < labels.Length; i++)
     {
-      var zoned = Instant.FromUnixTimeSeconds((long)breaks[i]).InZone(timezone);
+      var zoned = Instant.FromUnixTimeMilliseconds((long)breaks[i]).InZone(timezone);
 
       labels[i] = (breaks[i], pattern.Format(zoned));
     }

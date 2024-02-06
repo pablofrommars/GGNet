@@ -9,18 +9,18 @@ public sealed class AxisTitle
 {
 	public AxisTitle(bool dark, Position axisY)
 	{
-		var color = dark ? "#929299" : "#2b2b2b";
+		var color = dark ? "#929299" : "#111827";
 
 		X = new()
 		{
 			Anchor = end,
-			Size = new() { Value = 0.75 },
+			Size = new() { Value = 0.875 },
 				Color = color,
 			Margin = new()
 			{
-				Top = 4,
-				Right = 4,
-				Bottom = 4
+				Top = 8,
+				Right = 8,
+				Bottom = 8
 			}
 		};
 
@@ -28,13 +28,13 @@ public sealed class AxisTitle
 		{
 			Y = new()
 			{
-				Size = new() { Value = 0.75 },
+				Size = new() { Value = 0.875 },
 				Anchor = end,
 				Color = color,
 				Angle = -90,
 				Margin = new()
 				{
-					Right = 4
+					Right = 8
 				}
 			};
 		}
@@ -42,15 +42,15 @@ public sealed class AxisTitle
 		{
 			Y = new()
 			{
-				Size = new() { Value = 0.75 },
+				Size = new() { Value = 0.875 },
 				Anchor = start,
 				Color = color,
 				Angle = 90,
 				Margin = new()
 				{
-					Top = 4,
-					Right = 4,
-					Left = 4
+					Top = 8,
+					Right = 8,
+					Left = 8
 				}
 			};
 		}

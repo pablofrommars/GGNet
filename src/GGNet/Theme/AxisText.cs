@@ -12,15 +12,19 @@ public sealed class AxisText
 		X = new()
 		{
 			Size = new() { Value = 0.75 },
-			Color = dark ? "#929299" : "#2b2b2b",
-			Anchor = middle
-		};
+			Color = dark ? "#929299" : "#374151",
+			Anchor = middle,
+      Margin = new()
+      {
+        Top = 8
+      }
+    };
 
 		Y = new()
 		{
 			Size = new() { Value = 0.75 },
 			Anchor = axisY == Left ? end : start,
-			Color = dark ? "#929299" : "#2b2b2b",
+			Color = dark ? "#929299" : "#374151",
 			Margin = new()
 			{
 				Right = 4,

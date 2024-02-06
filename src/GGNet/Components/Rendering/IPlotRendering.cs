@@ -2,7 +2,7 @@ namespace GGNet.Components.Rendering;
 
 public interface IPlotRendering
 {
-	IRenderPolicy Policy { get; }
+	IRenderPolicy? Policy { get; }
 
 	void Render(RenderTarget target);
 
