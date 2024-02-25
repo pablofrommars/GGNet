@@ -14,7 +14,7 @@ public sealed class AxisTitle
 		X = new()
 		{
 			Anchor = end,
-			Size = new() { Value = 0.875 },
+			Size = new() { Value = 0.75 },
 				Color = color,
 			Margin = new()
 			{
@@ -28,13 +28,13 @@ public sealed class AxisTitle
 		{
 			Y = new()
 			{
-				Size = new() { Value = 0.875 },
+				Size = new() { Value = 0.75 },
 				Anchor = end,
 				Color = color,
 				Angle = -90,
 				Margin = new()
 				{
-					Right = 8
+					Right = 12
 				}
 			};
 		}
@@ -42,7 +42,7 @@ public sealed class AxisTitle
 		{
 			Y = new()
 			{
-				Size = new() { Value = 0.875 },
+				Size = new() { Value = 0.75 },
 				Anchor = start,
 				Color = color,
 				Angle = 90,

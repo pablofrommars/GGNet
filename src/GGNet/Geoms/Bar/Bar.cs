@@ -260,7 +260,9 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 						Aesthetic = new()
 						{
 							Fill = fill,
-							Alpha = Aesthetic.Alpha
+							Alpha = Aesthetic.Alpha,
+              Color = Aesthetic.Color,
+              Width = Aesthetic.Width
 						}
 					};
 
@@ -303,8 +305,10 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 						Aesthetic = new()
 						{
 							Fill = fill,
-							Alpha = Aesthetic.Alpha
-						}
+							Alpha = Aesthetic.Alpha,
+              Color = Aesthetic.Color,
+              Width = Aesthetic.Width
+            }
 					};
 
 					Layer.Add(rect);
@@ -371,8 +375,10 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 						Aesthetic = new()
 						{
 							Fill = fill,
-							Alpha = Aesthetic.Alpha
-						}
+							Alpha = Aesthetic.Alpha,
+              Color = Aesthetic.Color,
+              Width = Aesthetic.Width
+            }
 					};
 
 					Interactivity(rect, item, x + w / 2.0, value);

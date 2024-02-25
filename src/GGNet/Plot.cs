@@ -811,6 +811,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
     string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -830,7 +831,9 @@ public static class Plot
         Aesthetic = new()
         {
           Fill = fill,
-          Alpha = alpha
+          Alpha = alpha,
+          Color = strokeColor,
+          Width = strokeWidth,
         }
       };
 
@@ -851,6 +854,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
     string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -860,7 +864,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
+    return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, strokeColor, strokeWidth, position, width, animation, scale, inherit);
   }
 
   public static PlotContext<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
@@ -874,6 +878,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
     string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -883,7 +888,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
+    context.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, strokeColor, strokeWidth, position, width, animation, scale, inherit);
 
     return context;
   }
@@ -899,6 +904,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
     string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -908,7 +914,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    return context.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
+    return context.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, strokeColor, strokeWidth, position, width, animation, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Bar<T, TX, TY>(
@@ -921,6 +927,7 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
     string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -928,7 +935,7 @@ public static class Plot
     where TX : struct
     where TY : struct
   {
-    return Geom_Bar(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
+    return Geom_Bar(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, strokeColor, strokeWidth, position, width, animation, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Bar<T, TX, TY>(
@@ -941,6 +948,7 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
     string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -948,7 +956,7 @@ public static class Plot
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, width, animation, scale, inherit);
+    context.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, strokeColor, strokeWidth, position, width, animation, scale, inherit);
 
     return context;
   }
