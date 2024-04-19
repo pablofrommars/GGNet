@@ -9,6 +9,7 @@ using Geoms.Point;
 using Geoms.Line;
 using Geoms.Bar;
 using Geoms.Segment;
+using Geoms.Rectangle;
 using Geoms.Area;
 using Geoms.Ribbon;
 using Geoms.ErrorBar;
@@ -225,10 +226,11 @@ public static class Plot
     ITransformation<double>? transformation = null,
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-    IFormatter<double>? formatter = null)
+    IFormatter<double>? formatter = null,
+    bool hide = false)
     where TX : struct
   {
-    context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, formatter);
+    context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, formatter, hide);
 
     return context;
   }
@@ -238,10 +240,11 @@ public static class Plot
      string? format,
      ITransformation<double>? transformation = null,
      (double? min, double? max)? limits = null,
-     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
+     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
+     bool hide = false)
      where TX : struct
   {
-    context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+    context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide);
 
     return context;
   }
@@ -251,10 +254,11 @@ public static class Plot
      ITransformation<double>? transformation = null,
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-    IFormatter<double>? formatter = null)
+    IFormatter<double>? formatter = null,
+     bool hide = false)
     where TX : struct
   {
-    panel.Y = () => new Extended(transformation, limits, expand, formatter);
+    panel.Y = () => new Extended(transformation, limits, expand, formatter, hide);
 
     return panel;
   }
@@ -264,10 +268,11 @@ public static class Plot
        string? format,
     ITransformation<double>? transformation = null,
        (double? min, double? max)? limits = null,
-       (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
+       (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
+     bool hide = false)
          where TX : struct
   {
-    panel.Scale_Y_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+    panel.Scale_Y_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide);
 
     return panel;
   }
@@ -1049,6 +1054,103 @@ public static class Plot
     where TY : struct
   {
     context.Default_Panel().Geom_Segment(x, xend, y, yend, width, color, alpha, lineType);
+
+    return context;
+  }
+
+  public static PanelFactory<T1, TX1, TY1> Geom_Rectangle<T1, TX1, TY1, T2, TX2, TY2>(
+    this PanelFactory<T1, TX1, TY1> panel,
+    Source<T2> source,
+    Func<T2, TX2> x,
+    Func<T2, TY2> y,
+    Func<T2, double> width,
+    Func<T2, double> height,
+    string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0)
+    where TX1 : struct
+    where TX2 : struct
+    where TY1 : struct
+    where TY2 : struct
+  {
+    panel.Add(() =>
+    {
+      var geom = new Rectangle<T2, TX2, TY2>(source, x, y, width, height, null)
+      {
+        Aesthetic = new()
+        {
+          Fill = fill,
+          Alpha = alpha,
+          Color = strokeColor,
+          Width = strokeWidth,
+        }
+      };
+
+      return geom;
+    });
+
+    return panel;
+  }
+
+  public static PlotContext<T1, TX1, TY1> Geom_Rectangle<T1, TX1, TY1, T2, TX2, TY2>(
+    this PlotContext<T1, TX1, TY1> context,
+    Source<T2> source,
+    Func<T2, TX2> x,
+    Func<T2, TY2> y,
+    Func<T2, double> width,
+    Func<T2, double> height,
+    string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0)
+    where TX1 : struct
+    where TX2 : struct
+    where TY1 : struct
+    where TY2 : struct
+  {
+    context.Default_Panel().Geom_Rectangle(source, x, y, width, height, fill, alpha, strokeColor, strokeWidth);
+
+    return context;
+  }
+
+  public static PlotContext<T1, TX1, TY1> Geom_Rectangle<T1, TX1, TY1, T2, TX2, TY2>(
+    this PlotContext<T1, TX1, TY1> context,
+    IEnumerable<T2> source,
+    Func<T2, TX2> x,
+    Func<T2, TY2> y,
+    Func<T2, double> width,
+    Func<T2, double> height,
+    string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0)
+    where TX1 : struct
+    where TX2 : struct
+    where TY1 : struct
+    where TY2 : struct
+    => context.Geom_Rectangle(new Source<T2>(source), x, y, width, height, fill, alpha, strokeColor, strokeWidth);
+
+  public static PanelFactory<T, TX, TY> Geom_Rectangle<T, TX, TY>(
+    this PanelFactory<T, TX, TY> panel,
+    Func<T, TX> x,
+    Func<T, TY> y,
+    Func<T, double> width,
+    Func<T, double> height,
+    string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0)
+    where TX : struct
+    where TY : struct
+  {
+    return Geom_Rectangle(panel, panel.Context.Source!, x, y, width, height, fill, alpha, strokeColor, strokeWidth);
+  }
+
+  public static PlotContext<T, TX, TY> Geom_Rectangle<T, TX, TY>(
+    this PlotContext<T, TX, TY> context,
+    Func<T, TX> x,
+    Func<T, TY> y,
+    Func<T, double> width,
+    Func<T, double> height,
+    string fill = "#23d0fc", double alpha = 1.0,
+    string strokeColor = "inherit", double strokeWidth = 0.0)
+    where TX : struct
+    where TY : struct
+  {
+    context.Default_Panel().Geom_Rectangle(x, y, width, height, fill, alpha, strokeColor, strokeWidth);
 
     return context;
   }

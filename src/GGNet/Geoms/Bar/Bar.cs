@@ -205,7 +205,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 		}
 	}
 
-	private void Interactivity(Rectangle rect, T item, double x, double y)
+	private void Interactivity(GGNet.Shapes.Rectangle rect, T item, double x, double y)
 	{
 		if (OnClick is not null)
 		{
@@ -250,7 +250,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 				{
 					var (item, fill, value) = y[j];
 
-					var rect = new Rectangle
+					var rect = new Shapes.Rectangle
 					{
 						Classes = animation ? "animate-bar" : string.Empty,
 						X = sum,
@@ -295,7 +295,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 				{
 					var (item, fill, value) = y[j];
 
-					var rect = new Rectangle
+					var rect = new Shapes.Rectangle
 					{
 						Classes = animation ? "animate-bar" : string.Empty,
 						X = x - delta / 2.0,
@@ -365,7 +365,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 				{
 					var (item, fill, value) = bar.y[j];
 
-					var rect = new Rectangle
+					var rect = new Shapes.Rectangle
 					{
 						Classes = animation ? "animate-bar" : string.Empty,
 						X = x,

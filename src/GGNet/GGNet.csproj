@@ -24,8 +24,6 @@
     <Compile Remove="Components\Tooltip.cs" />
     <Compile Remove="Components\VTrack.cs" />
     <Content Remove="Components\VTrack.razor" />
-
-    <Compile Remove="Geoms/Rectangle/Rectangle.cs" />
   </ItemGroup>
 
   <ItemGroup>

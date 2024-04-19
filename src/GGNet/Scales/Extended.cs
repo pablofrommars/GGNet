@@ -7,16 +7,19 @@ namespace GGNet.Scales;
 public sealed class Extended : Position<double>
 {
 	private readonly IFormatter<double> formatter;
+  private readonly bool hide;
 
 	public Extended(ITransformation<double>? transformation = null,
 		(double? min, double? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-		IFormatter<double>? formatter = null)
+		IFormatter<double>? formatter = null,
+    bool hide = false)
 		: base(transformation, expand ?? (0.05, 0, 0.05, 0))
 	{
 		Limits = limits ?? (null, null);
 
 		this.formatter = formatter ?? Standard<double>.Instance;
+    this.hide = hide;
 	}
 
 	public override Guide Guide => Guide.None;
@@ -29,6 +32,11 @@ public sealed class Extended : Position<double>
 		{
 			return;
 		}
+
+    if (hide)
+    {
+      return;
+    }
 
 		var breaks = Wilkinson.Extended(Range.min, Range.max) ?? Pretty.Run(Range.min, Range.max);
 		if (breaks is null)
