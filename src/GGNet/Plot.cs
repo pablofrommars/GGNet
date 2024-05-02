@@ -9,7 +9,7 @@ using Geoms.Point;
 using Geoms.Line;
 using Geoms.Bar;
 using Geoms.Segment;
-using Geoms.Rectangle;
+using Geoms.Tile;
 using Geoms.Area;
 using Geoms.Ribbon;
 using Geoms.ErrorBar;
@@ -1058,13 +1058,14 @@ public static class Plot
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Rectangle<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2, TX2, TY2>(
     this PanelFactory<T1, TX1, TY1> panel,
     Source<T2> source,
     Func<T2, TX2> x,
     Func<T2, TY2> y,
     Func<T2, double> width,
     Func<T2, double> height,
+    IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double alpha = 1.0,
     string strokeColor = "inherit", double strokeWidth = 0.0)
     where TX1 : struct
@@ -1074,7 +1075,7 @@ public static class Plot
   {
     panel.Add(() =>
     {
-      var geom = new Rectangle<T2, TX2, TY2>(source, x, y, width, height, null)
+      var geom = new Tile<T2, TX2, TY2>(source, x, y, width, height, _fill, null)
       {
         Aesthetic = new()
         {
@@ -1091,13 +1092,14 @@ public static class Plot
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Rectangle<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2, TX2, TY2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
     Func<T2, TX2> x,
     Func<T2, TY2> y,
     Func<T2, double> width,
     Func<T2, double> height,
+    IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double alpha = 1.0,
     string strokeColor = "inherit", double strokeWidth = 0.0)
     where TX1 : struct
@@ -1105,52 +1107,55 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Rectangle(source, x, y, width, height, fill, alpha, strokeColor, strokeWidth);
+    context.Default_Panel().Geom_Tile(source, x, y, width, height, _fill, fill, alpha, strokeColor, strokeWidth);
 
     return context;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Rectangle<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2, TX2, TY2>(
     this PlotContext<T1, TX1, TY1> context,
     IEnumerable<T2> source,
     Func<T2, TX2> x,
     Func<T2, TY2> y,
     Func<T2, double> width,
     Func<T2, double> height,
+    IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double alpha = 1.0,
     string strokeColor = "inherit", double strokeWidth = 0.0)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
-    => context.Geom_Rectangle(new Source<T2>(source), x, y, width, height, fill, alpha, strokeColor, strokeWidth);
+    => context.Geom_Tile(new Source<T2>(source), x, y, width, height, _fill, fill, alpha, strokeColor, strokeWidth);
 
-  public static PanelFactory<T, TX, TY> Geom_Rectangle<T, TX, TY>(
+  public static PanelFactory<T, TX, TY> Geom_Tile<T, TX, TY>(
     this PanelFactory<T, TX, TY> panel,
     Func<T, TX> x,
     Func<T, TY> y,
     Func<T, double> width,
     Func<T, double> height,
+    IAestheticMapping<T, string>? _fill = null,
     string fill = "#23d0fc", double alpha = 1.0,
     string strokeColor = "inherit", double strokeWidth = 0.0)
     where TX : struct
     where TY : struct
   {
-    return Geom_Rectangle(panel, panel.Context.Source!, x, y, width, height, fill, alpha, strokeColor, strokeWidth);
+    return Geom_Tile(panel, panel.Context.Source!, x, y, width, height, _fill, fill, alpha, strokeColor, strokeWidth);
   }
 
-  public static PlotContext<T, TX, TY> Geom_Rectangle<T, TX, TY>(
+  public static PlotContext<T, TX, TY> Geom_Tile<T, TX, TY>(
     this PlotContext<T, TX, TY> context,
     Func<T, TX> x,
     Func<T, TY> y,
     Func<T, double> width,
     Func<T, double> height,
+    IAestheticMapping<T, string>? _fill = null,
     string fill = "#23d0fc", double alpha = 1.0,
     string strokeColor = "inherit", double strokeWidth = 0.0)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Rectangle(x, y, width, height, fill, alpha, strokeColor, strokeWidth);
+    context.Default_Panel().Geom_Tile(x, y, width, height, _fill, fill, alpha, strokeColor, strokeWidth);
 
     return context;
   }

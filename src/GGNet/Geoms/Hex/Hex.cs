@@ -158,8 +158,8 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
 			Classes = animation ? "animate-hex" : string.Empty,
 			Path = new()
 			{
-				Longitude = new[] { x + dx, x + dx, x, x - dx, x - dx, x },
-				Latitude = new[] { y + dy, y - dy, y - 2.0 * dy, y - dy, y + dy, y + 2.0 * dy }
+				Longitude = [x + dx, x + dx, x, x - dx, x - dx, x],
+				Latitude = [y + dy, y - dy, y - 2.0 * dy, y - dy, y + dy, y + 2.0 * dy]
 			},
 			Aesthetic = new()
 			{

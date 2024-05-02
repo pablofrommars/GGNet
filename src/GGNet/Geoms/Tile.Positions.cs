@@ -1,6 +1,6 @@
 using GGNet.Scales;
 
-namespace GGNet.Geoms.Rectangle;
+namespace GGNet.Geoms.Tile;
 
 internal sealed class Positions<T>
 {
