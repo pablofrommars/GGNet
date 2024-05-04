@@ -11,13 +11,16 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
   where TY : struct
 {
   [Parameter]
-  public double Width { get; set; } = 720;
+  public double Width { get; init; } = 720;
 
   [Parameter]
-  public double Height { get; set; } = 576;
+  public double Height { get; init; } = 576;
 
   [Parameter]
-  public string? Class { get; set; }
+  public string? Class { get; init; }
+
+  [Parameter]
+  public ObjectPool<StringBuilder>? StringBuilderPool { get; init; }
 
   public Zone Title;
   public Zone SubTitle;

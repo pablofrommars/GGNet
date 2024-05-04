@@ -59,16 +59,13 @@ internal sealed class Map<T> : Geom<T, double, double>
       {
         var (point, content) = Selectors.Tooltip(item);
 
-        if (point is not null)
-        {
-          panel.Component?.Tooltip?.Show(
-            point.Longitude,
-            point.Latitude,
-            0,
-            content,
-            Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
-            Aesthetic.FillOpacity);
-        }
+        panel.Component?.Tooltip?.Show(
+          point.Longitude,
+          point.Latitude,
+          0,
+          content,
+          Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
+          Aesthetic.FillOpacity);
 
         return Task.CompletedTask;
       };

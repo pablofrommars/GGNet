@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Geospacial;
 
-public sealed record Point
+public readonly record struct Point
 {
 	public double Longitude { get; init; }
 

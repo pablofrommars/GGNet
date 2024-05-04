@@ -2,11 +2,13 @@
 
 using static Units;
 
-public sealed record Size
+public readonly record struct Size
 {
-	public double Value { get; init; }
+  public Size() { }
+
+  public double Value { get; init; }
 
 	public Units Units { get; init; } = em;
 
-	public sealed override string ToString() => $"{Value}{Units}";
+	public override string ToString() => $"{Value}{Units}";
 }

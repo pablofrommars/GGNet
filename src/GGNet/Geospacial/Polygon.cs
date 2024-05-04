@@ -1,10 +1,10 @@
 ﻿namespace GGNet.Geospacial;
 
-public sealed record Polygon
+public readonly record struct Polygon
 {
 	public bool Hole { get; init; }
 
-	public double[] Longitude { get; init; } = default!;
+	public required double[] Longitude { get; init; }
 
-	public double[] Latitude { get; init; } = default!;
+	public required double[] Latitude { get; init; }
 }
