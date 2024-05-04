@@ -1,14 +1,22 @@
 ﻿namespace GGNet.Elements;
 
-public sealed record Rectangle : IElement
+public readonly record struct Rectangle : IElement
 {
-	public string Fill { get; init; } = "inhenit";
+  public Rectangle() { }
 
-	public double Alpha { get; init; } = 1.0;
+  public string Fill { get; init; } = "inhenit";
 
-	public string Color { get; init; } = "inhenit";
+  public double FillOpacity { get; init; } = 1.0;
 
-	public double Width { get; init; }
+  public string Stroke { get; init; } = "inhenit";
 
-	public Margin Margin { get; init; } = new();
+  public double StrokeOpacity { get; init; } = 1.0;
+
+  public double StrokeWidth { get; init; }
+
+  public Margin Margin { get; init; } = new();
+
+  public string StopColor => Fill;
+
+  public double StopOpacity => FillOpacity;
 }

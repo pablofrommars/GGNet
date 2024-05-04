@@ -16,8 +16,9 @@ internal sealed class Tile<T, TX, TY> : Geom<T, TX, TY>
     Func<T, double> width,
     Func<T, double> height,
     IAestheticMapping<T, string>? fill = null,
-    (bool x, bool y)? scale = null)
-    : base(source, scale, false)
+    (bool x, bool y)? scale = null,
+    bool inherit = true)
+    : base(source, scale, inherit)
   {
     Selectors = new()
     {
@@ -45,14 +46,38 @@ internal sealed class Tile<T, TX, TY> : Geom<T, TX, TY>
   {
     base.Init(panel, facet);
 
-    Positions.X = XMapping(Selectors.X!, panel.X);
-    Positions.Y = YMapping(Selectors.Y!, panel.Y);
+    if (Selectors.X is null)
+    {
+      Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
+    }
+    else
+    {
+      Positions.X = XMapping(Selectors.X, panel.X);
+    }
+
+    if (Selectors.Y is null)
+    {
+      Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
+    }
+    else
+    {
+      Positions.Y = YMapping(Selectors.Y, panel.Y);
+    }
+
+    if (!inherit)
+    {
+      return;
+    }
+
+    Aesthetics.Fill ??= panel.Data.Aesthetics.Fill as IAestheticMapping<T, string>;
   }
 
   public override void Train(T item)
   {
     Positions.X.Train(item);
     Positions.Y.Train(item);
+
+    Aesthetics.Fill?.Train(item);
   }
 
   public override void Legend()
@@ -60,7 +85,7 @@ internal sealed class Tile<T, TX, TY> : Geom<T, TX, TY>
     Legend(Aesthetics.Fill, value => new Elements.Rectangle
     {
       Fill = value,
-      Alpha = Aesthetic.Alpha
+      FillOpacity = Aesthetic.FillOpacity
     });
   }
 
@@ -90,9 +115,9 @@ internal sealed class Tile<T, TX, TY> : Geom<T, TX, TY>
       Aesthetic = new()
       {
         Fill = fill,
-        Alpha = Aesthetic.Alpha,
-        Color = Aesthetic.Color,
-        Width = Aesthetic.Width
+        FillOpacity = Aesthetic.FillOpacity,
+        Stroke = Aesthetic.Stroke,
+        StrokeWidth = Aesthetic.StrokeWidth
       }
     };
 

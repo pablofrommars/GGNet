@@ -33,7 +33,7 @@
                             x2=@(Theme.Legend.Direction == Direction.Vertical ? "0%" : "100%")
                             y2="@(Theme.Legend.Direction == Direction.Vertical ? "100%" : "0%")">
 
-                <stop offset="0%" stop-color=@l.Items[0].elements[0].Value.Fill stop-opacity=@l.Items[0].elements[0].Value.Alpha />
+                <stop offset="0%" stop-color=@l.Items[0].elements[0].Value.StopColor stop-opacity=@l.Items[0].elements[0].Value.StopOpacity />
 
                 @if (n > 2)
                 {
@@ -41,11 +41,11 @@
 
                     @for (var j = 0; j < n - 1; j++)
                     {
-                        <stop offset="@(j * delta)%" stop-color=@l.Items[j].elements[0].Value.Fill stop-opacity=@l.Items[j].elements[0].Value.Alpha />
+                        <stop offset="@(j * delta)%" stop-color=@l.Items[j].elements[0].Value.StopColor stop-opacity=@l.Items[j].elements[0].Value.StopOpacity />
                     }
                 }
 
-                <stop offset="100%" stop-color=@l.Items[n - 1].elements[0].Value.Fill stop-opacity=@l.Items[n - 1].elements[0].Value.Alpha />
+                <stop offset="100%" stop-color=@l.Items[n - 1].elements[0].Value.StopColor stop-opacity=@l.Items[n - 1].elements[0].Value.StopOpacity />
 
             </linearGradient>
         }
@@ -99,9 +99,9 @@
                                       x2=@(Legend.X + l.Width)
                                       y1=@(offset + elements.Height / 2.0)
                                       y2=@(offset + elements.Height / 2.0)
-                                      stroke-width=@hline.Width
-                                      stroke=@hline.Fill
-                                      stroke-opacity=@hline.Alpha
+                                      stroke-width=@hline.StrokeWidth
+                                      stroke=@hline.Stroke
+                                      stroke-opacity=@hline.StrokeOpacity
                                       clip-path="url(#@(Id)-plot)" />
 
                             }
@@ -111,9 +111,9 @@
                                       x2=@(Legend.X + l.Width / 2.0)
                                       y1=@offset
                                       y2=@(offset + elements.Height)
-                                      stroke-width=@vline.Width
-                                      stroke=@vline.Fill
-                                      stroke-opacity=@vline.Alpha
+                                      stroke-width=@vline.StrokeWidth
+                                      stroke=@vline.Stroke
+                                      stroke-opacity=@vline.StrokeOpacity
                                       clip-path="url(#@(Id)-plot)" />
 
                             }
@@ -123,10 +123,10 @@
                                         cy=@(offset + elements.Height / 2.0)
                                         r=@circle.Radius
                                         stroke-width="0.71"
-                                        stroke=@circle.Fill
-                                        stroke-opacity=@circle.Alpha
+                                        stroke=@circle.Stroke
+                                        stroke-opacity=@circle.StrokeOpacity
                                         fill=@circle.Fill
-                                        fill-opacity=@circle.Alpha
+                                        fill-opacity=@circle.FillOpacity
                                         clip-path="url(#@(Id)-plot)" />
                             }
                             else if (element.Value is Elements.Rectangle rect)
@@ -136,9 +136,9 @@
                                       width=@l.Width
                                       height=@elements.Height
                                       fill=@rect.Fill
-                                      fill-opacity=@rect.Alpha
-                                      stroke=@rect.Color
-                                      stroke-width=@rect.Width
+                                      fill-opacity=@rect.FillOpacity
+                                      stroke=@rect.Stroke
+                                      stroke-width=@rect.StrokeWidth
                                       clip-path="url(#@(Id)-plot)" />
                             }
                         }
@@ -213,9 +213,9 @@
                                       x2=@(offset + elements.Width)
                                       y1=@(middle)
                                       y2=@(middle)
-                                      stroke-width=@hline.Width
-                                      stroke=@hline.Fill
-                                      stroke-opacity=@hline.Alpha
+                                      stroke-width=@hline.StrokeWidth
+                                      stroke=@hline.Stroke
+                                      stroke-opacity=@hline.StrokeOpacity
                                       stroke-dasharray=@(hline.LineType.DashArray())
                                       clip-path="url(#@(Id)-plot)" />
 
@@ -226,9 +226,9 @@
                                       x2=@(offset + elements.Width / 2.0)
                                       y1=@Legend.Y
                                       y2=@(Legend.Y + Legend.Height)
-                                      stroke-width=@vline.Width
-                                      stroke=@vline.Fill
-                                      stroke-opacity=@vline.Alpha
+                                      stroke-width=@vline.StrokeWidth
+                                      stroke=@vline.Stroke
+                                      stroke-opacity=@vline.StrokeOpacity
                                       stroke-dasharray=@(vline.LineType.DashArray())
                                       clip-path="url(#@(Id)-plot)" />
 
@@ -239,10 +239,10 @@
                                         cy=@middle
                                         r=@circle.Radius
                                         stroke-width="0.71"
-                                        stroke=@circle.Fill
-                                        stroke-opacity=@circle.Alpha
+                                        stroke=@circle.Stroke
+                                        stroke-opacity=@circle.StrokeOpacity
                                         fill=@circle.Fill
-                                        fill-opacity=@circle.Alpha
+                                        fill-opacity=@circle.FillOpacity
                                         clip-path="url(#@(Id)-plot)" />
                             }
                             else if (element.Value is Elements.Rectangle rect)
@@ -252,9 +252,9 @@
                                       width=@elements.Width
                                       height=@elements.Height
                                       fill=@rect.Fill
-                                      fill-opacity=@rect.Alpha
-                                      stroke=@rect.Color
-                                      stroke-width=@rect.Width
+                                      fill-opacity=@rect.FillOpacity
+                                      stroke=@rect.StrokeOpacity
+                                      stroke-width=@rect.StrokeWidth
                                       clip-path="url(#@(Id)-plot)" />
                             }
                         }

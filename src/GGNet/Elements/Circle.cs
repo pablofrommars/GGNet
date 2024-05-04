@@ -1,10 +1,22 @@
 ﻿namespace GGNet.Elements;
 
-public sealed record Circle : IElement
+public readonly record struct Circle : IElement
 {
-	public double Radius { get; init; }
+  public Circle() { }
 
-	public required string Fill { get; init; }
+  public double Radius { get; init; }
 
-	public double Alpha { get; init; }
+  public string Fill { get; init; } = "inhenit";
+
+  public double FillOpacity { get; init; } = 1.0;
+
+  public string Stroke { get; init; } = "inhenit";
+
+  public double StrokeOpacity { get; init; } = 1.0;
+
+  public double StrokeWidth { get; init; }
+
+  public string StopColor => Fill;
+
+  public double StopOpacity => FillOpacity;
 }

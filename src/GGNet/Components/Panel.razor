@@ -4,7 +4,7 @@
 @typeparam TX
 @typeparam TY
 
-@{ 
+@{
     Render(firstRender);
     firstRender = false;
 }
@@ -56,20 +56,20 @@
     var y1 = Area.Y;
     var y2 = Area.Y + Area.Height;
 
-    if (Data.Data.Theme!.Panel.Grid.Major.X.Width > 0)
+    if (Data.Data.Theme!.Panel.Grid.Major.X.StrokeWidth > 0)
     {
         foreach (var b in xscale.Breaks)
         {
-            var x = CoordX(b);
+            var x = ToX(b);
             <line x1=@x x2=@x y1=@y1 y2=@y2 class="gridMajorX" clip-path="url(#@(clip)-area)" />
         }
     }
 
-    if (Data.Data.Theme!.Panel.Grid.Minor.X.Width > 0)
+    if (Data.Data.Theme!.Panel.Grid.Minor.X.StrokeWidth > 0)
     {
         foreach (var b in xscale.MinorBreaks)
         {
-            var x = CoordX(b);
+            var x = ToX(b);
             <line x1=@x x2=@x y1=@y1 y2=@y2 class="gridMinorX" clip-path="url(#@(clip)-area)" />
         }
     }
@@ -78,7 +78,7 @@
     {
         foreach (var (value, label) in xscale.Labels)
         {
-            var x = CoordX(value);
+            var x = ToX(value);
 
             if (Area.X < x && x < (Area.X + Area.Width))
             {
@@ -90,7 +90,7 @@
 
         foreach (var (value, label) in xscale.Titles)
         {
-            var x = CoordX(value);
+            var x = ToX(value);
 
             if (Area.X < x && x < (Area.X + Area.Width))
             {
@@ -107,20 +107,20 @@
     var x2 = Area.X + Area.Width;
 
 
-    if (Data.Data.Theme.Panel.Grid.Major.Y.Width > 0)
+    if (Data.Data.Theme.Panel.Grid.Major.Y.StrokeWidth > 0)
     {
         foreach (var b in yscale.Breaks)
         {
-            var y = CoordY(b);
+            var y = ToY(b);
             <line x1=@x1 x2=@x2 y1=@y y2=@y class="gridMajorY" clip-path="url(#@(clip)-area)" />
         }
     }
 
-    if (Data.Data.Theme.Panel.Grid.Minor.Y.Width > 0)
+    if (Data.Data.Theme.Panel.Grid.Minor.Y.StrokeWidth > 0)
     {
         foreach (var b in yscale.MinorBreaks)
         {
-            var y = CoordY(b);
+            var y = ToY(b);
             <line x1=@x1 x2=@x2 y1=@y y2=@y class="gridMinorY" clip-path="url(#@(clip)-area)" />
         }
     }
@@ -132,7 +132,7 @@
 
         foreach (var (value, label) in yscale.Labels)
         {
-            var y = CoordY(value) + offset;
+            var y = ToY(value) + offset;
 
             if (Area.Y < (y - height / 2.0) && (y + offset) < (Area.Y + Area.Height))
             {

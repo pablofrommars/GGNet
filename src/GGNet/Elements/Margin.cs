@@ -1,8 +1,10 @@
 ﻿namespace GGNet.Elements;
 
-public sealed record Margin
+public readonly record struct Margin
 {
-	public double Top { get; init; }
+  public Margin() { }
+
+  public double Top { get; init; }
 
 	public double Right { get; init; }
 

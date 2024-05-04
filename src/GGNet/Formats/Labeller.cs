@@ -1,19 +1,8 @@
 ﻿namespace GGNet.Formats;
 
-public sealed class Labeller<T> : IFormatter<T>
-	where T : notnull
+public sealed class Labeller<T>(Func<T, string> selector) : IFormatter<T>
 {
-	private readonly IDictionary<T, string> labels;
+	private readonly Func<T, string> selector = selector;
 
-	public Labeller() => labels = new Dictionary<T, string>();
-
-	public Labeller(IDictionary<T, string> labels) => this.labels = labels;
-
-	public string this[T key]
-	{
-		get => labels[key];
-		set => labels[key] = value;
-	}
-
-	public string Format(T value) => labels[value];
+  public string Format(T value) => selector(value);
 }

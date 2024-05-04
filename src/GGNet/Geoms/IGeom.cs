@@ -5,7 +5,7 @@ namespace GGNet.Geoms;
 
 public interface IGeom
 {
-	Buffer<Shape> Layer { get; }
+	Buffer<IShape> Layer { get; }
 
 	void Train();
 

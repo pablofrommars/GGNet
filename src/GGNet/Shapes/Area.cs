@@ -2,18 +2,28 @@
 
 namespace GGNet.Shapes;
 
-public record Area : Shape
+public readonly record struct Area : IShape
 {
-	public SortedBuffer<(double x, double ymin, double ymax)> Points { get; }
-		= new(comparer: Comparer.Instance);
+  public Area() { }
 
-	private sealed class Comparer : Comparer<(double x, double ymin, double ymax)>
-	{
-		public static readonly Comparer Instance = new();
+  public string? Classes { get; init; }
 
-		public override int Compare((double x, double ymin, double ymax) a, (double x, double ymin, double ymax) b)
+  public Func<MouseEventArgs, Task>? OnClick { get; init; }
+
+  public Func<MouseEventArgs, Task>? OnMouseOver { get; init; }
+
+  public Func<MouseEventArgs, Task>? OnMouseOut { get; init; }
+
+  public required Elements.Rectangle Aesthetic { get; init; }
+
+  public SortedBuffer<(double x, double ymin, double ymax)> Points { get; }
+    = new(comparer: Comparer.Instance);
+
+  private sealed class Comparer : Comparer<(double x, double ymin, double ymax)>
+  {
+    public static readonly Comparer Instance = new();
+
+    public override int Compare((double x, double ymin, double ymax) a, (double x, double ymin, double ymax) b)
             => a.x.CompareTo(b.x);
-	}
-
-	public Elements.Rectangle Aesthetic { get; set; } = default!;
+  }
 }

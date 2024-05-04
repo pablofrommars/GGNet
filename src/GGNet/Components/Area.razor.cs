@@ -23,9 +23,13 @@ public partial class Area<T, TX, TY> : ComponentBase
 	[Parameter]
 	public required string Clip { get; init; }
 
-	private readonly StringBuilder sb = new(); // TODO: SB pool
+	private readonly StringBuilder sb = new();
 
 	protected override bool ShouldRender() => RenderPolicy.ShouldRender();
+
+  private double X(double x) => Coord.ToX(x);
+
+  private double Y(double y) => Coord.ToY(y);
 
 	private string Path(Shapes.Path path)
 	{
@@ -34,18 +38,18 @@ public partial class Area<T, TX, TY> : ComponentBase
 		var (x, y) = path.Points[0];
 
 		sb.Append("M ");
-		sb.Append(Coord.CoordX(x));
+		sb.Append(X(x));
 		sb.Append(' ');
-		sb.Append(Coord.CoordY(y));
+		sb.Append(Y(y));
 
 		for (var j = 1; j < path.Points.Count; j++)
 		{
 			(x, y) = path.Points[j];
 
 			sb.Append(" L ");
-			sb.Append(Coord.CoordX(x));
+			sb.Append(X(x));
 			sb.Append(' ');
-			sb.Append(Coord.CoordY(y));
+			sb.Append(Y(y));
 		}
 
 		return sb.ToString();
@@ -57,18 +61,18 @@ public partial class Area<T, TX, TY> : ComponentBase
 		var (x, _, ymax) = area.Points[0];
 
 		sb.Append("M ");
-		sb.Append(Coord.CoordX(x));
+		sb.Append(X(x));
 		sb.Append(' ');
-		sb.Append(Coord.CoordY(ymax));
+		sb.Append(Y(ymax));
 
 		for (var j = 1; j < area.Points.Count; j++)
 		{
 			(x, _, ymax) = area.Points[j];
 
 			sb.Append(" L ");
-			sb.Append(Coord.CoordX(x));
+			sb.Append(X(x));
 			sb.Append(' ');
-			sb.Append(Coord.CoordY(ymax));
+			sb.Append(Y(ymax));
 		}
 
 		for (var j = 0; j < area.Points.Count; j++)
@@ -77,9 +81,9 @@ public partial class Area<T, TX, TY> : ComponentBase
 			(x, ymin, _) = area.Points[area.Points.Count - j - 1];
 
 			sb.Append(" L ");
-			sb.Append(Coord.CoordX(x));
+			sb.Append(X(x));
 			sb.Append(' ');
-			sb.Append(Coord.CoordY(ymin));
+			sb.Append(Y(ymin));
 		}
 
 		sb.Append(" Z");
@@ -90,16 +94,16 @@ public partial class Area<T, TX, TY> : ComponentBase
 	private void AppendPolygon(Geospacial.Polygon poly)
 	{
 		sb.Append("M ");
-		sb.Append(Coord.CoordX(poly.Longitude[0]));
+		sb.Append(X(poly.Longitude[0]));
 		sb.Append(' ');
-		sb.Append(Coord.CoordY(poly.Latitude[0]));
+		sb.Append(Y(poly.Latitude[0]));
 
 		for (var i = 1; i < poly.Longitude.Length; i++)
 		{
 			sb.Append(" L ");
-			sb.Append(Coord.CoordX(poly.Longitude[i]));
+			sb.Append(X(poly.Longitude[i]));
 			sb.Append(' ');
-			sb.Append(Coord.CoordY(poly.Latitude[i]));
+			sb.Append(Y(poly.Latitude[i]));
 		}
 
 		sb.Append(" Z");

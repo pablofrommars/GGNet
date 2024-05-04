@@ -1,8 +1,10 @@
 ﻿namespace GGNet.Elements;
 
-public record Text
+public readonly record struct Text
 {
-	public Size Size { get; init; } = new() { Value = 1 };
+  public Text() { }
+
+  public Size Size { get; init; } = new() { Value = 1 };
 
 	public Anchor Anchor { get; init; } = Anchor.start;
 

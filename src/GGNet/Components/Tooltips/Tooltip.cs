@@ -35,11 +35,11 @@ public abstract class Tooltip : ComponentBase, ITooltip
 
 		this.color = color ?? "#FFFFFF";
 		this.alpha = alpha ?? 1.0;
-		
+
 		themeColor = Theme.Tooltip.Background ?? color ?? "#FFFFFF";
 		themeAlpha = Theme.Tooltip.Alpha ?? alpha ?? 1.0;
 
-		foreignObject = Render(Coord.CoordX(x), Coord.CoordY(y), offset, content);
+		foreignObject = Render(Coord.ToX(x), Coord.ToY(y), offset, content);
 
 		StateHasChanged();
 	}

@@ -217,20 +217,15 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
   public void Refresh(RenderTarget target) => policy?.Refresh(target);
 
-  protected override bool ShouldRender()
-  {
-    var policyShouldRender = policy?.ShouldRender() ?? true;
+  protected override bool ShouldRender() => policy?.ShouldRender() ?? true;
 
-    return policyShouldRender;
-  }
-
-  public double CoordX(double value) => Area.X + xscale.Coord(value) * Area.Width;
+  public double ToX(double value) => Area.X + xscale.Coord(value) * Area.Width;
 
   public (double min, double max) XRange => xscale.Range;
 
   public ITransformation<double> XTransformation => xscale.RangeTransformation;
 
-  public double CoordY(double value) => Area.Y + (1 - yscale.Coord(value)) * Area.Height;
+  public double ToY(double value) => Area.Y + (1 - yscale.Coord(value)) * Area.Height;
 
   public (double min, double max) YRange => yscale.Range;
 

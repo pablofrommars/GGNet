@@ -1,12 +1,12 @@
 ﻿namespace GGNet.Elements;
 
-public record Line : IElement
+public readonly record struct Line : IElement
 {
-	public double Width { get; init; }
+  public required string Stroke { get; init; }
 
-	public required string Fill { get; init; }
+  public double StrokeOpacity { get; init; }
 
-	public double Alpha { get; init; }
+  public double StrokeWidth { get; init; }
 
-	public LineType LineType { get; init; }
+  public LineType LineType { get; init; }
 }

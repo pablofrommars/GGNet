@@ -23,6 +23,7 @@ using Geoms.Volume;
 using Geoms.Hex;
 using Geoms.RidgeLine;
 using Geoms.Violin;
+using Geoms.Boxplot;
 using Geoms.Map;
 using Scales;
 using Transformations;
@@ -143,10 +144,11 @@ public static class Plot
     ITransformation<double>? transformation = null,
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-    IFormatter<double>? formatter = null)
+    IFormatter<double>? formatter = null,
+    bool hide = false)
     where TY : struct
   {
-    context.Positions.X.Factory = () => new Extended(transformation, limits, expand, formatter);
+    context.Positions.X.Factory = () => new Extended(transformation, limits, expand, formatter, hide);
 
     return context;
   }
@@ -156,10 +158,11 @@ public static class Plot
     string? format,
     ITransformation<double>? transformation = null,
     (double? min, double? max)? limits = null,
-    (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
+    (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
+    bool hide = false)
     where TY : struct
   {
-    context.Scale_X_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+    context.Scale_X_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide);
 
     return context;
   }
@@ -168,11 +171,13 @@ public static class Plot
      this PlotContext<T, TX, TY> context,
      (TX? min, TX? max)? limits = null,
      (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-     IFormatter<TX>? formatter = null)
+     IFormatter<TX>? formatter = null,
+     double offset = 0.0,
+     bool hide = false)
      where TX : struct
      where TY : struct
   {
-    context.Positions.X.Factory = () => new DiscretePosition<TX>(null, limits, expand, formatter);
+    context.Positions.X.Factory = () => new DiscretePosition<TX>(null, limits, expand, formatter, offset, hide);
 
     return context;
   }
@@ -281,9 +286,10 @@ public static class Plot
     this PlotContext<T, double, TY> context,
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-    string? format = null)
+    string? format = null,
+    bool hide = false)
     where TY : struct
-    => context.Scale_X_Continuous(format, Sqrt.Instance, limits, expand);
+    => context.Scale_X_Continuous(format, Sqrt.Instance, limits, expand, hide);
 
   public static PlotContext<T, double, TY> Scale_X_Log10<T, TY>(
     this PlotContext<T, double, TY> context,
@@ -301,17 +307,19 @@ public static class Plot
     this PanelFactory<T, TX, double> panel,
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-    string? format = null)
+    string? format = null,
+    bool hide = false)
     where TX : struct
-    => panel.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand);
+    => panel.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand, hide);
 
   public static PlotContext<T, TX, double> Scale_Y_Sqrt<T, TX>(
     this PlotContext<T, TX, double> context,
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-    string? format = null)
+    string? format = null,
+    bool hide = false)
     where TX : struct
-    => context.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand);
+    => context.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand, hide);
 
   public static PanelFactory<T, TX, double> Scale_Y_Log10<T, TX>(
     this PanelFactory<T, TX, double> panel,
@@ -341,11 +349,13 @@ public static class Plot
      this PlotContext<T, TX, TY> context,
      (TY? min, TY? max)? limits = null,
      (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-     IFormatter<TY>? formatter = null)
+     IFormatter<TY>? formatter = null,
+     double offset = 0.0,
+     bool hide = false)
      where TX : struct
      where TY : struct
   {
-    context.Positions.Y.Factory = () => new DiscretePosition<TY>(null, limits, expand, formatter);
+    context.Positions.Y.Factory = () => new DiscretePosition<TY>(null, limits, expand, formatter, offset, hide);
 
     return context;
   }
@@ -526,7 +536,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
     bool animation = false,
-    double size = 5, string color = "#23d0fc", double alpha = 1.0,
+    double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
@@ -544,7 +554,7 @@ public static class Plot
         {
           Radius = size,
           Fill = color,
-          Alpha = alpha,
+          FillOpacity = opacity,
         }
       };
 
@@ -566,14 +576,14 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
     bool animation = false,
-    double size = 5, string color = "#23d0fc", double alpha = 1.0,
+    double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    return panel.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
+    return panel.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit);
   }
 
   public static PlotContext<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
@@ -588,14 +598,14 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
     bool animation = false,
-    double size = 5, string color = "#23d0fc", double alpha = 1.0,
+    double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
+    context.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit);
 
     return context;
   }
@@ -612,14 +622,14 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
     bool animation = false,
-    double size = 5, string color = "#23d0fc", double alpha = 1.0,
+    double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    return context.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
+    return context.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Point<T, TX, TY>(
@@ -633,12 +643,12 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
     bool animation = false,
-    double size = 5, string color = "#23d0fc", double alpha = 1.0,
+    double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_Point(panel, panel.Context.Source!, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
+    return Geom_Point(panel, panel.Context.Source!, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Point<T, TX, TY>(
@@ -652,12 +662,12 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
     bool animation = false,
-    double size = 5, string color = "#23d0fc", double alpha = 1.0,
+    double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Point(x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, alpha, scale, inherit);
+    context.Default_Panel().Geom_Point(x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit);
 
     return context;
   }
@@ -673,7 +683,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
@@ -686,9 +696,9 @@ public static class Plot
       {
         Aesthetic = new()
         {
-          Width = width,
-          Fill = color,
-          Alpha = alpha,
+          Stroke = color,
+          StrokeOpacity = opacity,
+          StrokeWidth = width,
           LineType = lineType
         },
         OnClick = onclick,
@@ -713,14 +723,14 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    return panel.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
+    return panel.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
   }
 
   public static PlotContext<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
@@ -734,14 +744,14 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
+    context.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
 
     return context;
   }
@@ -757,14 +767,14 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    return context.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
+    return context.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Line<T, TX, TY>(
@@ -777,12 +787,12 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_Line(panel, panel.Context.Source!, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
+    return Geom_Line(panel, panel.Context.Source!, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Line<T, TX, TY>(
@@ -795,12 +805,12 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, scale, inherit);
+    context.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
 
     return context;
   }
@@ -815,8 +825,8 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -836,9 +846,10 @@ public static class Plot
         Aesthetic = new()
         {
           Fill = fill,
-          Alpha = alpha,
-          Color = strokeColor,
-          Width = strokeWidth,
+          FillOpacity = fillOpacity,
+          Stroke = strokeColor,
+          StrokeOpacity = strokeOpacity,
+          StrokeWidth = strokeWidth,
         }
       };
 
@@ -858,8 +869,8 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -869,7 +880,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, strokeColor, strokeWidth, position, width, animation, scale, inherit);
+    return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
   }
 
   public static PlotContext<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
@@ -882,8 +893,8 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -893,7 +904,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, strokeColor, strokeWidth, position, width, animation, scale, inherit);
+    context.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
 
     return context;
   }
@@ -908,8 +919,8 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -919,7 +930,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    return context.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, strokeColor, strokeWidth, position, width, animation, scale, inherit);
+    return context.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Bar<T, TX, TY>(
@@ -931,8 +942,8 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -940,7 +951,7 @@ public static class Plot
     where TX : struct
     where TY : struct
   {
-    return Geom_Bar(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, strokeColor, strokeWidth, position, width, animation, scale, inherit);
+    return Geom_Bar(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Bar<T, TX, TY>(
@@ -952,8 +963,8 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
     double width = 0.9,
     bool animation = false,
@@ -961,7 +972,7 @@ public static class Plot
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, strokeColor, strokeWidth, position, width, animation, scale, inherit);
+    context.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
 
     return context;
   }
@@ -973,7 +984,7 @@ public static class Plot
     Func<T2, TX2> xend,
     Func<T2, TY2> y,
     Func<T2, TY2> yend,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
@@ -985,9 +996,9 @@ public static class Plot
       {
         Aesthetic = new()
         {
-          Width = width,
-          Fill = color,
-          Alpha = alpha,
+          Stroke = color,
+          StrokeOpacity = opacity,
+          StrokeWidth = width,
           LineType = lineType
         }
       };
@@ -1005,13 +1016,13 @@ public static class Plot
     Func<T2, TX2> xend,
     Func<T2, TY2> y,
     Func<T2, TY2> yend,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Segment(source, x, xend, y, yend, width, color, alpha, lineType);
+    context.Default_Panel().Geom_Segment(source, x, xend, y, yend, width, color, opacity, lineType);
 
     return context;
   }
@@ -1023,12 +1034,12 @@ public static class Plot
     Func<T2, TX2> xend,
     Func<T2, TY2> y,
     Func<T2, TY2> yend,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
-    => context.Geom_Segment(new Source<T2>(source), x, xend, y, yend, width, color, alpha, lineType);
+    => context.Geom_Segment(new Source<T2>(source), x, xend, y, yend, width, color, opacity, lineType);
 
   public static PanelFactory<T, TX, TY> Geom_Segment<T, TX, TY>(
     this PanelFactory<T, TX, TY> panel,
@@ -1036,11 +1047,11 @@ public static class Plot
     Func<T, TX> xend,
     Func<T, TY> y,
     Func<T, TY> yend,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX : struct
     where TY : struct
   {
-    return Geom_Segment(panel, panel.Context.Source!, x, xend, y, yend, width, color, alpha, lineType);
+    return Geom_Segment(panel, panel.Context.Source!, x, xend, y, yend, width, color, opacity, lineType);
   }
 
   public static PlotContext<T, TX, TY> Geom_Segment<T, TX, TY>(
@@ -1049,11 +1060,11 @@ public static class Plot
     Func<T, TX> xend,
     Func<T, TY> y,
     Func<T, TY> yend,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Segment(x, xend, y, yend, width, color, alpha, lineType);
+    context.Default_Panel().Geom_Segment(x, xend, y, yend, width, color, opacity, lineType);
 
     return context;
   }
@@ -1066,8 +1077,9 @@ public static class Plot
     Func<T2, double> width,
     Func<T2, double> height,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0)
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
@@ -1075,14 +1087,15 @@ public static class Plot
   {
     panel.Add(() =>
     {
-      var geom = new Tile<T2, TX2, TY2>(source, x, y, width, height, _fill, null)
+      var geom = new Tile<T2, TX2, TY2>(source, x, y, width, height, _fill, scale, inherit)
       {
         Aesthetic = new()
         {
           Fill = fill,
-          Alpha = alpha,
-          Color = strokeColor,
-          Width = strokeWidth,
+          FillOpacity = fillOpacity,
+          Stroke = strokeColor,
+          StrokeOpacity = strokeOpacity,
+          StrokeWidth = strokeWidth,
         }
       };
 
@@ -1100,14 +1113,15 @@ public static class Plot
     Func<T2, double> width,
     Func<T2, double> height,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0)
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Tile(source, x, y, width, height, _fill, fill, alpha, strokeColor, strokeWidth);
+    context.Default_Panel().Geom_Tile(source, x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit);
 
     return context;
   }
@@ -1120,13 +1134,14 @@ public static class Plot
     Func<T2, double> width,
     Func<T2, double> height,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0)
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
-    => context.Geom_Tile(new Source<T2>(source), x, y, width, height, _fill, fill, alpha, strokeColor, strokeWidth);
+    => context.Geom_Tile(new Source<T2>(source), x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit);
 
   public static PanelFactory<T, TX, TY> Geom_Tile<T, TX, TY>(
     this PanelFactory<T, TX, TY> panel,
@@ -1135,12 +1150,13 @@ public static class Plot
     Func<T, double> width,
     Func<T, double> height,
     IAestheticMapping<T, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0)
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_Tile(panel, panel.Context.Source!, x, y, width, height, _fill, fill, alpha, strokeColor, strokeWidth);
+    return Geom_Tile(panel, panel.Context.Source!, x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Tile<T, TX, TY>(
@@ -1150,12 +1166,13 @@ public static class Plot
     Func<T, double> width,
     Func<T, double> height,
     IAestheticMapping<T, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
-    string strokeColor = "inherit", double strokeWidth = 0.0)
+    string fill = "#23d0fc", double fillOpacity = 1.0,
+    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Tile(x, y, width, height, _fill, fill, alpha, strokeColor, strokeWidth);
+    context.Default_Panel().Geom_Tile(x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit);
 
     return context;
   }
@@ -1170,7 +1187,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -1188,7 +1205,7 @@ public static class Plot
         Aesthetic = new()
         {
           Fill = fill,
-          Alpha = alpha
+          FillOpacity = fillOpacity
         }
       };
 
@@ -1208,7 +1225,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -1216,7 +1233,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    return panel.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
+    return panel.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
   }
 
   public static PlotContext<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1229,7 +1246,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -1237,7 +1254,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Area(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
+    context.Default_Panel().Geom_Area(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
 
     return context;
   }
@@ -1252,7 +1269,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -1260,7 +1277,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    return context.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
+    return context.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Area<T, TX, TY>(
@@ -1272,13 +1289,13 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_Area(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
+    return Geom_Area(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Area<T, TX, TY>(
@@ -1290,13 +1307,13 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Area(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, position, scale, inherit);
+    context.Default_Panel().Geom_Area(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
 
     return context;
   }
@@ -1312,7 +1329,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
@@ -1329,7 +1346,7 @@ public static class Plot
         Aesthetic = new()
         {
           Fill = fill,
-          Alpha = alpha
+          FillOpacity = fillOpacity
         }
       };
 
@@ -1350,14 +1367,14 @@ public static class Plot
      Func<T2, MouseEventArgs, Task>? onmouseover = null,
      Func<T2, MouseEventArgs, Task>? onmouseout = null,
      Func<T2, string>? tooltip = null,
-     string fill = "#23d0fc", double alpha = 1.0,
+     string fill = "#23d0fc", double fillOpacity = 1.0,
      (bool x, bool y)? scale = null, bool inherit = true)
      where TX1 : struct
      where TX2 : struct
      where TY1 : struct
      where TY2 : struct
   {
-    return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
+    return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale, inherit);
   }
 
   public static PlotContext<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
@@ -1371,14 +1388,14 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
+    context.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale, inherit);
 
     return context;
   }
@@ -1394,14 +1411,14 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    return context.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
+    return context.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Ribbon<T, TX, TY>(
@@ -1414,12 +1431,12 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_Ribbon(panel, panel.Context.Source!, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
+    return Geom_Ribbon(panel, panel.Context.Source!, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Ribbon<T, TX, TY>(
@@ -1432,12 +1449,12 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, scale, inherit);
+    context.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale, inherit);
 
     return context;
   }
@@ -1473,15 +1490,15 @@ public static class Plot
         OnMouseOut = onmouseout,
         Line = new()
         {
-          Width = width,
-          Fill = color,
-          Alpha = alpha,
+          StrokeWidth = width,
+          Stroke = color,
+          StrokeOpacity = alpha,
           LineType = lineType
         },
         Circle = new()
         {
           Fill = color,
-          Alpha = alpha,
+          FillOpacity = alpha,
           Radius = radius
         }
       };
@@ -1744,7 +1761,7 @@ public static class Plot
     Source<T2> source,
     Func<T2, TX2> x,
     Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX1 : struct
     where TX2 : struct
@@ -1756,19 +1773,19 @@ public static class Plot
       {
         Line = new()
         {
-          Width = width,
-          Fill = color,
-          Alpha = alpha,
+          Stroke = color,
+          StrokeOpacity = opacity,
+          StrokeWidth = width,
           LineType = lineType
         },
         Text = new()
         {
           Size = size ?? new() { Value = 0.75 },
-          Anchor = (anchor == end ? end : start),
+          Anchor = anchor == end ? end : start,
           Weight = weight,
           Style = style,
           Color = color,
-          Alpha = alpha
+          Alpha = opacity
         }
       };
 
@@ -1783,13 +1800,13 @@ public static class Plot
     IEnumerable<T2> source,
     Func<T2, TX2> x,
     Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX1 : struct
     where TX2 : struct
     where TY : struct
   {
-    return panel.Geom_VLine(new Source<T2>(source), x, label, width, color, alpha, lineType, size, anchor, weight, style);
+    return panel.Geom_VLine(new Source<T2>(source), x, label, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PlotContext<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
@@ -1797,13 +1814,13 @@ public static class Plot
     Source<T2> source,
     Func<T2, TX2> x,
     Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX1 : struct
     where TX2 : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_VLine(source, x, label, width, color, alpha, lineType, size, anchor, weight, style);
+    context.Default_Panel().Geom_VLine(source, x, label, width, color, opacity, lineType, size, anchor, weight, style);
 
     return context;
   }
@@ -1813,37 +1830,37 @@ public static class Plot
     IEnumerable<T2> source,
     Func<T2, TX2> x,
     Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX1 : struct
     where TX2 : struct
     where TY : struct
   {
-    return context.Geom_VLine(new Source<T2>(source), x, label, width, color, alpha, lineType, size, anchor, weight, style);
+    return context.Geom_VLine(new Source<T2>(source), x, label, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PanelFactory<T, TX, TY> Geom_VLine<T, TX, TY>(
     this PanelFactory<T, TX, TY> panel,
     Func<T, TX> x,
     Func<T, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
-    return Geom_VLine(panel, panel.Context.Source!, x, label, width, color, alpha, lineType, size, anchor, weight, style);
+    return Geom_VLine(panel, panel.Context.Source!, x, label, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PlotContext<T, TX, TY> Geom_VLine<T, TX, TY>(
     this PlotContext<T, TX, TY> context,
     Func<T, TX> x,
     Func<T, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_VLine(x, label, width, color, alpha, lineType, size, anchor, weight, style);
+    context.Default_Panel().Geom_VLine(x, label, width, color, opacity, lineType, size, anchor, weight, style);
 
     return context;
   }
@@ -1853,7 +1870,7 @@ public static class Plot
     Source<T2> source,
     Func<T2, TY2> y,
     Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY1 : struct
@@ -1865,9 +1882,9 @@ public static class Plot
       {
         Line = new()
         {
-          Width = width,
-          Fill = color,
-          Alpha = alpha,
+          Stroke = color,
+          StrokeOpacity = opacity,
+          StrokeWidth = width,
           LineType = lineType
         },
         Text = new()
@@ -1877,7 +1894,7 @@ public static class Plot
           Weight = weight,
           Style = style,
           Color = color,
-          Alpha = alpha
+          Alpha = opacity
         }
       };
 
@@ -1892,13 +1909,13 @@ public static class Plot
     IEnumerable<T2> source,
     Func<T2, TY2> y,
     Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY1 : struct
     where TY2 : struct
   {
-    return panel.Geom_HLine(new Source<T2>(source), y, label, width, color, alpha, lineType, size, anchor, weight, style);
+    return panel.Geom_HLine(new Source<T2>(source), y, label, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PlotContext<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
@@ -1906,13 +1923,13 @@ public static class Plot
     Source<T2> source,
     Func<T2, TY2> y,
     Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_HLine(source, y, label, width, color, alpha, lineType, size, anchor, weight, style);
+    context.Default_Panel().Geom_HLine(source, y, label, width, color, opacity, lineType, size, anchor, weight, style);
 
     return context;
   }
@@ -1922,37 +1939,37 @@ public static class Plot
     IEnumerable<T2> source,
     Func<T2, TY2> y,
     Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY1 : struct
     where TY2 : struct
   {
-    return context.Geom_HLine(new Source<T2>(source), y, label, width, color, alpha, lineType, size, anchor, weight, style);
+    return context.Geom_HLine(new Source<T2>(source), y, label, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PanelFactory<T, TX, TY> Geom_HLine<T, TX, TY>(
     this PanelFactory<T, TX, TY> panel,
     Func<T, TY> y,
     Func<T, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
-    return Geom_HLine(panel, panel.Context.Source!, y, label, width, color, alpha, lineType, size, anchor, weight, style);
+    return Geom_HLine(panel, panel.Context.Source!, y, label, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PlotContext<T, TX, TY> Geom_HLine<T, TX, TY>(
     this PlotContext<T, TX, TY> context,
     Func<T, TY> y,
     Func<T, string> label,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_HLine(y, label, width, color, alpha, lineType, size, anchor, weight, style);
+    context.Default_Panel().Geom_HLine(y, label, width, color, opacity, lineType, size, anchor, weight, style);
 
     return context;
   }
@@ -1964,7 +1981,7 @@ public static class Plot
     Func<T2, double> b,
     Func<T2, string>? label = null,
     (bool x, bool y)? transformation = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
@@ -1975,19 +1992,19 @@ public static class Plot
       {
         Line = new()
         {
-          Width = width,
-          Fill = color,
-          Alpha = alpha,
+          Stroke = color,
+          StrokeOpacity = opacity,
+          StrokeWidth = width,
           LineType = lineType
         },
         Text = new()
         {
           Size = size ?? new() { Value = 0.75 },
-          Anchor = (anchor == end ? end : start),
+          Anchor = anchor == end ? end : start,
           Weight = weight,
           Style = style,
           Color = color,
-          Alpha = alpha
+          Alpha = opacity
         }
       };
 
@@ -2004,12 +2021,12 @@ public static class Plot
     Func<T2, double> b,
     Func<T2, string>? label = null,
     (bool x, bool y)? transformation = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
-    return panel.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
+    return panel.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PlotContext<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
@@ -2019,12 +2036,12 @@ public static class Plot
     Func<T2, double> b,
     Func<T2, string>? label = null,
     (bool x, bool y)? transformation = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_ABLine(source, a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
+    context.Default_Panel().Geom_ABLine(source, a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
 
     return context;
   }
@@ -2036,12 +2053,12 @@ public static class Plot
     Func<T2, double> b,
     Func<T2, string>? label = null,
     (bool x, bool y)? transformation = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
-    return context.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
+    return context.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PanelFactory<T, TX, TY> Geom_ABLine<T, TX, TY>(
@@ -2050,12 +2067,12 @@ public static class Plot
     Func<T, double> b,
     Func<T, string>? label = null,
     (bool x, bool y)? transformation = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
-    return Geom_ABLine(panel, panel.Context.Source!, a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
+    return Geom_ABLine(panel, panel.Context.Source!, a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PlotContext<T, TX, TY> Geom_ABLine<T, TX, TY>(
@@ -2064,12 +2081,12 @@ public static class Plot
     Func<T, double> b,
     Func<T, string>? label = null,
     (bool x, bool y)? transformation = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_ABLine(a, b, label, transformation, width, color, alpha, lineType, size, anchor, weight, style);
+    context.Default_Panel().Geom_ABLine(a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
 
     return context;
   }
@@ -2083,7 +2100,7 @@ public static class Plot
     Func<T2, TY2>? low = null,
     Func<T2, TY2>? close = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
@@ -2116,9 +2133,9 @@ public static class Plot
         OnClick = onclick,
         Aesthetic = new()
         {
-          Width = width,
-          Fill = color,
-          Alpha = alpha,
+          Stroke = color,
+          StrokeOpacity = opacity,
+          StrokeWidth = width,
           LineType = lineType
 
         }
@@ -2139,13 +2156,13 @@ public static class Plot
     Func<T2, TY2>? low = null,
     Func<T2, TY2>? close = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_OHLC(source, x, open, high, low, close, onclick, width, color, alpha, lineType);
+    context.Default_Panel().Geom_OHLC(source, x, open, high, low, close, onclick, width, color, opacity, lineType);
 
     return context;
   }
@@ -2158,11 +2175,11 @@ public static class Plot
     Func<T, TY>? low = null,
     Func<T, TY>? close = null,
     Func<T, MouseEventArgs, Task>? onclick = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX : struct
     where TY : struct
   {
-    return Geom_OHLC(panel, panel.Context.Source!, x, open, high, low, close, onclick, width, color, alpha, lineType);
+    return Geom_OHLC(panel, panel.Context.Source!, x, open, high, low, close, onclick, width, color, opacity, lineType);
   }
 
   public static PlotContext<T, TX, TY> Geom_OHLC<T, TX, TY>(
@@ -2173,11 +2190,11 @@ public static class Plot
     Func<T, TY>? low = null,
     Func<T, TY>? close = null,
     Func<T, MouseEventArgs, Task>? onclick = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_OHLC(x, open, high, low, close, onclick, width, color, alpha, lineType);
+    context.Default_Panel().Geom_OHLC(x, open, high, low, close, onclick, width, color, opacity, lineType);
 
     return context;
   }
@@ -2190,7 +2207,7 @@ public static class Plot
     Func<T2, TY2>? high = null,
     Func<T2, TY2>? low = null,
     Func<T2, TY2>? close = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
@@ -2222,15 +2239,15 @@ public static class Plot
       {
         Line = new()
         {
-          Width = width,
-          Fill = color,
-          Alpha = alpha,
+          Stroke = color,
+          StrokeOpacity = opacity,
+          StrokeWidth = width,
           LineType = lineType
         },
         Rectangle = new()
         {
           Fill = color,
-          Alpha = alpha
+          FillOpacity = opacity
         }
       };
 
@@ -2248,13 +2265,13 @@ public static class Plot
     Func<T2, TY2>? high = null,
     Func<T2, TY2>? low = null,
     Func<T2, TY2>? close = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Candlestick(source, x, open, high, low, close, width, color, alpha, lineType);
+    context.Default_Panel().Geom_Candlestick(source, x, open, high, low, close, width, color, opacity, lineType);
 
     return context;
   }
@@ -2266,11 +2283,11 @@ public static class Plot
     Func<T, TY>? high = null,
     Func<T, TY>? low = null,
     Func<T, TY>? close = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX : struct
     where TY : struct
   {
-    return Geom_Candlestick(panel, panel.Context.Source!, x, open, high, low, close, width, color, alpha, lineType);
+    return Geom_Candlestick(panel, panel.Context.Source!, x, open, high, low, close, width, color, opacity, lineType);
   }
 
   public static PlotContext<T, TX, TY> Geom_Candlestick<T, TX, TY>(
@@ -2280,11 +2297,11 @@ public static class Plot
     Func<T, TY>? high = null,
     Func<T, TY>? low = null,
     Func<T, TY>? close = null,
-    double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid)
+    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Candlestick(x, open, high, low, close, width, color, alpha, lineType);
+    context.Default_Panel().Geom_Candlestick(x, open, high, low, close, width, color, opacity, lineType);
 
     return context;
   }
@@ -2295,7 +2312,7 @@ public static class Plot
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? volume = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
-    string fill = "#23d0fc", double alpha = 1.0)
+    string fill = "#23d0fc", double opacity = 1.0)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
@@ -2314,7 +2331,7 @@ public static class Plot
         Aesthetic = new()
         {
           Fill = fill,
-          Alpha = alpha
+          FillOpacity = opacity
         }
       };
 
@@ -2330,13 +2347,13 @@ public static class Plot
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? volume = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
-    string fill = "#23d0fc", double alpha = 1.0)
+    string fill = "#23d0fc", double opacity = 1.0)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Volume(source, x, volume, onclick, fill, alpha);
+    context.Default_Panel().Geom_Volume(source, x, volume, onclick, fill, opacity);
 
     return context;
   }
@@ -2346,11 +2363,11 @@ public static class Plot
     Func<T, TX>? x = null,
     Func<T, TY>? volume = null,
     Func<T, MouseEventArgs, Task>? onclick = null,
-    string fill = "#23d0fc", double alpha = 1.0)
+    string fill = "#23d0fc", double opacity = 1.0)
     where TX : struct
     where TY : struct
   {
-    return Geom_Volume(panel, panel.Context.Source!, x, volume, onclick, fill, alpha);
+    return Geom_Volume(panel, panel.Context.Source!, x, volume, onclick, fill, opacity);
   }
 
   public static PlotContext<T, TX, TY> Geom_Volume<T, TX, TY>(
@@ -2358,11 +2375,11 @@ public static class Plot
     Func<T, TX>? x = null,
     Func<T, TY>? volume = null,
     Func<T, MouseEventArgs, Task>? onclick = null,
-    string fill = "#23d0fc", double alpha = 1.0)
+    string fill = "#23d0fc", double opacity = 1.0)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Volume(x, volume, onclick, fill, alpha);
+    context.Default_Panel().Geom_Volume(x, volume, onclick, fill, opacity);
 
     return context;
   }
@@ -2379,7 +2396,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -2404,7 +2421,7 @@ public static class Plot
         Aesthetic = new()
         {
           Fill = fill,
-          Alpha = alpha
+          FillOpacity = opacity
         },
         OnClick = onclick,
         OnMouseOver = onmouseover,
@@ -2429,7 +2446,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -2437,7 +2454,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
+    return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit);
   }
 
   public static PlotContext<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2452,7 +2469,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -2460,7 +2477,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
+    context.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit);
 
     return context;
   }
@@ -2477,7 +2494,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -2485,7 +2502,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    return context.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
+    return context.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Hex<T, TX, TY>(
@@ -2499,13 +2516,13 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_Hex(panel, panel.Context.Source!, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
+    return Geom_Hex(panel, panel.Context.Source!, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Hex<T, TX, TY>(
@@ -2519,13 +2536,13 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, string>? tooltip = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, alpha, animation, scale, inherit);
+    context.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit);
 
     return context;
   }
@@ -2537,7 +2554,7 @@ public static class Plot
     Func<T2, TY2>? y = null,
     Func<T2, double>? height = null,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
@@ -2556,7 +2573,7 @@ public static class Plot
         Aesthetic = new Rectangle
         {
           Fill = fill,
-          Alpha = alpha
+          FillOpacity = fillOpacity
         }
       };
 
@@ -2573,14 +2590,14 @@ public static class Plot
     Func<T2, TY2>? y = null,
     Func<T2, double>? height = null,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    return panel.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, scale, inherit);
+    return panel.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, fillOpacity, scale, inherit);
   }
 
   public static PlotContext<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2590,14 +2607,14 @@ public static class Plot
     Func<T2, TY2>? y = null,
     Func<T2, double>? height = null,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_RidgeLine(source, x, y, height, _fill, fill, alpha, scale, inherit);
+    context.Default_Panel().Geom_RidgeLine(source, x, y, height, _fill, fill, fillOpacity, scale, inherit);
 
     return context;
   }
@@ -2609,14 +2626,14 @@ public static class Plot
     Func<T2, TY2>? y = null,
     Func<T2, double>? height = null,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    return context.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, alpha, scale, inherit);
+    return context.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, fillOpacity, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_RidgeLine<T, TX, TY>(
@@ -2625,12 +2642,12 @@ public static class Plot
     Func<T, TY>? y = null,
     Func<T, double>? height = null,
     IAestheticMapping<T, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_RidgeLine(panel, panel.Context.Source!, x, y, height, _fill, fill, alpha, scale, inherit);
+    return Geom_RidgeLine(panel, panel.Context.Source!, x, y, height, _fill, fill, fillOpacity, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_RidgeLine<T, TX, TY>(
@@ -2639,12 +2656,12 @@ public static class Plot
     Func<T, TY>? y = null,
     Func<T, double>? height = null,
     IAestheticMapping<T, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0,
+    string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_RidgeLine(x, y, height, _fill, fill, alpha, scale, inherit);
+    context.Default_Panel().Geom_RidgeLine(x, y, height, _fill, fill, fillOpacity, scale, inherit);
 
     return context;
   }
@@ -2656,7 +2673,7 @@ public static class Plot
     Func<T2, TY2>? y = null,
     Func<T2, double>? width = null,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0, string? color = null,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -2676,9 +2693,9 @@ public static class Plot
         Aesthetic = new()
         {
           Fill = fill,
-          Alpha = alpha,
-          Color = string.IsNullOrEmpty(color) ? "inherit" : color,
-          Width = string.IsNullOrEmpty(color) ? 0.0 : 0.3
+          FillOpacity = fillOpacity,
+          Stroke = string.IsNullOrEmpty(stroke) ? "inherit" : stroke,
+          StrokeWidth = string.IsNullOrEmpty(stroke) ? 0.0 : 0.3
         }
       };
 
@@ -2695,7 +2712,7 @@ public static class Plot
     Func<T2, TY2>? y = null,
     Func<T2, double>? width = null,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0, string? color = null,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -2703,7 +2720,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    return panel.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, scale, inherit);
+    return panel.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, fillOpacity, stroke, position, scale, inherit);
   }
 
   public static PlotContext<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
@@ -2713,7 +2730,7 @@ public static class Plot
     Func<T2, TY2>? y = null,
     Func<T2, double>? width = null,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0, string? color = null,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -2721,7 +2738,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Violin(source, x, y, width, _fill, fill, alpha, color, position, scale, inherit);
+    context.Default_Panel().Geom_Violin(source, x, y, width, _fill, fill, fillOpacity, stroke, position, scale, inherit);
 
     return context;
   }
@@ -2733,7 +2750,7 @@ public static class Plot
     Func<T2, TY2>? y = null,
     Func<T2, double>? width = null,
     IAestheticMapping<T2, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0, string? color = null,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -2741,7 +2758,7 @@ public static class Plot
     where TY1 : struct
     where TY2 : struct
   {
-    return context.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, alpha, color, position, scale, inherit);
+    return context.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, fillOpacity, stroke, position, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Violin<T, TX, TY>(
@@ -2750,13 +2767,13 @@ public static class Plot
     Func<T, TY>? y = null,
     Func<T, double>? width = null,
     IAestheticMapping<T, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0, string? color = null,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_Violin(panel, panel.Context.Source!, x, y, width, _fill, fill, alpha, color, position, scale, inherit);
+    return Geom_Violin(panel, panel.Context.Source!, x, y, width, _fill, fill, fillOpacity, stroke, position, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Violin<T, TX, TY>(
@@ -2765,13 +2782,128 @@ public static class Plot
     Func<T, TY>? y = null,
     Func<T, double>? width = null,
     IAestheticMapping<T, string>? _fill = null,
-    string fill = "#23d0fc", double alpha = 1.0, string? color = null,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Violin(x, y, width, _fill, fill, alpha, color, position, scale, inherit);
+    context.Default_Panel().Geom_Violin(x, y, width, _fill, fill, fillOpacity, stroke, position, scale, inherit);
+
+    return context;
+  }
+
+  public static PanelFactory<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2, TX2, TY2>(
+  this PanelFactory<T1, TX1, TY1> panel,
+  Source<T2> source,
+  Func<T2, TX2>? x = null,
+  Func<T2, TY2>? y = null,
+  IAestheticMapping<T2, string>? _fill = null,
+  double size = 0.8,
+  string fill = "#23d0fc", double fillOpacity = 1.0, double strokeWidth = 2.0,
+  (bool x, bool y)? scale = null, bool inherit = true)
+  where TX1 : struct
+  where TX2 : struct
+  where TY1 : struct
+  where TY2 : struct
+  {
+    panel.Add(() =>
+    {
+      var geom = new Boxplot<T2, TX2, TY2>(source, x, y, _fill, size, scale, inherit)
+      {
+        Aesthetic = new()
+        {
+          Fill = fill,
+          FillOpacity = fillOpacity,
+          StrokeWidth = strokeWidth
+        }
+      };
+
+      return geom;
+    });
+
+    return panel;
+  }
+
+  public static PanelFactory<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2, TX2, TY2>(
+    this PanelFactory<T1, TX1, TY1> panel,
+    IEnumerable<T2> source,
+    Func<T2, TX2>? x = null,
+    Func<T2, TY2>? y = null,
+    IAestheticMapping<T2, string>? _fill = null,
+    double size = 0.8,
+    string fill = "#23d0fc", double fillOpacity = 1.0, double strokeWidth = 2.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
+    where TX1 : struct
+    where TX2 : struct
+    where TY1 : struct
+    where TY2 : struct
+  {
+    return panel.Geom_Boxplot(new Source<T2>(source), x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
+  }
+
+  public static PlotContext<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2, TX2, TY2>(
+    this PlotContext<T1, TX1, TY1> context,
+    Source<T2> source,
+    Func<T2, TX2>? x = null,
+    Func<T2, TY2>? y = null,
+    IAestheticMapping<T2, string>? _fill = null,
+    double size = 0.8,
+    string fill = "#23d0fc", double fillOpacity = 1.0, double strokeWidth = 2.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
+    where TX1 : struct
+    where TX2 : struct
+    where TY1 : struct
+    where TY2 : struct
+  {
+    context.Default_Panel().Geom_Boxplot(source, x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
+
+    return context;
+  }
+
+  public static PlotContext<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2, TX2, TY2>(
+    this PlotContext<T1, TX1, TY1> context,
+    IEnumerable<T2> source,
+    Func<T2, TX2>? x = null,
+    Func<T2, TY2>? y = null,
+    IAestheticMapping<T2, string>? _fill = null,
+    double size = 0.8,
+    string fill = "#23d0fc", double fillOpacity = 1.0, double strokeWidth = 2.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
+    where TX1 : struct
+    where TX2 : struct
+    where TY1 : struct
+    where TY2 : struct
+  {
+    return context.Geom_Boxplot(new Source<T2>(source), x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
+  }
+
+  public static PanelFactory<T, TX, TY> Geom_Boxplot<T, TX, TY>(
+    this PanelFactory<T, TX, TY> panel,
+    Func<T, TX>? x = null,
+    Func<T, TY>? y = null,
+    IAestheticMapping<T, string>? _fill = null,
+    double size = 0.8,
+    string fill = "#23d0fc", double fillOpacity = 1.0, double strokeWidth = 2.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
+    where TX : struct
+    where TY : struct
+  {
+    return Geom_Boxplot(panel, panel.Context.Source!, x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
+  }
+
+  public static PlotContext<T, TX, TY> Geom_Boxplot<T, TX, TY>(
+    this PlotContext<T, TX, TY> context,
+    Func<T, TX>? x = null,
+    Func<T, TY>? y = null,
+    IAestheticMapping<T, string>? _fill = null,
+    double size = 0.8,
+    string fill = "#23d0fc", double fillOpacity = 1.0, double strokeWidth = 2.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
+    where TX : struct
+    where TY : struct
+  {
+    context.Default_Panel().Geom_Boxplot(x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
 
     return context;
   }
@@ -2786,7 +2918,7 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, (Geospacial.Point point, string content)>? tooltip = null,
     bool animation = false,
-    string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TY1 : struct
@@ -2801,9 +2933,9 @@ public static class Plot
         Aesthetic = new()
         {
           Fill = fill,
-          Alpha = alpha,
-          Color = color,
-          Width = width
+          FillOpacity = fillOpacity,
+          Stroke = stroke,
+          StrokeWidth = width
         }
       };
 
@@ -2823,12 +2955,12 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, (Geospacial.Point point, string content)>? tooltip = null,
     bool animation = false,
-    string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TY1 : struct
   {
-    return Geom_Map(panel, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+    return Geom_Map(panel, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Map<T, TX, TY>(
@@ -2840,12 +2972,12 @@ public static class Plot
     Func<Geospacial.Polygon[], MouseEventArgs, Task>? onmouseout = null,
     Func<Geospacial.Polygon[], (Geospacial.Point point, string content)>? tooltip = null,
     bool animation = false,
-    string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_Map(panel, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+    return Geom_Map(panel, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
   }
 
   public static PlotContext<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
@@ -2858,12 +2990,12 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, (Geospacial.Point point, string content)>? tooltip = null,
     bool animation = false,
-    string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TY1 : struct
   {
-    context.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+    context.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
 
     return context;
   }
@@ -2878,12 +3010,12 @@ public static class Plot
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, (Geospacial.Point point, string content)>? tooltip = null,
     bool animation = false,
-    string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TY1 : struct
   {
-    return Geom_Map(context, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+    return Geom_Map(context, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Map<T, TX, TY>(
@@ -2895,12 +3027,12 @@ public static class Plot
     Func<Geospacial.Polygon[], MouseEventArgs, Task>? onmouseout = null,
     Func<Geospacial.Polygon[], (Geospacial.Point point, string content)>? tooltip = null,
     bool animation = false,
-    string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_Map(context, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+    return Geom_Map(context, new Source<Geospacial.Polygon[]>([polygons]), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Map<T, TX, TY>(
@@ -2912,12 +3044,12 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, (Geospacial.Point point, string content)>? tooltip = null,
     bool animation = false,
-    string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    return Geom_Map(panel, panel.Context.Source!, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+    return Geom_Map(panel, panel.Context.Source!, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
   }
 
   public static PlotContext<T, TX, TY> Geom_Map<T, TX, TY>(
@@ -2929,12 +3061,12 @@ public static class Plot
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, (Geospacial.Point point, string content)>? tooltip = null,
     bool animation = false,
-    string fill = "#23d0fc", double alpha = 1.0, string color = "#000000", double width = 0,
+    string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, alpha, color, width, scale, inherit);
+    context.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
 
     return context;
   }

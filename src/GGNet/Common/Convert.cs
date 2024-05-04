@@ -10,7 +10,7 @@ public static class Convert<T>
 		{
 			//if (!typeof(T).IsNumeric) throw
 
-			var method = new DynamicMethod(string.Empty, typeof(double), new[] { typeof(T) });
+			var method = new DynamicMethod(string.Empty, typeof(double), [typeof(T)]);
 			var il = method.GetILGenerator();
 
 			il.Emit(OpCodes.Ldarg_0);

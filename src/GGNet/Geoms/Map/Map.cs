@@ -6,194 +6,182 @@ namespace GGNet.Geoms.Map;
 
 internal sealed class Map<T> : Geom<T, double, double>
 {
-	private readonly bool animation;
+  private readonly bool animation;
 
-	public Map(
-		Source<T> source,
-		Func<T, Geospacial.Polygon[]> polygons,
-		IAestheticMapping<T, string>? fill = null,
-		Func<T, (Geospacial.Point point, string content)>? tooltip = null,
-		bool animation = false,
-		(bool x, bool y)? scale = null,
-		bool inherit = true)
-		: base(source, scale, inherit)
-	{
-		Selectors = new()
-		{
-			Polygons = polygons,
-			Tooltip = tooltip
-		};
+  public Map(
+    Source<T> source,
+    Func<T, Geospacial.Polygon[]> polygons,
+    IAestheticMapping<T, string>? fill = null,
+    Func<T, (Geospacial.Point point, string content)>? tooltip = null,
+    bool animation = false,
+    (bool x, bool y)? scale = null,
+    bool inherit = true)
+    : base(source, scale, inherit)
+  {
+    Selectors = new()
+    {
+      Polygons = polygons,
+      Tooltip = tooltip
+    };
 
-		Aesthetics = new()
-		{
-			Fill = fill
-		};
+    Aesthetics = new()
+    {
+      Fill = fill
+    };
 
-		this.animation = animation;
-	}
+    this.animation = animation;
+  }
 
-	public Selectors<T> Selectors { get; }
+  public Selectors<T> Selectors { get; }
 
-	public Aesthetics<T> Aesthetics { get; }
+  public Aesthetics<T> Aesthetics { get; }
 
-	public Positions<T> Positions { get; } = new();
+  public Positions<T> Positions { get; } = new();
 
-	public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
+  public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
 
-	public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
+  public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
 
-	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
+  public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
 
-	public Elements.Rectangle Aesthetic { get; set; } = default!;
+  public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
-	{
-		base.Init(panel, facet);
+  public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+  {
+    base.Init(panel, facet);
 
-		Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
-		Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
+    Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
+    Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
 
-		if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
-		{
-			OnMouseOver = (item, _) =>
-			{
-				var (point, content) = Selectors.Tooltip(item);
+    if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
+    {
+      OnMouseOver = (item, _) =>
+      {
+        var (point, content) = Selectors.Tooltip(item);
 
-				if (point is not null)
-				{
-					panel.Component?.Tooltip?.Show(
-						point.Longitude,
-						point.Latitude,
-						0,
-						content,
-						Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
-						Aesthetic.Alpha);
-				}
+        if (point is not null)
+        {
+          panel.Component?.Tooltip?.Show(
+            point.Longitude,
+            point.Latitude,
+            0,
+            content,
+            Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
+            Aesthetic.FillOpacity);
+        }
 
-				return Task.CompletedTask;
-			};
+        return Task.CompletedTask;
+      };
 
-			OnMouseOut = (_, __) =>
-			{
-				panel.Component?.Tooltip?.Hide();
+      OnMouseOut = (_, __) =>
+      {
+        panel.Component?.Tooltip?.Hide();
 
-				return Task.CompletedTask;
-			};
-		}
+        return Task.CompletedTask;
+      };
+    }
 
-		if (!inherit)
-		{
-			return;
-		}
+    if (!inherit)
+    {
+      return;
+    }
 
-		Aesthetics.Fill ??= panel.Data.Aesthetics.Fill as IAestheticMapping<T, string>;
-	}
+    Aesthetics.Fill ??= panel.Data.Aesthetics.Fill as IAestheticMapping<T, string>;
+  }
 
-	public override void Train(T item)
-	{
-		Aesthetics.Fill?.Train(item);
-	}
+  public override void Train(T item)
+  {
+    Aesthetics.Fill?.Train(item);
+  }
 
-	public override void Legend()
-	{
-		Legend(Aesthetics.Fill, value => new Elements.Rectangle
-		{
-			Fill = value,
-			Alpha = Aesthetic.Alpha,
-			Color = Aesthetic.Color,
-			Width = Aesthetic.Width
-		});
-	}
+  public override void Legend()
+  {
+    Legend(Aesthetics.Fill, value => new Elements.Rectangle
+    {
+      Fill = value,
+      FillOpacity = Aesthetic.FillOpacity,
+      Stroke = Aesthetic.Stroke,
+      StrokeWidth = Aesthetic.StrokeWidth
+    });
+  }
 
-	protected override void Shape(T item, bool flip)
-	{
-		var fill = Aesthetic.Fill;
+  protected override void Shape(T item, bool flip)
+  {
+    var fill = Aesthetic.Fill;
 
-		if (Aesthetics.Fill is not null)
-		{
-			fill = Aesthetics.Fill.Map(item);
-			if (string.IsNullOrEmpty(fill))
-			{
-				return;
-			}
-		}
+    if (Aesthetics.Fill is not null)
+    {
+      fill = Aesthetics.Fill.Map(item);
+      if (string.IsNullOrEmpty(fill))
+      {
+        return;
+      }
+    }
 
-		var polygons = Selectors.Polygons(item);
+    var polygons = Selectors.Polygons(item);
 
-		var xmin = double.MaxValue;
-		var xmax = double.MinValue;
+    var xmin = double.MaxValue;
+    var xmax = double.MinValue;
 
-		var ymin = double.MaxValue;
-		var ymax = double.MinValue;
+    var ymin = double.MaxValue;
+    var ymax = double.MinValue;
 
-		for (var i = 0; i < polygons.Length; i++)
-		{
-			var polygon = polygons[i];
-			for (var j = 0; j < polygon.Longitude.Length; j++)
-			{
-				var x = polygon.Longitude[j];
-				var y = polygon.Latitude[j];
+    for (var i = 0; i < polygons.Length; i++)
+    {
+      var polygon = polygons[i];
+      for (var j = 0; j < polygon.Longitude.Length; j++)
+      {
+        var x = polygon.Longitude[j];
+        var y = polygon.Latitude[j];
 
-				if (x < xmin)
-				{
-					xmin = x;
-				}
+        if (x < xmin)
+        {
+          xmin = x;
+        }
 
-				if (x > xmax)
-				{
-					xmax = x;
-				}
+        if (x > xmax)
+        {
+          xmax = x;
+        }
 
-				if (y < ymin)
-				{
-					ymin = y;
-				}
+        if (y < ymin)
+        {
+          ymin = y;
+        }
 
-				if (y > ymax)
-				{
-					ymax = y;
-				}
-			}
-		}
+        if (y > ymax)
+        {
+          ymax = y;
+        }
+      }
+    }
 
-		var multi = new MultiPolygon
-		{
-			Classes = animation ? "animate-map" : string.Empty,
-			Polygons = polygons,
-			Aesthetic = new()
-			{
-				Fill = fill,
-				Alpha = Aesthetic.Alpha,
-				Color = Aesthetic.Color,
-				Width = Aesthetic.Width
-			}
-		};
+    var multi = new MultiPolygon
+    {
+      Classes = animation ? "animate-map" : string.Empty,
+      Polygons = polygons,
+      Aesthetic = new()
+      {
+        Fill = fill,
+        FillOpacity = Aesthetic.FillOpacity,
+        Stroke = Aesthetic.Stroke,
+        StrokeWidth = Aesthetic.StrokeWidth
+      },
+      OnClick = OnClick is not null ? e => OnClick(item, e) : null,
+      OnMouseOver = OnMouseOver is not null ? e => OnMouseOver(item, e) : null,
+      OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
+    };
 
-		if (OnClick is not null)
-		{
-			multi.OnClick = e => OnClick(item, e);
-		}
+    Layer.Add(multi);
 
-		if (OnMouseOver is not null)
-		{
-			multi.OnMouseOver = e => OnMouseOver(item, e);
-		}
+    if (scale.x)
+    {
+      Positions.X.Position.Shape(xmin, xmax);
+    }
 
-		if (OnMouseOut is not null)
-		{
-			multi.OnMouseOut = e => OnMouseOut(item, e);
-		}
-
-		Layer.Add(multi);
-
-		if (scale.x)
-		{
-			Positions.X.Position.Shape(xmin, xmax);
-		}
-
-		if (scale.y)
-		{
-			Positions.Y.Position.Shape(ymin, ymax);
-		}
-	}
+    if (scale.y)
+    {
+      Positions.Y.Position.Shape(ymin, ymax);
+    }
+  }
 }
