@@ -85,8 +85,8 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
     if (!string.IsNullOrEmpty(Context.Title))
     {
-      var width = Context.Title.Height(Context.Theme!.Plot.Title.Size);
-      var height = Context.Title.Height(Context.Theme!.Plot.Title.Size);
+      var width = Context.Title.Height(Context.Theme!.Plot.Title.FontSize);
+      var height = Context.Title.Height(Context.Theme!.Plot.Title.FontSize);
 
       Title.X = Context.Theme!.Plot.Title.Margin.Left;
       Title.Y = Context.Theme!.Plot.Title.Margin.Top + height;
@@ -99,8 +99,8 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
     if (!string.IsNullOrEmpty(Context.SubTitle))
     {
-      var width = Context.SubTitle.Height(Context.Theme!.Plot.SubTitle.Size);
-      var height = Context.SubTitle.Height(Context.Theme!.Plot.SubTitle.Size);
+      var width = Context.SubTitle.Height(Context.Theme!.Plot.SubTitle.FontSize);
+      var height = Context.SubTitle.Height(Context.Theme!.Plot.SubTitle.FontSize);
 
       SubTitle.X = Context.Theme!.Plot.SubTitle.Margin.Left;
       SubTitle.Y = Title.Height + Context.Theme!.Plot.SubTitle.Margin.Top + height;
@@ -113,8 +113,8 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
     if (!string.IsNullOrEmpty(Context.Caption))
     {
-      var width = Context.Caption.Height(Context.Theme!.Plot.Caption.Size);
-      var height = Context.Caption.Height(Context.Theme!.Plot.Caption.Size);
+      var width = Context.Caption.Height(Context.Theme!.Plot.Caption.FontSize);
+      var height = Context.Caption.Height(Context.Theme!.Plot.Caption.FontSize);
 
       Caption.Y = Height - Context.Theme!.Plot.Caption.Margin.Bottom;
       Caption.Width = Context.Theme!.Plot.Caption.Margin.Left + width + Context.Theme!.Plot.Caption.Margin.Right;

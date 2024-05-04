@@ -15,24 +15,24 @@ public sealed class Plot
 
 		Title = new()
 		{
-			Size = new() { Value = 1.25 },
-			Weight = "bold",
+			FontSize = 1.25,
+			FontWeight = "bold",
 			Color = dark ? "#FFFFFF" : "#111827",
 			Margin = new() { Bottom = 16 }
 		};
 
 		SubTitle = new()
 		{
-			Size = new() { Value = 1.125 },
+      FontSize = 1.125,
 			Color = dark ? "#929299" : "#374151",
 			Margin = new() { Bottom = 16 }
 		};
 
 		Caption = new()
 		{
-			Size = new() { Value = 0.875 },
-			Anchor = end,
-			Style = "italic",
+			Anchor = End,
+      FontSize = 0.875 ,
+			FontStyle = "italic",
 			Color = dark ? "#929299" : "#6b7280",
 			Margin = new()
 			{

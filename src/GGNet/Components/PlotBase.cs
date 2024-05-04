@@ -43,8 +43,15 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
     return Policy.RefreshAsync(target);
   }
 
+  private int disposing = 0;
+
   public ValueTask DisposeAsync()
   {
+    if (Interlocked.CompareExchange(ref disposing, 1, 0) == 1)
+    {
+      return ValueTask.CompletedTask;
+    }
+
     if (Policy is null)
     {
       return ValueTask.CompletedTask;

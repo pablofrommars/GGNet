@@ -84,7 +84,7 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 		{
 			return;
 		}
-		
+
 		var value = Selectors.Text(item)?.ToString();
 		if (string.IsNullOrEmpty(value))
 		{
@@ -110,8 +110,8 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 		var x = Positions.X.Map(item);
 		var y = Positions.Y.Map(item);
 
-		var width = value.Width(Aesthetic.Size);
-		var height = value.Height(Aesthetic.Size);
+		var width = value.Width(Aesthetic.FontSize);
+		var height = value.Height(Aesthetic.FontSize);
 
 		var text = new Shapes.Text
 		{

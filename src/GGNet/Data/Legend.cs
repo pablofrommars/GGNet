@@ -17,8 +17,8 @@ internal sealed class Legend
 			Title = new()
 			{
 				Value = aes.Name,
-				Width = aes.Name.Width(theme.Legend.Title.Size),
-				Height = aes.Name.Height(theme.Legend.Title.Size)
+				Width = aes.Name.Width(theme.Legend.Title.FontSize),
+				Height = aes.Name.Height(theme.Legend.Title.FontSize)
 			};
 		}
 

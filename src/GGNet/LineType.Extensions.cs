@@ -1,8 +1,8 @@
-namespace GGNet.Common;
+namespace GGNet;
 
 public static class LineTypeExtensions
 {
-  public static string DashArray(this LineType type) => type switch
+  public static string Render(this LineType type) => type switch
   {
     LineType.Solid => "1 0",
     LineType.Dashed => "10 10",

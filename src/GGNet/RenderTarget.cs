@@ -1,10 +1,10 @@
 namespace GGNet;
 
-public enum RenderTarget
+public enum RenderTarget : ushort
 {
 	None = 0,
 	Loading = 1,
-	Data = 2,
-	Theme = 4,
-	All = 7
+	Data = 1 << 2,
+	Theme = 1 << 4,
+	All = 0xffff
 }

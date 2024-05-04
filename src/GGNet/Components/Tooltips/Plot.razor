@@ -7,9 +7,9 @@
 
             #@(Id) [role^="tooltip"] {
                 --tooltip-color: @color;
-                --tooltip-alpha: @alpha;
+                --tooltip-opacity: @opacity;
                 --tooltip-theme-color: @themeColor;
-                --tooltip-theme-alpha: @themeAlpha;
+                --tooltip-theme-opacity: @themeOpacity;
 
                 --tooltip-fadein-duration: 500ms;
 
@@ -40,9 +40,8 @@
                     background: var(--tooltip-theme-color);
                     white-space: nowrap;
                     pointer-events: none;
-
                     color: @(Theme.Tooltip.Text.Color);
-                    font-size: @(Theme.Tooltip.Text.Size);
+                    font-size: @(Theme.Tooltip.Text.FontSize);
                 }
 
             @@keyframes fadein {

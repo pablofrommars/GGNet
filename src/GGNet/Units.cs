@@ -2,6 +2,6 @@
 
 public enum Units
 {
-	em,
-	px
+	EM,
+	PX
 }

@@ -64,6 +64,8 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	private bool grid = true;
 
+	public Type PlotType => typeof(Components.Plot<T, TX, TY>);
+
 	public void Init(bool grid = true)
 	{
     try
@@ -143,7 +145,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 					var lab = PanelFactories[i].YLab;
 					if (!string.IsNullOrEmpty(lab))
 					{
-						ylab = lab.Height(Theme!.Axis.Title.Y.Size);
+						ylab = lab.Height(Theme!.Axis.Title.Y.FontSize);
 
 						break;
 					}
@@ -170,7 +172,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 						if (!string.IsNullOrEmpty(XLab))
 						{
-							panel.XLab = (XLab.Height(Theme!.Axis.Title.X.Size), XLab);
+							panel.XLab = (XLab.Height(Theme!.Axis.Title.X.FontSize), XLab);
 						}
 					}
 					else
@@ -196,12 +198,12 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 				if (!string.IsNullOrEmpty(XLab))
 				{
-					panel.XLab = (XLab.Height(Theme!.Axis.Title.X.Size), XLab);
+					panel.XLab = (XLab.Height(Theme!.Axis.Title.X.FontSize), XLab);
 				}
 
 				if (!string.IsNullOrEmpty(DefaultFactory.YLab))
 				{
-					panel.YLab = (DefaultFactory.YLab.Height(Theme!.Axis.Title.Y.Size), DefaultFactory.YLab);
+					panel.YLab = (DefaultFactory.YLab.Height(Theme!.Axis.Title.Y.FontSize), DefaultFactory.YLab);
 				}
 
 				Panels.Add(panel);
@@ -249,7 +251,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 		if (Faceting.Strip)
 		{
-			Strip = Theme!.Strip.Text.X.Size.Height();
+			Strip = Theme!.Strip.Text.X.FontSize.Height();
 		}
 
 		if (!Faceting.FreeX)
@@ -267,13 +269,13 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		var xlab = 0.0;
 		if (!string.IsNullOrEmpty(XLab))
 		{
-			xlab = XLab.Height(Theme!.Axis.Title.X.Size);
+			xlab = XLab.Height(Theme!.Axis.Title.X.FontSize);
 		}
 
 		var ylab = 0.0;
 		if (!string.IsNullOrEmpty(DefaultFactory!.YLab))
 		{
-			ylab = DefaultFactory.YLab.Height(Theme!.Axis.Title.Y.Size);
+			ylab = DefaultFactory.YLab.Height(Theme!.Axis.Title.Y.FontSize);
 		}
 
 		for (var i = 0; i < facets.Length; i++)
@@ -438,19 +440,19 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			{
 				foreach (var (_, label) in scale.Labels)
 				{
-					height = Max(height, label.Height(Theme!.Axis.Text.X.Size));
+					height = Max(height, label.Height(Theme!.Axis.Text.X.FontSize));
 				}
 
 				foreach (var (_, title) in scale.Titles)
 				{
-					xtitles = Max(xtitles, title.Height(Theme!.Axis.Title.X.Size));
+					xtitles = Max(xtitles, title.Height(Theme!.Axis.Title.X.FontSize));
 				}
 			}
 		}
 
 		var xtitlesVisibility = xtitles > 0.0;
 
-		xtitles = Max(xtitles, XLab.Height(Theme!.Axis.Title.X.Size));
+		xtitles = Max(xtitles, XLab.Height(Theme!.Axis.Title.X.FontSize));
 
 		var width = 0.0;
 		var ytitles = 0.0;
@@ -465,12 +467,12 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			{
 				foreach (var (_, label) in scale.Labels)
 				{
-					width = Max(width, label.Width(Theme.Axis.Text.Y.Size));
+					width = Max(width, label.Width(Theme.Axis.Text.Y.FontSize));
 				}
 
 				foreach (var (_, title) in scale.Titles)
 				{
-					ytitles = Max(ytitles, title.Height(Theme.Axis.Title.Y.Size));
+					ytitles = Max(ytitles, title.Height(Theme.Axis.Title.Y.FontSize));
 				}
 			}
 		}
@@ -481,10 +483,4 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 		AxisTitlesVisibility = (xtitlesVisibility, false);
 	}
-
-	#region IData
-
-	public Type PlotType => typeof(Components.Plot<T, TX, TY>);
-
-	#endregion
 }

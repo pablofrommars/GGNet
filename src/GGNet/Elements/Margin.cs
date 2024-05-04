@@ -12,5 +12,5 @@ public readonly record struct Margin
 
 	public double Left { get; init; }
 
-	public Units Units { get; init; } = Units.px;
+	public Units Units { get; init; } = Units.PX;
 }

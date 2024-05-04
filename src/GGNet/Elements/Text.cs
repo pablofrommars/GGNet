@@ -4,19 +4,19 @@ public readonly record struct Text
 {
   public Text() { }
 
-  public Size Size { get; init; } = new() { Value = 1 };
+	public Anchor Anchor { get; init; } = Anchor.Start;
 
-	public Anchor Anchor { get; init; } = Anchor.start;
+  public string FontFamily { get; init; } = "Inter var";
 
-	public string Weight { get; init; } = "normal";
+  public Size FontSize { get; init; } = 1.0;
 
-	public string Style { get; init; } = "normal";
+	public string FontWeight { get; init; } = "normal";
+
+	public string FontStyle { get; init; } = "normal";
 
 	public string Color { get; init; } = "#929299";
 
-	public string Fill { get; init; } = "#FFFFFF";
-
-	public double Alpha { get; init; } = 1.0;
+	public double Opacity { get; init; } = 1.0;
 
 	public double Angle { get; init; }
 

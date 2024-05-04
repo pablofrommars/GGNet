@@ -10,9 +10,9 @@ public sealed class StripText
 
 		X = new()
 		{
-			Size = new() { Value = 0.75 },
+      FontSize = 0.75,
+			FontWeight = "bold",
 			Color = color,
-			Weight = "bold",
 			Margin = new()
 			{
 				Left = 4,
@@ -23,9 +23,9 @@ public sealed class StripText
 
 		Y = new()
 		{
-			Size = new() { Value = 0.75 },
+      FontSize = 0.75,
+			FontWeight = "bold",
 			Color = color,
-			Weight = "bold",
 			Angle = 90,
 			Margin = new()
 			{

@@ -10,7 +10,69 @@
 
 <svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height" class="@DynamicClass">
 
-    <GGNet.Components.Definitions.Plot Id=@Id Theme=@Theme RenderPolicy=@definitionsPolicy />
+    <style type="text/css">
+        line,
+        polyline,
+        polygon,
+        path,
+        rect,
+        circle {
+            stroke-linecap: butt;
+            stroke-linejoin: round;
+            stroke-miterlimit: 10.00;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .pointer-events-none {
+            pointer-events: none;
+        }
+
+        .loading {
+            opacity: 0.25;
+            transition: opacity linear 100ms;
+            transition-delay: 25ms;
+        }
+
+        .animate-point {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .animate-point:hover {
+            transform: scale(1.5);
+        }
+
+        .animate-bar {
+            transition: transform 0.2s ease-in-out;
+            fill-opacity: 0.6 !important;
+        }
+
+        .animate-bar:hover {
+            fill-opacity: 0.8 !important;
+        }
+
+        .animate-map {
+            transition: transform 0.2s ease-in-out;
+            fill-opacity: 0.6 !important;
+            stroke-width: 0.2 !important;
+        }
+
+        .animate-map:hover {
+            fill-opacity: 1 !important;
+            stroke-width: 0.5 !important;
+        }
+
+        .animate-hex {
+            transition: transform 0.2s ease-in-out;
+            fill-opacity: 0.7 !important;
+        }
+
+        .animate-hex:hover {
+            fill-opacity: 1 !important;
+        }
+    </style>
 
     <defs>
         @for (int i = 0; i < Context.Legends.Count; i++)
@@ -54,13 +116,11 @@
 
     </defs>
 
-    <GGNet.Components.Definitions.Animation Id=@Id Theme=@Theme />
-
     <clipPath id="@(Id)-plot">
         <rect x="0" y="0" width=@Width height=@Height />
     </clipPath>
 
-    <rect width="100%" height="100%" class="plot" />
+    <rect width="100%" height="100%" fill=@(Theme.Plot.Background.Fill) />
 
     @if (Legend.Width > 0)
     {
@@ -76,9 +136,19 @@
                 {
                     offset += Theme.Legend.Title.Margin.Top;
 
-                    <g clip-path="url(#@(Id)-plot)">
-                        <text x=@Legend.X y=@(offset + l.Title.Height) class="legendTitle">@l.Title.Value</text>
-                    </g>
+                    <text>
+                        <text
+                            x=@(Legend.X)
+                            y=@(offset + l.Title.Height)
+                            text-anchor=@(Theme.Legend.Title.Anchor.Render())
+                            font-size=@(Theme.Legend.Title.FontSize)
+                            font-weight=@(Theme.Legend.Title.FontWeight)
+                            font-style=@(Theme.Legend.Title.FontStyle)
+                            fill=@(Theme.Legend.Title.Color)
+                            clip-path="url(#@(Id)-plot)">
+                            @l.Title.Value
+                        </text>
+                    </text>
 
                     offset += l.Title.Height + Theme.Legend.Title.Margin.Bottom;
                 }
@@ -145,9 +215,19 @@
                             }
                         }
 
-                        <g clip-path="url(#@(Id)-legend)">
-                            <text x=@(Legend.X + l.Width + Theme.Legend.Labels.Margin.Left) y=@(offset + elements.Height / 2.0 + label.Height / 4.0) class="legendLabels">@label.Value</text>
-                        </g>
+                        <text>
+                            <text
+                                x=@(Legend.X + l.Width + Theme.Legend.Labels.Margin.Left)
+                                y=@(offset + elements.Height / 2.0 + label.Height / 4.0)
+                                text-anchor=@(Theme.Legend.Labels.Anchor.Render())
+                                font-size=@(Theme.Legend.Labels.FontSize)
+                                font-weight=@(Theme.Legend.Labels.FontWeight)
+                                font-style=@(Theme.Legend.Labels.FontStyle)
+                                fill=@(Theme.Legend.Labels.Color)
+                                clip-path="url(#@(Id)-legend)">
+                            @label.Value
+                            </text>
+                        </text>
 
                         offset += Math.Max(elements.Height, label.Height) + Theme.Legend.Labels.Margin.Bottom;
                     }
@@ -163,9 +243,19 @@
                     {
                         var (label, _) = l.Items[j];
 
-                        <g clip-path="url(#@(Id)-legend)">
-                            <text x=@xOffset y=@(offset + (j + 1.0) * 3.0 * l.Height + label.Height / 4.0) class="legendLabels">@label.Value</text>
-                        </g>
+                        <text>
+                            <text
+                                x=@xOffset
+                                y=@(offset + (j + 1.0) * 3.0 * l.Height + label.Height / 4.0)
+                                text-anchor=@(Theme.Legend.Labels.Anchor.Render())
+                                font-size=@(Theme.Legend.Labels.FontSize)
+                                font-weight=@(Theme.Legend.Labels.FontWeight)
+                                font-style=@(Theme.Legend.Labels.FontStyle)
+                                fill=@(Theme.Legend.Labels.Color)
+                                clip-path="url(#@(Id)-legend)">
+                                    @label.Value
+                            </text>
+                        </text>
                     }
 
                     <rect x=@Legend.X
@@ -192,9 +282,19 @@
                 {
                     offset += Theme.Legend.Title.Margin.Left;
 
-                    <g clip-path="url(#@(Id)-plot)">
-                        <text x=@offset y=@(middle + l.Title.Height / 4.0) class="legendTitle">@l.Title.Value</text>
-                    </g>
+                    <text>
+                        <text
+                            x=@offset
+                            y=@(middle + l.Title.Height / 4.0)
+                            text-anchor=@(Theme.Legend.Title.Anchor.Render())
+                            font-size=@(Theme.Legend.Title.FontSize)
+                            font-weight=@(Theme.Legend.Title.FontWeight)
+                            font-style=@(Theme.Legend.Title.FontStyle)
+                            fill=@(Theme.Legend.Title.Color)
+                            clip-path="url(#@(Id)-plot)">
+                                @l.Title.Value
+                        </text>
+                    </text>
 
                     offset += l.Title.Width + Theme.Legend.Title.Margin.Right;
                 }
@@ -218,7 +318,7 @@
                                       stroke-width=@hline.StrokeWidth
                                       stroke=@hline.Stroke
                                       stroke-opacity=@hline.StrokeOpacity
-                                      stroke-dasharray=@(hline.LineType.DashArray())
+                                      stroke-dasharray=@(hline.LineType.Render())
                                       clip-path="url(#@(Id)-plot)" />
 
                             }
@@ -231,7 +331,7 @@
                                       stroke-width=@vline.StrokeWidth
                                       stroke=@vline.Stroke
                                       stroke-opacity=@vline.StrokeOpacity
-                                      stroke-dasharray=@(vline.LineType.DashArray())
+                                      stroke-dasharray=@(vline.LineType.Render())
                                       clip-path="url(#@(Id)-plot)" />
 
                             }
@@ -265,9 +365,19 @@
 
                         offset += Theme.Legend.Labels.Margin.Left;
 
-                        <g clip-path="url(#@(Id)-legend)">
-                            <text x=@offset y=@(middle + label.Height / 4.0) class="legendLabels">@label.Value</text>
-                        </g>
+                        <text>
+                            <text
+                                x=@offset
+                                y=@(middle + label.Height / 4.0)
+                                text-anchor=@(Theme.Legend.Labels.Anchor.Render())
+                                font-size=@(Theme.Legend.Labels.FontSize)
+                                font-weight=@(Theme.Legend.Labels.FontWeight)
+                                font-style=@(Theme.Legend.Labels.FontStyle)
+                                fill=@(Theme.Legend.Labels.Color)
+                                clip-path="url(#@(Id)-legend)">
+                                    @label.Value
+                            </text>
+                        </text>
 
                         offset += label.Width + Theme.Legend.Labels.Margin.Right;
                     }
@@ -282,9 +392,19 @@
                     {
                         var (label, _) = l.Items[j];
 
-                        <g clip-path="url(#@(Id)-legend)">
-                            <text x=@(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0) y=@yOffset class="legendLabels">@label.Value</text>
-                        </g>
+                        <text>
+                            <text
+                                x=@(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0)
+                                y=@yOffset
+                                text-anchor=@(Theme.Legend.Labels.Anchor.Render())
+                                font-size=@(Theme.Legend.Labels.FontSize)
+                                font-weight=@(Theme.Legend.Labels.FontWeight)
+                                font-style=@(Theme.Legend.Labels.FontStyle)
+                                fill=@(Theme.Legend.Labels.Color)
+                                clip-path="url(#@(Id)-legend)">
+                                    @label.Value
+                            </text>
+                        </text>
                     }
 
                     yOffset += Theme.Legend.Labels.Margin.Bottom;

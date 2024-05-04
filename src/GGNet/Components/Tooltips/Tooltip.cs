@@ -21,23 +21,23 @@ public abstract class Tooltip : ComponentBase, ITooltip
 	protected bool visibility = false;
 
 	protected string? color;
-	protected double alpha;
+	protected double opacity;
 	protected string? themeColor;
-	protected double themeAlpha;
+	protected double themeOpacity;
 
 	protected string? foreignObject;
 
 	protected abstract string Render(double x, double y, double offset, string content);
 
-	public void Show(double x, double y, double offset, string content, string? color = null, double? alpha = null)
+	public void Show(double x, double y, double offset, string content, string? color = null, double? opacity = null)
 	{
 		visibility = true;
 
 		this.color = color ?? "#FFFFFF";
-		this.alpha = alpha ?? 1.0;
+		this.opacity = opacity ?? 1.0;
 
 		themeColor = Theme.Tooltip.Background ?? color ?? "#FFFFFF";
-		themeAlpha = Theme.Tooltip.Alpha ?? alpha ?? 1.0;
+    themeOpacity = Theme.Tooltip.Opacity ?? opacity ?? 1.0;
 
 		foreignObject = Render(Coord.ToX(x), Coord.ToY(y), offset, content);
 

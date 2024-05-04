@@ -11,9 +11,9 @@ public sealed class AxisText
 	{
 		X = new()
 		{
-			Size = new() { Value = 0.75 },
+			Anchor = Middle,
+			FontSize = 0.75,
 			Color = dark ? "#929299" : "#374151",
-			Anchor = middle,
       Margin = new()
       {
         Top = 8
@@ -22,8 +22,8 @@ public sealed class AxisText
 
 		Y = new()
 		{
-			Size = new() { Value = 0.75 },
-			Anchor = axisY == Left ? end : start,
+			Anchor = axisY == Left ? End : Start,
+      FontSize = 0.75,
 			Color = dark ? "#929299" : "#374151",
 			Margin = new()
 			{

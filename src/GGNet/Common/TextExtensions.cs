@@ -117,7 +117,7 @@ public static class TextExtensions
 
 		var relative = size.Value;
 
-		if (size.Units == Units.px)
+		if (size.Units == Units.PX)
 		{
 			relative /= 16;
 		}
@@ -125,7 +125,7 @@ public static class TextExtensions
 		return relative * width;
 	}
 
-	public static double Height(this Size size) => size.Value * (size.Units == Units.em ? 16 : 1);
+	public static double Height(this Size size) => size.Value * (size.Units == Units.EM ? 16 : 1);
 
 	public static double Height(this string? text, Size size) => string.IsNullOrEmpty(text) ? 0 : size.Height();
 }

@@ -1,9 +1,9 @@
 ﻿namespace GGNet.Formats;
 
 public sealed class Standard<T> : IFormatter<T>
-	where T : notnull
+  where T : notnull
 {
-	public static Standard<T> Instance => new();
+  public static Standard<T> Instance => new();
 
-	public string Format(T value) => value.ToString()!;
+  public string Format(T value) => value.ToString()!;
 }

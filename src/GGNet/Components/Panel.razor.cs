@@ -101,8 +101,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
     if (!string.IsNullOrEmpty(Data.Strip.x))
     {
-      var width = Data.Strip.x.Width(Data.Data.Theme!.Strip.Text.X.Size);
-      var height = Data.Strip.x.Height(Data.Data.Theme!.Strip.Text.X.Size);
+      var width = Data.Strip.x.Width(Data.Data.Theme!.Strip.Text.X.FontSize);
+      var height = Data.Strip.x.Height(Data.Data.Theme!.Strip.Text.X.FontSize);
 
       //xStrip.X = X + Data.Data.Theme.Strip.Text.X.Margin.Left;
       xStrip.Y = Y + Data.Data.Theme!.Strip.Text.X.Margin.Top + height;
@@ -115,8 +115,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
     if (!string.IsNullOrEmpty(Data.Strip.y))
     {
-      var width = Data.Strip.y.Height(Data.Data.Theme!.Strip.Text.Y.Size);
-      var height = Data.Strip.y.Width(Data.Data.Theme!.Strip.Text.Y.Size);
+      var width = Data.Strip.y.Height(Data.Data.Theme!.Strip.Text.Y.FontSize);
+      var height = Data.Strip.y.Width(Data.Data.Theme!.Strip.Text.Y.FontSize);
 
       yStrip.X = Area.X + Area.Width - Data.Data.Theme!.Strip.Text.X.Margin.Right - width;
       yStrip.Y = Area.Y + Data.Data.Theme!.Strip.Text.Y.Margin.Top;
@@ -176,7 +176,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
       if (Data.X.Titles.Any())
       {
-        xTitlesHeight = Max(xTitlesHeight, Data.Data.Theme!.Axis.Title.X.Size.Height());
+        xTitlesHeight = Max(xTitlesHeight, Data.Data.Theme!.Axis.Title.X.FontSize.Height());
       }
 
       if (xTitlesHeight > 0.0)

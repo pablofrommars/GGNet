@@ -16,8 +16,6 @@ public sealed class Theme(bool dark, Position axisY, Position legend)
 
   public Strip Strip { get; set; } = new(dark);
 
-  public Animation Animation { get; set; } = new();
-
   public Tooltip Tooltip { get; set; } = new();
 
   public static Theme Default(bool dark = true, Position axisY = Left, Position legend = Right)

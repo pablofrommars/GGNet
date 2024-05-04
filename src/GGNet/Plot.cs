@@ -1640,7 +1640,7 @@ public static class Plot
     Func<T2, double>? _angle = null,
     Func<T2, TT>? text = null,
     IAestheticMapping<T2, string>? _color = null,
-    Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+    Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
@@ -1653,10 +1653,10 @@ public static class Plot
       {
         Aesthetic = new()
         {
-          Size = size ?? new() { Value = 1 },
           Anchor = anchor,
-          Weight = weight,
-          Style = style,
+          FontSize = size ?? 1,
+          FontWeight = weight,
+          FontStyle = style,
           Color = color,
           Angle = angle
         }
@@ -1676,7 +1676,7 @@ public static class Plot
     Func<T2, double>? _angle = null,
     Func<T2, TT>? text = null,
     IAestheticMapping<T2, string>? _color = null,
-    Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+    Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
@@ -1694,7 +1694,7 @@ public static class Plot
     Func<T2, double>? _angle = null,
     Func<T2, TT>? text = null,
     IAestheticMapping<T2, string>? _color = null,
-    Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+    Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
@@ -1714,7 +1714,7 @@ public static class Plot
     Func<T2, double>? _angle = null,
     Func<T2, TT>? text = null,
     IAestheticMapping<T2, string>? _color = null,
-    Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+    Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
     where TX2 : struct
@@ -1731,7 +1731,7 @@ public static class Plot
     Func<T, double>? _angle = null,
     Func<T, TT>? text = null,
     IAestheticMapping<T, string>? _color = null,
-    Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+    Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
@@ -1746,7 +1746,7 @@ public static class Plot
     Func<T, double>? _angle = null,
     Func<T, TT>? text = null,
     IAestheticMapping<T, string>? _color = null,
-    Size? size = null, Anchor anchor = middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
+    Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
     where TY : struct
@@ -1762,7 +1762,7 @@ public static class Plot
     Func<T2, TX2> x,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX1 : struct
     where TX2 : struct
     where TY : struct
@@ -1780,12 +1780,12 @@ public static class Plot
         },
         Text = new()
         {
-          Size = size ?? new() { Value = 0.75 },
-          Anchor = anchor == end ? end : start,
-          Weight = weight,
-          Style = style,
+          Anchor = anchor == End ? End : Start,
+          FontSize = size ?? 0.75,
+          FontWeight = weight,
+          FontStyle = style,
           Color = color,
-          Alpha = opacity
+          Opacity = opacity
         }
       };
 
@@ -1801,7 +1801,7 @@ public static class Plot
     Func<T2, TX2> x,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX1 : struct
     where TX2 : struct
     where TY : struct
@@ -1815,7 +1815,7 @@ public static class Plot
     Func<T2, TX2> x,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX1 : struct
     where TX2 : struct
     where TY : struct
@@ -1831,7 +1831,7 @@ public static class Plot
     Func<T2, TX2> x,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX1 : struct
     where TX2 : struct
     where TY : struct
@@ -1844,7 +1844,7 @@ public static class Plot
     Func<T, TX> x,
     Func<T, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
@@ -1856,7 +1856,7 @@ public static class Plot
     Func<T, TX> x,
     Func<T, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
@@ -1871,7 +1871,7 @@ public static class Plot
     Func<T2, TY2> y,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY1 : struct
     where TY2 : struct
@@ -1889,12 +1889,12 @@ public static class Plot
         },
         Text = new()
         {
-          Size = size ?? new() { Value = 0.75 },
-          Anchor = anchor == end ? end : start,
-          Weight = weight,
-          Style = style,
+          Anchor = anchor == End ? End : Start,
+          FontSize = size ?? 0.75,
+          FontWeight = weight,
+          FontStyle = style,
           Color = color,
-          Alpha = opacity
+          Opacity = opacity
         }
       };
 
@@ -1910,7 +1910,7 @@ public static class Plot
     Func<T2, TY2> y,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY1 : struct
     where TY2 : struct
@@ -1924,7 +1924,7 @@ public static class Plot
     Func<T2, TY2> y,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY1 : struct
     where TY2 : struct
@@ -1940,7 +1940,7 @@ public static class Plot
     Func<T2, TY2> y,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY1 : struct
     where TY2 : struct
@@ -1953,7 +1953,7 @@ public static class Plot
     Func<T, TY> y,
     Func<T, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
@@ -1965,7 +1965,7 @@ public static class Plot
     Func<T, TY> y,
     Func<T, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
@@ -1982,7 +1982,7 @@ public static class Plot
     Func<T2, string>? label = null,
     (bool x, bool y)? transformation = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
@@ -1999,12 +1999,12 @@ public static class Plot
         },
         Text = new()
         {
-          Size = size ?? new() { Value = 0.75 },
-          Anchor = anchor == end ? end : start,
-          Weight = weight,
-          Style = style,
+          Anchor = anchor == End ? End : Start,
+          FontSize = size ?? 0.75,
+          FontWeight = weight,
+          FontStyle = style,
           Color = color,
-          Alpha = opacity
+          Opacity = opacity
         }
       };
 
@@ -2022,7 +2022,7 @@ public static class Plot
     Func<T2, string>? label = null,
     (bool x, bool y)? transformation = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
@@ -2037,7 +2037,7 @@ public static class Plot
     Func<T2, string>? label = null,
     (bool x, bool y)? transformation = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
@@ -2054,7 +2054,7 @@ public static class Plot
     Func<T2, string>? label = null,
     (bool x, bool y)? transformation = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
@@ -2068,7 +2068,7 @@ public static class Plot
     Func<T, string>? label = null,
     (bool x, bool y)? transformation = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {
@@ -2082,7 +2082,7 @@ public static class Plot
     Func<T, string>? label = null,
     (bool x, bool y)? transformation = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = end, string weight = "normal", string style = "normal")
+    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY : struct
   {

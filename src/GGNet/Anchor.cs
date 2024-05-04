@@ -2,7 +2,7 @@
 
 public enum Anchor
 {
-	start,
-	middle,
-	end
+	Start,
+	Middle,
+	End
 }

@@ -19,10 +19,10 @@ public sealed class Tooltip
 		Text = new()
 		{
 			Color = "#FFFFFF",
-			Size = new() { Value = 0.75 }
+			FontSize = 0.75
 		};
 
-		Radius = new() { Value = 4, Units = px };
+    Radius = (Size)4.0 * PX;
 	}
 
 	public Margin Margin { get; set; }
@@ -31,7 +31,7 @@ public sealed class Tooltip
 
 	public string Background { get; set; } = default!;
 
-	public double? Alpha { get; set; }
+	public double? Opacity { get; set; }
 
 	public Size Radius { get; set; }
 }
