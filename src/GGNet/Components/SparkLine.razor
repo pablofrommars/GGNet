@@ -4,21 +4,7 @@
 
 @inherits PlotBase<T, TX, TY>
 
-<svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
-
-    <style type="text/css">
-        line,
-        polyline,
-        polygon,
-        path,
-        rect,
-        circle {
-            stroke-linecap: butt;
-            stroke-linejoin: round;
-            stroke-miterlimit: 10.00;
-        }
-    </style>
-
+<svg id=@Id class="ggnet" theme="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
     <defs>
         <clipPath id=@(Id + "-" + Panel.Id + "-area")>
             <rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height />
@@ -29,5 +15,5 @@
 
     <Area T=T TX=TX TY=TY Panel=@Panel Coord=@this Zone=@Area Clip=@(Id + "-" + Panel.Id + "-area") RenderPolicy=@renderChildPolicy />
 
-    <GGNet.Components.Tooltips.SparkLine Id=@Id Coord=@this Area=@Area Style=@Style @ref=@tooltip />
+    <SparkLineTooltip Coord=@this Zone=@Area @ref=@tooltip />
 </svg>

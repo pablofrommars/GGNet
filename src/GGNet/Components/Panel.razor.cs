@@ -54,7 +54,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
   public Zone Area;
 
-  protected Tooltips.Plot tooltip = default!;
+  protected Tooltip tooltip = default!;
   public ITooltip? Tooltip => tooltip;
 
   protected string clip = default!;

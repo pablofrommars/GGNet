@@ -16,8 +16,6 @@ public sealed partial class Style(Position axisY, Position legend)
 
   public StyleStrip Strip { get; set; } = new();
 
-  public StyleTooltip Tooltip { get; set; } = new();
-
   public static Style Default(Position axisY = Left, Position legend = Right)
     => new(axisY, legend);
 }

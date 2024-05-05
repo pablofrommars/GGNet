@@ -1,0 +1,49 @@
+﻿@inherits TooltipBase
+
+@_renderForeignObject
+
+@code {
+    protected override void RenderForeignObject(RenderTreeBuilder __builder)
+    {
+        if (context is null)
+        {
+            return;
+        }
+
+        /*
+        var px = (x - Zone.X) / Zone.Width;
+        var py = 1.0 - ((y - Zone.Y) / Zone.Height);
+
+        var (role, tx, ty) = (px, py) switch
+        {
+        var (_px, _py) when _px < 0.25 && _py < 0.25 => ("tooltip-right-start", x + offset, y),
+        var (_px, _py) when _px < 0.25 && _py > 0.75 => ("tooltip-right-end", x + offset, y),
+        var (_px, _py) when _px > 0.75 && _py < 0.25 => ("tooltip-left-start", x - offset, y),
+        var (_px, _py) when _px > 0.8 && _py > 0.75 => ("tooltip-left-end", x - offset, y),
+        var (_px, _) when _px > 0.75 => ("tooltip-left-center", x - offset, y),
+        var (_, _py) when _py > 0.75 => ("tooltip-bottom-center", x, y + offset),
+        var (_, _py) when _py < 0.25 => ("tooltip-top-center", x, y - offset),
+        _ => ("tooltip-right-center", x + offset, y)
+        };
+
+        return $@"
+        <foreignObject role=""{role}"" x=""{tx}"" y=""{ty}"" width=""1"" height=""1"">
+        <div class=""position: fixed"">
+        <div class=""arrow""></div>
+        <div class=""bubble"">{content}</div>
+        </div>
+        </foreignObject>
+        ";
+        */
+    }
+
+    // TODO
+    // * content as RenderFragment
+    // pass css vars
+    /*
+    private RenderFragment RenderButton(int number)
+    {
+    return @<button type="button">@number</button>;
+    }
+    */
+}

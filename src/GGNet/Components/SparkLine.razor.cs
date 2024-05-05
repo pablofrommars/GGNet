@@ -1,5 +1,4 @@
-﻿using GGNet.Buffers;
-using GGNet.Transformations;
+﻿using GGNet.Transformations;
 
 namespace GGNet.Components;
 
@@ -23,7 +22,7 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 	private Scales.Position<TX> xscale = default!;
 	private Scales.Position<TY> yscale = default!;
 
-	protected Tooltips.SparkLine tooltip = default!;
+	protected SparkLineTooltip tooltip = default!;
 	public ITooltip? Tooltip => tooltip;
 
 	protected override void OnInitialized()

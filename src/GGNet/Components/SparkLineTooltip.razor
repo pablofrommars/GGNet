@@ -1,0 +1,32 @@
+﻿@inherits TooltipBase
+
+@_renderForeignObject;
+
+@code {
+    protected override void RenderForeignObject(RenderTreeBuilder __builder)
+    {
+        if (context is null)
+        {
+            return;
+        }
+        /*
+        var px = (x - Zone.X) / Zone.Width;
+
+        var (role, tx) = (px < 0.5) switch
+        {
+        true => ("sparkline-tooltip-right", x + offset),
+        _ => ("sparkline-tooltip-left", x - offset),
+        };
+
+        var ty = Zone.Y + Zone.Height / 2.0;
+
+        return $@"
+        <foreignObject role=""{role}"" x=""{tx}"" y=""{ty}"" width=""1"" height=""1"">
+        <div>
+        <div class=""bubble"">{content}</div>
+        </div>
+        </foreignObject>
+        ";
+        */
+    }
+}

@@ -154,3 +154,182 @@ text {
 .animate-hex:hover {
     fill-opacity: 1 !important;
 }
+
+[role^="tooltip"] {
+    --tooltip-fadein-duration: 500ms;
+
+    position: fixed;
+    overflow: visible;
+}
+
+[role^="tooltip"]+div {
+    position: relative;
+    pointer-events: none;
+}
+
+[role^="tooltip"] .arrow {
+    position: absolute;
+}
+
+[role^="tooltip"] .arrow::before {
+    position: absolute;
+    content: '';
+    border: 5px solid transparent;
+    pointer-events: none;
+}
+
+[role^="tooltip"] .bubble {
+    position: absolute;
+    border-radius: 4px;
+    padding: 5px 10px 5px 10px;
+    background: var(--tooltip-theme-color);
+    white-space: nowrap;
+    pointer-events: none;
+    font-size: 0.75em;
+}
+
+[role^="tooltip"] .arrow::before,
+[role^="tooltip"] .bubble {
+    animation: fadein var(--tooltip-fadein-duration) linear forwards;
+}
+
+[role^="tooltip-top"] .arrow::before {
+    border-bottom-width: 0;
+    border-top-color: var(--tooltip-theme-color);
+    bottom: 100%;
+    transform: translate(-50%, -.5em);
+}
+
+[role^="tooltip-top"] .bubble {
+    bottom: calc(100% + 5px);
+}
+
+[role^="tooltip-top"][role$="start"] .bubble {
+    transform: translate(-75%, -0.48em);
+}
+
+[role^="tooltip-top"][role$="center"] .bubble {
+    transform: translate(-50%, -0.48em);
+}
+
+[role^="tooltip-top"][role$="end"] .bubble {
+    transform: translate(-25%, -0.48em);
+}
+
+[role^="tooltip-bottom"] .arrow::before {
+    border-top-width: 0;
+    border-bottom-color: var(--tooltip-theme-color);
+    top: 100%;
+    transform: translate(-50%, .5em);
+}
+
+[role^="tooltip-bottom"] .bubble {
+    top: calc(100% + 5px);
+}
+
+[role^="tooltip-bottom"][role$="start"] .bubble {
+    transform: translate(-75%, 0.48em);
+}
+
+[role^="tooltip-bottom"][role$="center"] .bubble {
+    transform: translate(-50%, 0.48em);
+}
+
+[role^="tooltip-bottom"][role$="end"] .bubble {
+    transform: translate(-25%, 0.48em);
+}
+
+[role^="tooltip-left"] .arrow::before {
+    border-right-width: 0;
+    border-left-color: var(--tooltip-theme-color);
+    top: 50%;
+    left: calc(0em - 5px);
+    transform: translate(-.5em, -50%);
+}
+
+[role^="tooltip-left"] .bubble {
+    top: 50%;
+    right: calc(100% + 5px);
+}
+
+[role^="tooltip-left"][role$="start"] .bubble {
+    transform: translate(-0.48em, -75%);
+}
+
+[role^="tooltip-left"][role$="center"] .bubble {
+    transform: translate(-0.48em, -50%);
+}
+
+[role^="tooltip-left"][role$="end"] .bubble {
+    transform: translate(-0.48em, -25%);
+}
+
+[role^="tooltip-right"] .arrow::before {
+    border-left-width: 0;
+    border-right-color: var(--tooltip-theme-color);
+    top: 50%;
+    right: calc(0em - 5px);
+    transform: translate(.5em, -50%);
+}
+
+[role^="tooltip-right"] .bubble {
+    top: 50%;
+    left: calc(100% + 5px);
+}
+
+[role^="tooltip-right"][role$="start"] .bubble {
+    transform: translate(0.48em, -75%);
+}
+
+[role^="tooltip-right"][role$="center"] .bubble {
+    transform: translate(0.48em, -50%);
+}
+
+[role^="tooltip-right"][role$="end"] .bubble {
+    transform: translate(0.48em, -25%);
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: var(--tooltip-theme-opacity);
+    }
+}
+
+[role^="sparkline-tooltip"] {
+    --tooltip-fadein-duration: 500ms;
+
+    overflow: visible;
+}
+
+[role^="sparkline-tooltip"]+div {
+    position: relative;
+    pointer-events: none;
+}
+
+[role^="sparkline-tooltip"] .bubble {
+    position: absolute;
+    border-radius: 4px;
+    padding: 2px 4px;
+    background: var(--tooltip-theme-color);
+    white-space: nowrap;
+    pointer-events: none;
+    font-size: 0.75em;
+}
+
+[role^="sparkline-tooltip"] .bubble {
+    top: 50%;
+    transform: translateY(-50%);
+    animation: fadein var(--tooltip-fadein-duration) linear forwards;
+}
+
+[role^="sparkline-tooltip-left"] .bubble {
+    right: calc(100% + 2px);
+}
+
+[role^="sparkline-tooltip-right"] .bubble {
+    left: calc(100% + 2px);
+}
