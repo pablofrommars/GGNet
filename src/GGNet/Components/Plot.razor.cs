@@ -17,7 +17,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
   public double Height { get; init; } = 576;
 
   [Parameter]
-  public string? Class { get; init; }
+  public string Theme { get; init; } = "default";
 
   [Parameter]
   public ObjectPool<StringBuilder>? StringBuilderPool { get; init; }
@@ -35,12 +35,20 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
   private bool loading;
 
-  public string? DynamicClass => (Class, loading) switch
+  private readonly RenderFragment _renderLegendGradients;
+  private readonly RenderFragment _renderLegend;
+  private readonly RenderFragment _renderPanels;
+
+  public Plot()
   {
-    (string @class, true) => $"{@class} loading",
-    (null, true) => "loading",
-    _ => Class
-  };
+    _renderLegendGradients = RenderLegendGradients;
+    _renderLegend = RenderLegend;
+    _renderPanels = RenderPanels;
+  }
+
+  public string? PlotClass() => loading
+    ? $"ggnet loading"
+    : "ggnet";
 
   protected override void OnInitialized()
   {
@@ -85,13 +93,13 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
     if (!string.IsNullOrEmpty(Context.Title))
     {
-      var width = Context.Title.Height(Context.Theme!.Plot.Title.FontSize);
-      var height = Context.Title.Height(Context.Theme!.Plot.Title.FontSize);
+      var width = Context.Title.Height(Context.Style!.Plot.Title.FontSize);
+      var height = Context.Title.Height(Context.Style!.Plot.Title.FontSize);
 
-      Title.X = Context.Theme!.Plot.Title.Margin.Left;
-      Title.Y = Context.Theme!.Plot.Title.Margin.Top + height;
-      Title.Width = Context.Theme!.Plot.Title.Margin.Left + width + Context.Theme.Plot.Title.Margin.Right;
-      Title.Height = Context.Theme!.Plot.Title.Margin.Top + height + Context.Theme.Plot.Title.Margin.Bottom;
+      Title.X = Context.Style!.Plot.Title.Margin.Left;
+      Title.Y = Context.Style!.Plot.Title.Margin.Top + height;
+      Title.Width = Context.Style!.Plot.Title.Margin.Left + width + Context.Style.Plot.Title.Margin.Right;
+      Title.Height = Context.Style!.Plot.Title.Margin.Top + height + Context.Style.Plot.Title.Margin.Bottom;
 
       wrapper.Y += Title.Height;
       wrapper.Height -= Title.Height;
@@ -99,13 +107,13 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
     if (!string.IsNullOrEmpty(Context.SubTitle))
     {
-      var width = Context.SubTitle.Height(Context.Theme!.Plot.SubTitle.FontSize);
-      var height = Context.SubTitle.Height(Context.Theme!.Plot.SubTitle.FontSize);
+      var width = Context.SubTitle.Height(Context.Style!.Plot.SubTitle.FontSize);
+      var height = Context.SubTitle.Height(Context.Style!.Plot.SubTitle.FontSize);
 
-      SubTitle.X = Context.Theme!.Plot.SubTitle.Margin.Left;
-      SubTitle.Y = Title.Height + Context.Theme!.Plot.SubTitle.Margin.Top + height;
-      SubTitle.Width = Context.Theme!.Plot.SubTitle.Margin.Left + width + Context.Theme!.Plot.SubTitle.Margin.Right;
-      SubTitle.Height = Context.Theme!.Plot.SubTitle.Margin.Top + height + Context.Theme!.Plot.SubTitle.Margin.Bottom;
+      SubTitle.X = Context.Style!.Plot.SubTitle.Margin.Left;
+      SubTitle.Y = Title.Height + Context.Style!.Plot.SubTitle.Margin.Top + height;
+      SubTitle.Width = Context.Style!.Plot.SubTitle.Margin.Left + width + Context.Style!.Plot.SubTitle.Margin.Right;
+      SubTitle.Height = Context.Style!.Plot.SubTitle.Margin.Top + height + Context.Style!.Plot.SubTitle.Margin.Bottom;
 
       wrapper.Y += SubTitle.Height;
       wrapper.Height -= SubTitle.Height;
@@ -113,12 +121,12 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
     if (!string.IsNullOrEmpty(Context.Caption))
     {
-      var width = Context.Caption.Height(Context.Theme!.Plot.Caption.FontSize);
-      var height = Context.Caption.Height(Context.Theme!.Plot.Caption.FontSize);
+      var width = Context.Caption.Height(Context.Style!.Plot.Caption.FontSize);
+      var height = Context.Caption.Height(Context.Style!.Plot.Caption.FontSize);
 
-      Caption.Y = Height - Context.Theme!.Plot.Caption.Margin.Bottom;
-      Caption.Width = Context.Theme!.Plot.Caption.Margin.Left + width + Context.Theme!.Plot.Caption.Margin.Right;
-      Caption.Height = Context.Theme!.Plot.Caption.Margin.Top + height + Context.Theme!.Plot.Caption.Margin.Bottom;
+      Caption.Y = Height - Context.Style!.Plot.Caption.Margin.Bottom;
+      Caption.Width = Context.Style!.Plot.Caption.Margin.Left + width + Context.Style!.Plot.Caption.Margin.Right;
+      Caption.Height = Context.Style!.Plot.Caption.Margin.Top + height + Context.Style!.Plot.Caption.Margin.Bottom;
 
       wrapper.Height -= Caption.Height;
     }
@@ -129,41 +137,41 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
       if (width > 0 && height > 0)
       {
-        if (Context.Theme!.Legend.Position == Right)
+        if (Context.Style!.Legend.Position == Right)
         {
-          Legend.X = Width - width - Context.Theme!.Legend.Margin.Right;
+          Legend.X = Width - width - Context.Style!.Legend.Margin.Right;
           Legend.Y = wrapper.Y + (wrapper.Height - height) / 2.0;
-          Legend.Width = Context.Theme!.Legend.Margin.Left + width + Context.Theme!.Legend.Margin.Right;
+          Legend.Width = Context.Style!.Legend.Margin.Left + width + Context.Style!.Legend.Margin.Right;
           Legend.Height = wrapper.Height;
 
           wrapper.Width -= Legend.Width;
         }
-        else if (Context.Theme!.Legend.Position == Left)
+        else if (Context.Style!.Legend.Position == Left)
         {
-          Legend.X = Context.Theme!.Legend.Margin.Left;
+          Legend.X = Context.Style!.Legend.Margin.Left;
           Legend.Y = wrapper.Y + (wrapper.Height - height) / 2.0; ;
-          Legend.Width = Context.Theme!.Legend.Margin.Left + width + Context.Theme!.Legend.Margin.Right;
+          Legend.Width = Context.Style!.Legend.Margin.Left + width + Context.Style!.Legend.Margin.Right;
           Legend.Height = wrapper.Height;
 
           wrapper.X += Legend.Width;
           wrapper.Width -= Legend.Width;
         }
-        else if (Context.Theme!.Legend.Position == Top)
+        else if (Context.Style!.Legend.Position == Top)
         {
           Legend.X = wrapper.X + (wrapper.Width - width) / 2.0;
-          Legend.Y = wrapper.Y + Context.Theme!.Legend.Margin.Top;
+          Legend.Y = wrapper.Y + Context.Style!.Legend.Margin.Top;
           Legend.Width = wrapper.Width;
-          Legend.Height = Context.Theme!.Legend.Margin.Top + height + Context.Theme!.Legend.Margin.Bottom;
+          Legend.Height = Context.Style!.Legend.Margin.Top + height + Context.Style!.Legend.Margin.Bottom;
 
           wrapper.Y += Legend.Height;
           wrapper.Height -= Legend.Height;
         }
-        else if (Context.Theme!.Legend.Position == Bottom)
+        else if (Context.Style!.Legend.Position == Bottom)
         {
           Legend.X = wrapper.X + (wrapper.Width - width) / 2.0;
-          Legend.Y = wrapper.Y + wrapper.Height - height - Context.Theme!.Legend.Margin.Bottom;
+          Legend.Y = wrapper.Y + wrapper.Height - height - Context.Style!.Legend.Margin.Bottom;
           Legend.Width = wrapper.Width;
-          Legend.Height = Context.Theme!.Legend.Margin.Top + height + Context.Theme!.Legend.Margin.Bottom;
+          Legend.Height = Context.Style!.Legend.Margin.Top + height + Context.Style!.Legend.Margin.Bottom;
 
           wrapper.Height -= Legend.Height;
         }
@@ -172,7 +180,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
     if (Caption.Width > 0)
     {
-      Caption.X = wrapper.X + wrapper.Width - Context.Theme!.Plot.Caption.Margin.Right;
+      Caption.X = wrapper.X + wrapper.Width - Context.Style!.Plot.Caption.Margin.Right;
     }
 
     if (!firstRender)

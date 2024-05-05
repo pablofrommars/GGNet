@@ -1,36 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <IsPackable>true</IsPackable>
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>true</IsPackable>
 
-    <Authors>Pablo Belin</Authors>
-    <Title>GG.Net Data Visualization</Title>
-    <Copyright>Copyright (c) 2020-2022 Pablo Belin</Copyright>
-    <PackageDescription>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</PackageDescription>
-    <PackageTags>plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp;blazor;geospacial</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</Description>
+        <Authors>Pablo Belin</Authors>
+        <Title>GG.Net Data Visualization</Title>
+        <Copyright>Copyright (c) 2020-2022 Pablo Belin</Copyright>
+        <PackageDescription>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</PackageDescription>
+        <PackageTags>plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp;blazor;geospacial</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Description>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</Description>
 
-    <Version>2.0.0-beta.0.1</Version>
+        <Version>2.0.0-beta.0.1</Version>
 
-  </PropertyGroup>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Components\Panel.cs" />
-    <Compile Remove="Components\Plot.cs" />
-    <Compile Remove="Components\Tooltip.cs" />
-    <Compile Remove="Components\VTrack.cs" />
-    <Content Remove="Components\VTrack.razor" />
-  </ItemGroup>
+    <ItemGroup>
+        <ThemeCssFiles Include="Themes\*.css" />
+        <_CurrentProjectDiscoveredScopedCssFiles Include="@(ThemeCssFiles)" RelativePath="%(Identity)" BasePath="_content/$(AssemblyName)" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="8.0.4" />
-    <PackageReference Include="NodaTime" Version="3.1.10" />
-    <PackageReference Include="System.Threading.Channels" Version="8.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <Content Remove="wwwroot\dev\**\*" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.4" />
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="8.0.4" />
+        <PackageReference Include="NodaTime" Version="3.1.11" />
+        <PackageReference Include="System.Threading.Channels" Version="8.0.0" />
+    </ItemGroup>
 
 </Project>

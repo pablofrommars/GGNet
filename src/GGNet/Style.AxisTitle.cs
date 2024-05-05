@@ -1,21 +1,18 @@
-using GGNet.Elements;
+namespace GGNet;
 
-namespace GGNet.Theme;
+using Elements;
 
 using static Position;
 using static Anchor;
 
-public sealed class AxisTitle
+public sealed partial class Style
 {
-  public AxisTitle(bool dark, Position axisY)
+  public sealed class StyleAxisTitle(Position position)
   {
-    var color = dark ? "#929299" : "#111827";
-
-    X = new()
+    public Text X { get; set; } = new()
     {
       Anchor = End,
       FontSize = 0.75,
-      Color = color,
       Margin = new()
       {
         Top = 8,
@@ -24,27 +21,22 @@ public sealed class AxisTitle
       }
     };
 
-    if (axisY == Left)
-    {
-      Y = new()
+    public Text Y { get; set; }
+      = position == Left
+      ? new()
       {
         Anchor = End,
         FontSize = 0.75,
-        Color = color,
         Angle = -90,
         Margin = new()
         {
           Right = 12
         }
-      };
-    }
-    else
-    {
-      Y = new()
+      }
+      : new()
       {
         Anchor = Start,
         FontSize = 0.75,
-        Color = color,
         Angle = 90,
         Margin = new()
         {
@@ -53,10 +45,5 @@ public sealed class AxisTitle
           Left = 8
         }
       };
-    }
   }
-
-  public Text X { get; set; }
-
-  public Text Y { get; set; }
 }

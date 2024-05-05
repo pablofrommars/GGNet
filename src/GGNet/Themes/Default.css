@@ -1,0 +1,156 @@
+line,
+polyline,
+polygon,
+path,
+rect,
+circle {
+    stroke-linecap: butt;
+    stroke-linejoin: round;
+    stroke-miterlimit: 10.00;
+}
+
+text {
+    font-family: Inter var;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.pointer-events-none {
+    pointer-events: none;
+}
+
+.ggnet[theme=default] {
+    --tw-color-white: #ffffff;
+    --tw-color-gray-900: #111827;
+    --tw-color-gray-800: #1f2937;
+    --tw-color-gray-700: #374151;
+    --tw-color-gray-500: #6b7280;
+    --tw-color-gray-300: #d1d5db;
+}
+
+.ggnet[theme=default] .loading {
+    opacity: 0.25;
+    transition: opacity linear 100ms;
+    transition-delay: 25ms;
+}
+
+.ggnet[theme=default] .plot {
+    fill: var(--tw-color-white);
+}
+
+.ggnet[theme=default] .panel {
+    fill: var(--tw-color-white);
+}
+
+.ggnet[theme=default] .title {
+    font-weight: bold;
+    fill: var(--tw-color-gray-900);
+}
+
+.ggnet[theme=default] .sub-title {
+    fill: var(--tw-color-gray-700);
+}
+
+.ggnet[theme=default] .caption {
+    text-anchor: end;
+    font-style: italic;
+    fill: var(--tw-color-gray-500);
+}
+
+.ggnet[theme=default] .x-strip {
+    font-weight: bold;
+    fill: var(--tw-color-gray-800);
+}
+
+.ggnet[theme=default] .y-strip {
+    font-weight: bold;
+    fill: var(--tw-color-gray-800);
+}
+
+.ggnet[theme=default] .x-break {
+    stroke: var(--tw-color-gray-300);
+    stroke-width: 0.43;
+}
+
+.ggnet[theme=default] .x-minor-break {
+    stroke: var(--tw-color-gray-300);
+    stroke-width: 0.32;
+}
+
+.ggnet[theme=default] .x-break-label {
+    fill: var(--tw-color-gray-700);
+}
+
+.ggnet[theme=default] .x-break-title {
+    fill: var(--tw-color-gray-900);
+}
+
+.ggnet[theme=default] .x-title {
+    fill: var(--tw-color-gray-900);
+}
+
+.ggnet[theme=default] .y-break {
+    stroke: var(--tw-color-gray-300);
+    stroke-width: 0.43;
+}
+
+.ggnet[theme=default] .y-minor-break {
+    stroke: var(--tw-color-gray-300);
+    stroke-width: 0.32;
+}
+
+.ggnet[theme=default] .y-break-label {
+    fill: var(--tw-color-gray-700);
+}
+
+.ggnet[theme=default] .y-title {
+    fill: var(--tw-color-gray-900);
+}
+
+.ggnet[theme=default] .legend-title {
+    font-weight: bold;
+    fill: var(--tw-color-gray-800);
+}
+
+.ggnet[theme=default] .legend-label {
+    fill: var(--tw-color-gray-900);
+}
+
+.animate-point {
+    transition: transform 0.2s ease-in-out;
+}
+
+.animate-point:hover {
+    transform: scale(1.5);
+}
+
+.animate-bar {
+    transition: transform 0.2s ease-in-out;
+    fill-opacity: 0.6 !important;
+}
+
+.animate-bar:hover {
+    fill-opacity: 0.8 !important;
+}
+
+.animate-map {
+    transition: transform 0.2s ease-in-out;
+    fill-opacity: 0.6 !important;
+    stroke-width: 0.2 !important;
+}
+
+.animate-map:hover {
+    fill-opacity: 1 !important;
+    stroke-width: 0.5 !important;
+}
+
+.animate-hex {
+    transition: transform 0.2s ease-in-out;
+    fill-opacity: 0.7 !important;
+}
+
+.animate-hex:hover {
+    fill-opacity: 1 !important;
+}

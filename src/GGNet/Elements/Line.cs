@@ -2,11 +2,13 @@
 
 public readonly record struct Line : IElement
 {
-  public required string Stroke { get; init; }
+  public Line() { }
 
-  public double StrokeOpacity { get; init; }
+  public string Stroke { get; init; } = "inherit";
 
-  public double StrokeWidth { get; init; }
+  public double StrokeOpacity { get; init; } = 1.0;
 
-  public LineType LineType { get; init; }
+  public double StrokeWidth { get; init; } = 1.0;
+
+  public LineType LineType { get; init; } = LineType.Solid;
 }

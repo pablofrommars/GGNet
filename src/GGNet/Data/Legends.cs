@@ -7,9 +7,9 @@ namespace GGNet.Data;
 
 using static Direction;
 
-internal sealed class Legends(Theme.Theme theme) : Buffer<Legend>(8, 1)
+internal sealed class Legends(Style style) : Buffer<Legend>(8, 1)
 {
-  private readonly Theme.Theme theme = theme;
+  private readonly Style style = style;
 
   public Legend GetOrAdd(IAestheticMapping aes)
   {
@@ -22,7 +22,7 @@ internal sealed class Legends(Theme.Theme theme) : Buffer<Legend>(8, 1)
       }
     }
 
-    var legend = new Legend(theme, aes);
+    var legend = new Legend(style, aes);
 
     Add(legend);
 
@@ -40,10 +40,10 @@ internal sealed class Legends(Theme.Theme theme) : Buffer<Legend>(8, 1)
 
       if (legend.Title?.Width > 0)
       {
-        var w = theme.Legend.Title.Margin.Left + legend.Title.Width + theme.Legend.Title.Margin.Left;
-        var h = theme.Legend.Title.Margin.Top + legend.Title.Height + theme.Legend.Title.Margin.Bottom;
+        var w = style.Legend.Title.Margin.Left + legend.Title.Width + style.Legend.Title.Margin.Left;
+        var h = style.Legend.Title.Margin.Top + legend.Title.Height + style.Legend.Title.Margin.Bottom;
 
-        if (theme.Legend.Direction == Vertical)
+        if (style.Legend.Direction == Vertical)
         {
           width = Max(width, w);
           height += h;
@@ -61,10 +61,10 @@ internal sealed class Legends(Theme.Theme theme) : Buffer<Legend>(8, 1)
         {
           var (label, elements) = legend.Items[j];
 
-          var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
-          var h = theme.Legend.Labels.Margin.Top + Max(elements.Height, label.Height) + theme.Legend.Labels.Margin.Bottom;
+          var w = legend.Width + style.Legend.Labels.Margin.Left + label.Width + style.Legend.Labels.Margin.Right;
+          var h = style.Legend.Labels.Margin.Top + Max(elements.Height, label.Height) + style.Legend.Labels.Margin.Bottom;
 
-          if (theme.Legend.Direction == Vertical)
+          if (style.Legend.Direction == Vertical)
           {
             width = Max(width, w);
             height += h;
@@ -80,15 +80,15 @@ internal sealed class Legends(Theme.Theme theme) : Buffer<Legend>(8, 1)
       {
         var n = legend.Items.Count;
 
-        if (theme.Legend.Direction == Vertical)
+        if (style.Legend.Direction == Vertical)
         {
-          height += theme.Legend.Labels.Margin.Top;
+          height += style.Legend.Labels.Margin.Top;
 
           for (var j = 0; j < legend.Items.Count; j++)
           {
             var (label, _) = legend.Items[j];
 
-            var w = legend.Width + theme.Legend.Labels.Margin.Left + label.Width + theme.Legend.Labels.Margin.Right;
+            var w = legend.Width + style.Legend.Labels.Margin.Left + label.Width + style.Legend.Labels.Margin.Right;
             var h = Max(3.0 * legend.Height, label.Height);
 
             width = Max(width, w);
@@ -97,8 +97,8 @@ internal sealed class Legends(Theme.Theme theme) : Buffer<Legend>(8, 1)
         }
         else
         {
-          width += theme.Legend.Labels.Margin.Left + 3.0 * legend.Width * n;
-          height = Max(height, legend.Items[0].label.Height + theme.Legend.Labels.Margin.Bottom + legend.Height);
+          width += style.Legend.Labels.Margin.Left + 3.0 * legend.Width * n;
+          height = Max(height, legend.Items[0].label.Height + style.Legend.Labels.Margin.Bottom + legend.Height);
         }
       }
     }

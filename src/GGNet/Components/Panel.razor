@@ -11,35 +11,10 @@
 
 @if (First)
 {
-    @if (Plot.Context.Title is not null)
-    {
-        <text><text x=@(Plot.Title.X + Area.X)
-          y=@Plot.Title.Y
-          text-anchor=@(Plot.Theme.Plot.Title.Anchor.Render())
-          font-family=@(Plot.Theme.Plot.Title.FontFamily)
-          font-size=@(Plot.Theme.Plot.Title.FontSize)
-          font-weight=@(Plot.Theme.Plot.Title.FontWeight)
-          font-style=@(Plot.Theme.Plot.Title.FontStyle)
-          fill=@(Plot.Theme.Plot.Title.Color)
-          clip-path="url(#@(Plot.Id)-plot)">
-        @Plot.Context.Title
-    </text></text>
-    }
-
-    @if (@Plot.Context.SubTitle is not null)
-    {
-        <text><text x=@(Plot.SubTitle.X + Area.X)
-          y=@Plot.SubTitle.Y
-          text-anchor=@(Plot.Theme.Plot.SubTitle.Anchor.Render())
-          font-family=@(Plot.Theme.Plot.SubTitle.FontFamily)
-          font-size=@(Plot.Theme.Plot.SubTitle.FontSize)
-          font-weight=@(Plot.Theme.Plot.SubTitle.FontWeight)
-          font-style=@(Plot.Theme.Plot.SubTitle.FontStyle)
-          fill=@(Plot.Theme.Plot.SubTitle.Color)
-          clip-path="url(#@(Plot.Id)-plot)">
-        @Plot.Context.SubTitle
-    </text></text>
-    }
+    @_renderTitle
+    ;
+    @_renderSubTitle
+    ;
 }
 
 <defs>
@@ -52,221 +27,266 @@
     </clipPath>
 </defs>
 
-<rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height fill=@(Plot.Theme.Panel.Background.Fill) />
+<rect class="panel" x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height />
 
-@if (Data.Strip.x is not null)
-{
-    <text><text
-          x=@(xStrip.X)
-          y=@(xStrip.Y)
-          text-anchor: @(Theme.Strip.Text.X.Anchor.Render());
-          font-size: @(Theme.Strip.Text.X.FontSize);
-          font-weight: @(Theme.Strip.Text.X.FontWeight);
-          font-style: @(Theme.Strip.Text.X.FontStyle);
-          fill: @(Theme.Strip.Text.X.Color);
-          clip-path="url(#@(Plot.Id)-plot)">
-        @Data.Strip.x
-    </text></text>
-}
+@_renderStrip;
 
-@if (Data.Strip.y is not null)
-{
-    <text><text
-          transform="translate(@(yStrip.X), @(yStrip.Y)) rotate(@(Plot.Theme.Strip.Text.Y.Angle)deg)"
-          text-anchor: @(Theme.Strip.Text.Y.Anchor.Render());
-          font-size: @(Theme.Strip.Text.Y.FontSize);
-          font-weight: @(Theme.Strip.Text.Y.FontWeight);
-          font-style: @(Theme.Strip.Text.Y.FontStyle);
-          fill: @(Theme.Strip.Text.Y.Color);
-          clip-path="url(#@(Plot.Id)-plot)">
-        @Data.Strip.y
-    </text></text>
-}
-
-@{
-    var y1 = Area.Y;
-    var y2 = Area.Y + Area.Height;
-
-    foreach (var b in xscale.Breaks)
-    {
-        var x = ToX(b);
-        <line
-              x1=@x
-              x2=@x
-              y1=@y1
-              y2=@y2
-              stroke-width=@(Plot.Theme.Panel.Grid.Major.X.StrokeWidth)
-              stroke=@(Plot.Theme.Panel.Grid.Major.X.Stroke)
-              stroke-opacity=@(Plot.Theme.Panel.Grid.Major.X.StrokeOpacity)
-              stroke-dasharray=@(Plot.Theme.Panel.Grid.Major.X.LineType.Render())
-              clip-path="url(#@(clip)-area)" />
-    }
-
-    foreach (var b in xscale.MinorBreaks)
-    {
-        var x = ToX(b);
-        <line
-              x1=@x
-              x2=@x
-              y1=@y1
-              y2=@y2
-              stroke-width=@(Plot.Theme.Panel.Grid.Minor.X.StrokeWidth)
-              stroke=@(Plot.Theme.Panel.Grid.Minor.X.Stroke)
-              stroke-opacity=@(Plot.Theme.Panel.Grid.Minor.X.StrokeOpacity)
-              stroke-dasharray=@(Plot.Theme.Panel.Grid.Minor.X.LineType.Render())
-              clip-path="url(#@(clip)-area)" />
-    }
-
-    if (Data.Axis.x)
-    {
-        @foreach (var (value, label) in xscale.Labels)
-        {
-            var x = ToX(value);
-
-            if (Area.X < x && x < (Area.X + Area.Width))
-            {
-                <text>
-                    <text x=@x
-                          y=@(xAxisText.Y)
-                          text-anchor=@(Plot.Theme.Axis.Text.X.Anchor.Render())
-                          font-size=@(Plot.Theme.Axis.Text.X.FontSize)
-                          font-weight=@(Plot.Theme.Axis.Text.X.FontWeight)
-                          font-style=@(Plot.Theme.Axis.Text.X.FontStyle)
-                          fill=@(Plot.Theme.Axis.Text.X.Color)
-                          clip-path="url(#@(Plot.Id)-plot)">
-                        @label
-                    </text>
-                </text>
-            }
-        }
-
-        @foreach (var (value, label) in xscale.Titles)
-        {
-            var x = ToX(value);
-
-            if (Area.X < x && x < (Area.X + Area.Width))
-            {
-                <text>
-                    <text x=@x
-                          y=@(xAxisTitle.Y)
-                          text-anchor="middle"
-                          font-size=@(Plot.Theme.Axis.Title.X.FontSize)
-                          font-weight=@(Plot.Theme.Axis.Title.X.FontWeight)
-                          font-style=@(Plot.Theme.Axis.Title.X.FontStyle)
-                          fill=@(Plot.Theme.Axis.Title.X.Color)
-                          clip-path="url(#@(Plot.Id)-plot)">
-                        @label
-                    </text>
-                </text>
-            }
-        }
-    }
-}
-
-@{
-    var x1 = Area.X;
-    var x2 = Area.X + Area.Width;
-
-    foreach (var b in yscale.Breaks)
-    {
-        var y = ToY(b);
-        <line
-              x1=@x1
-              x2=@x2
-              y1=@y
-              y2=@y
-              stroke-width=@(Plot.Theme.Panel.Grid.Major.Y.StrokeWidth)
-              stroke=@(Plot.Theme.Panel.Grid.Major.Y.Stroke)
-              stroke-opacity=@(Plot.Theme.Panel.Grid.Major.Y.StrokeOpacity)
-              stroke-dasharray=@(Plot.Theme.Panel.Grid.Major.Y.LineType.Render())
-              clip-path="url(#@(clip)-area)" />
-    }
-
-    foreach (var b in yscale.MinorBreaks)
-    {
-        var y = ToY(b);
-        <line
-              x1=@x1
-              x2=@x2
-              y1=@y
-              y2=@y
-              stroke-width=@(Plot.Theme.Panel.Grid.Minor.Y.StrokeWidth)
-              stroke=@(Plot.Theme.Panel.Grid.Minor.Y.Stroke)
-              stroke-opacity=@(Plot.Theme.Panel.Grid.Minor.Y.StrokeOpacity)
-              stroke-dasharray=@(Plot.Theme.Panel.Grid.Minor.Y.LineType.Render())
-              clip-path="url(#@(clip)-area)" />
-    }
-
-    if (Data.Axis.y)
-    {
-        var height = Data.Data.Theme!.Axis.Text.Y.FontSize.Height();
-        var offset = height / 4.0;
-
-        @foreach (var (value, label) in yscale.Labels)
-        {
-            var y = ToY(value) + offset;
-
-            if (Area.Y < (y - height / 2.0) && (y + offset) < (Area.Y + Area.Height))
-            {
-                <text>
-                    <text x=@yAxisText.X
-                          y=@y
-                          text-anchor=@(Plot.Theme.Axis.Text.Y.Anchor.Render())
-                          font-size=@(Plot.Theme.Axis.Text.Y.FontSize)
-                          font-weight=@(Plot.Theme.Axis.Text.Y.FontWeight)
-                          font-style=@(Plot.Theme.Axis.Text.Y.FontStyle)
-                          fill=@(Plot.Theme.Axis.Text.Y.Color)
-                          clip-path="url(#@(clip)">
-                        @label
-                    </text>
-                </text>
-            }
-        }
-    }
-}
+@_renderGrid;
 
 <Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderPolicy=@areaPolicy />
 
-@if (!string.IsNullOrEmpty(Data.XLab.text))
+@_renderXLab;
+@_renderYLab;
+
+@if (Last)
 {
-    <text><text x=@(xAxisTitle.X)
-          y=(xAxisTitle.Y)
-          text-anchor=@(Plot.Theme.Axis.Title.X.Anchor.Render())
-          font-size=@(Plot.Theme.Axis.Title.X.FontSize)
-          font-weight=@(Plot.Theme.Axis.Title.X.FontWeight)
-          font-style=@(Plot.Theme.Axis.Title.X.FontStyle)
-          fill=@(Plot.Theme.Axis.Title.X.Color)
-          clip-path="url(#@(Plot.Id)-plot)">
-        @Data.XLab.text
-    </text></text>
+    @_renderCaption
+    ;
 }
 
-@if (!string.IsNullOrEmpty(Data.YLab.text))
-{
-    <text><text transform="translate(@(yAxisTitle.X), @(yAxisTitle.Y)) rotate(@(Data.Data.Theme!.Axis.Title.Y.Angle)deg)"
-          text-anchor=@(Plot.Theme.Axis.Title.Y.Anchor.Render())
-          font-size=@(Plot.Theme.Axis.Title.Y.FontSize)
-          font-weight=@(Plot.Theme.Axis.Title.Y.FontWeight)
-          font-style=@(Plot.Theme.Axis.Title.Y.FontStyle)
-          fill=@(Plot.Theme.Axis.Title.Y.Color)
-          clip-path="url(#@(Plot.Id)-plot)">
-        @Data.YLab.text
-    </text></text>
-}
+<GGNet.Components.Tooltips.Plot Id=@(Plot.Id) Coord=@this Area=@Area Style=@(Plot.Style) @ref=@tooltip />
 
-@if (Last && Plot.Context.Caption is not null)
-{
-    <text><text
-          x=@(Area.X + Area.Width - Plot.Theme.Plot.Caption.Margin.Right)
-          y=@(Plot.Caption.Y)
-          text-anchor=@(Plot.Theme.Plot.Caption.Anchor.Render())
-          font-size=@(Plot.Theme.Plot.Caption.FontSize)
-          font-weight=@(Plot.Theme.Plot.Caption.FontWeight)
-          font-style=@(Plot.Theme.Plot.Caption.FontStyle)
-          fill=@(Plot.Theme.Plot.Caption.Color)
-          clip-path="url(#@(Plot.Id)-plot)">
-        @Plot.Context.Caption
-    </text></text>
-}
+@code {
 
-<GGNet.Components.Tooltips.Plot Id=@Plot.Id Coord=@this Area=@Area Theme=@Plot.Theme @ref=@tooltip />
+    private void RenderTitle(RenderTreeBuilder __builder)
+    {
+        if (Plot.Context.Title is null)
+        {
+            return;
+        }
+
+        <text><text
+                  class="title"
+                  x=@(Plot.Title.X + Area.X)
+                  y=@(Plot.Title.Y)
+                  font-size=@(Plot.Style.Plot.Title.FontSize)
+                  clip-path="url(#@(Plot.Id)-plot)">
+                @Plot.Context.Title
+            </text></text>
+    }
+
+    private void RenderSubTitle(RenderTreeBuilder __builder)
+    {
+        if (@Plot.Context.SubTitle is null)
+        {
+            return;
+        }
+
+        <text><text
+                  class="sub-title"
+                  x=@(Plot.SubTitle.X + Area.X)
+                  y=@Plot.SubTitle.Y
+                  font-size=@(Plot.Style.Plot.SubTitle.FontSize)
+                  clip-path="url(#@(Plot.Id)-plot)">
+                @Plot.Context.SubTitle
+            </text></text>
+    }
+
+    private void RenderStrip(RenderTreeBuilder __builder)
+    {
+        if (Data.Strip.x is not null)
+        {
+            <text><text
+                      class="x-strip"
+                      x=@(xStrip.X)
+                      y=@(xStrip.Y)
+                      text-anchor: @(Plot.Style.Strip.Text.X.Anchor.Render())
+                      font-size=@(Plot.Style.Strip.Text.X.FontSize)
+                      clip-path="url(#@(Plot.Id)-plot)">
+                    @Data.Strip.x
+                </text></text>
+        }
+
+
+
+        if (Data.Strip.y is not null)
+        {
+            <text><text
+                      class="y-strip"
+                      transform="translate(@(yStrip.X), @(yStrip.Y)) rotate(@(Plot.Style.Strip.Text.Y.Angle)deg)"
+                      text-anchor: @(Plot.Style.Strip.Text.Y.Anchor.Render())
+                      font-size=@(Plot.Style.Strip.Text.Y.FontSize)
+                      clip-path="url(#@(Plot.Id)-plot)">
+                    @Data.Strip.y
+                </text></text>
+        }
+    }
+
+    private void RenderGrid(RenderTreeBuilder __builder)
+    {
+        var y1 = Area.Y;
+        var y2 = Area.Y + Area.Height;
+
+        foreach (var b in xscale.Breaks)
+        {
+            var x = ToX(b);
+            <line
+                  class="x-break"
+                  x1=@x
+                  x2=@x
+                  y1=@y1
+                  y2=@y2
+                  clip-path="url(#@(clip)-area)" />
+        }
+
+        foreach (var b in xscale.MinorBreaks)
+        {
+            var x = ToX(b);
+            <line
+                  class="x-minor-break"
+                  x1=@x
+                  x2=@x
+                  y1=@y1
+                  y2=@y2
+                  clip-path="url(#@(clip)-area)" />
+        }
+
+        if (Data.Axis.x)
+        {
+            @foreach (var (value, label) in xscale.Labels)
+            {
+                var x = ToX(value);
+
+                if (Area.X < x && x < (Area.X + Area.Width))
+                {
+                    <text>
+                        <text
+                              class="x-break-label"
+                              x=@x
+                              y=@(xAxisText.Y)
+                              text-anchor=@(Plot.Style.Axis.Text.X.Anchor.Render())
+                              font-size=@(Plot.Style.Axis.Text.X.FontSize)
+                              clip-path="url(#@(Plot.Id)-plot)">
+                            @label
+                        </text>
+                    </text>
+                }
+            }
+
+            @foreach (var (value, label) in xscale.Titles)
+            {
+                var x = ToX(value);
+
+                if (Area.X < x && x < (Area.X + Area.Width))
+                {
+                    <text>
+                        <text
+                              class="x-break-title"
+                              x=@x
+                              y=@(xAxisTitle.Y)
+                              text-anchor="middle"
+                              font-size=@(Plot.Style.Axis.Title.X.FontSize)
+                              clip-path="url(#@(Plot.Id)-plot)">
+                            @label
+                        </text>
+                    </text>
+                }
+            }
+        }
+
+        var x1 = Area.X;
+        var x2 = Area.X + Area.Width;
+
+        foreach (var b in yscale.Breaks)
+        {
+            var y = ToY(b);
+            <line
+                  class="y-break"
+                  x1=@x1
+                  x2=@x2
+                  y1=@y
+                  y2=@y
+                  clip-path="url(#@(clip)-area)" />
+        }
+
+        foreach (var b in yscale.MinorBreaks)
+        {
+            var y = ToY(b);
+            <line
+                  class="y-minor-break"
+                  x1=@x1
+                  x2=@x2
+                  y1=@y
+                  y2=@y
+                  clip-path="url(#@(clip)-area)" />
+        }
+
+        if (Data.Axis.y)
+        {
+            var height = Data.Data.Style!.Axis.Text.Y.FontSize.Height();
+            var offset = height / 4.0;
+
+            @foreach (var (value, label) in yscale.Labels)
+            {
+                var y = ToY(value) + offset;
+
+                if (Area.Y < (y - height / 2.0) && (y + offset) < (Area.Y + Area.Height))
+                {
+                    <text>
+                        <text
+                              class="y-break-label"
+                              x=@(yAxisText.X)
+                              y=@y
+                              text-anchor=@(Plot.Style.Axis.Text.Y.Anchor.Render())
+                              font-size=@(Plot.Style.Axis.Text.Y.FontSize)
+                              clip-path="url(#@(clip)">
+                            @label
+                        </text>
+                    </text>
+                }
+            }
+        }
+    }
+
+    private void RenderCaption(RenderTreeBuilder __builder)
+    {
+        if (Plot.Context.Caption is null)
+        {
+            return;
+        }
+
+        <text><text
+                  class="caption"
+                  x=@(Area.X + Area.Width - Plot.Style.Plot.Caption.Margin.Right)
+                  y=@(Plot.Caption.Y)
+                  font-size=@(Plot.Style.Plot.Caption.FontSize)
+                  clip-path="url(#@(Plot.Id)-plot)">
+                @Plot.Context.Caption
+            </text></text>
+    }
+
+    private void RenderXLab(RenderTreeBuilder __builder)
+    {
+        if (string.IsNullOrEmpty(Data.XLab.text))
+        {
+            return;
+        }
+
+        <text><text
+                  class="x-title"
+                  x=@(xAxisTitle.X)
+                  y=@(xAxisTitle.Y)
+                  text-anchor=@(Plot.Style.Axis.Title.X.Anchor.Render())
+                  font-size=@(Plot.Style.Axis.Title.X.FontSize)
+                  clip-path="url(#@(Plot.Id)-plot)">
+                @Data.XLab.text
+            </text></text>
+    }
+
+    private void RenderYLab(RenderTreeBuilder __builder)
+    {
+        if (string.IsNullOrEmpty(Data.YLab.text))
+        {
+            return;
+        }
+
+        <text><text
+                  class="y-title"
+                  style="transform: translate(@(yAxisTitle.X)px, @(yAxisTitle.Y)px) rotate(@(Plot.Style.Axis.Title.Y.Angle)deg);"
+                  text-anchor=@(Plot.Style.Axis.Title.Y.Anchor.Render())
+                  font-size=@(Plot.Style.Axis.Title.Y.FontSize)
+                  clip-path="url(#@(Plot.Id)-plot)">
+                @Data.YLab.text
+            </text></text>
+    }
+}

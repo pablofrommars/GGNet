@@ -2,8 +2,6 @@
 
 namespace GGNet.Components.Tooltips;
 
-using Theme = Theme.Theme;
-
 public abstract class Tooltip : ComponentBase, ITooltip
 {
 	[Parameter]
@@ -16,7 +14,7 @@ public abstract class Tooltip : ComponentBase, ITooltip
 	public Zone Area { get; set; }
 
 	[Parameter]
-	public required Theme Theme { get; set; }
+	public required Style Style { get; set; }
 
 	protected bool visibility = false;
 
@@ -36,8 +34,8 @@ public abstract class Tooltip : ComponentBase, ITooltip
 		this.color = color ?? "#FFFFFF";
 		this.opacity = opacity ?? 1.0;
 
-		themeColor = Theme.Tooltip.Background ?? color ?? "#FFFFFF";
-    themeOpacity = Theme.Tooltip.Opacity ?? opacity ?? 1.0;
+		themeColor = Style.Tooltip.Background ?? color ?? "#FFFFFF";
+    themeOpacity = Style.Tooltip.Opacity ?? opacity ?? 1.0;
 
 		foreignObject = Render(Coord.ToX(x), Coord.ToY(y), offset, content);
 

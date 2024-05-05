@@ -6,396 +6,469 @@
 
 @using Shapes
 
-@for (var g = 0; g < Panel.Geoms.Count; g++)
-{
-    var geom = Panel.Geoms[g];
+@_renderShapes
 
-    for (var i = 0; i < geom.Layer.Count; i++)
+@code {
+    private void RenderShapes(RenderTreeBuilder __builder)
     {
-        var shape = geom.Layer[i];
+        for (var g = 0; g < Panel.Geoms.Count; g++)
+        {
+            var geom = Panel.Geoms[g];
 
-        if (shape is Shapes.Line l)
-        {
-            <line x1=@X(l.X1)
-      y1=@Y(l.Y1)
-      x2=@X(l.X2)
-      y2=@Y(l.Y2)
-      class=@shape.Css
-      stroke-width=@l.Aesthetic.StrokeWidth
-      stroke=@l.Aesthetic.Stroke
-      stroke-opacity=@l.Aesthetic.StrokeOpacity
-      stroke-dasharray=@(l.Aesthetic.LineType.Render())
-      clip-path="url(#@(Clip))"
-      @onclick=@shape.OnClickHandler
-      @onmouseover=@shape.OnMouseOverHandler
-      @onmouseout=@shape.OnMouseOutHandler />
-        }
-        else if (shape is Shapes.Rectangle r)
-        {
-            var x = X(r.X);
-            var y = Y(r.Y + r.Height);
-            var width = X(r.X + r.Width) - x;
-            var height = Y(r.Y) - y;
-
-            <rect x=@x
-      y=@y
-      width=@width
-      height=@height
-      class=@shape.Css
-      fill=@r.Aesthetic.Fill
-      fill-opacity=@r.Aesthetic.FillOpacity
-      stroke=@r.Aesthetic.Stroke
-      stroke-opacity=@r.Aesthetic.StrokeOpacity
-      stroke-width=@r.Aesthetic.StrokeWidth
-      clip-path="url(#@(Clip))"
-      @onclick=@shape.OnClickHandler
-      @onmouseover=@shape.OnMouseOverHandler
-      @onmouseout=@shape.OnMouseOutHandler />
-        }
-        else if (shape is Shapes.Circle c)
-        {
-            <g transform="translate(@X(c.X), @Y(c.Y))">
-    <circle
-            cx="0"
-            cy="0"
-            r=@c.Aesthetic.Radius
-            class=@shape.Css
-            stroke-width="0.71"
-            stroke=@c.Aesthetic.Fill
-            stroke-opacity=@c.Aesthetic.StrokeOpacity
-            fill=@c.Aesthetic.Fill
-            fill-opacity=@c.Aesthetic.FillOpacity
-            @onclick=@shape.OnClickHandler
-            @onmouseover=@shape.OnMouseOverHandler
-            @onmouseout=@shape.OnMouseOutHandler />
-</g>
-        }
-        else if (shape is Shapes.Path p)
-        {
-            if (p.Points.Count > 0)
+            for (var l = 0; l < geom.Layer.Count; l++)
             {
-                <path d=@(Path(p))
-      fill="none"
-      stroke-width=@p.Aesthetic.StrokeWidth
-      stroke=@p.Aesthetic.Stroke
-      stroke-opacity=@p.Aesthetic.StrokeOpacity
-      stroke-dasharray=@(p.Aesthetic.LineType.Render())
-      clip-path="url(#@(Clip))" />
-            }
-        }
-        else if (shape is Shapes.Area a)
-        {
-            if (a.Points.Count > 0)
-            {
-                <path d=@(Path(a))
-      fill=@a.Aesthetic.Fill
-      fill-opacity=@a.Aesthetic.FillOpacity
-      clip-path="url(#@(Clip))" />
-            }
-        }
-        else if (shape is Shapes.Polygon poly)
-        {
-            <path d=@(Path(poly.Path))
-      class=@shape.Css
-      fill=@poly.Aesthetic.Fill
-      fill-opacity=@poly.Aesthetic.FillOpacity
-      stroke=@poly.Aesthetic.Stroke
-      stroke-width=@poly.Aesthetic.StrokeWidth
-      clip-path="url(#@(Clip))"
-      @onclick=@shape.OnClickHandler
-      @onmouseover=@shape.OnMouseOverHandler
-      @onmouseout=@shape.OnMouseOutHandler />
-        }
-        else if (shape is Shapes.MultiPolygon multi)
-        {
-            <path d=@(Path(multi.Polygons))
-      class=@shape.Css
-      fill=@multi.Aesthetic.Fill
-      fill-opacity=@multi.Aesthetic.FillOpacity
-      stroke=@multi.Aesthetic.Stroke
-      stroke-width=@multi.Aesthetic.StrokeWidth
-      clip-path="url(#@(Clip))"
-      @onclick=@shape.OnClickHandler
-      @onmouseover=@shape.OnMouseOverHandler
-      @onmouseout=@shape.OnMouseOutHandler />
-        }
-        else if (shape is Shapes.Text text)
-        {
-            <text><text
-          class="pointer-events-none"
-          transform="translate(@X(text.X), @Y(text.Y)) rotate(@(text.Aesthetic.Angle)deg)"
-          fill=@(text.Aesthetic.Color)
-          text-anchor=@(text.Aesthetic.Anchor.Render())
-          font-size=@(text.Aesthetic.FontSize)
-          font-weigth=@(text.Aesthetic.FontWeight)
-          font-style=@(text.Aesthetic.FontStyle)
-          clip-path="url(#@(Clip))">
-        @text.Value
-    </text></text>
-        }
-        else if (shape is Shapes.VLine vline)
-        {
-            var x = X(vline.X);
+                var shape = geom.Layer[l];
 
-            <line x1=@x
-      y1=@Zone.Y
-      x2=@x
-      y2=@(Zone.Y + Zone.Height)
-      stroke-width=@vline.Line.StrokeWidth
-      stroke=@vline.Line.Stroke
-      stroke-opacity=@vline.Line.StrokeOpacity
-      stroke-dasharray=@(vline.Line.LineType.Render())
-      clip-path="url(#@(Clip))" />
-
-            if (!string.IsNullOrEmpty(vline.Label))
-            {
-                var offset = 0.025 * Zone.Height;
-
-                var y = 0.0;
-                var angle = 0.0;
-
-                if (vline.Text.Anchor == Anchor.End)
+                switch (shape)
                 {
-                    x += 3;
-                    y = Zone.Y + offset;
-                    angle = 90;
+                    case Circle circle:
+                        RenderCircle(__builder, shape, circle);
+                        break;
+
+                    case Line line:
+                        RenderLine(__builder, shape, line);
+                        break;
+
+                    case Rectangle rectangle:
+                        RenderRectangle(__builder, shape, rectangle);
+                        break;
+
+                    case Area area:
+                        RenderArea(__builder, shape, area);
+                        break;
+
+                    case Path path:
+                        RenderPath(__builder, shape, path);
+                        break;
+
+                    case Polygon polygon:
+                        RenderPolygon(__builder, shape, polygon);
+                        break;
+
+                    case MultiPolygon nulti:
+                        RenderMultiPolygon(__builder, shape, nulti);
+                        break;
+
+                    case Text text:
+                        RenderText(__builder, shape, text);
+                        break;
+
+                    case VLine vline:
+                        RenderVLine(__builder, shape, vline);
+                        break;
+
+                    case HLine hline:
+                        RenderHLine(__builder, shape, hline);
+                        break;
+
+                    case ABLine abline:
+                        RenderABLine(__builder, shape, abline);
+                        break;
                 }
-                else
-                {
-                    x -= 3;
-                    y = Zone.Y + Zone.Height - offset;
-                    angle = -90;
-                }
-
-                <text><text
-          class="pointer-events-none"
-          fill=@(vline.Text.Color)
-          fill-opacity=@(vline.Text.Opacity)
-          text-anchor=@(Anchor.Start.Render())
-          font-size=@(vline.Text.FontSize)
-          font-weigth=@(vline.Text.FontWeight)
-          font-style=@(vline.Text.FontStyle)
-          transform="translate(@(x)px, @(y)px) rotate(@(angle)deg)"
-          clip-path="url(#@(Clip))">
-        @vline.Label
-    </text></text>
             }
         }
-        else if (shape is Shapes.HLine hline)
+    }
+
+    private void RenderCircle(RenderTreeBuilder __builder, IShape shape, Circle circle)
+    {
+        <g transform="translate(@X(circle.X), @Y(circle.Y))">
+            <circle
+                    cx="0"
+                    cy="0"
+                    r=@circle.Aesthetic.Radius
+                    class=@shape.Css
+                    stroke-width="0.71"
+                    stroke=@circle.Aesthetic.Fill
+                    stroke-opacity=@circle.Aesthetic.StrokeOpacity
+                    fill=@circle.Aesthetic.Fill
+                    fill-opacity=@circle.Aesthetic.FillOpacity
+                    @onclick=@shape.OnClickHandler
+                    @onmouseover=@shape.OnMouseOverHandler
+                    @onmouseout=@shape.OnMouseOutHandler />
+        </g>
+    }
+
+    private void RenderLine(RenderTreeBuilder __builder, IShape shape, Line line)
+    {
+        <line x1=@X(line.X1)
+              y1=@Y(line.Y1)
+              x2=@X(line.X2)
+              y2=@Y(line.Y2)
+              class=@shape.Css
+              stroke-width=@line.Aesthetic.StrokeWidth
+              stroke=@line.Aesthetic.Stroke
+              stroke-opacity=@line.Aesthetic.StrokeOpacity
+              stroke-dasharray=@(line.Aesthetic.LineType.Render())
+              clip-path="url(#@(Clip))"
+              @onclick=@shape.OnClickHandler
+              @onmouseover=@shape.OnMouseOverHandler
+              @onmouseout=@shape.OnMouseOutHandler />
+    }
+
+    private void RenderRectangle(RenderTreeBuilder __builder, IShape shape, Rectangle rectangle)
+    {
+        var x = X(rectangle.X);
+        var y = Y(rectangle.Y + rectangle.Height);
+        var width = X(rectangle.X + rectangle.Width) - x;
+        var height = Y(rectangle.Y) - y;
+
+        <rect x=@x
+              y=@y
+              width=@width
+              height=@height
+              class=@shape.Css
+              fill=@rectangle.Aesthetic.Fill
+              fill-opacity=@rectangle.Aesthetic.FillOpacity
+              stroke=@rectangle.Aesthetic.Stroke
+              stroke-opacity=@rectangle.Aesthetic.StrokeOpacity
+              stroke-width=@rectangle.Aesthetic.StrokeWidth
+              clip-path="url(#@(Clip))"
+              @onclick=@shape.OnClickHandler
+              @onmouseover=@shape.OnMouseOverHandler
+              @onmouseout=@shape.OnMouseOutHandler />
+    }
+
+    private void RenderArea(RenderTreeBuilder __builder, IShape shape, Area area)
+    {
+        if (area.Points.Count == 0)
         {
-            var y = Y(hline.Y);
-
-            <line x1=@Zone.X
-      y1=@y
-      x2=@(Zone.X + Zone.Width)
-      y2=@y
-      stroke-width=@hline.Line.StrokeWidth
-      stroke=@hline.Line.Stroke
-      stroke-opacity=@hline.Line.StrokeOpacity
-      stroke-dasharray=@(hline.Line.LineType.Render())
-      clip-path="url(#@(Clip))" />
-
-            if (!string.IsNullOrEmpty(hline.Label))
-            {
-                var offset = 0.025 * Zone.Width;
-
-                var x = 0.0;
-
-                if (hline.Text.Anchor == Anchor.End)
-                {
-                    x = Zone.X + Zone.Width - offset;
-                }
-                else
-                {
-                    x = Zone.X + offset;
-                }
-
-                y -= 3;
-
-                <text><text
-          class="pointer-events-none"
-          fill=@(hline.Text.Color)
-          fill-opacity=@(hline.Text.Opacity)
-          text-anchor=@(hline.Text.Anchor.Render())
-          font-size=@(hline.Text.FontSize)
-          font-weigth=@(hline.Text.FontWeight)
-          font-style=@(hline.Text.FontStyle)
-          transform="translate(@(x), @(y))"
-          clip-path="url(#@(Clip))">
-        @hline.Label
-    </text></text>
-            }
+            return;
         }
-        else if (shape is Shapes.ABLine abline)
+
+        <path d=@(Path(area))
+              fill=@area.Aesthetic.Fill
+              fill-opacity=@area.Aesthetic.FillOpacity
+              clip-path="url(#@(Clip))" />
+    }
+
+    private void RenderPath(RenderTreeBuilder __builder, IShape shape, Path path)
+    {
+        if (path.Points.Count == 0)
         {
-            var ymin = Coord.XRange.min;
-            var ymax = Coord.XRange.max;
-            if (abline.Transformation.x)
+            return;
+        }
+
+        <path d=@(Path(path))
+              fill="none"
+              stroke-width=@path.Aesthetic.StrokeWidth
+              stroke=@path.Aesthetic.Stroke
+              stroke-opacity=@path.Aesthetic.StrokeOpacity
+              stroke-dasharray=@(path.Aesthetic.LineType.Render())
+              clip-path="url(#@(Clip))" />
+    }
+
+    private void RenderPolygon(RenderTreeBuilder __builder, IShape shape, Polygon polygon)
+    {
+        <path d=@(Path(polygon.Path))
+              class=@shape.Css
+              fill=@polygon.Aesthetic.Fill
+              fill-opacity=@polygon.Aesthetic.FillOpacity
+              stroke=@polygon.Aesthetic.Stroke
+              stroke-width=@polygon.Aesthetic.StrokeWidth
+              clip-path="url(#@(Clip))"
+              @onclick=@shape.OnClickHandler
+              @onmouseover=@shape.OnMouseOverHandler
+              @onmouseout=@shape.OnMouseOutHandler />
+    }
+
+    private void RenderMultiPolygon(RenderTreeBuilder __builder, IShape shape, MultiPolygon multi)
+    {
+        <path d=@(Path(multi.Polygons))
+              class=@shape.Css
+              fill=@multi.Aesthetic.Fill
+              fill-opacity=@multi.Aesthetic.FillOpacity
+              stroke=@multi.Aesthetic.Stroke
+              stroke-width=@multi.Aesthetic.StrokeWidth
+              clip-path="url(#@(Clip))"
+              @onclick=@shape.OnClickHandler
+              @onmouseover=@shape.OnMouseOverHandler
+              @onmouseout=@shape.OnMouseOutHandler />
+    }
+
+    private void RenderText(RenderTreeBuilder __builder, IShape shape, Text text)
+    {
+        <text><text
+                  class="pointer-events-none"
+                  transform="translate(@X(text.X), @Y(text.Y)) rotate(@(text.Aesthetic.Angle)deg)"
+                  fill=@(text.Aesthetic.Color)
+                  text-anchor=@(text.Aesthetic.Anchor.Render())
+                  font-size=@(text.Aesthetic.FontSize)
+                  font-weigth=@(text.Aesthetic.FontWeight)
+                  font-style=@(text.Aesthetic.FontStyle)
+                  clip-path="url(#@(Clip))">
+                @text.Value
+            </text></text>
+    }
+
+    private void RenderVLine(RenderTreeBuilder __builder, IShape shape, VLine vline)
+    {
+        var x = X(vline.X);
+
+        <line x1=@x
+              y1=@Zone.Y
+              x2=@x
+              y2=@(Zone.Y + Zone.Height)
+              stroke-width=@vline.Line.StrokeWidth
+              stroke=@vline.Line.Stroke
+              stroke-opacity=@vline.Line.StrokeOpacity
+              stroke-dasharray=@(vline.Line.LineType.Render())
+              clip-path="url(#@(Clip))" />
+
+        if (string.IsNullOrEmpty(vline.Label))
+        {
+            return;
+        }
+        var offset = 0.025 * Zone.Height;
+
+        var y = 0.0;
+        var angle = 0.0;
+
+        if (vline.Text.Anchor == Anchor.End)
+        {
+            x += 3;
+            y = Zone.Y + offset;
+            angle = 90;
+        }
+        else
+        {
+            x -= 3;
+            y = Zone.Y + Zone.Height - offset;
+            angle = -90;
+        }
+
+        <text><text
+                  class="pointer-events-none"
+                  fill=@(vline.Text.Color)
+                  fill-opacity=@(vline.Text.Opacity)
+                  text-anchor=@(Anchor.Start.Render())
+                  font-size=@(vline.Text.FontSize)
+                  font-weigth=@(vline.Text.FontWeight)
+                  font-style=@(vline.Text.FontStyle)
+                  transform="translate(@(x)px, @(y)px) rotate(@(angle)deg)"
+                  clip-path="url(#@(Clip))">
+                @vline.Label
+            </text></text>
+    }
+
+    private void RenderHLine(RenderTreeBuilder __builder, IShape shape, HLine hline)
+    {
+        var y = Y(hline.Y);
+
+        <line x1=@Zone.X
+              y1=@y
+              x2=@(Zone.X + Zone.Width)
+              y2=@y
+              stroke-width=@hline.Line.StrokeWidth
+              stroke=@hline.Line.Stroke
+              stroke-opacity=@hline.Line.StrokeOpacity
+              stroke-dasharray=@(hline.Line.LineType.Render())
+              clip-path="url(#@(Clip))" />
+
+        if (string.IsNullOrEmpty(hline.Label))
+        {
+            return;
+        }
+
+        var offset = 0.025 * Zone.Width;
+
+        var x = 0.0;
+
+        if (hline.Text.Anchor == Anchor.End)
+        {
+            x = Zone.X + Zone.Width - offset;
+        }
+        else
+        {
+            x = Zone.X + offset;
+        }
+
+        y -= 3;
+
+        <text><text
+                  class="pointer-events-none"
+                  fill=@(hline.Text.Color)
+                  fill-opacity=@(hline.Text.Opacity)
+                  text-anchor=@(hline.Text.Anchor.Render())
+                  font-size=@(hline.Text.FontSize)
+                  font-weigth=@(hline.Text.FontWeight)
+                  font-style=@(hline.Text.FontStyle)
+                  transform="translate(@(x), @(y))"
+                  clip-path="url(#@(Clip))">
+                @hline.Label
+            </text></text>
+    }
+
+    private void RenderABLine(RenderTreeBuilder __builder, IShape shape, ABLine abline)
+    {
+        var ymin = Coord.XRange.min;
+        var ymax = Coord.XRange.max;
+        if (abline.Transformation.x)
+        {
+            ymin = Coord.XTransformation.Inverse(ymin);
+            ymax = Coord.XTransformation.Inverse(ymax);
+        }
+
+        ymin = abline.A * ymin + abline.B;
+        ymax = abline.A * ymax + abline.B;
+
+        if (abline.Transformation.y)
+        {
+            ymin = Coord.YTransformation.Apply(ymin);
+            ymax = Coord.YTransformation.Apply(ymax);
+        }
+
+        var y1 = Y(ymin);
+        var y2 = Y(ymax);
+
+        <line x1=@Zone.X
+              y1=@y1
+              x2=@(Zone.X + Zone.Width)
+              y2=@y2
+              stroke-width=@abline.Line.StrokeWidth
+              stroke=@abline.Line.Stroke
+              stroke-opacity=@abline.Line.StrokeOpacity
+              stroke-dasharray=@(abline.Line.LineType.Render())
+              clip-path="url(#@(Clip))" />
+
+        if (string.IsNullOrEmpty(abline.Label))
+        {
+            return;
+        }
+
+        var x = 0.0;
+        var y = 0.0;
+        var offset = 0.05 * Zone.Width;
+
+        var tan = (y1 - y2) / Zone.Width;
+        var angle = Math.Atan(tan);
+
+        if (abline.Text.Anchor == Anchor.End)
+        {
+            x = Zone.X + Zone.Width;
+            y = y2;
+
+            if (angle >= 0)
             {
-                ymin = Coord.XTransformation.Inverse(ymin);
-                ymax = Coord.XTransformation.Inverse(ymax);
-            }
-
-            ymin = abline.A * ymin + abline.B;
-            ymax = abline.A * ymax + abline.B;
-
-            if (abline.Transformation.y)
-            {
-                ymin = Coord.YTransformation.Apply(ymin);
-                ymax = Coord.YTransformation.Apply(ymax);
-            }
-
-            var y1 = Y(ymin);
-            var y2 = Y(ymax);
-
-            <line x1=@Zone.X
-      y1=@y1
-      x2=@(Zone.X + Zone.Width)
-      y2=@y2
-      stroke-width=@abline.Line.StrokeWidth
-      stroke=@abline.Line.Stroke
-      stroke-opacity=@abline.Line.StrokeOpacity
-      stroke-dasharray=@(abline.Line.LineType.Render())
-      clip-path="url(#@(Clip))" />
-
-            if (!string.IsNullOrEmpty(abline.Label))
-            {
-                var x = 0.0;
-                var y = 0.0;
-                var offset = 0.05 * Zone.Width;
-
-                var tan = (y1 - y2) / Zone.Width;
-                var angle = Math.Atan(tan);
-
-                if (abline.Text.Anchor == Anchor.End)
+                if (ymax > Coord.YRange.max)
                 {
-                    x = Zone.X + Zone.Width;
-                    y = y2;
+                    x = Coord.YRange.max;
 
-                    if (angle >= 0)
+                    if (abline.Transformation.y)
                     {
-                        if (ymax > Coord.YRange.max)
-                        {
-                            x = Coord.YRange.max;
-
-                            if (abline.Transformation.y)
-                            {
-                                x = Coord.YTransformation.Inverse(x);
-                            }
-
-                            x = (x - abline.B) / abline.A;
-
-                            if (abline.Transformation.x)
-                            {
-                                x = Coord.XTransformation.Apply(x);
-
-                            }
-
-                            x = X(x);
-
-                            y = Zone.Y;
-                        }
-                    }
-                    else
-                    {
-                        if (ymax < Coord.YRange.min)
-                        {
-                            x = Coord.YRange.min;
-
-                            if (abline.Transformation.y)
-                            {
-                                x = Coord.YTransformation.Inverse(x);
-                            }
-
-                            x = (x - abline.B) / abline.A;
-
-                            if (abline.Transformation.x)
-                            {
-                                x = Coord.XTransformation.Apply(x);
-
-                            }
-
-                            x = X(x);
-
-                            y = Zone.Y + Zone.Height;
-                        }
-                    }
-
-                    x -= offset;
-                    y += offset * tan - 3;
-                }
-                else
-                {
-                    x = Zone.X;
-                    y = y1;
-
-                    if (angle >= 0)
-                    {
-                        if (ymin < Coord.YRange.min)
-                        {
-                            x = Coord.YRange.min;
-
-                            if (abline.Transformation.y)
-                            {
-                                x = Coord.YTransformation.Inverse(x);
-                            }
-
-                            x = (x - abline.B) / abline.A;
-
-                            if (abline.Transformation.x)
-                            {
-                                x = Coord.XTransformation.Apply(x);
-
-                            }
-
-                            x = X(x);
-
-                            y = Zone.Y + Zone.Height;
-                        }
-                    }
-                    else
-                    {
-                        if (ymin < Coord.YRange.max)
-                        {
-                            x = Coord.YRange.max;
-
-                            if (abline.Transformation.y)
-                            {
-                                x = Coord.YTransformation.Inverse(x);
-                            }
-
-                            x = (x - abline.B) / abline.A;
-
-                            if (abline.Transformation.x)
-                            {
-                                x = Coord.XTransformation.Apply(x);
-
-                            }
-
-                            x = X(x);
-
-                            y = Zone.Y;
-                        }
+                        x = Coord.YTransformation.Inverse(x);
                     }
 
-                    x += offset;
-                    y -= offset * tan + 3;
+                    x = (x - abline.B) / abline.A;
 
+                    if (abline.Transformation.x)
+                    {
+                        x = Coord.XTransformation.Apply(x);
+
+                    }
+
+                    x = X(x);
+
+                    y = Zone.Y;
                 }
-
-                <text><text
-          transform="translate(@(x), @(y)) rotate(@(-angle)rad)"
-          class="pointer-events-none"
-          fill=@(abline.Text.Color)
-          fill-opacity=@(abline.Text.Opacity)
-          text-anchor=@(abline.Text.Anchor.Render())
-          font-size=@(abline.Text.FontSize)
-          font-weigth=@(abline.Text.FontWeight)
-          font-style=@(abline.Text.FontStyle)
-          clip-path="url(#@(Clip))">
-        @abline.Label
-    </text></text>
             }
+            else
+            {
+                if (ymax < Coord.YRange.min)
+                {
+                    x = Coord.YRange.min;
+
+                    if (abline.Transformation.y)
+                    {
+                        x = Coord.YTransformation.Inverse(x);
+                    }
+
+                    x = (x - abline.B) / abline.A;
+
+                    if (abline.Transformation.x)
+                    {
+                        x = Coord.XTransformation.Apply(x);
+
+                    }
+
+                    x = X(x);
+
+                    y = Zone.Y + Zone.Height;
+                }
+            }
+
+            x -= offset;
+            y += offset * tan - 3;
         }
+        else
+        {
+            x = Zone.X;
+            y = y1;
+
+            if (angle >= 0)
+            {
+                if (ymin < Coord.YRange.min)
+                {
+                    x = Coord.YRange.min;
+
+                    if (abline.Transformation.y)
+                    {
+                        x = Coord.YTransformation.Inverse(x);
+                    }
+
+                    x = (x - abline.B) / abline.A;
+
+                    if (abline.Transformation.x)
+                    {
+                        x = Coord.XTransformation.Apply(x);
+
+                    }
+
+                    x = X(x);
+
+                    y = Zone.Y + Zone.Height;
+                }
+            }
+            else
+            {
+                if (ymin < Coord.YRange.max)
+                {
+                    x = Coord.YRange.max;
+
+                    if (abline.Transformation.y)
+                    {
+                        x = Coord.YTransformation.Inverse(x);
+                    }
+
+                    x = (x - abline.B) / abline.A;
+
+                    if (abline.Transformation.x)
+                    {
+                        x = Coord.XTransformation.Apply(x);
+
+                    }
+
+                    x = X(x);
+
+                    y = Zone.Y;
+                }
+            }
+
+            x += offset;
+            y -= offset * tan + 3;
+
+        }
+
+        <text><text
+                  transform="translate(@(x), @(y)) rotate(@(-angle)rad)"
+                  class="pointer-events-none"
+                  fill=@(abline.Text.Color)
+                  fill-opacity=@(abline.Text.Opacity)
+                  text-anchor=@(abline.Text.Anchor.Render())
+                  font-size=@(abline.Text.FontSize)
+                  font-weigth=@(abline.Text.FontWeight)
+                  font-style=@(abline.Text.FontStyle)
+                  clip-path="url(#@(Clip))">
+                @abline.Label
+            </text></text>
     }
 }

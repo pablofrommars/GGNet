@@ -2,8 +2,6 @@
 
 namespace GGNet.Facets;
 
-using GGNet.Theme;
-
 public sealed class Faceting2D<T, TRow, TColumn>(Func<T, TRow> row, Func<T, TColumn> column, bool freeX, bool freeY) : Faceting<T>(freeX, freeY)
 {
 	private readonly SortedBuffer<TRow> rows = new(4, 1);
@@ -42,7 +40,7 @@ public sealed class Faceting2D<T, TRow, TColumn>(Func<T, TRow> row, Func<T, TCol
 		columns.Clear();
 	}
 
-	public override (Facet<T> facet, bool showX, bool showY)[] Facets(Theme theme)
+	public override (Facet<T> facet, bool showX, bool showY)[] Facets(Style style)
 	{
 		var facets = new(Facet<T> facet, bool showX, bool showY)[N];
 
@@ -60,7 +58,7 @@ public sealed class Faceting2D<T, TRow, TColumn>(Func<T, TRow> row, Func<T, TCol
 					? rows[r]?.ToString()
 					: string.Empty;
 
-				var showY = theme.Axis.Y == Position.Left
+				var showY = style.Axis.Y == Position.Left
 					? c == 0
 					: c == (NColumns - 1);
 

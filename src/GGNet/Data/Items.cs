@@ -2,9 +2,9 @@ using GGNet.Common;
 
 namespace GGNet.Data;
 
-internal sealed class Items(Theme.Theme theme) : Buffer<(Dimension<string> label, Elements elements)>(8, 1)
+internal sealed class Items(Style style) : Buffer<(Dimension<string> label, Elements elements)>(8, 1)
 {
-  private readonly Theme.Theme theme = theme;
+  private readonly Style style = style;
 
   public (Dimension<string> label, Elements elements) GetOrAdd(string label)
   {
@@ -17,13 +17,13 @@ internal sealed class Items(Theme.Theme theme) : Buffer<(Dimension<string> label
       }
     }
 
-    var height = label.Height(theme.Legend.Labels.FontSize);
+    var height = label.Height(style.Legend.Labels.FontSize);
 
     var item = (
       label: new Dimension<string>
       {
         Value = label,
-        Width = label.Width(theme.Legend.Labels.FontSize),
+        Width = label.Width(style.Legend.Labels.FontSize),
         Height = height
       },
       elements: new Elements(height)

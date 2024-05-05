@@ -8,85 +8,41 @@
 
 <CascadingValue Value=StringBuilderPool IsFixed=true>
 
-<svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height" class="@DynamicClass">
+    <svg id=@Id theme=@Theme xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height" class=@(PlotClass())>
 
-    <style type="text/css">
-        line,
-        polyline,
-        polygon,
-        path,
-        rect,
-        circle {
-            stroke-linecap: butt;
-            stroke-linejoin: round;
-            stroke-miterlimit: 10.00;
-        }
+        <defs>
+            @_renderLegendGradients;
+        </defs>
 
-        .cursor-pointer {
-            cursor: pointer;
-        }
+        <clipPath id="@(Id)-plot">
+            <rect x="0" y="0" width=@Width height=@Height />
+        </clipPath>
 
-        .pointer-events-none {
-            pointer-events: none;
-        }
+        <rect class="plot" width="100%" height="100%" />
 
-        .loading {
-            opacity: 0.25;
-            transition: opacity linear 100ms;
-            transition-delay: 25ms;
-        }
+        @_renderLegend;
 
-        .animate-point {
-            transition: transform 0.2s ease-in-out;
-        }
+        <CascadingValue Value=@this IsFixed=true>
+            @_renderPanels;
+        </CascadingValue>
 
-        .animate-point:hover {
-            transform: scale(1.5);
-        }
+    </svg>
 
-        .animate-bar {
-            transition: transform 0.2s ease-in-out;
-            fill-opacity: 0.6 !important;
-        }
+</CascadingValue>
 
-        .animate-bar:hover {
-            fill-opacity: 0.8 !important;
-        }
-
-        .animate-map {
-            transition: transform 0.2s ease-in-out;
-            fill-opacity: 0.6 !important;
-            stroke-width: 0.2 !important;
-        }
-
-        .animate-map:hover {
-            fill-opacity: 1 !important;
-            stroke-width: 0.5 !important;
-        }
-
-        .animate-hex {
-            transition: transform 0.2s ease-in-out;
-            fill-opacity: 0.7 !important;
-        }
-
-        .animate-hex:hover {
-            fill-opacity: 1 !important;
-        }
-    </style>
-
-    <defs>
-        @for (int i = 0; i < Context.Legends.Count; i++)
+@code {
+    private void RenderLegendGradients(RenderTreeBuilder __builder)
+    {
+        for (int i = 0; i < Context.Legends.Count; i++)
         {
             var l = Context.Legends[i];
-
-            @if (l.Aes.Type != Guide.ColorBar)
+            if (l.Aes.Type != Guide.ColorBar)
             {
                 continue;
             }
 
             var n = l.Items.Count;
-
-            @if (n < 2)
+            if (n < 2)
             {
                 continue;
             }
@@ -94,8 +50,8 @@
             <linearGradient id="gadient-@(Id)-@i"
                             x1="0%"
                             y1="0%"
-                            x2=@(Theme.Legend.Direction == Direction.Vertical ? "0%" : "100%")
-                            y2="@(Theme.Legend.Direction == Direction.Vertical ? "100%" : "0%")">
+                            x2=@(Style.Legend.Direction == Direction.Vertical ? "0%" : "100%")
+                            y2="@(Style.Legend.Direction == Direction.Vertical ? "100%" : "0%")">
 
                 <stop offset="0%" stop-color=@l.Items[0].elements[0].Value.StopColor stop-opacity=@l.Items[0].elements[0].Value.StopOpacity />
 
@@ -103,7 +59,7 @@
                 {
                     var delta = 100.0 / (n - 2.0);
 
-                    @for (var j = 0; j < n - 1; j++)
+                    for (var j = 0; j < n - 1; j++)
                     {
                         <stop offset="@(j * delta)%" stop-color=@l.Items[j].elements[0].Value.StopColor stop-opacity=@l.Items[j].elements[0].Value.StopOpacity />
                     }
@@ -113,18 +69,16 @@
 
             </linearGradient>
         }
+    }
 
-    </defs>
-
-    <clipPath id="@(Id)-plot">
-        <rect x="0" y="0" width=@Width height=@Height />
-    </clipPath>
-
-    <rect width="100%" height="100%" fill=@(Theme.Plot.Background.Fill) />
-
-    @if (Legend.Width > 0)
+    private void RenderLegend(RenderTreeBuilder __builder)
     {
-        if (Theme.Legend.Direction == Direction.Vertical)
+        if (Legend.Width == 0)
+        {
+            return;
+        }
+
+        if (Style.Legend.Direction == Direction.Vertical)
         {
             var offset = Legend.Y;
 
@@ -134,23 +88,21 @@
 
                 if (l.Title?.Width > 0)
                 {
-                    offset += Theme.Legend.Title.Margin.Top;
+                    offset += Style.Legend.Title.Margin.Top;
 
                     <text>
                         <text
-                            x=@(Legend.X)
-                            y=@(offset + l.Title.Height)
-                            text-anchor=@(Theme.Legend.Title.Anchor.Render())
-                            font-size=@(Theme.Legend.Title.FontSize)
-                            font-weight=@(Theme.Legend.Title.FontWeight)
-                            font-style=@(Theme.Legend.Title.FontStyle)
-                            fill=@(Theme.Legend.Title.Color)
-                            clip-path="url(#@(Id)-plot)">
+                              class="legend-title"
+                              x=@(Legend.X)
+                              y=@(offset + l.Title.Height)
+                              text-anchor=@(Style.Legend.Title.Anchor.Render())
+                              font-size=@(Style.Legend.Title.FontSize)
+                              clip-path="url(#@(Id)-plot)">
                             @l.Title.Value
                         </text>
                     </text>
 
-                    offset += l.Title.Height + Theme.Legend.Title.Margin.Bottom;
+                    offset += l.Title.Height + Style.Legend.Title.Margin.Bottom;
                 }
 
                 if (l.Aes.Type == Guide.Items)
@@ -159,7 +111,7 @@
                     {
                         var (label, elements) = l.Items[j];
 
-                        offset += Theme.Legend.Labels.Margin.Top;
+                        offset += Style.Legend.Labels.Margin.Top;
 
                         for (int k = 0; k < elements.Count; k++)
                         {
@@ -217,25 +169,23 @@
 
                         <text>
                             <text
-                                x=@(Legend.X + l.Width + Theme.Legend.Labels.Margin.Left)
-                                y=@(offset + elements.Height / 2.0 + label.Height / 4.0)
-                                text-anchor=@(Theme.Legend.Labels.Anchor.Render())
-                                font-size=@(Theme.Legend.Labels.FontSize)
-                                font-weight=@(Theme.Legend.Labels.FontWeight)
-                                font-style=@(Theme.Legend.Labels.FontStyle)
-                                fill=@(Theme.Legend.Labels.Color)
-                                clip-path="url(#@(Id)-legend)">
-                            @label.Value
+                                  class="legend-label"
+                                  x=@(Legend.X + l.Width + Style.Legend.Labels.Margin.Left)
+                                  y=@(offset + elements.Height / 2.0 + label.Height / 4.0)
+                                  text-anchor=@(Style.Legend.Labels.Anchor.Render())
+                                  font-size=@(Style.Legend.Labels.FontSize)
+                                  clip-path="url(#@(Id)-legend)">
+                                @label.Value
                             </text>
                         </text>
 
-                        offset += Math.Max(elements.Height, label.Height) + Theme.Legend.Labels.Margin.Bottom;
+                        offset += Math.Max(elements.Height, label.Height) + Style.Legend.Labels.Margin.Bottom;
                     }
                 }
                 else if (l.Aes.Type == Guide.ColorBar)
                 {
-                    var xOffset = Legend.X + l.Width + Theme.Legend.Labels.Margin.Left;
-                    offset += Theme.Legend.Labels.Margin.Top;
+                    var xOffset = Legend.X + l.Width + Style.Legend.Labels.Margin.Left;
+                    offset += Style.Legend.Labels.Margin.Top;
 
                     var n = l.Items.Count;
 
@@ -245,15 +195,13 @@
 
                         <text>
                             <text
-                                x=@xOffset
-                                y=@(offset + (j + 1.0) * 3.0 * l.Height + label.Height / 4.0)
-                                text-anchor=@(Theme.Legend.Labels.Anchor.Render())
-                                font-size=@(Theme.Legend.Labels.FontSize)
-                                font-weight=@(Theme.Legend.Labels.FontWeight)
-                                font-style=@(Theme.Legend.Labels.FontStyle)
-                                fill=@(Theme.Legend.Labels.Color)
-                                clip-path="url(#@(Id)-legend)">
-                                    @label.Value
+                                  class="legend-label"
+                                  x=@xOffset
+                                  y=@(offset + (j + 1.0) * 3.0 * l.Height + label.Height / 4.0)
+                                  text-anchor=@(Style.Legend.Labels.Anchor.Render())
+                                  font-size=@(Style.Legend.Labels.FontSize)
+                                  clip-path="url(#@(Id)-legend)">
+                                @label.Value
                             </text>
                         </text>
                     }
@@ -263,7 +211,7 @@
                           width=@l.Width
                           height=@(3.0 * n * l.Height)
                           fill="url(#gadient-@(Id)-@i)"
-                          stroke=@Theme.Legend.Labels.Color
+                          stroke=@Style.Legend.Labels.Color
                           stroke-width="0.2"
                           clip-path="url(#@(Id)-plot)" />
                 }
@@ -280,23 +228,21 @@
 
                 if (l.Title?.Height > 0)
                 {
-                    offset += Theme.Legend.Title.Margin.Left;
+                    offset += Style.Legend.Title.Margin.Left;
 
                     <text>
                         <text
-                            x=@offset
-                            y=@(middle + l.Title.Height / 4.0)
-                            text-anchor=@(Theme.Legend.Title.Anchor.Render())
-                            font-size=@(Theme.Legend.Title.FontSize)
-                            font-weight=@(Theme.Legend.Title.FontWeight)
-                            font-style=@(Theme.Legend.Title.FontStyle)
-                            fill=@(Theme.Legend.Title.Color)
-                            clip-path="url(#@(Id)-plot)">
-                                @l.Title.Value
+                              class="legend-title"
+                              x=@offset
+                              y=@(middle + l.Title.Height / 4.0)
+                              text-anchor=@(Style.Legend.Title.Anchor.Render())
+                              font-size=@(Style.Legend.Title.FontSize)
+                              clip-path="url(#@(Id)-plot)">
+                            @l.Title.Value
                         </text>
                     </text>
 
-                    offset += l.Title.Width + Theme.Legend.Title.Margin.Right;
+                    offset += l.Title.Width + Style.Legend.Title.Margin.Right;
                 }
 
                 if (l.Aes.Type == Guide.Items)
@@ -363,28 +309,26 @@
 
                         offset += elements.Width;
 
-                        offset += Theme.Legend.Labels.Margin.Left;
+                        offset += Style.Legend.Labels.Margin.Left;
 
                         <text>
                             <text
-                                x=@offset
-                                y=@(middle + label.Height / 4.0)
-                                text-anchor=@(Theme.Legend.Labels.Anchor.Render())
-                                font-size=@(Theme.Legend.Labels.FontSize)
-                                font-weight=@(Theme.Legend.Labels.FontWeight)
-                                font-style=@(Theme.Legend.Labels.FontStyle)
-                                fill=@(Theme.Legend.Labels.Color)
-                                clip-path="url(#@(Id)-legend)">
-                                    @label.Value
+                                  class="legend-label"
+                                  x=@offset
+                                  y=@(middle + label.Height / 4.0)
+                                  text-anchor=@(Style.Legend.Labels.Anchor.Render())
+                                  font-size=@(Style.Legend.Labels.FontSize)
+                                  clip-path="url(#@(Id)-legend)">
+                                @label.Value
                             </text>
                         </text>
 
-                        offset += label.Width + Theme.Legend.Labels.Margin.Right;
+                        offset += label.Width + Style.Legend.Labels.Margin.Right;
                     }
                 }
                 else if (l.Aes.Type == Guide.ColorBar)
                 {
-                    offset += Theme.Legend.Labels.Margin.Left;
+                    offset += Style.Legend.Labels.Margin.Left;
 
                     var yOffset = Legend.Y + l.Items[0].label.Height;
 
@@ -394,27 +338,25 @@
 
                         <text>
                             <text
-                                x=@(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0)
-                                y=@yOffset
-                                text-anchor=@(Theme.Legend.Labels.Anchor.Render())
-                                font-size=@(Theme.Legend.Labels.FontSize)
-                                font-weight=@(Theme.Legend.Labels.FontWeight)
-                                font-style=@(Theme.Legend.Labels.FontStyle)
-                                fill=@(Theme.Legend.Labels.Color)
-                                clip-path="url(#@(Id)-legend)">
-                                    @label.Value
+                                  class="legend-label"
+                                  x=@(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0)
+                                  y=@yOffset
+                                  text-anchor=@(Style.Legend.Labels.Anchor.Render())
+                                  font-size=@(Style.Legend.Labels.FontSize)
+                                  clip-path="url(#@(Id)-legend)">
+                                @label.Value
                             </text>
                         </text>
                     }
 
-                    yOffset += Theme.Legend.Labels.Margin.Bottom;
+                    yOffset += Style.Legend.Labels.Margin.Bottom;
 
                     <rect x=@offset
                           y=@yOffset
                           width=@(3.0 * l.Width * l.Items.Count)
                           height=@l.Height
                           fill="url(#gadient-@(Id)-@i)"
-                          stroke=@Theme.Legend.Labels.Color
+                          stroke=@Style.Legend.Labels.Color
                           stroke-width="0.2"
                           clip-path="url(#@(Id)-plot)" />
                 }
@@ -422,94 +364,90 @@
         }
     }
 
-    <CascadingValue Value=@this IsFixed=true>
-        @{
-            var width = wrapper.Width - Context.Strip - (Context.N.cols - 1.0) * Theme.Panel.Spacing.X;
+    private void RenderPanels(RenderTreeBuilder __builder)
+    {
+        var width = wrapper.Width - Context.Strip - (Context.N.cols - 1.0) * Style.Panel.Spacing.X;
 
-            if (!Context.AxisVisibility.y)
+        if (!Context.AxisVisibility.y)
+        {
+            width -= Context.Axis.width;
+        }
+
+        var height = wrapper.Height - Context.Strip - (Context.N.rows - 1.0) * Style.Panel.Spacing.Y;
+
+        if (!Context.AxisVisibility.x)
+        {
+            height -= Context.Axis.height;
+        }
+
+        if (!Context.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Context.XLab))
+        {
+            height -= Context.AxisTitles.x;
+        }
+
+        var xOffsetReset = wrapper.X;
+
+        var xOffset = xOffsetReset;
+        var yOffset = wrapper.Y;
+
+        for (var i = 0; i < Context.Panels.Count; i++)
+        {
+            var panel = Context.Panels[i];
+
+            var x = xOffset;
+            var y = yOffset;
+
+            var w = panel.Width * width;
+            var h = panel.Height * height;
+
+            if (panel.Coord.row == 0)
             {
-                width -= Context.Axis.width;
+                h += Context.Strip;
             }
 
-            var height = wrapper.Height - Context.Strip - (Context.N.rows - 1.0) * Theme.Panel.Spacing.Y;
-
-            if (!Context.AxisVisibility.x)
+            if (panel.Coord.col == 0 && !Context.AxisVisibility.y && Style.Axis.Y == Position.Left)
             {
-                height -= Context.Axis.height;
+                w += Context.Axis.width;
             }
 
-            if (!Context.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Context.XLab))
+            if (panel.Coord.row == (Context.N.rows - 1))
             {
-                height -= Context.AxisTitles.x;
-            }
-
-            var xOffsetReset = wrapper.X;
-
-            var xOffset = xOffsetReset;
-            var yOffset = wrapper.Y;
-
-            for (var i = 0; i < Context.Panels.Count; i++)
-            {
-                var panel = Context.Panels[i];
-
-                var x = xOffset;
-                var y = yOffset;
-
-                var w = panel.Width * width;
-                var h = panel.Height * height;
-
-                if (panel.Coord.row == 0)
+                if (!Context.AxisVisibility.x)
                 {
-                    h += Context.Strip;
+                    h += Context.Axis.height;
                 }
 
-                if (panel.Coord.col == 0 && !Context.AxisVisibility.y && Theme.Axis.Y == Position.Left)
+                if (!Context.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Context.XLab))
+                {
+                    h += Context.AxisTitles.x;
+                }
+            }
+
+            if (panel.Coord.col == (Context.N.cols - 1))
+            {
+                w += Context.Strip;
+
+                if (!Context.AxisVisibility.y && Style.Axis.Y == Position.Right)
                 {
                     w += Context.Axis.width;
                 }
 
-                if (panel.Coord.row == (Context.N.rows - 1))
-                {
-                    if (!Context.AxisVisibility.x)
-                    {
-                        h += Context.Axis.height;
-                    }
-
-                    if (!Context.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Context.XLab))
-                    {
-                        h += Context.AxisTitles.x;
-                    }
-                }
-
-                if (panel.Coord.col == (Context.N.cols - 1))
-                {
-                    w += Context.Strip;
-
-                    if (!Context.AxisVisibility.y && Theme.Axis.Y == Position.Right)
-                    {
-                        w += Context.Axis.width;
-                    }
-
-                    xOffset = xOffsetReset;
-                    yOffset += h + Theme.Panel.Spacing.Y;
-                }
-                else
-                {
-                    xOffset += w + Theme.Panel.Spacing.X;
-                }
-
-                <Panel Data=@panel
-                       X=@x
-                       Y=@y
-                       Width=@w
-                       Height=@h
-                       First=@(i == 0)
-                       Last=@(i == (Context.Panels.Count - 1))
-                       T=T TX=TX TY=TY />
+                xOffset = xOffsetReset;
+                yOffset += h + Style.Panel.Spacing.Y;
             }
+            else
+            {
+                xOffset += w + Style.Panel.Spacing.X;
+            }
+
+            <Panel Data=@panel
+                   X=@x
+                   Y=@y
+                   Width=@w
+                   Height=@h
+                   First=@(i == 0)
+                   Last=@(i == (Context.Panels.Count - 1))
+                   T=T TX=TX TY=TY />
         }
-    </CascadingValue>
-
-</svg>
-
-</CascadingValue>
+    }
+}

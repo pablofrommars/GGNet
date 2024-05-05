@@ -3300,14 +3300,13 @@ public static class Plot
 
   public static PlotContext<T, TX, TY> Theme<T, TX, TY>(
     this PlotContext<T, TX, TY> context,
-    Theme.Theme? theme = null,
-    bool dark = false,
+    Style? style = null,
     Position axisY = Left,
     Position legend = Right)
     where TX : struct
     where TY : struct
   {
-    context.Theme = theme ?? GGNet.Theme.Theme.Default(dark, axisY, legend);
+    context.Style = style ?? Style.Default(axisY, legend);
 
     return context;
   }

@@ -8,7 +8,7 @@ namespace GGNet.Data;
 
 internal sealed class Legend
 {
-	public Legend(Theme.Theme theme, IAestheticMapping aes)
+	public Legend(Style style, IAestheticMapping aes)
 	{
 		Aes = aes;
 
@@ -17,12 +17,12 @@ internal sealed class Legend
 			Title = new()
 			{
 				Value = aes.Name,
-				Width = aes.Name.Width(theme.Legend.Title.FontSize),
-				Height = aes.Name.Height(theme.Legend.Title.FontSize)
+				Width = aes.Name.Width(style.Legend.Title.FontSize),
+				Height = aes.Name.Height(style.Legend.Title.FontSize)
 			};
 		}
 
-		Items = new(theme);
+		Items = new(style);
 	}
 
 	public IAestheticMapping Aes { get; }

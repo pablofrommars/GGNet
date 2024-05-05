@@ -4,5 +4,5 @@ public interface IPlotContext
 {
 	Type PlotType { get; }
 
-	Theme.Theme? Theme { get; set; }
+	Style? Style { get; set; }
 }

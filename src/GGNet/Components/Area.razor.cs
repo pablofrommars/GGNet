@@ -3,6 +3,7 @@
 namespace GGNet.Components;
 
 using Rendering;
+using Shapes;
 
 public partial class Area<T, TX, TY> : ComponentBase
    where TX : struct
@@ -26,13 +27,20 @@ public partial class Area<T, TX, TY> : ComponentBase
   [Parameter]
   public required string Clip { get; init; }
 
+  private readonly RenderFragment _renderShapes;
+
+  public Area()
+  {
+    _renderShapes = RenderShapes;
+  }
+
   protected override bool ShouldRender() => RenderPolicy.ShouldRender();
 
   private double X(double x) => Coord.ToX(x);
 
   private double Y(double y) => Coord.ToY(y);
 
-  private string Path(Shapes.Path path)
+  private string Path(Path path)
   {
     if (StringBuilderPool is not null)
     {
@@ -55,7 +63,7 @@ public partial class Area<T, TX, TY> : ComponentBase
     }
   }
 
-  private void Path(StringBuilder sb, Shapes.Path path)
+  private void Path(StringBuilder sb, Path path)
   {
     var (x, y) = path.Points[0];
 
@@ -75,7 +83,7 @@ public partial class Area<T, TX, TY> : ComponentBase
     }
   }
 
-  private string Path(Shapes.Area area)
+  private string Path(Area area)
   {
     if (StringBuilderPool is not null)
     {
@@ -98,7 +106,7 @@ public partial class Area<T, TX, TY> : ComponentBase
     }
   }
 
-  private void Path(StringBuilder sb, Shapes.Area area)
+  private void Path(StringBuilder sb, Area area)
   {
     var (x, _, ymax) = area.Points[0];
 

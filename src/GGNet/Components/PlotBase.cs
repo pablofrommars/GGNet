@@ -2,8 +2,6 @@
 
 using Rendering;
 
-using Theme = Theme.Theme;
-
 public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAsyncDisposable
   where TX : struct
   where TY : struct
@@ -16,7 +14,7 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
 
   public string Id => Context.Id;
 
-  public Theme Theme => Context.Theme!;
+  public Style Style => Context.Style!;
 
   protected override void OnInitialized()
   {

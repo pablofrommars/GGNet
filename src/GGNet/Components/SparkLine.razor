@@ -25,9 +25,9 @@
         </clipPath>
     </defs>
 
-    <rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height fill=@(Theme.Panel.Background.Fill) />
+    <rect class="panel" x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height />
 
     <Area T=T TX=TX TY=TY Panel=@Panel Coord=@this Zone=@Area Clip=@(Id + "-" + Panel.Id + "-area") RenderPolicy=@renderChildPolicy />
 
-    <GGNet.Components.Tooltips.SparkLine Id=@Id Coord=@this Area=@Area Theme=@Theme @ref=@tooltip />
+    <GGNet.Components.Tooltips.SparkLine Id=@Id Coord=@this Area=@Area Style=@Style @ref=@tooltip />
 </svg>

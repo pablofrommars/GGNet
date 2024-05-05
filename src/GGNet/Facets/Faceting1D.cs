@@ -34,7 +34,7 @@ public sealed class Faceting1D<T, TKey>(Func<T, TKey> selector, bool freeX, bool
 
 	public override void Clear() => buffer.Clear();
 
-	public override (Facet<T> facet, bool showX, bool showY)[] Facets(Theme.Theme theme)
+	public override (Facet<T> facet, bool showX, bool showY)[] Facets(Style style)
 	{
 		var n = buffer.Count;
 		var facets = new(Facet<T> facet, bool showX, bool showY)[n];
@@ -46,7 +46,7 @@ public sealed class Faceting1D<T, TKey>(Func<T, TKey> selector, bool freeX, bool
 		{
 			var xStrip = buffer[i]?.ToString();
 
-			var showY = theme.Axis.Y == Position.Left ? c == 0 : (c == (NColumns - 1) || i == (n - 1));
+			var showY = style.Axis.Y == Position.Left ? c == 0 : (c == (NColumns - 1) || i == (n - 1));
 
 			if (r == (NRows - 1))
 			{
