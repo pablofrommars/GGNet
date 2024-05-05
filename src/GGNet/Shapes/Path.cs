@@ -1,4 +1,4 @@
-﻿using GGNet.Common;
+﻿using GGNet.Buffers;
 
 namespace GGNet.Shapes;
 

@@ -1,4 +1,4 @@
-using GGNet.Common;
+using GGNet.Buffers;
 using GGNet.Scales;
 
 using static System.Math;

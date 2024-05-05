@@ -1,4 +1,4 @@
-namespace GGNet.Common;
+namespace GGNet.Buffers;
 
 public class Buffer<T>(int pageCapacity = 32, int pagesIncrement = 4) : BufferBase<T>(pageCapacity, pagesIncrement)
 {

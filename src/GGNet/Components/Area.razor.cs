@@ -1,6 +1,4 @@
-﻿using GGNet.Common;
-
-namespace GGNet.Components;
+﻿namespace GGNet.Components;
 
 using Rendering;
 using Shapes;

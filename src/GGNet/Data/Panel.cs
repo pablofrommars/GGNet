@@ -1,10 +1,10 @@
-﻿using GGNet.Common;
+﻿using GGNet.Buffers;
 using GGNet.Geoms;
 
 namespace GGNet.Data;
 
 public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX, TY> context, double width, double height)
-    where TX : struct
+  where TX : struct
   where TY : struct
 {
   public (int row, int col) Coord { get; } = coord;

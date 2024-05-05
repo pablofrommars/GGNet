@@ -1,4 +1,4 @@
-﻿namespace GGNet.Common;
+﻿namespace GGNet.Components;
 
 public struct Zone
 {

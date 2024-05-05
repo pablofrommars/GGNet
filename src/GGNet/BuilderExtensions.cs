@@ -32,79 +32,8 @@ using static Position;
 using static Anchor;
 using static LineType;
 
-public static class Plot
+public static class BuilderExtensions
 {
-  private static PlotContext<T, TX, TY> NewBase<T, TX, TY>(Source<T>? source, Func<T, TX>? x, Func<T, TY>? y)
-    where TX : struct
-    where TY : struct
-  {
-    var context = new PlotContext<T, TX, TY>()
-    {
-      Source = source,
-    };
-
-    context.Selectors.X = x;
-    context.Selectors.Y = y;
-
-    return context;
-  }
-
-  public static PlotContext<T, LocalDate, double> New<T>(Source<T> source, Func<T, LocalDate> x, Func<T, double>? y = null) => NewBase(source, x, y);
-
-  public static PlotContext<T, LocalDate, double> New<T>(IEnumerable<T> items, Func<T, LocalDate> x, Func<T, double>? y = null) => NewBase(new Source<T>(items), x, y);
-
-  public static PlotContext<T, LocalDateTime, double> New<T>(Source<T> source, Func<T, LocalDateTime> x, Func<T, double>? y = null) => NewBase(source, x, y);
-
-  public static PlotContext<T, LocalDateTime, double> New<T>(IEnumerable<T> items, Func<T, LocalDateTime> x, Func<T, double>? y = null) => NewBase(new Source<T>(items), x, y);
-
-  public static PlotContext<T, Instant, double> New<T>(Source<T> source, Func<T, Instant> x, Func<T, double>? y = null) => NewBase(source, x, y);
-
-  public static PlotContext<T, Instant, double> New<T>(IEnumerable<T> items, Func<T, Instant> x, Func<T, double>? y = null) => NewBase(new Source<T>(items), x, y);
-
-  public static PlotContext<T, TX, double> New<T, TX>(Source<T> source, Func<T, TX> x, Func<T, double>? y = null)
-    where TX : struct, Enum
-  {
-    return NewBase(source, x, y);
-  }
-
-  public static PlotContext<T, TX, double> New<T, TX>(IEnumerable<T> items, Func<T, TX> x, Func<T, double>? y = null)
-     where TX : struct, Enum
-  {
-    return NewBase(new Source<T>(items), x, y);
-  }
-
-  public static PlotContext<T, TX, TY> New<T, TX, TY>(Source<T> source, Func<T, TX> x, Func<T, TY> y)
-    where TX : struct, Enum
-    where TY : struct, Enum
-  {
-    return NewBase(source, x, y);
-  }
-
-  public static PlotContext<T, TX, TY> New<T, TX, TY>(IEnumerable<T> items, Func<T, TX> x, Func<T, TY> y)
-    where TX : struct, Enum
-    where TY : struct, Enum
-  {
-    return NewBase(new Source<T>(items), x, y);
-  }
-
-  public static PlotContext<T, double, TY> New<T, TY>(Source<T> source, Func<T, double> x, Func<T, TY> y)
-    where TY : struct, Enum
-  {
-    return NewBase(source, x, y);
-  }
-
-  public static PlotContext<T, double, TY> New<T, TY>(IEnumerable<T> items, Func<T, double> x, Func<T, TY> y)
-    where TY : struct, Enum
-  {
-    return NewBase(new Source<T>(items), x, y);
-  }
-
-  public static PlotContext<T, double, double> New<T>(Source<T> source, Func<T, double>? x = null, Func<T, double>? y = null) => NewBase(source, x, y);
-
-  public static PlotContext<T, double, double> New<T>(IEnumerable<T> items, Func<T, double>? x = null, Func<T, double>? y = null) => NewBase(new Source<T>(items), x, y);
-
-  public static PlotContext<IWaiver, double, double> New() => NewBase<IWaiver, double, double>(null, null, null);
-
   public static PlotContext<T, LocalDate, TY> Scale_X_Discrete_Date<T, TY>(
     this PlotContext<T, LocalDate, TY> context,
     (LocalDate? min, LocalDate? max)? limits = null,
@@ -3298,7 +3227,7 @@ public static class Plot
     return context;
   }
 
-  public static PlotContext<T, TX, TY> Theme<T, TX, TY>(
+  public static PlotContext<T, TX, TY> Style<T, TX, TY>(
     this PlotContext<T, TX, TY> context,
     Style? style = null,
     Position axisY = Left,
@@ -3306,29 +3235,8 @@ public static class Plot
     where TX : struct
     where TY : struct
   {
-    context.Style = style ?? Style.Default(axisY, legend);
+    context.Style = style ?? GGNet.Style.Default(axisY, legend);
 
     return context;
   }
-
-  #region F# Helpers
-
-  public static (double min, double max)? Range(double min, double max) => (min, max);
-
-  public static (double minMult, double minAdd, double maxMult, double maxAdd)? Expand(double minMult, double minAdd, double maxMult, double maxAdd)
-    => (minMult, minAdd, maxMult, maxAdd);
-
-  public static (double? min, double? max)? Limits(double? min = null, double? max = null) => (min, max);
-
-  public static (LocalDate? min, LocalDate? max)? Limits(LocalDate? min = null, LocalDate? max = null) => (min, max);
-
-  public static (LocalDateTime? min, LocalDateTime? max)? Limits(LocalDateTime? min = null, LocalDateTime? max = null) => (min, max);
-
-  public static (T? min, T? max)? Limits<T>(T? min, T? max)
-     where T : struct
-     => (min, max);
-
-  public static (bool x, bool y)? Scale(bool x, bool y) => (x, y);
-
-  #endregion
 }

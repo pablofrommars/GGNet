@@ -1,4 +1,4 @@
-namespace GGNet.Common;
+namespace GGNet.Buffers;
 
 public sealed class SortedBuffer<T>(int pageCapacity = 32, int pagesIncrement = 4, IComparer<T>? comparer = null) : BufferBase<T>(pageCapacity, pagesIncrement, comparer)
 {

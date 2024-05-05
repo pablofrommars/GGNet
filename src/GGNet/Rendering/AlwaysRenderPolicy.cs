@@ -1,4 +1,4 @@
-namespace GGNet.Components.Rendering;
+namespace GGNet.Rendering;
 
 public sealed class AlwaysRenderPolicy(IPlotRendering plot) : RenderPolicyBase(plot)
 {

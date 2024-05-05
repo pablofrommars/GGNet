@@ -1,5 +1,4 @@
-﻿using GGNet.Common;
-using GGNet.Scales;
+﻿using GGNet.Scales;
 using GGNet.Transformations;
 
 using static System.Math;

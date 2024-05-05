@@ -1,4 +1,4 @@
-﻿namespace GGNet.Common;
+﻿namespace GGNet.Buffers;
 
 public abstract class BufferBase<T>
 {

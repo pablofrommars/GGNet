@@ -1,4 +1,4 @@
-﻿namespace GGNet.Common;
+﻿namespace GGNet.Scales;
 
 public static class Convert<T>
 {
@@ -8,8 +8,6 @@ public static class Convert<T>
 
 		private static Invoker Emit()
 		{
-			//if (!typeof(T).IsNumeric) throw
-
 			var method = new DynamicMethod(string.Empty, typeof(double), [typeof(T)]);
 			var il = method.GetILGenerator();
 

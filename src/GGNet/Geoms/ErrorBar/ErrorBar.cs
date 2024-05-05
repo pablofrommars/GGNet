@@ -1,4 +1,4 @@
-﻿using GGNet.Common;
+﻿using GGNet.Buffers;
 using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
