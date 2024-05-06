@@ -26,7 +26,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
     Func<T, TX>? x,
     Func<T, TY>? y,
     IAestheticMapping<T, string>? fill = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null,
     bool inherit = true)

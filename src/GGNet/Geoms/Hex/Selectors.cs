@@ -10,5 +10,5 @@ internal sealed record Selectors<T, TX, TY>
 
 	public required Func<T, TY> Dy { get; init; }
 
-	public Func<T, string>? Tooltip { get; init; }
+	public Func<T, RenderFragment>? Tooltip { get; init; }
 }

@@ -17,7 +17,7 @@ internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>
     Func<T, TY>? y,
     IAestheticMapping<T, double>? size,
     IAestheticMapping<T, string>? color,
-    Func<T, string>? tooltip,
+    Func<T, RenderFragment>? tooltip,
     bool animation,
     (bool x, bool y)? scale,
     bool inherit)

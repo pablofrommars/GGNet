@@ -30,7 +30,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
     Func<T, TY>? ymin,
     Func<T, TY>? ymax,
     IAestheticMapping<T, string>? color = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     bool animation = false,
     (bool x, bool y)? scale = null,

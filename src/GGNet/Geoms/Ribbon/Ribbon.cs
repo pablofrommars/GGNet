@@ -17,7 +17,7 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
     Func<T, TY>? ymin,
     Func<T, TY>? ymax,
     IAestheticMapping<T, string>? fill = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     (bool x, bool y)? scale = null,
     bool inherit = true)
     : base(source, scale, inherit)

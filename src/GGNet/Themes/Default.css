@@ -28,6 +28,7 @@ text {
     --tw-color-gray-700: #374151;
     --tw-color-gray-500: #6b7280;
     --tw-color-gray-300: #d1d5db;
+    --tw-color-gray-100: #f1f5f9;
 }
 
 .ggnet[theme=default] .loading {
@@ -156,15 +157,18 @@ text {
 }
 
 [role^="tooltip"] {
+    --tooltip-theme-color: var(--tw-color-gray-100);
+    --tooltip-theme-opacity: 1;
+
     --tooltip-fadein-duration: 500ms;
 
     position: fixed;
     overflow: visible;
 }
 
-[role^="tooltip"]+div {
-    position: relative;
-    pointer-events: none;
+[role^="tooltip"] .container {
+    position: fixed;
+    /* pointer-events: none; */
 }
 
 [role^="tooltip"] .arrow {

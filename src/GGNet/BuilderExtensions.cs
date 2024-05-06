@@ -463,7 +463,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     bool animation = false,
     double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -503,7 +503,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     bool animation = false,
     double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -525,7 +525,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     bool animation = false,
     double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -549,7 +549,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     bool animation = false,
     double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -570,7 +570,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     bool animation = false,
     double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -589,7 +589,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     bool animation = false,
     double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -611,7 +611,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -651,7 +651,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -672,7 +672,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -695,7 +695,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -715,7 +715,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
@@ -733,7 +733,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
@@ -753,7 +753,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
@@ -797,7 +797,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
@@ -821,7 +821,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
@@ -847,7 +847,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
@@ -870,7 +870,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
@@ -891,7 +891,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,
@@ -1115,7 +1115,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -1153,7 +1153,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -1174,7 +1174,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -1197,7 +1197,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -1217,7 +1217,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -1235,7 +1235,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -1257,7 +1257,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -1295,7 +1295,7 @@ public static class BuilderExtensions
      Func<T2, MouseEventArgs, Task>? onclick = null,
      Func<T2, MouseEventArgs, Task>? onmouseover = null,
      Func<T2, MouseEventArgs, Task>? onmouseout = null,
-     Func<T2, string>? tooltip = null,
+     Func<T2, RenderFragment>? tooltip = null,
      string fill = "#23d0fc", double fillOpacity = 1.0,
      (bool x, bool y)? scale = null, bool inherit = true)
      where TX1 : struct
@@ -1316,7 +1316,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -1339,7 +1339,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
@@ -1359,7 +1359,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
@@ -1377,7 +1377,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX : struct
@@ -1399,7 +1399,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
     double radius = 5,
     PositionAdjustment position = PositionAdjustment.Identity,
@@ -1449,7 +1449,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
     double radius = 5,
     PositionAdjustment position = PositionAdjustment.Identity,
@@ -1474,7 +1474,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
     double radius = 5,
     PositionAdjustment position = PositionAdjustment.Identity,
@@ -1501,7 +1501,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
     double radius = 5,
     PositionAdjustment position = PositionAdjustment.Identity,
@@ -1525,7 +1525,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
     double radius = 5,
     PositionAdjustment position = PositionAdjustment.Identity,
@@ -1547,7 +1547,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
     double radius = 5,
     PositionAdjustment position = PositionAdjustment.Identity,
@@ -2324,7 +2324,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2374,7 +2374,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2397,7 +2397,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2422,7 +2422,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, string>? tooltip = null,
+    Func<T2, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2444,7 +2444,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2464,7 +2464,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     string fill = "#23d0fc", double opacity = 1.0,
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2845,7 +2845,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, (Geospacial.Point point, string content)>? tooltip = null,
+    Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2882,7 +2882,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, (Geospacial.Point point, string content)>? tooltip = null,
+    Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2899,7 +2899,7 @@ public static class BuilderExtensions
     Func<Geospacial.Polygon[], MouseEventArgs, Task>? onclick = null,
     Func<Geospacial.Polygon[], MouseEventArgs, Task>? onmouseover = null,
     Func<Geospacial.Polygon[], MouseEventArgs, Task>? onmouseout = null,
-    Func<Geospacial.Polygon[], (Geospacial.Point point, string content)>? tooltip = null,
+    Func<Geospacial.Polygon[], (Geospacial.Point point, RenderFragment content)>? tooltip = null,
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2917,7 +2917,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, (Geospacial.Point point, string content)>? tooltip = null,
+    Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2937,7 +2937,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, (Geospacial.Point point, string content)>? tooltip = null,
+    Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2954,7 +2954,7 @@ public static class BuilderExtensions
     Func<Geospacial.Polygon[], MouseEventArgs, Task>? onclick = null,
     Func<Geospacial.Polygon[], MouseEventArgs, Task>? onmouseover = null,
     Func<Geospacial.Polygon[], MouseEventArgs, Task>? onmouseout = null,
-    Func<Geospacial.Polygon[], (Geospacial.Point point, string content)>? tooltip = null,
+    Func<Geospacial.Polygon[], (Geospacial.Point point, RenderFragment content)>? tooltip = null,
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2971,7 +2971,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, (Geospacial.Point point, string content)>? tooltip = null,
+    Func<T, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
@@ -2988,7 +2988,7 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onclick = null,
     Func<T, MouseEventArgs, Task>? onmouseover = null,
     Func<T, MouseEventArgs, Task>? onmouseout = null,
-    Func<T, (Geospacial.Point point, string content)>? tooltip = null,
+    Func<T, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)

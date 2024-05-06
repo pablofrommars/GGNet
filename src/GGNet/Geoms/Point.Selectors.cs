@@ -6,5 +6,5 @@ internal sealed class Selectors<T, TX, TY>
 
 	public Func<T, TY>? Y { get; init; }
 
-	public Func<T, string>? Tooltip { get; init; }
+	public Func<T, RenderFragment>? Tooltip { get; init; }
 }

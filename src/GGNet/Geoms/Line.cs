@@ -17,7 +17,7 @@ internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
     Func<T, TY>? y,
     IAestheticMapping<T, string>? color = null,
     IAestheticMapping<T, LineType>? lineType = null,
-    Func<T, string>? tooltip = null,
+    Func<T, RenderFragment>? tooltip = null,
     (bool x, bool y)? scale = null,
     bool inherit = true)
     : base(source, scale, inherit)

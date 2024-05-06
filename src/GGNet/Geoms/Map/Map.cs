@@ -12,7 +12,7 @@ internal sealed class Map<T> : Geom<T, double, double>
     Source<T> source,
     Func<T, Geospacial.Polygon[]> polygons,
     IAestheticMapping<T, string>? fill = null,
-    Func<T, (Geospacial.Point point, string content)>? tooltip = null,
+    Func<T, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
     bool animation = false,
     (bool x, bool y)? scale = null,
     bool inherit = true)

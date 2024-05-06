@@ -4,7 +4,7 @@ internal sealed record TooltipContext(
   double X,
   double Y,
   double Offset,
-  string Content,
+  RenderFragment Content,
   string? Color = null,
   double? Opacity = null
 );
