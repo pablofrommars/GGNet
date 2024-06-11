@@ -1,0 +1,22 @@
+<svg width="0" height="0">
+    <defs>
+        <linearGradient id=@Id x1="0" x2="0" y1="1" y2="0">
+            @foreach (var (offset, opacity) in Stops)
+            {
+                <stop offset="@offset" stop-color=@Color stop-opacity="@opacity" />
+
+            }
+        </linearGradient>
+    </defs>
+</svg>
+
+@code {
+    [Parameter]
+    public required string Id { get; init; }
+
+    [Parameter]
+    public required string Color { get; init; }
+
+    [Parameter]
+    public required (double offset, double opacity)[] Stops { get; init; }
+}

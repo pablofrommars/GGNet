@@ -20,6 +20,9 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
   [Parameter]
   public ObjectPool<StringBuilder>? StringBuilderPool { get; init; }
 
+  [Parameter(CaptureUnmatchedValues = true)]
+  public IDictionary<string, object>? AdditionalAttributes { get; set; }
+
   public Zone Title;
   public Zone SubTitle;
 
@@ -44,9 +47,18 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
     _renderPanels = RenderPanels;
   }
 
-  public string? PlotClass() => loading
-    ? $"ggnet loading"
-    : "ggnet";
+  private string? CssClass()
+  {
+    var @class = (string)(AdditionalAttributes?.GetValueOr("class", string.Empty) ?? string.Empty);
+
+    return (@class, loading) switch
+    {
+      ("", true) => "ggnet loading",
+      (_, true) => $"ggnet {@class} loading",
+      ("", false) => "ggnet",
+      (_, false) => $"ggnet {@class}",
+    };
+  }
 
   protected override void OnInitialized()
   {

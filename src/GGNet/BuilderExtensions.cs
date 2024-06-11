@@ -111,6 +111,20 @@ public static class BuilderExtensions
     return context;
   }
 
+  public static PlotContext<T, double, TY> Scale_X_Discrete<T, TY>(
+   this PlotContext<T, double, TY> context,
+    string? format = null,
+   (double? min, double? max)? limits = null,
+   (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
+   double offset = 0.0,
+   bool hide = false)
+   where TY : struct
+  {
+    context.Scale_X_Discrete(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, offset, hide);
+
+    return context;
+  }
+
   public static PlotContext<T, double, TY> XLim<T, TY>(this PlotContext<T, double, TY> context, double? min = null, double? max = null)
     where TY : struct
   {
@@ -199,12 +213,12 @@ public static class BuilderExtensions
 
   public static PanelFactory<T, TX, double> Scale_Y_Continuous<T, TX>(
     this PanelFactory<T, TX, double> panel,
-       string? format,
+    string? format,
     ITransformation<double>? transformation = null,
-       (double? min, double? max)? limits = null,
-       (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
+    (double? min, double? max)? limits = null,
+    (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
      bool hide = false)
-         where TX : struct
+        where TX : struct
   {
     panel.Scale_Y_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide);
 
@@ -285,6 +299,20 @@ public static class BuilderExtensions
      where TY : struct
   {
     context.Positions.Y.Factory = () => new DiscretePosition<TY>(null, limits, expand, formatter, offset, hide);
+
+    return context;
+  }
+
+  public static PlotContext<T, TX, double> Scale_Y_Discrete<T, TX>(
+   this PlotContext<T, TX, double> context,
+    string? format,
+   (double? min, double? max)? limits = null,
+   (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
+   double offset = 0.0,
+   bool hide = false)
+   where TX : struct
+  {
+    context.Scale_Y_Discrete(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, offset, hide);
 
     return context;
   }
