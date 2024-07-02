@@ -29,12 +29,43 @@ text {
     --tw-color-gray-500: #6b7280;
     --tw-color-gray-300: #d1d5db;
     --tw-color-gray-100: #f1f5f9;
+
+    position: relative;
 }
 
-.ggnet[theme=default] .loading {
+.ggnet[theme=default].loading > svg {
     opacity: 0.25;
     transition: opacity linear 100ms;
     transition-delay: 25ms;
+}
+
+.ggnet[theme=default] .spinner {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+.ggnet[theme=default] .spinner svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--tw-color-gray-100);
+    fill: var(--color-primary);
+}
+
+.ggnet[theme=default].loading .spinner {
+    display: block;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.ggnet[theme=default].loading .spinner svg {
+    animation: spin 1s linear infinite;
 }
 
 .ggnet[theme=default] .plot {
