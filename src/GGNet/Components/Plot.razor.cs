@@ -34,7 +34,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
   private IChildRenderPolicy? definitionsPolicy;
 
-  private bool renderLoading;
+  private bool loading;
 
   private readonly RenderFragment _renderLegendGradients;
   private readonly RenderFragment _renderLegend;
@@ -54,7 +54,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
   {
     var @class = (string)(AdditionalAttributes?.GetValueOr("class", string.Empty) ?? string.Empty);
 
-    return (@class, Loading || renderLoading) switch
+    return (@class, Loading || loading) switch
     {
       ("", true) => "ggnet loading",
       (_, true) => $"ggnet {@class} loading",
@@ -91,11 +91,11 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
   {
     if (target == RenderTarget.Loading)
     {
-      renderLoading = true;
+      loading = true;
       return;
     }
 
-    renderLoading = false;
+    loading = false;
 
     Context.Render(firstRender);
 
