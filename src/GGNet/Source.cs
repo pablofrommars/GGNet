@@ -2,7 +2,7 @@
 
 using Buffers;
 
-public sealed class Source<T> : Buffer<T>
+public sealed class Source<T> : Buffer<T>, IEnumerable<T>
 {
 	public Source()
 		: base()
@@ -14,4 +14,22 @@ public sealed class Source<T> : Buffer<T>
 	{
 		Add(items);
 	}
+
+  public void AddRange(IEnumerable<T> items)
+  {
+    foreach (var item in items)
+    {
+      Add(item);
+    }
+  }
+
+  public IEnumerator<T> GetEnumerator()
+  {
+    for (var i = 0; i < Count; i++)
+    {
+      yield return Get(i);
+    }
+  }
+
+  IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
