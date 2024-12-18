@@ -2,5 +2,5 @@ namespace GGNet.Components;
 
 public interface IPlot
 {
-	Task RefreshAsync(RenderTarget target = RenderTarget.All);
+	Task RefreshAsync(RenderTarget target = RenderTarget.All, CancellationToken token = default);
 }

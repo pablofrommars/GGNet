@@ -2,7 +2,7 @@ namespace GGNet.Rendering;
 
 public interface IRenderPolicy : IAsyncDisposable
 {
-	Task RefreshAsync(RenderTarget target);
+	Task RefreshAsync(RenderTarget target, CancellationToken token);
 
 	bool ShouldRender();
 

@@ -17,9 +17,6 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
   [Parameter]
   public string Theme { get; init; } = "default";
 
-  [Parameter]
-  public ObjectPool<StringBuilder>? StringBuilderPool { get; init; }
-
   [Parameter(CaptureUnmatchedValues = true)]
   public IDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -83,7 +80,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
       Context.Init();
       Context.Render(true);
 
-      await RefreshAsync(RenderTarget.All);
+      await RefreshAsync(RenderTarget.All, CancellationToken.None);
     }
   }
 

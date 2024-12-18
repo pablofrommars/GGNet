@@ -1,0 +1,102 @@
+.ggnet[theme=dotnet-interactive] {
+    position: relative;
+}
+
+.ggnet[theme=dotnet-interactive] line,
+polyline,
+polygon,
+path,
+rect,
+circle {
+    stroke-linecap: butt;
+    stroke-linejoin: round;
+    stroke-miterlimit: 10.00;
+}
+
+.ggnet[theme=dotnet-interactive] text {
+    font-family: var(--theme-font-family);
+}
+
+.ggnet[theme=dotnet-interactive] .spinner {
+    display: none;
+}
+
+.ggnet[theme=dotnet-interactive] .cursor-pointer {
+    cursor: pointer;
+}
+
+.ggnet[theme=dotnet-interactive] .pointer-events-none {
+    pointer-events: none;
+}
+
+.ggnet[theme=dotnet-interactive] .plot {
+    fill: var(--theme-background);
+}
+
+.ggnet[theme=dotnet-interactive] .panel {
+    fill: var(--theme-background);
+}
+
+.ggnet[theme=dotnet-interactive] .title {
+    font-weight: bold;
+    fill: var(--theme-foreground);
+}
+
+.ggnet[theme=dotnet-interactive] .sub-title {
+    fill: var(--theme-foreground);
+}
+
+.ggnet[theme=dotnet-interactive] .caption {
+    text-anchor: end;
+    font-style: italic;
+    fill: var(--theme-foreground);
+}
+
+.ggnet[theme=dotnet-interactive] .x-break {
+    stroke: var(--theme-ui-foreground);
+    stroke-width: 0.43;
+}
+
+.ggnet[theme=dotnet-interactive] .x-minor-break {
+    stroke: var(--theme-ui-foreground);
+    stroke-width: 0.32;
+}
+
+.ggnet[theme=dotnet-interactive] .x-break-label {
+    fill: var(--theme-ui-foreground);
+}
+
+.ggnet[theme=dotnet-interactive] .x-break-title {
+    fill: var(--theme-ui-foreground);
+}
+
+.ggnet[theme=dotnet-interactive] .x-title {
+    fill: var(--theme-foreground);
+}
+
+.ggnet[theme=dotnet-interactive] .y-break {
+    stroke: var(--theme-ui-foreground);
+    stroke-width: 0.43;
+}
+
+.ggnet[theme=dotnet-interactive] .y-minor-break {
+    stroke: var(--theme-ui-foreground);
+    stroke-width: 0.32;
+}
+
+.ggnet[theme=dotnet-interactive] .y-break-label {
+    fill: var(--theme-ui-foreground);
+}
+
+.ggnet[theme=dotnet-interactive] .y-title {
+    fill: var(--theme-foreground);
+}
+
+.ggnet[theme=dotnet-interactive] .legend-title {
+    font-weight: bold;
+    fill: var(--theme-foreground);
+}
+
+.ggnet[theme=dotnet-interactive] .legend-label {
+    fill: var(--theme-ui-foreground);
+}

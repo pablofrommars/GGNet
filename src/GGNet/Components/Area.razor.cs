@@ -7,9 +7,6 @@ public partial class Area<T, TX, TY> : ComponentBase
    where TX : struct
    where TY : struct
 {
-  [CascadingParameter]
-  public ObjectPool<StringBuilder>? StringBuilderPool { get; init; }
-
   [Parameter]
   public required Data.Panel<T, TX, TY> Panel { get; init; }
 
@@ -40,24 +37,15 @@ public partial class Area<T, TX, TY> : ComponentBase
 
   private string Path(Path path)
   {
-    if (StringBuilderPool is not null)
+    var sb = StringBuilderCache.Acquire();
+    try
     {
-      var sb = StringBuilderPool.Get();
-      try
-      {
-        Path(sb, path);
-        return sb.ToString();
-      }
-      finally
-      {
-        StringBuilderPool.Return(sb);
-      }
-    }
-    else
-    {
-      var sb = new StringBuilder();
       Path(sb, path);
       return sb.ToString();
+    }
+    finally
+    {
+      StringBuilderCache.Release(sb);
     }
   }
 
@@ -83,24 +71,15 @@ public partial class Area<T, TX, TY> : ComponentBase
 
   private string Path(Area area)
   {
-    if (StringBuilderPool is not null)
+    var sb = StringBuilderCache.Acquire();
+    try
     {
-      var sb = StringBuilderPool.Get();
-      try
-      {
-        Path(sb, area);
-        return sb.ToString();
-      }
-      finally
-      {
-        StringBuilderPool.Return(sb);
-      }
-    }
-    else
-    {
-      var sb = new StringBuilder();
       Path(sb, area);
       return sb.ToString();
+    }
+    finally
+    {
+      StringBuilderCache.Release(sb);
     }
   }
 
@@ -139,47 +118,29 @@ public partial class Area<T, TX, TY> : ComponentBase
 
   private string Path(Geospacial.Polygon poly)
   {
-    if (StringBuilderPool is not null)
+    var sb = StringBuilderCache.Acquire();
+    try
     {
-      var sb = StringBuilderPool.Get();
-      try
-      {
-        AppendPolygon(sb, poly);
-        return sb.ToString();
-      }
-      finally
-      {
-        StringBuilderPool.Return(sb);
-      }
-    }
-    else
-    {
-      var sb = new StringBuilder();
       AppendPolygon(sb, poly);
       return sb.ToString();
+    }
+    finally
+    {
+      StringBuilderCache.Release(sb);
     }
   }
 
   private string Path(Geospacial.Polygon[] polygons)
   {
-    if (StringBuilderPool is not null)
+    var sb = StringBuilderCache.Acquire();
+    try
     {
-      var sb = StringBuilderPool.Get();
-      try
-      {
-        Path(sb, polygons);
-        return sb.ToString();
-      }
-      finally
-      {
-        StringBuilderPool.Return(sb);
-      }
-    }
-    else
-    {
-      var sb = new StringBuilder();
       Path(sb, polygons);
       return sb.ToString();
+    }
+    finally
+    {
+      StringBuilderCache.Release(sb);
     }
   }
 

@@ -1,0 +1,3 @@
+#!csharp
+
+GGNet.InteractiveExtension.GGNetKernelExtension.Load(Microsoft.DotNet.Interactive.KernelInvocationContext.Current.HandlingKernel.RootKernel);

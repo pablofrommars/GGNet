@@ -2,7 +2,7 @@ namespace GGNet.Rendering;
 
 public sealed class AlwaysRenderPolicy(IPlotRendering plot) : RenderPolicyBase(plot)
 {
-  public override Task RefreshAsync(RenderTarget target)
+  public override Task RefreshAsync(RenderTarget target, CancellationToken token)
   {
     plot.Render(RenderTarget.All);
 
