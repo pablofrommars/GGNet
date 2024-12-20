@@ -4,8 +4,6 @@ using static Position;
 
 public sealed partial class Style(Position axisY, Position legend)
 {
-  public string FontFamily { get; set; } = "Inter var";
-
   public StylePlot Plot { get; set; } = new();
 
   public StylePanel Panel { get; set; } = new();

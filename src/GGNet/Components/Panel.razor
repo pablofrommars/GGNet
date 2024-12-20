@@ -282,10 +282,11 @@
 
         <text><text
                   class="y-title"
-                  style="transform: translate(@(yAxisTitle.X)px, @(yAxisTitle.Y)px) rotate(@(Plot.Style.Axis.Title.Y.Angle)deg);"
+                  x="0"
+                  y="0"
+                  transform="rotate(@(Plot.Style.Axis.Title.Y.Angle)) translate(-@(yAxisTitle.Y), @(yAxisTitle.X))"
                   text-anchor=@(Plot.Style.Axis.Title.Y.Anchor.Render())
-                  font-size=@(Plot.Style.Axis.Title.Y.FontSize)
-                  clip-path="url(#@(Plot.Id)-plot)">
+                  font-size=@(Plot.Style.Axis.Title.Y.FontSize)>
                 @Data.YLab.text
             </text></text>
     }

@@ -6,7 +6,7 @@ public abstract class RenderPolicyBase(IPlotRendering plot) : IRenderPolicy
 {
 	protected readonly IPlotRendering plot = plot;
 
-    public virtual Task RefreshAsync(RenderTarget target)
+    public virtual Task RefreshAsync(RenderTarget target, CancellationToken token)
 		=> Task.CompletedTask;
 
 	public virtual bool ShouldRender() => false;

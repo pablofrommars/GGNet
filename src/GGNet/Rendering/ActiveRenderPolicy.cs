@@ -22,9 +22,9 @@ public sealed class ActiveRenderPolicy : RenderPolicyBase
     background = RunBackground();
   }
 
-  public override async Task RefreshAsync(RenderTarget target)
+  public override async Task RefreshAsync(RenderTarget target, CancellationToken token)
   {
-    await channel.Writer.WriteAsync(target, cancellationTokenSource.Token);
+    await channel.Writer.WriteAsync(target, token);
   }
 
   public override bool ShouldRender() => Interlocked.Exchange(ref render, 0) == 1;

@@ -1,43 +1,35 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IncludeBuildOutput>true</IncludeBuildOutput>
+        <IsPackable>true</IsPackable>
+        <PackageDescription>GG.Net Data Visualization Extension for .Net Interactive</PackageDescription>
+    </PropertyGroup>
 
-    <OutputType>Library</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <IncludeBuildOutput>true</IncludeBuildOutput>
-    <IsPackable>true</IsPackable>
+    <ItemGroup>
+        <Compile Remove="bin\**" />
+        <EmbeddedResource Remove="bin\**" />
+        <None Remove="bin\**" />
+    </ItemGroup>
 
-    <Authors>Pablo Belin</Authors>
-    <Title>GG.Net Data Visualization</Title>
-    <Copyright>Copyright (c) 2020-2022 Pablo Belin</Copyright>
-    <PackageDescription>GG.Net Data Visualization Extension for .Net Interactive</PackageDescription>
-    <PackageTags>plotting;plot;plots;charting;chart;charts;sparkline;sparklines;visualization;ML.Net;csharp;fsharp;geospacial</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</Description>
+    <ItemGroup>
+        <PackageReference Include="microsoft.dotnet.interactive" Version="1.0.0-beta.24530.1" />
+        <PackageReference Include="microsoft.dotnet.interactive.csharp" Version="1.0.0-beta.24530.1" />
+    </ItemGroup>
 
-    <Version>2.0.0-beta.0.1</Version>
+    <ItemGroup>
+        <ProjectReference Include="../GGNet.Static/GGNet.Static.csproj" />
+    </ItemGroup>
 
-  </PropertyGroup>
+    <ItemGroup>
+        <None Include="../GGNet/Themes/DotnetInteractive.css" Pack="true" PackagePath="themes" />
 
-  <ItemGroup>
-    <Compile Remove="bin\**" />
-    <EmbeddedResource Remove="bin\**" />
-    <None Remove="bin\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.DotNet.Interactive" Version="1.0.0-beta.22256.1" />
-    <!-- <PackageReference Include="Microsoft.DotNet.Interactive.csharp" Version="1.0.0-beta.22256.1" /> -->
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="../GGNet.Static/GGNet.Static.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="$(OutputPath)/*.dll" Pack="true" PackagePath="interactive-extensions/dotnet" />
-  </ItemGroup>
+        <None Include="$(OutputPath)/*.dll" Pack="true" PackagePath="lib/net9.0" />
+        <None Include="extension.dib" Pack="true" PackagePath="interactive-extensions/dotnet" />
+    </ItemGroup>
 
 </Project>

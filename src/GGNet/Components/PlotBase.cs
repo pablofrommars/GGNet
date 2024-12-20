@@ -31,14 +31,14 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
 
   protected override void OnAfterRender(bool firstRender) => Policy?.OnAfterRender(firstRender);
 
-  public Task RefreshAsync(RenderTarget target)
+  public Task RefreshAsync(RenderTarget target, CancellationToken token)
   {
     if (Policy is null)
     {
       return Task.CompletedTask;
     }
 
-    return Policy.RefreshAsync(target);
+    return Policy.RefreshAsync(target, token);
   }
 
   private int disposing = 0;

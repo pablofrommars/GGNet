@@ -1,39 +1,34 @@
-﻿using Microsoft.DotNet.Interactive;
-using Microsoft.DotNet.Interactive.Formatting;
+﻿namespace GGNet.InteractiveExtension;
 
-using GGNet.Static;
-
-namespace GGNet.InteractiveExtension;
-
-public class GGNetKernelExtension : IKernelExtension
+public static class GGNetKernelExtension
 {
-	public Task OnLoadAsync(Kernel kernel)
-	{
-		Formatter.Register<IData>(async (data, writer) =>
-		{
-			var theme = data.Theme ?? Theme.Theme.Default();
+  public static void Load(Kernel kernel)
+  {
+    LoadTheme();
+    LoadFormatters();
+  }
 
-			theme.FontFamily = "var(--theme-font-family)";
-			theme.Plot.Background = theme.Plot.Background with { Fill = "var(--theme-background)" };
-			theme.Panel.Background = theme.Panel.Background with { Fill = "var(--theme-background)" };
-			theme.Panel.Grid.Major.X.Fill = "var(--theme-scrollbar-background)";
-			theme.Panel.Grid.Minor.X.Fill = "var(--theme-scrollbar-background)";
-			theme.Panel.Grid.Major.Y.Fill = "var(--theme-scrollbar-background)";
-			theme.Panel.Grid.Minor.Y.Fill = "var(--theme-scrollbar-background)";
-			theme.Axis.Title.X = theme.Axis.Title.X with { Color = "var(--theme-menu-hover-foreground)" };
-			theme.Axis.Text.X = theme.Axis.Text.X with { Color = "var(--theme-foreground)" };
-			theme.Axis.Title.Y = theme.Axis.Title.Y with { Color = "var(--theme-menu-hover-foreground)" };
-			theme.Axis.Text.Y = theme.Axis.Text.Y with { Color = "var(--theme-foreground)" };
-			theme.Legend.Title = theme.Legend.Title with { Color = "var(--theme-menu-hover-foreground)" };
-			theme.Legend.Labels = theme.Legend.Labels with { Color = "var(--theme-foreground)" };
+  private static void LoadTheme()
+  {
+    var dllPath = Assembly.GetExecutingAssembly().Location;
+    var extensionPathIndex = dllPath.IndexOf(@"/lib/");
+    var extensionPath = dllPath.Substring(0, extensionPathIndex);
+    var cssPath = Path.Combine(extensionPath, "themes", "DotnetInteractive.css");
 
-			data.Theme = theme;
+    var css = File.ReadAllText(cssPath);
 
-			var svg = await data.AsStringAsync();
+    Kernel.CSS(css);
+  }
 
-			await writer.WriteAsync(svg);
-		}, "text/html");
+  private static void LoadFormatters()
+  {
+    Formatter.Register<IPlotContext>(async (context, writer) =>
+    {
+      context.Style ??= GGNet.Style.Default();
 
-		return Task.CompletedTask;
-	}
+      var svg = await context.AsStringAsync(theme: "dotnet-interactive");
+
+      await writer.WriteAsync(svg);
+    }, "text/html");
+  }
 }
