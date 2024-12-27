@@ -1,6 +1,6 @@
 namespace GGNet.Rendering;
 
-public sealed class ActiveRenderPolicy : RenderPolicyBase
+public sealed class InteractiveRenderModeHandler : RenderModeHandler
 {
   private readonly CancellationTokenSource cancellationTokenSource = new();
 
@@ -16,7 +16,7 @@ public sealed class ActiveRenderPolicy : RenderPolicyBase
 
   private readonly Task background;
 
-  public ActiveRenderPolicy(IPlotRendering plot)
+  public InteractiveRenderModeHandler(IPlotRendering plot)
     : base(plot)
   {
     background = RunBackground();
@@ -36,10 +36,10 @@ public sealed class ActiveRenderPolicy : RenderPolicyBase
       return;
     }
 
-    semaphore.Release();
+    semaphore.TryRelease();
   }
 
-  public sealed class ChildRenderPolicy : IChildRenderPolicy
+  public sealed class ChildRenderHandler : IChildRenderModeHandler
   {
     private volatile int render = 0;
 
@@ -50,7 +50,7 @@ public sealed class ActiveRenderPolicy : RenderPolicyBase
       => ((RenderTarget)Interlocked.Exchange(ref render, 0) & target) != RenderTarget.None;
   }
 
-  public override IChildRenderPolicy Child() => new ChildRenderPolicy();
+  public override IChildRenderModeHandler Child() => new ChildRenderHandler();
 
   private async Task RunBackground()
   {
@@ -85,12 +85,15 @@ public sealed class ActiveRenderPolicy : RenderPolicyBase
         }
       }
     }
+    catch (OperationCanceledException)
+    {
+    }
     catch (Exception)
     {
     }
   }
 
-  private int disposing = 0;
+  private volatile int disposing = 0;
 
   public override async ValueTask DisposeAsync()
   {

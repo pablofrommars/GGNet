@@ -29,7 +29,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
   private Zone wrapper;
 
-  private IChildRenderPolicy? definitionsPolicy;
+  private IChildRenderModeHandler? definitionsRenderModeHandler;
 
   private bool loading;
 
@@ -44,14 +44,11 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
     _renderPanels = RenderPanels;
   }
 
-  [Parameter]
-  public bool Loading { get; set; }
-
   private string? CssClass()
   {
     var @class = (string)(AdditionalAttributes?.GetValueOr("class", string.Empty) ?? string.Empty);
 
-    return (@class, Loading || loading) switch
+    return (@class, loading) switch
     {
       ("", true) => "ggnet loading",
       (_, true) => $"ggnet {@class} loading",
@@ -66,7 +63,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
     Context.Init();
 
-    definitionsPolicy = Policy?.Child();
+    definitionsRenderModeHandler = RenderModeHandler?.Child();
 
     Render(true, RenderTarget.All);
   }
@@ -195,7 +192,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
     if (!firstRender)
     {
-      definitionsPolicy?.Refresh(target);
+      definitionsRenderModeHandler?.Refresh(target);
 
       for (var i = 0; i < Context.Panels.Count; i++)
       {

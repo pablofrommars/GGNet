@@ -3,7 +3,7 @@ using GGNet.Geoms;
 
 namespace GGNet.Data;
 
-public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX, TY> context, double width, double height)
+public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX, TY> context, double width, double height, Func<MouseEventArgs, Task>? onClick)
   where TX : struct
   where TY : struct
 {
@@ -14,6 +14,8 @@ public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX
   public double Width { get; } = width;
 
   public double Height { get; } = height;
+
+  public Func<MouseEventArgs, Task>? OnClick { get; } = onClick;
 
   public string Id { get; } = $"{coord.row}_{coord.col}";
 

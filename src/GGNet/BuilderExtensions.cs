@@ -58,7 +58,7 @@ public static class BuilderExtensions
 
   public static PlotContext<T, Instant, TY> Scale_X_Instant<T, TY>(
     this PlotContext<T, Instant, TY> context,
-    Instant start, Instant end,
+    Instant? start = null, Instant? end = null,
     string format = "H:mm:ss",
     string timezone = "UTC")
     where TY : struct
@@ -388,11 +388,11 @@ public static class BuilderExtensions
     return context.DefaultFactory;
   }
 
-  public static PlotContext<T, TX, TY> Panel<T, TX, TY>(this PlotContext<T, TX, TY> context, Func<PanelFactory<T, TX, TY>, PanelFactory<T, TX, TY>> factory, double width = 1.0, double height = 1.0)
+  public static PlotContext<T, TX, TY> Panel<T, TX, TY>(this PlotContext<T, TX, TY> context, Func<PanelFactory<T, TX, TY>, PanelFactory<T, TX, TY>> factory, double width = 1.0, double height = 1.0, Func<MouseEventArgs, Task>? onClick = null)
     where TX : struct
     where TY : struct
   {
-    var panel = factory(new PanelFactory<T, TX, TY>(context, width, height));
+    var panel = factory(new PanelFactory<T, TX, TY>(context, width, height, onClick));
 
     context.PanelFactories.Add(panel);
 

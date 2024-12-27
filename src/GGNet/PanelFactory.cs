@@ -4,7 +4,7 @@ using Scales;
 using Facets;
 using Geoms;
 
-public sealed class PanelFactory<T, TX, TY>(PlotContext<T, TX, TY> context, double width = 1, double height = 1)
+public sealed class PanelFactory<T, TX, TY>(PlotContext<T, TX, TY> context, double width = 1, double height = 1, Func<MouseEventArgs, Task>? onClick = null)
     where TX : struct
     where TY : struct
 {
@@ -12,6 +12,7 @@ public sealed class PanelFactory<T, TX, TY>(PlotContext<T, TX, TY> context, doub
 
   private readonly double width = width;
   private readonly double height = height;
+  private readonly Func<MouseEventArgs, Task>? onClick = onClick;
 
   internal PlotContext<T, TX, TY> Context { get; } = context;
 
@@ -26,7 +27,8 @@ public sealed class PanelFactory<T, TX, TY>(PlotContext<T, TX, TY> context, doub
     var panel = new Data.Panel<T, TX, TY>(coord,
       Context,
       width ?? this.width,
-      height ?? this.height
+      height ?? this.height,
+      onClick
     );
 
     foreach (var geom in geoms)

@@ -27,13 +27,19 @@
     </clipPath>
 </defs>
 
-<rect class="panel" x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height />
+<rect
+      class="panel"
+      @onclick=OnClick
+      x=@Area.X
+      y=@Area.Y
+      width=@Area.Width
+      height=@Area.Height />
 
 @_renderStrip;
 
 @_renderGrid;
 
-<Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderPolicy=@areaPolicy />
+<Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderModeHandler=@areaRenderModeHandler />
 
 @_renderXLab;
 @_renderYLab;

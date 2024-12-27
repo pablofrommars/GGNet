@@ -7,7 +7,7 @@ public class InstantPosition : Position<Instant>
   private readonly ZonedDateTimePattern pattern;
   private readonly DateTimeZone timezone;
 
-  public InstantPosition(Instant start, Instant end, string format = "H:mm:ss", string timezone = "UTC")
+  public InstantPosition(Instant? start, Instant? end, string format = "H:mm:ss", string timezone = "UTC")
     : base(null, (0, 0, 0, 0))
   {
     Limits = (start, end);
@@ -21,10 +21,21 @@ public class InstantPosition : Position<Instant>
 
   public override void Set(bool grid)
   {
-    var start = Limits.min ?? throw new NullReferenceException();
-    var end = Limits.max ?? throw new NullReferenceException();
+    var (start, mappedStart) = (Limits.min, _min) switch
+    {
+      (null, null) => (Instant.FromUnixTimeSeconds(0), 0),
+      (null, double min) => (Instant.FromUnixTimeMilliseconds((long)min), min),
+      (Instant limit, _) => (limit, Map(limit)),
+    };
 
-    SetRange(Map(start), Map(end));
+    var (end, mappedEnd) = (Limits.max, _max) switch
+    {
+      (null, null) => (Instant.FromUnixTimeSeconds(0), 0),
+      (null, double max) => (Instant.FromUnixTimeMilliseconds((long)max), max),
+      (Instant limit, _) => (limit, Map(limit)),
+    };
+
+    SetRange(mappedStart, mappedEnd);
 
     if (!grid)
     {

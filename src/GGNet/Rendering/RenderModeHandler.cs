@@ -2,7 +2,7 @@ using GGNet.Exceptions;
 
 namespace GGNet.Rendering;
 
-public abstract class RenderPolicyBase(IPlotRendering plot) : IRenderPolicy
+public abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHandler
 {
 	protected readonly IPlotRendering plot = plot;
 
@@ -13,17 +13,17 @@ public abstract class RenderPolicyBase(IPlotRendering plot) : IRenderPolicy
 
 	public virtual void OnAfterRender(bool firstRender) { }
 
-	public abstract IChildRenderPolicy Child();
+	public abstract IChildRenderModeHandler Child();
 
 	public virtual ValueTask DisposeAsync()
 		=> ValueTask.CompletedTask;
 
-	public static IRenderPolicy Factory(RenderPolicy policy, IPlotRendering component)
-		=> policy switch
+	public static IRenderModeHandler Factory(RenderMode mode, IPlotRendering component)
+		=> mode switch
 		{
-			RenderPolicy.Active => new ActiveRenderPolicy(component),
-			RenderPolicy.Always => new AlwaysRenderPolicy(component),
-			RenderPolicy.Never => new NeverRenderPolicy(component),
+			RenderMode.Interactive => new InteractiveRenderModeHandler(component),
+			RenderMode.InteractiveAuto => new InteractiveAutoRenderModeHandler(component),
+			RenderMode.Static => new StaticRenderModeHandler(component),
 			_ => throw new GGNetInternalException("Not Implemented")
 		};
 }

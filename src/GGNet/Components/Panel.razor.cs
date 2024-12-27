@@ -37,8 +37,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
   [Parameter]
   public bool Last { get; set; }
 
-  private IChildRenderPolicy? policy;
-  private IChildRenderPolicy? areaPolicy;
+  private IChildRenderModeHandler? renderModeHandler;
+  private IChildRenderModeHandler? areaRenderModeHandler;
 
   private Position<TX> xscale = default!;
   private Position<TY> yscale = default!;
@@ -82,8 +82,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
   protected override void OnInitialized()
   {
-    policy = Plot.Policy?.Child();
-    areaPolicy = Plot.Policy?.Child();
+    renderModeHandler = Plot.RenderModeHandler?.Child();
+    areaRenderModeHandler = Plot.RenderModeHandler?.Child();
 
     Data.Register(this);
 
@@ -229,13 +229,13 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
     if (!firstRender)
     {
-      areaPolicy?.Refresh(RenderTarget.Data);
+      areaRenderModeHandler?.Refresh(RenderTarget.Data);
     }
   }
 
-  public void Refresh(RenderTarget target) => policy?.Refresh(target);
+  public void Refresh(RenderTarget target) => renderModeHandler?.Refresh(target);
 
-  protected override bool ShouldRender() => policy?.ShouldRender() ?? true;
+  protected override bool ShouldRender() => renderModeHandler?.ShouldRender() ?? true;
 
   public double ToX(double value) => Area.X + xscale.Coord(value) * Area.Width;
 
@@ -248,4 +248,15 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
   public (double min, double max) YRange => yscale.Range;
 
   public ITransformation<double> YTransformation => yscale.RangeTransformation;
+
+  private Task OnClick(MouseEventArgs e)
+  {
+    if (Data.OnClick is null)
+    {
+
+      return Task.CompletedTask;
+    }
+
+    return Data.OnClick(e);
+  }
 }

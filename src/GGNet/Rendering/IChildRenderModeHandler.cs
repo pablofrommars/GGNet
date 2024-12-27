@@ -1,6 +1,6 @@
 namespace GGNet.Rendering;
 
-public interface IChildRenderPolicy
+public interface IChildRenderModeHandler
 {
 	void Refresh(RenderTarget target = RenderTarget.All);
 

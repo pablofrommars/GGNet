@@ -1,18 +1,17 @@
 namespace GGNet.Rendering;
 
-public sealed class AlwaysRenderPolicy(IPlotRendering plot) : RenderPolicyBase(plot)
+public sealed class InteractiveAutoRenderModeHandler(IPlotRendering plot) : RenderModeHandler(plot)
 {
   public override Task RefreshAsync(RenderTarget target, CancellationToken token)
   {
     plot.Render(RenderTarget.All);
 
-    //return plot.StateHasChangedAsync();
     return Task.CompletedTask;
   }
 
   public override bool ShouldRender() => true;
 
-  public sealed class ChildRenderPolicy : IChildRenderPolicy
+  public sealed class ChildRenderHandler : IChildRenderModeHandler
   {
     public void Refresh(RenderTarget target = RenderTarget.All)
     {
@@ -21,5 +20,5 @@ public sealed class AlwaysRenderPolicy(IPlotRendering plot) : RenderPolicyBase(p
     public bool ShouldRender(RenderTarget target) => true;
   }
 
-  public override IChildRenderPolicy Child() => new ChildRenderPolicy();
+  public override IChildRenderModeHandler Child() => new ChildRenderHandler();
 }

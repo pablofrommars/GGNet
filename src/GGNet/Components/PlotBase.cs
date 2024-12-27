@@ -10,7 +10,7 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
   public required PlotContext<T, TX, TY> Context { get; init; }
 
   [Parameter]
-  public required RenderPolicy RenderPolicy { get; init; }
+  public required RenderMode RenderMode { get; init; }
 
   public string Id => Context.Id;
 
@@ -18,27 +18,27 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
 
   protected override void OnInitialized()
   {
-    Policy = RenderPolicyBase.Factory(RenderPolicy, this);
+    RenderModeHandler = Rendering.RenderModeHandler.Factory(RenderMode, this);
   }
 
-  public IRenderPolicy? Policy { get; set; }
+  public IRenderModeHandler? RenderModeHandler { get; set; }
 
   public abstract void Render(RenderTarget target);
 
   public Task StateHasChangedAsync() => InvokeAsync(StateHasChanged);
 
-  protected override bool ShouldRender() => Policy?.ShouldRender() ?? true;
+  protected override bool ShouldRender() => RenderModeHandler?.ShouldRender() ?? true;
 
-  protected override void OnAfterRender(bool firstRender) => Policy?.OnAfterRender(firstRender);
+  protected override void OnAfterRender(bool firstRender) => RenderModeHandler?.OnAfterRender(firstRender);
 
   public Task RefreshAsync(RenderTarget target, CancellationToken token)
   {
-    if (Policy is null)
+    if (RenderModeHandler is null)
     {
       return Task.CompletedTask;
     }
 
-    return Policy.RefreshAsync(target, token);
+    return RenderModeHandler.RefreshAsync(target, token);
   }
 
   private int disposing = 0;
@@ -50,11 +50,11 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
       return ValueTask.CompletedTask;
     }
 
-    if (Policy is null)
+    if (RenderModeHandler is null)
     {
       return ValueTask.CompletedTask;
     }
 
-    return Policy.DisposeAsync();
+    return RenderModeHandler.DisposeAsync();
   }
 }

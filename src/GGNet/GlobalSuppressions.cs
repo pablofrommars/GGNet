@@ -7,4 +7,4 @@
 
 
 [assembly: SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "<Pending>", Scope = "member", Target = "~M:GGNet.Components.PlotBase`3.DisposeAsync~System.Threading.Tasks.ValueTask")]
-[assembly: SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "<Pending>", Scope = "member", Target = "~M:GGNet.Rendering.RenderPolicyBase.DisposeAsync~System.Threading.Tasks.ValueTask")]
+[assembly: SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "<Pending>", Scope = "member", Target = "~M:GGNet.Rendering.RenderModeHandler.DisposeAsync~System.Threading.Tasks.ValueTask")]

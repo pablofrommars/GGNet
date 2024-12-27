@@ -9,7 +9,7 @@ public static class IPlotContextExtensions
 			["Context"] = context,
 			["Width"] = width,
 			["Height"] = height,
-      ["Theme"] = theme
+			["Theme"] = theme
 		});
 
 		component.WriteHTML(writer);

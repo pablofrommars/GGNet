@@ -11,7 +11,7 @@ public partial class Area<T, TX, TY> : ComponentBase
   public required Data.Panel<T, TX, TY> Panel { get; init; }
 
   [Parameter]
-  public required IChildRenderPolicy RenderPolicy { get; init; }
+  public required IChildRenderModeHandler RenderModeHandler { get; init; }
 
   [Parameter]
   public required ICoord Coord { get; init; }
@@ -29,7 +29,7 @@ public partial class Area<T, TX, TY> : ComponentBase
     _renderShapes = RenderShapes;
   }
 
-  protected override bool ShouldRender() => RenderPolicy.ShouldRender();
+  protected override bool ShouldRender() => RenderModeHandler.ShouldRender();
 
   private double X(double x) => Coord.ToX(x);
 

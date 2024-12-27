@@ -1,6 +1,6 @@
 namespace GGNet.Rendering;
 
-public interface IRenderPolicy : IAsyncDisposable
+public interface IRenderModeHandler : IAsyncDisposable
 {
 	Task RefreshAsync(RenderTarget target, CancellationToken token);
 
@@ -8,5 +8,5 @@ public interface IRenderPolicy : IAsyncDisposable
 
 	void OnAfterRender(bool firstRender);
 
-	IChildRenderPolicy Child();
+	IChildRenderModeHandler Child();
 }
