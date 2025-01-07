@@ -169,7 +169,16 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
     }
 
     var x = Positions.X.Map(item);
+    if (double.IsNaN(x))
+    {
+      return;
+    }
+
     var y = Positions.Y.Map(item);
+    if (double.IsNaN(y))
+    {
+      return;
+    }
 
     points.Add((x, y, item));
   }
