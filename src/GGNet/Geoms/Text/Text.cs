@@ -1,5 +1,4 @@
-﻿using GGNet.Buffers;
-using GGNet.Data;
+﻿using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
 
@@ -10,7 +9,7 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 	where TY : struct
 {
 	public Text(
-		Source<T> source,
+		IReadOnlyList<T> source,
 		Func<T, TX>? x,
 		Func<T, TY>? y,
 		Func<T, double>? angle,

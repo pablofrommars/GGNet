@@ -18,7 +18,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	public string Id { get; }
 
-	public Source<T>? Source { get; init; }
+	public IReadOnlyList<T>? Source { get; init; }
 
 	internal bool Initialized { get; set; }
 

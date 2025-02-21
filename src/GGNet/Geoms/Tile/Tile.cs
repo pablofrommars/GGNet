@@ -6,11 +6,11 @@ using GGNet.Shapes;
 namespace GGNet.Geoms.Tile;
 
 internal sealed class Tile<T, TX, TY> : Geom<T, TX, TY>
-  where TX : struct
-  where TY : struct
+where TX : struct
+where TY : struct
 {
   public Tile(
-    Source<T> source,
+    IReadOnlyList<T> source,
     Func<T, TX> x,
     Func<T, TY> y,
     Func<T, double> width,

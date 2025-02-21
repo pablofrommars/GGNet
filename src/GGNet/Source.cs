@@ -2,18 +2,18 @@
 
 using Buffers;
 
-public sealed class Source<T> : Buffer<T>, IEnumerable<T>
+public sealed class Source<T> : Buffer<T>, IReadOnlyList<T>
 {
-	public Source()
-		: base()
-	{
-	}
+  public Source()
+    : base()
+  {
+  }
 
-	public Source(IEnumerable<T> items)
-		: this()
-	{
-		Add(items);
-	}
+  public Source(IEnumerable<T> items)
+    : this()
+  {
+    Add(items);
+  }
 
   public void AddRange(IEnumerable<T> items)
   {

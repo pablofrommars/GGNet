@@ -8,7 +8,7 @@ internal sealed class HLine<T, TX, TY> : Geom<T, TX, TY>
 	where TY : struct
 {
 	public HLine(
-		Source<T> source,
+		IReadOnlyList<T> source,
 		Func<T, TY> y,
 		Func<T, string> label)
 		: base(source, null, false)

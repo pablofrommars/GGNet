@@ -8,7 +8,7 @@ internal sealed class Volume<T, TX, TY> : Geom<T, TX, TY>
   where TY : struct
 {
   public Volume(
-    Source<T> source,
+    IReadOnlyList<T> source,
     Func<T, TX>? x,
     Func<T, TY> volume)
     : base(source, null, false)

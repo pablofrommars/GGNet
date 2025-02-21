@@ -4,27 +4,29 @@ using Elements;
 using Exceptions;
 using Facets;
 using Formats;
+
 using Geoms;
-using Geoms.Point;
-using Geoms.Line;
-using Geoms.Bar;
-using Geoms.Segment;
-using Geoms.Tile;
-using Geoms.Area;
-using Geoms.Ribbon;
-using Geoms.ErrorBar;
-using Geoms.Text;
-using Geoms.VLine;
-using Geoms.HLine;
 using Geoms.ABLine;
-using Geoms.OHLC;
-using Geoms.Candlestick;
-using Geoms.Volume;
-using Geoms.Hex;
-using Geoms.RidgeLine;
-using Geoms.Violin;
+using Geoms.Area;
+using Geoms.Bar;
 using Geoms.Boxplot;
+using Geoms.Candlestick;
+using Geoms.ErrorBar;
+using Geoms.Hex;
+using Geoms.HLine;
+using Geoms.Line;
 using Geoms.Map;
+using Geoms.OHCL;
+using Geoms.Point;
+using Geoms.Ribbon;
+using Geoms.RidgeLine;
+using Geoms.Segment;
+using Geoms.Text;
+using Geoms.Tile;
+using Geoms.Violin;
+using Geoms.VLine;
+using Geoms.Volume;
+
 using Scales;
 using Transformations;
 
@@ -483,7 +485,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
     this PanelFactory<T1, TX1, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? y = null,
     IAestheticMapping<T2, double>? _size = null,
@@ -631,7 +633,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
     this PanelFactory<T1, TX1, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? y = null,
     IAestheticMapping<T2, string>? _color = null,
@@ -669,30 +671,9 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
-    this PanelFactory<T1, TX1, TY1> panel,
-    IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    IAestheticMapping<T2, string>? _color = null,
-    IAestheticMapping<T2, LineType>? _lineType = null,
-    Func<T2, MouseEventArgs, Task>? onclick = null,
-    Func<T2, MouseEventArgs, Task>? onmouseover = null,
-    Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, RenderFragment>? tooltip = null,
-    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TX2 : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return panel.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
-  }
-
   public static PlotContext<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
     this PlotContext<T1, TX1, TY1> context,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? y = null,
     IAestheticMapping<T2, string>? _color = null,
@@ -711,27 +692,6 @@ public static class BuilderExtensions
     context.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
 
     return context;
-  }
-
-  public static PlotContext<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
-    this PlotContext<T1, TX1, TY1> context,
-    IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    IAestheticMapping<T2, string>? _color = null,
-    IAestheticMapping<T2, LineType>? _lineType = null,
-    Func<T2, MouseEventArgs, Task>? onclick = null,
-    Func<T2, MouseEventArgs, Task>? onmouseover = null,
-    Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, RenderFragment>? tooltip = null,
-    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TX2 : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return context.Geom_Line(new Source<T2>(source), x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Line<T, TX, TY>(
@@ -774,7 +734,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
     this PanelFactory<T1, TX1, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
@@ -816,33 +776,9 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
-    this PanelFactory<T1, TX1, TY1> panel,
-    IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    IAestheticMapping<T2, string>? _fill = null,
-    Func<T2, MouseEventArgs, Task>? onclick = null,
-    Func<T2, MouseEventArgs, Task>? onmouseover = null,
-    Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, RenderFragment>? tooltip = null,
-    string fill = "#23d0fc", double fillOpacity = 1.0,
-    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
-    PositionAdjustment position = PositionAdjustment.Stack,
-    double width = 0.9,
-    bool animation = false,
-    (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TX2 : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return panel.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
-  }
-
   public static PlotContext<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
     this PlotContext<T1, TX1, TY1> context,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
@@ -864,30 +800,6 @@ public static class BuilderExtensions
     context.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
 
     return context;
-  }
-
-  public static PlotContext<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
-    this PlotContext<T1, TX1, TY1> context,
-    IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    IAestheticMapping<T2, string>? _fill = null,
-    Func<T2, MouseEventArgs, Task>? onclick = null,
-    Func<T2, MouseEventArgs, Task>? onmouseover = null,
-    Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, RenderFragment>? tooltip = null,
-    string fill = "#23d0fc", double fillOpacity = 1.0,
-    string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
-    PositionAdjustment position = PositionAdjustment.Stack,
-    double width = 0.9,
-    bool animation = false,
-    (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TX2 : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return context.Geom_Bar(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Bar<T, TX, TY>(
@@ -936,7 +848,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2, TX2, TY2>(
     this PanelFactory<T1, TX1, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2> x,
     Func<T2, TX2> xend,
     Func<T2, TY2> y,
@@ -1028,7 +940,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2, TX2, TY2>(
     this PanelFactory<T1, TX1, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2> x,
     Func<T2, TY2> y,
     Func<T2, double> width,
@@ -1136,7 +1048,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
     this PanelFactory<T1, TX1, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
@@ -1172,30 +1084,9 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
-    this PanelFactory<T1, TX1, TY1> panel,
-    IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    IAestheticMapping<T2, string>? _fill = null,
-    Func<T2, MouseEventArgs, Task>? onclick = null,
-    Func<T2, MouseEventArgs, Task>? onmouseover = null,
-    Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, RenderFragment>? tooltip = null,
-    string fill = "#23d0fc", double fillOpacity = 1.0,
-    PositionAdjustment position = PositionAdjustment.Identity,
-    (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TX2 : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return panel.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
-  }
-
   public static PlotContext<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
     this PlotContext<T1, TX1, TY1> context,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
@@ -1214,27 +1105,6 @@ public static class BuilderExtensions
     context.Default_Panel().Geom_Area(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
 
     return context;
-  }
-
-  public static PlotContext<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
-    this PlotContext<T1, TX1, TY1> context,
-    IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    IAestheticMapping<T2, string>? _fill = null,
-    Func<T2, MouseEventArgs, Task>? onclick = null,
-    Func<T2, MouseEventArgs, Task>? onmouseover = null,
-    Func<T2, MouseEventArgs, Task>? onmouseout = null,
-    Func<T2, RenderFragment>? tooltip = null,
-    string fill = "#23d0fc", double fillOpacity = 1.0,
-    PositionAdjustment position = PositionAdjustment.Identity,
-    (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TX2 : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return context.Geom_Area(new Source<T2>(source), x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Area<T, TX, TY>(
@@ -1591,7 +1461,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
     this PanelFactory<T1, TX1, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? y = null,
     Func<T2, double>? _angle = null,
@@ -1625,27 +1495,9 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
-    this PanelFactory<T1, TX1, TY1> panel,
-    IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    Func<T2, double>? _angle = null,
-    Func<T2, TT>? text = null,
-    IAestheticMapping<T2, string>? _color = null,
-    Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
-    (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TX2 : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return panel.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
-  }
-
   public static PlotContext<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
     this PlotContext<T1, TX1, TY1> context,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? y = null,
     Func<T2, double>? _angle = null,
@@ -1661,24 +1513,6 @@ public static class BuilderExtensions
     context.Default_Panel().Geom_Text(source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
 
     return context;
-  }
-
-  public static PlotContext<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
-    this PlotContext<T1, TX1, TY1> context,
-    IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    Func<T2, double>? _angle = null,
-    Func<T2, TT>? text = null,
-    IAestheticMapping<T2, string>? _color = null,
-    Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
-    (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TX2 : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return context.Geom_Text(new Source<T2>(source), x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Text<T, TX, TY, TT>(
@@ -1715,7 +1549,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
     this PanelFactory<T1, TX1, TY> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2> x,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
@@ -1752,23 +1586,9 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
-    this PanelFactory<T1, TX1, TY> panel,
-    IEnumerable<T2> source,
-    Func<T2, TX2> x,
-    Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
-    where TX1 : struct
-    where TX2 : struct
-    where TY : struct
-  {
-    return panel.Geom_VLine(new Source<T2>(source), x, label, width, color, opacity, lineType, size, anchor, weight, style);
-  }
-
   public static PlotContext<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
     this PlotContext<T1, TX1, TY> context,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2> x,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
@@ -1780,20 +1600,6 @@ public static class BuilderExtensions
     context.Default_Panel().Geom_VLine(source, x, label, width, color, opacity, lineType, size, anchor, weight, style);
 
     return context;
-  }
-
-  public static PlotContext<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
-    this PlotContext<T1, TX1, TY> context,
-    IEnumerable<T2> source,
-    Func<T2, TX2> x,
-    Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
-    where TX1 : struct
-    where TX2 : struct
-    where TY : struct
-  {
-    return context.Geom_VLine(new Source<T2>(source), x, label, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PanelFactory<T, TX, TY> Geom_VLine<T, TX, TY>(
@@ -1824,7 +1630,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
     this PanelFactory<T1, TX, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TY2> y,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
@@ -1861,23 +1667,9 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
-    this PanelFactory<T1, TX, TY1> panel,
-    IEnumerable<T2> source,
-    Func<T2, TY2> y,
-    Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
-    where TX : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return panel.Geom_HLine(new Source<T2>(source), y, label, width, color, opacity, lineType, size, anchor, weight, style);
-  }
-
   public static PlotContext<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
     this PlotContext<T1, TX, TY1> context,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TY2> y,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
@@ -1889,20 +1681,6 @@ public static class BuilderExtensions
     context.Default_Panel().Geom_HLine(source, y, label, width, color, opacity, lineType, size, anchor, weight, style);
 
     return context;
-  }
-
-  public static PlotContext<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
-    this PlotContext<T1, TX, TY1> context,
-    IEnumerable<T2> source,
-    Func<T2, TY2> y,
-    Func<T2, string> label,
-    double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
-    where TX : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return context.Geom_HLine(new Source<T2>(source), y, label, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PanelFactory<T, TX, TY> Geom_HLine<T, TX, TY>(
@@ -2050,7 +1828,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_OHLC<T1, TX1, TY1, T2, TX2, TY2>(
     this PanelFactory<T1, TX1, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? open = null,
     Func<T2, TY2>? high = null,
@@ -2158,7 +1936,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2, TX2, TY2>(
     this PanelFactory<T1, TX1, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? open = null,
     Func<T2, TY2>? high = null,
@@ -2265,7 +2043,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_Volume<T1, TX1, TY1, T2, TX2, TY2>(
     this PanelFactory<T1, TX1, TY1> panel,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? volume = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
@@ -2752,7 +2530,7 @@ public static class BuilderExtensions
 
   public static PanelFactory<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2, TX2, TY2>(
   this PanelFactory<T1, TX1, TY1> panel,
-  Source<T2> source,
+  IReadOnlyList<T2> source,
   Func<T2, TX2>? x = null,
   Func<T2, TY2>? y = null,
   IAestheticMapping<T2, string>? _fill = null,
@@ -2782,26 +2560,9 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2, TX2, TY2>(
-    this PanelFactory<T1, TX1, TY1> panel,
-    IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    IAestheticMapping<T2, string>? _fill = null,
-    double size = 0.8,
-    string fill = "#23d0fc", double fillOpacity = 1.0, double strokeWidth = 2.0,
-    (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TX2 : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return panel.Geom_Boxplot(new Source<T2>(source), x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
-  }
-
   public static PlotContext<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2, TX2, TY2>(
     this PlotContext<T1, TX1, TY1> context,
-    Source<T2> source,
+    IReadOnlyList<T2> source,
     Func<T2, TX2>? x = null,
     Func<T2, TY2>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
@@ -2816,23 +2577,6 @@ public static class BuilderExtensions
     context.Default_Panel().Geom_Boxplot(source, x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
 
     return context;
-  }
-
-  public static PlotContext<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2, TX2, TY2>(
-    this PlotContext<T1, TX1, TY1> context,
-    IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    IAestheticMapping<T2, string>? _fill = null,
-    double size = 0.8,
-    string fill = "#23d0fc", double fillOpacity = 1.0, double strokeWidth = 2.0,
-    (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TX2 : struct
-    where TY1 : struct
-    where TY2 : struct
-  {
-    return context.Geom_Boxplot(new Source<T2>(source), x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Boxplot<T, TX, TY>(

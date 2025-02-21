@@ -25,7 +25,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
   private readonly bool animation;
 
   public Bar(
-    Source<T> source,
+    IReadOnlyList<T> source,
     Func<T, TX>? x,
     Func<T, TY>? y,
     IAestheticMapping<T, string>? fill = null,

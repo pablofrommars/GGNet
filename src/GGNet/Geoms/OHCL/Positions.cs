@@ -1,6 +1,6 @@
 using GGNet.Scales;
 
-namespace GGNet.Geoms.OHLC;
+namespace GGNet.Geoms.OHCL;
 
 internal sealed class Positions<T>
 {

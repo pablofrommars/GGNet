@@ -8,7 +8,7 @@ internal sealed class VLine<T, TX, TY> : Geom<T, TX, TY>
 	where TY : struct
 {
 	public VLine(
-		Source<T> source,
+		IReadOnlyList<T> source,
 		Func<T, TX> x,
 		Func<T, string> label)
 		: base(source, null, false)

@@ -8,7 +8,7 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 	where TY : struct
 {
 	public Candlestick(
-		Source<T> source,
+		IReadOnlyList<T> source,
 		Func<T, TX>? x,
 		Func<T, TY> open,
 		Func<T, TY> high,

@@ -1,14 +1,14 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
 
-namespace GGNet.Geoms.OHLC;
+namespace GGNet.Geoms.OHCL;
 
 internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
 	public OHLC(
-		Source<T> source,
+		IReadOnlyList<T> source,
 		Func<T, TX>? x,
 		Func<T, TY> open,
 		Func<T, TY> high,

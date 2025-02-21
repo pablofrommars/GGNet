@@ -23,7 +23,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
   private readonly double size;
 
   public Boxplot(
-    Source<T> source,
+    IReadOnlyList<T> source,
     Func<T, TX>? x,
     Func<T, TY>? y,
     IAestheticMapping<T, string>? fill = null,

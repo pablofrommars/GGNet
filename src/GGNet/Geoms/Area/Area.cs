@@ -22,7 +22,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
   private readonly PositionAdjustment position;
 
   public Area(
-    Source<T> source,
+    IReadOnlyList<T> source,
     Func<T, TX>? x,
     Func<T, TY>? y,
     IAestheticMapping<T, string>? fill = null,

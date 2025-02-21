@@ -1,4 +1,4 @@
-namespace GGNet.Geoms.OHLC;
+namespace GGNet.Geoms.OHCL;
 
 internal sealed record Selectors<T, TX, TY>
 {

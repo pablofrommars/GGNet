@@ -10,7 +10,7 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 	where TY : struct
 {
 	public Segment(
-		Source<T> source,
+		IReadOnlyList<T> source,
 		Func<T, TX> x,
 		Func<T, TX> xend,
 		Func<T, TY> y,

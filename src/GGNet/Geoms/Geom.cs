@@ -7,11 +7,11 @@ using GGNet.Shapes;
 
 namespace GGNet.Geoms;
 
-internal abstract class Geom<T, TX, TY>(Source<T> source, (bool x, bool y)? scale, bool inherit) : IGeom
+internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y)? scale, bool inherit) : IGeom
   where TX : struct
   where TY : struct
 {
-  protected readonly Source<T> source = source;
+  protected readonly IReadOnlyList<T> source = source;
   protected readonly (bool x, bool y) scale = scale ?? (true, true);
   protected readonly bool inherit = inherit;
 

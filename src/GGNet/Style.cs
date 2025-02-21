@@ -14,6 +14,15 @@ public sealed partial class Style(Position axisY, Position legend)
 
   public StyleStrip Strip { get; set; } = new();
 
-  public static Style Default(Position axisY = Left, Position legend = Right)
-    => new(axisY, legend);
+  public static Style Default(Position axisY = Left, Position legend = Right, Action<Style>? init = null)
+  {
+    Style style = new(axisY, legend);
+
+    if (init is not null)
+    {
+      init(style);
+    }
+
+    return style;
+  }
 }

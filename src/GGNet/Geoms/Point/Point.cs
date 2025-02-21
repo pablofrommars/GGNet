@@ -3,23 +3,24 @@ using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;
 
-namespace GGNet.Geoms.Line;
+namespace GGNet.Geoms.Point;
 
-internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
+internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>
   where TX : struct
   where TY : struct
 {
-  private readonly Dictionary<(string, LineType), Shapes.Path> paths = [];
+  private readonly bool animation;
 
-  public Line(
-    Source<T> source,
+  public Point(
+    IReadOnlyList<T> source,
     Func<T, TX>? x,
     Func<T, TY>? y,
-    IAestheticMapping<T, string>? color = null,
-    IAestheticMapping<T, LineType>? lineType = null,
-    Func<T, RenderFragment>? tooltip = null,
-    (bool x, bool y)? scale = null,
-    bool inherit = true)
+    IAestheticMapping<T, double>? size,
+    IAestheticMapping<T, string>? color,
+    Func<T, RenderFragment>? tooltip,
+    bool animation,
+    (bool x, bool y)? scale,
+    bool inherit)
     : base(source, scale, inherit)
   {
     Selectors = new()
@@ -31,9 +32,11 @@ internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
 
     Aesthetics = new()
     {
+      Size = size,
       Color = color,
-      LineType = lineType
     };
+
+    this.animation = animation;
   }
 
   public Selectors<T, TX, TY> Selectors { get; }
@@ -50,7 +53,7 @@ internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
 
   private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
 
-  public Elements.Line Aesthetic { get; set; } = default!;
+  public Elements.Circle Aesthetic { get; init; } = default!;
 
   public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
   {
@@ -78,13 +81,24 @@ internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
     {
       onMouseOver = (item, x, y, _) =>
       {
+        var radius = Aesthetic.Radius;
+        if (Aesthetics.Size is not null)
+        {
+          radius = Aesthetics.Size.Map(item);
+        }
+
+        if (animation)
+        {
+          radius *= 1.5;
+        }
+
         panel.Component?.Tooltip?.Show(
           x,
           y,
-          0,
+          radius,
           Selectors.Tooltip(item),
-          Aesthetics.Color?.Map(item) ?? Aesthetic.Stroke,
-          Aesthetic.StrokeOpacity);
+          Aesthetics.Color?.Map(item) ?? Aesthetic.Fill,
+          Aesthetic.FillOpacity);
 
         return Task.CompletedTask;
       };
@@ -106,8 +120,8 @@ internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
       return;
     }
 
+    Aesthetics.Size ??= panel.Data.Aesthetics.Size as IAestheticMapping<T, double>;
     Aesthetics.Color ??= panel.Data.Aesthetics.Color as IAestheticMapping<T, string>;
-    Aesthetics.LineType ??= panel.Data.Aesthetics.LineType as IAestheticMapping<T, LineType>;
   }
 
   public override void Train(T item)
@@ -115,32 +129,30 @@ internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
     Positions.X.Train(item);
     Positions.Y.Train(item);
 
+    Aesthetics.Size?.Train(item);
     Aesthetics.Color?.Train(item);
-    Aesthetics.LineType?.Train(item);
   }
 
   public override void Legend()
   {
-    Legend(Aesthetics.Color, value => new Elements.HLine
+    Legend(Aesthetics.Color, value => new Elements.Circle
     {
-      Stroke = value,
-      StrokeOpacity = Aesthetic.StrokeOpacity,
-      StrokeWidth = Aesthetic.StrokeWidth,
-      LineType = Aesthetic.LineType
+      Fill = value,
+      FillOpacity = Aesthetic.FillOpacity,
+      Radius = Aesthetic.Radius
     });
 
-    Legend(Aesthetics.LineType, value => new Elements.HLine
+    Legend(Aesthetics.Size, value => new Elements.Circle
     {
-      Stroke = Aesthetic.Stroke,
-      StrokeOpacity = Aesthetic.StrokeOpacity,
-      StrokeWidth = Aesthetic.StrokeWidth,
-      LineType = value
+      Fill = Aesthetic.Fill,
+      FillOpacity = Aesthetic.FillOpacity,
+      Radius = value
     });
   }
 
   protected override void Shape(T item, bool flip)
   {
-    var color = Aesthetic.Stroke;
+    var color = Aesthetic.Fill;
 
     if (Aesthetics.Color is not null)
     {
@@ -151,28 +163,15 @@ internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
       }
     }
 
-    var lineType = Aesthetic.LineType;
-    if (Aesthetics.LineType is not null)
-    {
-      lineType = Aesthetics.LineType.Map(item);
-    }
+    var radius = Aesthetic.Radius;
 
-    if (!paths.TryGetValue((color, lineType), out var path))
+    if (Aesthetics.Size is not null)
     {
-      path = new Shapes.Path
+      radius = Aesthetics.Size.Map(item);
+      if (radius <= 0)
       {
-        Aesthetic = new()
-        {
-          Stroke = color,
-          StrokeOpacity = Aesthetic.StrokeOpacity,
-          StrokeWidth = Aesthetic.StrokeWidth,
-          LineType = lineType
-        }
-      };
-
-      Layer.Add(path);
-
-      paths[(color, lineType)] = path;
+        return;
+      }
     }
 
     var x = Positions.X.Map(item);
@@ -187,27 +186,23 @@ internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
       return;
     }
 
-    path.Points.Add((x, y));
-
-    if (OnClick is not null || OnMouseOver is not null || OnMouseOut is not null)
+    var circle = new Circle
     {
-      var circle = new Circle
+      Classes = animation ? "animate-point" : string.Empty,
+      X = x,
+      Y = y,
+      Aesthetic = new()
       {
-        X = x,
-        Y = y,
-        Aesthetic = new()
-        {
-          Radius = 3.0 * Aesthetic.StrokeWidth,
-          Fill = "transparent",
-          FillOpacity = 0
-        },
-        OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-        OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x, y, e) : null,
-        OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
-      };
+        Radius = radius,
+        Fill = color,
+        FillOpacity = Aesthetic.FillOpacity
+      },
+      OnClick = OnClick is not null ? e => OnClick(item, e) : null,
+      OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x, y, e) : null,
+      OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
+    };
 
-      Layer.Add(circle);
-    }
+    Layer.Add(circle);
 
     if (scale.x)
     {
@@ -218,12 +213,5 @@ internal sealed class Line<T, TX, TY> : Geom<T, TX, TY>
     {
       Positions.Y.Position.Shape(y, y);
     }
-  }
-
-  public override void Clear()
-  {
-    base.Clear();
-
-    paths.Clear();
   }
 }
