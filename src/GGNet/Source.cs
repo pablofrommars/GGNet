@@ -15,14 +15,6 @@ public sealed class Source<T> : Buffer<T>, IReadOnlyList<T>
     Add(items);
   }
 
-  public void AddRange(IEnumerable<T> items)
-  {
-    foreach (var item in items)
-    {
-      Add(item);
-    }
-  }
-
   public IEnumerator<T> GetEnumerator()
   {
     for (var i = 0; i < Count; i++)

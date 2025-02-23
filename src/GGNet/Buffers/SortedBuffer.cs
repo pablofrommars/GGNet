@@ -13,8 +13,6 @@ public sealed class SortedBuffer<T>(int pageCapacity = 32, int pagesIncrement = 
     var cmp = comparer.Compare(pages[page][element - 1], item);
     if (cmp == 0)
     {
-      pages[page][element - 1] = item;
-
       return;
     }
     else if (cmp < 0)
@@ -36,8 +34,6 @@ public sealed class SortedBuffer<T>(int pageCapacity = 32, int pagesIncrement = 
         cmp = comparer.Compare(pages[p][i], item);
         if (cmp == 0)
         {
-          pages[p][i] = item;
-
           return;
         }
         if (cmp < 0)
