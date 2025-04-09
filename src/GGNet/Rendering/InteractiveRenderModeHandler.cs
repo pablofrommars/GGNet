@@ -102,13 +102,15 @@ public sealed class InteractiveRenderModeHandler : RenderModeHandler
       return;
     }
 
-    cancellationTokenSource?.Cancel();
+    cancellationTokenSource.Cancel();
 
     if (background is not null)
     {
       await background.ConfigureAwait(false);
     }
 
-    cancellationTokenSource?.Dispose();
+    cancellationTokenSource.Dispose();
+
+    semaphore.Dispose();
   }
 }
