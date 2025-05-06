@@ -11,6 +11,8 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
 {
   private readonly Dictionary<(string, LineType), Shapes.Path> paths = [];
 
+  private readonly bool piecewise;
+
   public Line(
     IReadOnlyList<T> source,
     Func<T, TX>? x,
@@ -19,9 +21,12 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
     IAestheticMapping<T, LineType>? lineType = null,
     Func<T, RenderFragment>? tooltip = null,
     (bool x, bool y)? scale = null,
-    bool inherit = true)
+    bool inherit = true,
+    bool piecewise = false)
     : base(source, scale, inherit)
   {
+    this.piecewise = piecewise;
+
     Selectors = new()
     {
       X = x,
@@ -184,39 +189,44 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
     var y = Positions.Y.Map(item);
     if (double.IsNaN(y))
     {
-      return;
-    }
-
-    path.Points.Add((x, y));
-
-    if (OnClick is not null || OnMouseOver is not null || OnMouseOut is not null)
-    {
-      var circle = new Circle
+      if (piecewise)
       {
-        X = x,
-        Y = y,
-        Aesthetic = new()
+        path.Points.Add((x, double.NaN));
+      }
+    }
+    else
+    {
+      path.Points.Add((x, y));
+
+      if (OnClick is not null || OnMouseOver is not null || OnMouseOut is not null)
+      {
+        var circle = new Circle
         {
-          Radius = 3.0 * Aesthetic.StrokeWidth,
-          Fill = "transparent",
-          FillOpacity = 0
-        },
-        OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-        OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x, y, e) : null,
-        OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
-      };
+          X = x,
+          Y = y,
+          Aesthetic = new()
+          {
+            Radius = 3.0 * Aesthetic.StrokeWidth,
+            Fill = "transparent",
+            FillOpacity = 0
+          },
+          OnClick = OnClick is not null ? e => OnClick(item, e) : null,
+          OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x, y, e) : null,
+          OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
+        };
 
-      Layer.Add(circle);
-    }
+        Layer.Add(circle);
+      }
 
-    if (scale.x)
-    {
-      Positions.X.Position.Shape(x, x);
-    }
+      if (scale.x)
+      {
+        Positions.X.Position.Shape(x, x);
+      }
 
-    if (scale.y)
-    {
-      Positions.Y.Position.Shape(y, y);
+      if (scale.y)
+      {
+        Positions.Y.Position.Shape(y, y);
+      }
     }
   }
 

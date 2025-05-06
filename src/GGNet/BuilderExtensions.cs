@@ -643,7 +643,7 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    (bool x, bool y)? scale = null, bool inherit = true)
+    (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
@@ -651,7 +651,7 @@ public static class BuilderExtensions
   {
     panel.Add(() =>
     {
-      var geom = new Line<T2, TX2, TY2>(source, x, y, _color, _lineType, tooltip, scale, inherit)
+      var geom = new Line<T2, TX2, TY2>(source, x, y, _color, _lineType, tooltip, scale, inherit, piecewise)
       {
         Aesthetic = new()
         {
@@ -683,13 +683,13 @@ public static class BuilderExtensions
     Func<T2, MouseEventArgs, Task>? onmouseout = null,
     Func<T2, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    (bool x, bool y)? scale = null, bool inherit = true)
+    (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false)
     where TX1 : struct
     where TX2 : struct
     where TY1 : struct
     where TY2 : struct
   {
-    context.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
+    context.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit, piecewise);
 
     return context;
   }
@@ -705,11 +705,11 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    (bool x, bool y)? scale = null, bool inherit = true)
+    (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false)
     where TX : struct
     where TY : struct
   {
-    return Geom_Line(panel, panel.Context.Source!, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
+    return Geom_Line(panel, panel.Context.Source!, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit, piecewise);
   }
 
   public static PlotContext<T, TX, TY> Geom_Line<T, TX, TY>(
@@ -723,11 +723,11 @@ public static class BuilderExtensions
     Func<T, MouseEventArgs, Task>? onmouseout = null,
     Func<T, RenderFragment>? tooltip = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-    (bool x, bool y)? scale = null, bool inherit = true)
+    (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false)
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit);
+    context.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit, piecewise);
 
     return context;
   }

@@ -53,19 +53,25 @@ public partial class Area<T, TX, TY> : ComponentBase
   {
     var (x, y) = path.Points[0];
 
-    sb.Append("M ");
-    sb.Append(X(x));
-    sb.Append(' ');
-    sb.Append(Y(y));
+    var M = true;
 
-    for (var j = 1; j < path.Points.Count; j++)
+    for (var j = 0; j < path.Points.Count; j++)
     {
       (x, y) = path.Points[j];
 
-      sb.Append(" L ");
-      sb.Append(X(x));
-      sb.Append(' ');
-      sb.Append(Y(y));
+      if (double.IsNaN(y))
+      {
+        M = true;
+      }
+      else
+      {
+        sb.Append(M ? " M " : " L ");
+        sb.Append(X(x));
+        sb.Append(' ');
+        sb.Append(Y(y));
+
+        M = false;
+      }
     }
   }
 
