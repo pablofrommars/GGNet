@@ -32,9 +32,10 @@ public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
 			return;
 		}
 
-		foreach (var (key, i) in map.Select(o => (o.Key, o.Value.i)).ToList())
+		foreach (var key in map.Keys.ToArray())
 		{
-			map[key] = (i, sub[i]);
+			var entry = map[key];
+			map[key] = (entry.i, sub[entry.i]);
 		}
 	}
 

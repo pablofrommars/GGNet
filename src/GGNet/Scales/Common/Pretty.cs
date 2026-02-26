@@ -300,7 +300,7 @@ public static class Pretty
             current = current.PlusDays(length);
         }
 
-        return results.ToArray();
+        return [.. results];
     }
 
     private static readonly int[] length_hours = [1, 2, 3, 4, 6, 8, 12, 24];

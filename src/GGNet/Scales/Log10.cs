@@ -42,15 +42,7 @@ public sealed class Log10 : Position<double>
 			Breaks = Log10Utils.MinorBreaks(Range.max);
 		}
 
-		var labels = new (double, string)[Breaks.Count()];
-
-		for (var i = 0; i < labels.Length; i++)
-		{
-			var b = Breaks.ElementAt(i);
-			labels[i] = (b, formatter.Format(transformation!.Inverse(b)));
-		}
-
-		Labels = labels;
+		Labels = [.. Breaks.Select(b => (b, formatter.Format(transformation!.Inverse(b))))];
 	}
 
 	public override double Map(double key) => transformation!.Apply(key);

@@ -7,6 +7,8 @@ public partial class Area<T, TX, TY> : ComponentBase
    where TX : struct
    where TY : struct
 {
+  private static readonly ObjectPool<StringBuilder> pool = ObjectPool.Create<StringBuilder>();
+
   [Parameter]
   public required Data.Panel<T, TX, TY> Panel { get; init; }
 
@@ -22,11 +24,11 @@ public partial class Area<T, TX, TY> : ComponentBase
   [Parameter]
   public required string Clip { get; init; }
 
-  private readonly RenderFragment _renderShapes;
+  private readonly RenderFragment renderShapes;
 
   public Area()
   {
-    _renderShapes = RenderShapes;
+    renderShapes = RenderShapes;
   }
 
   protected override bool ShouldRender() => RenderModeHandler.ShouldRender();
@@ -37,7 +39,7 @@ public partial class Area<T, TX, TY> : ComponentBase
 
   private string Path(Path path)
   {
-    var sb = StringBuilderCache.Acquire();
+    var sb = pool.Get();
     try
     {
       Path(sb, path);
@@ -45,7 +47,8 @@ public partial class Area<T, TX, TY> : ComponentBase
     }
     finally
     {
-      StringBuilderCache.Release(sb);
+      sb.Clear();
+      pool.Return(sb);
     }
   }
 
@@ -65,10 +68,7 @@ public partial class Area<T, TX, TY> : ComponentBase
       }
       else
       {
-        sb.Append(M ? " M " : " L ");
-        sb.Append(X(x));
-        sb.Append(' ');
-        sb.Append(Y(y));
+        sb.Append($"{(M ? " M " : " L ")}{X(x)} {Y(y)}");
 
         M = false;
       }
@@ -77,7 +77,7 @@ public partial class Area<T, TX, TY> : ComponentBase
 
   private string Path(Area area)
   {
-    var sb = StringBuilderCache.Acquire();
+    var sb = pool.Get();
     try
     {
       Path(sb, area);
@@ -85,7 +85,8 @@ public partial class Area<T, TX, TY> : ComponentBase
     }
     finally
     {
-      StringBuilderCache.Release(sb);
+      sb.Clear();
+      pool.Return(sb);
     }
   }
 
@@ -93,19 +94,13 @@ public partial class Area<T, TX, TY> : ComponentBase
   {
     var (x, _, ymax) = area.Points[0];
 
-    sb.Append("M ");
-    sb.Append(X(x));
-    sb.Append(' ');
-    sb.Append(Y(ymax));
+    sb.Append($"M {X(x)} {Y(ymax)}");
 
     for (var j = 1; j < area.Points.Count; j++)
     {
       (x, _, ymax) = area.Points[j];
 
-      sb.Append(" L ");
-      sb.Append(X(x));
-      sb.Append(' ');
-      sb.Append(Y(ymax));
+      sb.Append($" L {X(x)} {Y(ymax)}");
     }
 
     for (var j = 0; j < area.Points.Count; j++)
@@ -113,10 +108,7 @@ public partial class Area<T, TX, TY> : ComponentBase
       double ymin;
       (x, ymin, _) = area.Points[area.Points.Count - j - 1];
 
-      sb.Append(" L ");
-      sb.Append(X(x));
-      sb.Append(' ');
-      sb.Append(Y(ymin));
+      sb.Append($" L {X(x)} {Y(ymin)}");
     }
 
     sb.Append(" Z");
@@ -124,7 +116,7 @@ public partial class Area<T, TX, TY> : ComponentBase
 
   private string Path(Geospacial.Polygon poly)
   {
-    var sb = StringBuilderCache.Acquire();
+    var sb = pool.Get();
     try
     {
       AppendPolygon(sb, poly);
@@ -132,13 +124,14 @@ public partial class Area<T, TX, TY> : ComponentBase
     }
     finally
     {
-      StringBuilderCache.Release(sb);
+      sb.Clear();
+      pool.Return(sb);
     }
   }
 
   private string Path(Geospacial.Polygon[] polygons)
   {
-    var sb = StringBuilderCache.Acquire();
+    var sb = pool.Get();
     try
     {
       Path(sb, polygons);
@@ -146,7 +139,8 @@ public partial class Area<T, TX, TY> : ComponentBase
     }
     finally
     {
-      StringBuilderCache.Release(sb);
+      sb.Clear();
+      pool.Return(sb);
     }
   }
 
@@ -164,17 +158,11 @@ public partial class Area<T, TX, TY> : ComponentBase
 
   private void AppendPolygon(StringBuilder sb, Geospacial.Polygon poly)
   {
-    sb.Append("M ");
-    sb.Append(X(poly.Longitude[0]));
-    sb.Append(' ');
-    sb.Append(Y(poly.Latitude[0]));
+    sb.Append($"M {X(poly.Longitude[0])} {Y(poly.Latitude[0])}");
 
     for (var i = 1; i < poly.Longitude.Length; i++)
     {
-      sb.Append(" L ");
-      sb.Append(X(poly.Longitude[i]));
-      sb.Append(' ');
-      sb.Append(Y(poly.Latitude[i]));
+      sb.Append($" L {X(poly.Longitude[i])} {Y(poly.Latitude[i])}");
     }
 
     sb.Append(" Z");

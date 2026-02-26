@@ -1,28 +1,22 @@
-﻿namespace GGNet.Scales;
+﻿using System.Numerics;
 
-public static class Convert<T>
+namespace GGNet.Scales;
+
+public static class Convert<T> where T : struct
 {
-	private static class ToDoubleHolder
+	// JIT elides boxing and dead branches for each value-type specialization
+	public static double ToDouble(T value)
 	{
-		internal delegate double Invoker(T value);
+		if (typeof(T) == typeof(double)) return (double)(object)value;
+		if (typeof(T) == typeof(int)) return (int)(object)value;
+		if (typeof(T) == typeof(float)) return (float)(object)value;
+		if (typeof(T) == typeof(long)) return (long)(object)value;
+		if (typeof(T) == typeof(short)) return (short)(object)value;
+		if (typeof(T) == typeof(byte)) return (byte)(object)value;
+		if (typeof(T) == typeof(uint)) return (uint)(object)value;
+		if (typeof(T) == typeof(ushort)) return (ushort)(object)value;
+		if (typeof(T) == typeof(ulong)) return (ulong)(object)value;
 
-		private static Invoker Emit()
-		{
-			var method = new DynamicMethod(string.Empty, typeof(double), [typeof(T)]);
-			var il = method.GetILGenerator();
-
-			il.Emit(OpCodes.Ldarg_0);
-			if (typeof(T) != typeof(double))
-			{
-				il.Emit(OpCodes.Conv_R8);
-			}
-			il.Emit(OpCodes.Ret);
-
-			return (Invoker)method.CreateDelegate(typeof(Invoker));
-		}
-
-		internal static Invoker Value = Emit();
+		throw new NotSupportedException($"Cannot convert {typeof(T)} to double");
 	}
-
-	public static double ToDouble(T value) => ToDoubleHolder.Value(value);
 }

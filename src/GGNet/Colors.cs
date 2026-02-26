@@ -98,7 +98,7 @@ public static class Colors
 	 */
   public static class Brewer
   {
-    public static readonly Dictionary<int, string[]> YlGnBu = new()
+    public static readonly FrozenDictionary<int, string[]> YlGnBu = new Dictionary<int, string[]>
     {
       [3] = ["rgb(237,248,177)", "rgb(127,205,187)", "rgb(44,127,184)"],
       [4] = ["rgb(255,255,204)", "rgb(161,218,180)", "rgb(65,182,196)", "rgb(34,94,168)"],
@@ -107,9 +107,9 @@ public static class Colors
       [7] = ["rgb(255,255,204)", "rgb(199,233,180)", "rgb(127,205,187)", "rgb(65,182,196)", "rgb(29,145,192)", "rgb(34,94,168)", "rgb(12,44,132)"],
       [8] = ["rgb(255,255,217)", "rgb(237,248,177)", "rgb(199,233,180)", "rgb(127,205,187)", "rgb(65,182,196)", "rgb(29,145,192)", "rgb(34,94,168)", "rgb(12,44,132)"],
       [9] = ["rgb(255,255,217)", "rgb(237,248,177)", "rgb(199,233,180)", "rgb(127,205,187)", "rgb(65,182,196)", "rgb(29,145,192)", "rgb(34,94,168)", "rgb(37,52,148)", "rgb(8,29,88)"]
-    };
+    }.ToFrozenDictionary();
 
-    public static readonly Dictionary<int, string[]> Blues = new()
+    public static readonly FrozenDictionary<int, string[]> Blues = new Dictionary<int, string[]>
     {
       [3] = ["rgb(222,235,247)", "rgb(158,202,225)", "rgb(49,130,189)"],
       [4] = ["rgb(239,243,255)", "rgb(189,215,231)", "rgb(107,174,214)", "rgb(33,113,181)"],
@@ -118,7 +118,7 @@ public static class Colors
       [7] = ["rgb(239,243,255)", "rgb(198,219,239)", "rgb(158,202,225)", "rgb(107,174,214)", "rgb(66,146,198)", "rgb(33,113,181)", "rgb(8,69,148)"],
       [8] = ["rgb(247,251,255)", "rgb(222,235,247)", "rgb(198,219,239)", "rgb(158,202,225)", "rgb(107,174,214)", "rgb(66,146,198)", "rgb(33,113,181)", "rgb(8,69,148)"],
       [9] = ["rgb(247,251,255)", "rgb(222,235,247)", "rgb(198,219,239)", "rgb(158,202,225)", "rgb(107,174,214)", "rgb(66,146,198)", "rgb(33,113,181)", "rgb(8,81,156)", "rgb(8,48,107)"]
-    };
+    }.ToFrozenDictionary();
   }
 
   /*

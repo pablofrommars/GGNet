@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GGNet.Static/GGNet.Static.csproj" />
+    <Project Path="src/GGNet/GGNet.csproj" />
+  </Folder>
+</Solution>

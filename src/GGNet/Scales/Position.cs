@@ -99,6 +99,7 @@ public class PositionMapping<T, TKey>(Func<T, TKey> selector, Position<TKey> pos
 }
 
 public class NumericalPositionMapping<T, TKey>(Func<T, TKey> selector, Position<double> scale) : IPositionMapping<T>
+	where TKey : struct
 {
 	private readonly Func<T, TKey> selector = selector;
 	private readonly Position<double> scale = scale;

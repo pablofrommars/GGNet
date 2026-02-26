@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <IncludeBuildOutput>true</IncludeBuildOutput>
@@ -28,7 +28,7 @@
     <ItemGroup>
         <None Include="../GGNet/Themes/DotnetInteractive.css" Pack="true" PackagePath="themes" />
 
-        <None Include="$(OutputPath)/*.dll" Pack="true" PackagePath="lib/net9.0" />
+        <None Include="$(OutputPath)/*.dll" Pack="true" PackagePath="lib/net10.0" />
         <None Include="extension.dib" Pack="true" PackagePath="interactive-extensions/dotnet" />
     </ItemGroup>
 

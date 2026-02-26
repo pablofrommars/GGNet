@@ -75,45 +75,27 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
       if (Positions.X.Factory is null)
       {
         if (typeof(TX) == typeof(LocalDate))
-        {
           (this as PlotContext<T, LocalDate, TY>)!.Scale_X_Discrete_Date();
-        }
         else if (typeof(TX) == typeof(LocalDateTime))
-        {
           (this as PlotContext<T, LocalDateTime, TY>)!.Scale_X_Discrete_DateTime();
-        }
         else if (typeof(TX) == typeof(Instant))
-        {
           throw new GGNetUserException("Scale_X_Instant required");
-        }
         else if (typeof(TX) == typeof(double))
-        {
           (this as PlotContext<T, double, TY>)!.Scale_X_Continuous();
-        }
         else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
-        {
           this.Scale_X_Discrete();
-        }
         else
-        {
-          throw new GGNetUserException("Type could not be infered");
-        }
+          throw new GGNetUserException("Type could not be inferred");
       }
 
       if (Positions.Y.Factory is null)
       {
         if (typeof(TY) == typeof(double))
-        {
           (this as PlotContext<T, TX, double>)!.Scale_Y_Continuous();
-        }
-        else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
-        {
+        else if (typeof(TY) == typeof(string) || typeof(TY).IsEnum)
           this.Scale_Y_Discrete();
-        }
         else
-        {
-          throw new GGNetUserException("Type could not be infered");
-        }
+          throw new GGNetUserException("Type could not be inferred");
       }
 
       Style ??= Style.Default();

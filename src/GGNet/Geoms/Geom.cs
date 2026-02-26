@@ -141,12 +141,8 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 
     var legend = legends.GetOrAdd(aes);
 
-    var n = aes.Labels.Count();
-
-    for (int i = 0; i < n; i++)
+    foreach (var (value, label) in aes.Labels)
     {
-      var (value, label) = aes.Labels.ElementAt(i);
-
       legend.Add(label, element(value));
     }
   }
@@ -165,12 +161,8 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 
     var legend = legends.GetOrAdd(aes);
 
-    var n = aes.Labels.Count();
-
-    for (var i = 0; i < n; i++)
+    foreach (var (value, label) in aes.Labels)
     {
-      var (value, label) = aes.Labels.ElementAt(i);
-
       var array = elements(value);
 
       for (var j = 0; j < array.Length; j++)

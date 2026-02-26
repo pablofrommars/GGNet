@@ -2,14 +2,18 @@ namespace GGNet.Geoms;
 
 public static class TypesExtensions
 {
-	public static bool IsNumeric(this Type type) =>
-		type == typeof(double) ||
-		type == typeof(int) ||
-		type == typeof(float) ||
-		type == typeof(uint) ||
-		type == typeof(long) ||
-		type == typeof(ulong) ||
-		type == typeof(short) ||
-		type == typeof(ushort) ||
-		type == typeof(byte);
+	private static readonly FrozenSet<Type> NumericTypes = new HashSet<Type>
+	{
+		typeof(double),
+		typeof(int),
+		typeof(float),
+		typeof(uint),
+		typeof(long),
+		typeof(ulong),
+		typeof(short),
+		typeof(ushort),
+		typeof(byte)
+	}.ToFrozenSet();
+
+	public static bool IsNumeric(this Type type) => NumericTypes.Contains(type);
 }
