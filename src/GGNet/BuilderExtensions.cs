@@ -76,10 +76,11 @@ public static class BuilderExtensions
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
     IFormatter<double>? formatter = null,
-    bool hide = false)
+    bool hide = false,
+    bool includeMinorBreaks = true)
     where TY : struct
   {
-    context.Positions.X.Factory = () => new Extended(transformation, limits, expand, formatter, hide);
+    context.Positions.X.Factory = () => new Extended(transformation, limits, expand, formatter, hide, includeMinorBreaks);
 
     return context;
   }
@@ -90,10 +91,11 @@ public static class BuilderExtensions
     ITransformation<double>? transformation = null,
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-    bool hide = false)
+    bool hide = false,
+    bool includeMinorBreaks = true)
     where TY : struct
   {
-    context.Scale_X_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide);
+    context.Scale_X_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide, includeMinorBreaks);
 
     return context;
   }
@@ -177,10 +179,11 @@ public static class BuilderExtensions
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
     IFormatter<double>? formatter = null,
-    bool hide = false)
+    bool hide = false,
+    bool includeMinorBreaks = true)
     where TX : struct
   {
-    context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, formatter, hide);
+    context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, formatter, hide, includeMinorBreaks);
 
     return context;
   }
@@ -191,10 +194,11 @@ public static class BuilderExtensions
      ITransformation<double>? transformation = null,
      (double? min, double? max)? limits = null,
      (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-     bool hide = false)
+     bool hide = false,
+    bool includeMinorBreaks = true)
      where TX : struct
   {
-    context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide);
+    context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide, includeMinorBreaks);
 
     return context;
   }
@@ -205,10 +209,11 @@ public static class BuilderExtensions
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
     IFormatter<double>? formatter = null,
-     bool hide = false)
+     bool hide = false,
+    bool includeMinorBreaks = true)
     where TX : struct
   {
-    panel.Y = () => new Extended(transformation, limits, expand, formatter, hide);
+    panel.Y = () => new Extended(transformation, limits, expand, formatter, hide, includeMinorBreaks);
 
     return panel;
   }
@@ -219,10 +224,11 @@ public static class BuilderExtensions
     ITransformation<double>? transformation = null,
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-     bool hide = false)
+     bool hide = false,
+    bool includeMinorBreaks = true)
         where TX : struct
   {
-    panel.Scale_Y_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide);
+    panel.Scale_Y_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide, includeMinorBreaks);
 
     return panel;
   }
@@ -232,9 +238,10 @@ public static class BuilderExtensions
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
     string? format = null,
-    bool hide = false)
+    bool hide = false,
+    bool includeMinorBreaks = true)
     where TY : struct
-    => context.Scale_X_Continuous(format, Sqrt.Instance, limits, expand, hide);
+    => context.Scale_X_Continuous(format, Sqrt.Instance, limits, expand, hide, includeMinorBreaks);
 
   public static PlotContext<T, double, TY> Scale_X_Log10<T, TY>(
     this PlotContext<T, double, TY> context,
@@ -401,52 +408,52 @@ public static class BuilderExtensions
     return context;
   }
 
-  public static PlotContext<T, TX, TY> Title<T, TX, TY>(this PlotContext<T, TX, TY> context, string title)
+  public static PlotContext<T, TX, TY> Title<T, TX, TY>(this PlotContext<T, TX, TY> context, [StringSyntax("Markdown")] string title)
     where TX : struct
     where TY : struct
   {
-    context.Title = title;
+    context.Title = Markdown.Text(title);
 
     return context;
   }
 
-  public static PlotContext<T, TX, TY> SubTitle<T, TX, TY>(this PlotContext<T, TX, TY> context, string subtitle)
+  public static PlotContext<T, TX, TY> SubTitle<T, TX, TY>(this PlotContext<T, TX, TY> context, [StringSyntax("Markdown")] string subtitle)
     where TX : struct
     where TY : struct
   {
-    context.SubTitle = subtitle;
+    context.SubTitle = Markdown.Text(subtitle);
 
     return context;
   }
 
-  public static PlotContext<T, TX, TY> Caption<T, TX, TY>(this PlotContext<T, TX, TY> context, string caption)
+  public static PlotContext<T, TX, TY> Caption<T, TX, TY>(this PlotContext<T, TX, TY> context, [StringSyntax("Markdown")] string caption)
     where TX : struct
     where TY : struct
   {
-    context.Caption = caption;
+    context.Caption = Markdown.Text(caption);
 
     return context;
   }
 
-  public static PlotContext<T, TX, TY> XLab<T, TX, TY>(this PlotContext<T, TX, TY> context, string xlab)
+  public static PlotContext<T, TX, TY> XLab<T, TX, TY>(this PlotContext<T, TX, TY> context, [StringSyntax("Markdown")] string xlab)
     where TX : struct
     where TY : struct
   {
-    context.XLab = xlab;
+    context.XLab = Markdown.Text(xlab);
 
     return context;
   }
 
-  public static PanelFactory<T, TX, TY> YLab<T, TX, TY>(this PanelFactory<T, TX, TY> panel, string ylab)
+  public static PanelFactory<T, TX, TY> YLab<T, TX, TY>(this PanelFactory<T, TX, TY> panel, [StringSyntax("Markdown")] string ylab)
     where TX : struct
     where TY : struct
   {
-    panel.YLab = ylab;
+    panel.YLab = Markdown.Text(ylab);
 
     return panel;
   }
 
-  public static PlotContext<T, TX, TY> YLab<T, TX, TY>(this PlotContext<T, TX, TY> context, string ylab)
+  public static PlotContext<T, TX, TY> YLab<T, TX, TY>(this PlotContext<T, TX, TY> context, [StringSyntax("Markdown")] string ylab)
     where TX : struct
     where TY : struct
   {

@@ -7,7 +7,7 @@ public partial class Area<T, TX, TY> : ComponentBase
    where TX : struct
    where TY : struct
 {
-  private static readonly ObjectPool<StringBuilder> pool = ObjectPool.Create<StringBuilder>();
+  private static readonly ObjectPool<StringBuilder> pool = new DefaultObjectPoolProvider().CreateStringBuilderPool();
 
   [Parameter]
   public required Data.Panel<T, TX, TY> Panel { get; init; }

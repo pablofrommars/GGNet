@@ -8,18 +8,21 @@ public sealed class Extended : Position<double>
 {
 	private readonly IFormatter<double> formatter;
 	private readonly bool hide;
+	private readonly bool includeMinorBreaks;
 
 	public Extended(ITransformation<double>? transformation = null,
 		(double? min, double? max)? limits = null,
 		(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 		IFormatter<double>? formatter = null,
-	bool hide = false)
+		bool hide = false,
+		bool includeMinorBreaks = true)
 		: base(transformation, expand ?? (0.05, 0, 0.05, 0))
 	{
 		Limits = limits ?? (null, null);
 
 		this.formatter = formatter ?? Standard<double>.Instance;
 		this.hide = hide;
+		this.includeMinorBreaks = includeMinorBreaks;
 	}
 
 	public override Guide Guide => Guide.None;
@@ -46,11 +49,16 @@ public sealed class Extended : Position<double>
 
 		Breaks = breaks;
 
-		var minorBreaks = Utils.MinorBreaks(breaks, Range.min, Range.max);
-
-		if (minorBreaks is null)
+		if (includeMinorBreaks)
 		{
-			return;
+			var minorBreaks = Utils.MinorBreaks(breaks, Range.min, Range.max);
+
+			if (minorBreaks is null)
+			{
+				return;
+			}
+
+			MinorBreaks = minorBreaks;
 		}
 
 		var labels = new (double, string)[breaks.Length];
@@ -60,12 +68,6 @@ public sealed class Extended : Position<double>
 			labels[i] = (breaks[i], formatter.Format(transformation.Inverse(breaks[i])));
 		}
 
-		for (var i = 0; i < minorBreaks.Length; i++)
-		{
-			minorBreaks[i] = minorBreaks[i];
-		}
-
-		MinorBreaks = minorBreaks;
 		Labels = labels;
 	}
 

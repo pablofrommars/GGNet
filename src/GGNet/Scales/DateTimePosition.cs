@@ -118,7 +118,7 @@ public class DateTimePosition : Position<LocalDateTime>
 		}
 
 		var breaks = new List<double>();
-		var minor = new List<double>();
+		var minorBreaks = new List<double>();
 		var labels = new List<(double x, string label)>();
 		var titles = new List<(double x, string title)>();
 
@@ -150,7 +150,7 @@ public class DateTimePosition : Position<LocalDateTime>
 			}
 			else if (date.Minute % 15 == 0)
 			{
-				minor.Add(i);
+				minorBreaks.Add(i);
 			}
 
 			values.Add(date);
@@ -164,7 +164,7 @@ public class DateTimePosition : Position<LocalDateTime>
 		}
 
 		Breaks = breaks;
-		MinorBreaks = minor;
+		MinorBreaks = minorBreaks;
 		Labels = labels;
 		Titles = titles;
 	}
