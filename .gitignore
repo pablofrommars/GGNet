@@ -339,4 +339,7 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 
-.DS_Store
+**/.DS_Store
+
+**/*.lscache
+
