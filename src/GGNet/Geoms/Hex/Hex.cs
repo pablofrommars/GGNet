@@ -1,6 +1,7 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
+using GGNet.Exceptions;
 
 namespace GGNet.Geoms.Hex;
 
@@ -19,9 +20,8 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
     IAestheticMapping<T, string>? fill = null,
     Func<T, RenderFragment>? tooltip = null,
     bool animation = false,
-    (bool x, bool y)? scale = null,
-    bool inherit = true)
-    : base(source, scale, inherit)
+    (bool x, bool y)? scale = null)
+    : base(source, scale)
   {
     Selectors = new()
     {
@@ -56,30 +56,26 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
 
   public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-  public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+  public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
   {
     base.Init(panel, facet);
 
     if (Selectors.X is null)
     {
-      Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
+      throw new GGNetUserException("X selector is required");
     }
-    else
-    {
-      Positions.X = XMapping(Selectors.X, panel.X);
-    }
+
+    Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
 
     if (Selectors.Y is null)
     {
-      Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
-    }
-    else
-    {
-      Positions.Y = YMapping(Selectors.Y, panel.Y);
+      throw new GGNetUserException("Y selector is required");
     }
 
-    Positions.Dx = XMapping(Selectors.Dx, panel.X);
-    Positions.Dy = YMapping(Selectors.Dy, panel.Y);
+    Positions.Y = new PositionMapping<T, TY>(Selectors.Y, panel.Y);
+
+    Positions.Dx = new PositionMapping<T, TX>(Selectors.Dx, panel.X);
+    Positions.Dy = new PositionMapping<T, TY>(Selectors.Dy, panel.Y);
 
     if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
     {
@@ -107,13 +103,6 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
     {
       onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
     }
-
-    if (!inherit)
-    {
-      return;
-    }
-
-    Aesthetics.Fill ??= panel.Data.Aesthetics.Fill as IAestheticMapping<T, string>;
   }
 
   public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;

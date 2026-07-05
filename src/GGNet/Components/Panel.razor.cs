@@ -59,8 +59,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
   public Zone Area;
 
-  protected Tooltip tooltip = default!;
-  public ITooltip? Tooltip => tooltip;
+  protected Tooltip tooltipComponent = default!;
+  public ITooltip? Tooltip => tooltipComponent;
 
   protected string clip = default!;
 
@@ -284,7 +284,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
     {
       var (px, py) = ProjectFraction(spokes[i], f);
 
-      sb.Append(i == 0 ? "M " : " L ").Append(px).Append(' ').Append(py);
+      sb.Append(CultureInfo.InvariantCulture, $"{(i == 0 ? "M " : " L ")}{px} {py}");
     }
 
     sb.Append(" Z");

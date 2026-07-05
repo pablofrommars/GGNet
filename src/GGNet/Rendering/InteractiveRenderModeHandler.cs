@@ -6,7 +6,7 @@ public sealed class InteractiveRenderModeHandler : RenderModeHandler
 
   private readonly SemaphoreSlim semaphore = new(0, 1);
 
-  private volatile int render = 0;
+  private volatile int render;
 
   readonly Channel<RenderTarget> channel = Channel.CreateUnbounded<RenderTarget>(new()
   {
@@ -41,7 +41,7 @@ public sealed class InteractiveRenderModeHandler : RenderModeHandler
 
   public sealed class ChildRenderHandler : IChildRenderModeHandler
   {
-    private volatile int render = 0;
+    private volatile int render;
 
     public void Refresh(RenderTarget target)
       => Interlocked.Exchange(ref render, (int)target);
@@ -93,24 +93,24 @@ public sealed class InteractiveRenderModeHandler : RenderModeHandler
     }
   }
 
-  private volatile int disposing = 0;
+  private volatile int disposing;
 
   public override async ValueTask DisposeAsync()
   {
-    if (Interlocked.CompareExchange(ref disposing, 1, 0) == 1)
+    if (Interlocked.CompareExchange(ref disposing, 1, 0) == 0)
     {
-      return;
+      cancellationTokenSource.Cancel();
+
+      if (background is not null)
+      {
+        await background.ConfigureAwait(false);
+      }
+
+      cancellationTokenSource.Dispose();
+
+      semaphore.Dispose();
     }
 
-    cancellationTokenSource.Cancel();
-
-    if (background is not null)
-    {
-      await background.ConfigureAwait(false);
-    }
-
-    cancellationTokenSource.Dispose();
-
-    semaphore.Dispose();
+    await base.DisposeAsync().ConfigureAwait(false);
   }
 }

@@ -1,5 +1,7 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
+using GGNet.Exceptions;
 
 namespace GGNet.Geoms.Volume;
 
@@ -11,7 +13,7 @@ internal sealed class Volume<T, TX, TY> : Geom<T, TX, TY>
     IReadOnlyList<T> source,
     Func<T, TX>? x,
     Func<T, TY> volume)
-    : base(source, null, false)
+    : base(source, null)
   {
     Selectors = new()
     {
@@ -63,20 +65,18 @@ internal sealed class Volume<T, TX, TY> : Geom<T, TX, TY>
 
   public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-  public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+  public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
   {
     base.Init(panel, facet);
 
     if (Selectors.X is null)
     {
-      Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
-    }
-    else
-    {
-      Positions.X = XMapping(Selectors.X, panel.X);
+      throw new GGNetUserException("X selector is required");
     }
 
-    Positions.Volume = YMapping(Selectors.Volume, panel.Y);
+    Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
+
+    Positions.Volume = new PositionMapping<T, TY>(Selectors.Volume, panel.Y);
   }
 
   public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;

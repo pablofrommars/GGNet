@@ -27,7 +27,7 @@ public sealed class Extended : Position<double>
 
 	public override Guide Guide => Guide.None;
 
-	public override void Set(bool grid)
+	public override void Commit(bool grid)
 	{
 		SetRange(Limits.min ?? _min ?? 0.0, Limits.max ?? _max ?? 0.0);
 

@@ -16,7 +16,7 @@ public class CoordPolarTest
     }
 
     scale.Shape(0, 4);
-    scale.Set(true);
+    scale.Commit(true);
 
     Assert.Equal((0.0, 5.0), scale.Range);
 

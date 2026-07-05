@@ -8,7 +8,7 @@ public sealed class Identity<T> : Scale<T, T>
 
 	public override void Train(T key) { }
 
-	public override void Set(bool grid) { }
+	public override void Commit(bool grid) { }
 
 	public override T Map(T key) => key;
 

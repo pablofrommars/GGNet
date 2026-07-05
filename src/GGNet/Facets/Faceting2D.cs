@@ -18,7 +18,7 @@ public sealed class Faceting2D<T, TRow, TColumn>(Func<T, TRow> row, Func<T, TCol
 		columns.Add(column(item));
 	}
 
-	public override void Set()
+	public override void Commit()
 	{
 		NRows = rows.Count;
 		NColumns = columns.Count;

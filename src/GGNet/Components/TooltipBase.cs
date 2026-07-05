@@ -19,7 +19,7 @@ public abstract class TooltipBase : ComponentBase, ITooltip
 
   protected abstract void RenderForeignObject(RenderTreeBuilder __builder);
 
-  public void Show(double x, double y, double offset, RenderFragment content, string? color = null, double? opacity = null)
+  public void Show(double x, double y, double offset, RenderFragment content, string? color = null, double? alpha = null)
   {
     var (px, py) = Coord.Project(x, y);
 
@@ -29,7 +29,7 @@ public abstract class TooltipBase : ComponentBase, ITooltip
       Offset: offset,
       Content: content,
       Color: color ?? "#ffffff",
-      Opacity: opacity ?? 1.0
+      Opacity: alpha ?? 1.0
     );
 
     StateHasChanged();

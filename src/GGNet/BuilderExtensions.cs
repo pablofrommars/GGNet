@@ -485,11 +485,10 @@ public static class BuilderExtensions
     return context;
   }
 
-  internal static PanelFactory<T1, TX1, TY1> Add<T1, TX1, TY1, T2, TX2, TY2>(this PanelFactory<T1, TX1, TY1> panel, Func<Geom<T2, TX2, TY2>> builder)
+    // Geoms are constructed with the panel's own axis types, so binding is fully typed.
+  internal static PanelFactory<T1, TX1, TY1> AddTyped<T1, TX1, TY1, T2>(this PanelFactory<T1, TX1, TY1> panel, Func<Geom<T2, TX1, TY1>> builder)
     where TX1 : struct
     where TY1 : struct
-    where TX2 : struct
-    where TY2 : struct
   {
     panel.Add((p, f) =>
     {
@@ -503,11 +502,11 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, double>? _size = null,
     IAestheticMapping<T2, string>? _color = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
@@ -518,13 +517,11 @@ public static class BuilderExtensions
     double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Point<T2, TX2, TY2>(source, x, y, _size, _color, tooltip, animation, scale, inherit)
+      var geom = new Point<T2, TX1, TY1>(source, x, y, _size, _color, tooltip, animation, scale)
       {
         OnClick = onclick,
         OnMouseOver = onmouseover,
@@ -543,11 +540,11 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, double>? _size = null,
     IAestheticMapping<T2, string>? _color = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
@@ -558,18 +555,16 @@ public static class BuilderExtensions
     double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return panel.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit);
+    return panel.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale);
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, double>? _size = null,
     IAestheticMapping<T2, string>? _color = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
@@ -580,20 +575,18 @@ public static class BuilderExtensions
     double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit);
+    context.Default_Panel().Geom_Point(source, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale);
 
     return context;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, double>? _size = null,
     IAestheticMapping<T2, string>? _color = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
@@ -604,11 +597,9 @@ public static class BuilderExtensions
     double size = 5, string color = "#23d0fc", double opacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return context.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit);
+    return context.Geom_Point(new Source<T2>(source), x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Point<T, TX, TY>(
@@ -627,7 +618,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Point(panel, panel.Context.Source!, x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit);
+    return Geom_Point(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _size ?? (inherit ? panel.Context.Aesthetics.Size : null), _color ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Point<T, TX, TY>(
@@ -646,16 +637,16 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Point(x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit);
+    context.Default_Panel().Geom_Point(x, y, _size, _color, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, string>? _color = null,
     IAestheticMapping<T2, LineType>? _lineType = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
@@ -665,13 +656,11 @@ public static class BuilderExtensions
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Line<T2, TX2, TY2>(source, x, y, _color, _lineType, tooltip, scale, inherit, piecewise)
+      var geom = new Line<T2, TX1, TY1>(source, x, y, _color, _lineType, tooltip, scale, piecewise)
       {
         Aesthetic = new()
         {
@@ -691,11 +680,11 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, string>? _color = null,
     IAestheticMapping<T2, LineType>? _lineType = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
@@ -705,11 +694,9 @@ public static class BuilderExtensions
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit, piecewise);
+    context.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, piecewise);
 
     return context;
   }
@@ -729,7 +716,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Line(panel, panel.Context.Source!, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit, piecewise);
+    return Geom_Line(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), _lineType ?? (inherit ? panel.Context.Aesthetics.LineType : null), onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, piecewise);
   }
 
   public static PlotContext<T, TX, TY> Geom_Line<T, TX, TY>(
@@ -747,16 +734,16 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit, piecewise);
+    context.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, piecewise);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Radar<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Radar<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -765,15 +752,13 @@ public static class BuilderExtensions
     string fill = "#23d0fc", double fillOpacity = 0.25, double width = 2.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     panel.Context.CoordSystem = CoordSystem.Polar;
 
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Radar<T2, TX2, TY2>(source, x, y, _fill, tooltip, scale, inherit)
+      var geom = new Radar<T2, TX1, TY1>(source, x, y, _fill, tooltip, scale)
       {
         Aesthetic = new()
         {
@@ -793,11 +778,11 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Radar<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Radar<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -806,11 +791,9 @@ public static class BuilderExtensions
     string fill = "#23d0fc", double fillOpacity = 0.25, double width = 2.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Radar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale, inherit);
+    context.Default_Panel().Geom_Radar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale);
 
     return context;
   }
@@ -829,7 +812,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Radar(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale, inherit);
+    return Geom_Radar(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Radar<T, TX, TY>(
@@ -846,16 +829,16 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Radar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale, inherit);
+    context.Default_Panel().Geom_Radar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -868,13 +851,11 @@ public static class BuilderExtensions
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Bar<T2, TX2, TY2>(source, x, y, _fill, tooltip, position, width, animation, scale, inherit)
+      var geom = new Bar<T2, TX1, TY1>(source, x, y, _fill, tooltip, position, width, animation, scale)
       {
         OnClick = onclick,
         OnMouseOver = onmouseover,
@@ -895,11 +876,11 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -912,11 +893,9 @@ public static class BuilderExtensions
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
+    context.Default_Panel().Geom_Bar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale);
 
     return context;
   }
@@ -939,7 +918,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Bar(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
+    return Geom_Bar(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Bar<T, TX, TY>(
@@ -960,27 +939,25 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit);
+    context.Default_Panel().Geom_Bar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2> x,
-    Func<T2, TX2> xend,
-    Func<T2, TY2> y,
-    Func<T2, TY2> yend,
+    Func<T2, TX1> x,
+    Func<T2, TX1> xend,
+    Func<T2, TY1> y,
+    Func<T2, TY1> yend,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Segment<T2, TX2, TY2>(source, x, xend, y, yend)
+      var geom = new Segment<T2, TX1, TY1>(source, x, xend, y, yend)
       {
         Aesthetic = new()
         {
@@ -997,36 +974,32 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2> x,
-    Func<T2, TX2> xend,
-    Func<T2, TY2> y,
-    Func<T2, TY2> yend,
+    Func<T2, TX1> x,
+    Func<T2, TX1> xend,
+    Func<T2, TY1> y,
+    Func<T2, TY1> yend,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     context.Default_Panel().Geom_Segment(source, x, xend, y, yend, width, color, opacity, lineType);
 
     return context;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IEnumerable<T2> source,
-    Func<T2, TX2> x,
-    Func<T2, TX2> xend,
-    Func<T2, TY2> y,
-    Func<T2, TY2> yend,
+    Func<T2, TX1> x,
+    Func<T2, TX1> xend,
+    Func<T2, TY1> y,
+    Func<T2, TY1> yend,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
     => context.Geom_Segment(new Source<T2>(source), x, xend, y, yend, width, color, opacity, lineType);
 
   public static PanelFactory<T, TX, TY> Geom_Segment<T, TX, TY>(
@@ -1057,11 +1030,11 @@ public static class BuilderExtensions
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2> x,
-    Func<T2, TY2> y,
+    Func<T2, TX1> x,
+    Func<T2, TY1> y,
     Func<T2, double> width,
     Func<T2, double> height,
     IAestheticMapping<T2, string>? _fill = null,
@@ -1069,13 +1042,11 @@ public static class BuilderExtensions
     string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Tile<T2, TX2, TY2>(source, x, y, width, height, _fill, scale, inherit)
+      var geom = new Tile<T2, TX1, TY1>(source, x, y, width, height, _fill, scale)
       {
         Aesthetic = new()
         {
@@ -1093,11 +1064,11 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2> x,
-    Func<T2, TY2> y,
+    Func<T2, TX1> x,
+    Func<T2, TY1> y,
     Func<T2, double> width,
     Func<T2, double> height,
     IAestheticMapping<T2, string>? _fill = null,
@@ -1105,20 +1076,18 @@ public static class BuilderExtensions
     string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Tile(source, x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit);
+    context.Default_Panel().Geom_Tile(source, x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
 
     return context;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IEnumerable<T2> source,
-    Func<T2, TX2> x,
-    Func<T2, TY2> y,
+    Func<T2, TX1> x,
+    Func<T2, TY1> y,
     Func<T2, double> width,
     Func<T2, double> height,
     IAestheticMapping<T2, string>? _fill = null,
@@ -1126,10 +1095,8 @@ public static class BuilderExtensions
     string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
-    => context.Geom_Tile(new Source<T2>(source), x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit);
+    => context.Geom_Tile(new Source<T2>(source), x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
 
   public static PanelFactory<T, TX, TY> Geom_Tile<T, TX, TY>(
     this PanelFactory<T, TX, TY> panel,
@@ -1144,7 +1111,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Tile(panel, panel.Context.Source!, x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit);
+    return Geom_Tile(panel, panel.Context.Source!, (x ?? panel.Context.Selectors.X)!, (y ?? panel.Context.Selectors.Y)!, width, height, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Tile<T, TX, TY>(
@@ -1160,16 +1127,16 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Tile(x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit);
+    context.Default_Panel().Geom_Tile(x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -1179,13 +1146,11 @@ public static class BuilderExtensions
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Area<T2, TX2, TY2>(source, x, y, _fill, tooltip, position, scale, inherit)
+      var geom = new Area<T2, TX1, TY1>(source, x, y, _fill, tooltip, position, scale)
       {
         OnClick = onclick,
         OnMouseOver = onmouseover,
@@ -1203,11 +1168,11 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -1217,11 +1182,9 @@ public static class BuilderExtensions
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Area(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
+    context.Default_Panel().Geom_Area(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
 
     return context;
   }
@@ -1241,7 +1204,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Area(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
+    return Geom_Area(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Area<T, TX, TY>(
@@ -1259,17 +1222,17 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Area(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit);
+    context.Default_Panel().Geom_Area(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? ymin = null,
-    Func<T2, TY2>? ymax = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? ymin = null,
+    Func<T2, TY1>? ymax = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -1278,13 +1241,11 @@ public static class BuilderExtensions
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Ribbon<T2, TX2, TY2>(source, x, ymin, ymax, _fill, tooltip, scale, inherit)
+      var geom = new Ribbon<T2, TX1, TY1>(source, x, ymin, ymax, _fill, tooltip, scale)
       {
         OnClick = onclick,
         OnMouseOver = onmouseover,
@@ -1302,12 +1263,12 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2>(
      this PanelFactory<T1, TX1, TY1> panel,
      IEnumerable<T2> source,
-     Func<T2, TX2>? x = null,
-     Func<T2, TY2>? ymin = null,
-     Func<T2, TY2>? ymax = null,
+     Func<T2, TX1>? x = null,
+     Func<T2, TY1>? ymin = null,
+     Func<T2, TY1>? ymax = null,
      IAestheticMapping<T2, string>? _fill = null,
      Func<T2, MouseEventArgs, Task>? onclick = null,
      Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -1316,19 +1277,17 @@ public static class BuilderExtensions
      string fill = "#23d0fc", double fillOpacity = 1.0,
      (bool x, bool y)? scale = null, bool inherit = true)
      where TX1 : struct
-     where TX2 : struct
      where TY1 : struct
-     where TY2 : struct
   {
-    return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale, inherit);
+    return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? ymin = null,
-    Func<T2, TY2>? ymax = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? ymin = null,
+    Func<T2, TY1>? ymax = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -1337,21 +1296,19 @@ public static class BuilderExtensions
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale, inherit);
+    context.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
 
     return context;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? ymin = null,
-    Func<T2, TY2>? ymax = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? ymin = null,
+    Func<T2, TY1>? ymax = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -1360,11 +1317,9 @@ public static class BuilderExtensions
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return context.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale, inherit);
+    return context.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Ribbon<T, TX, TY>(
@@ -1382,7 +1337,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Ribbon(panel, panel.Context.Source!, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale, inherit);
+    return Geom_Ribbon(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Ribbon<T, TX, TY>(
@@ -1400,18 +1355,18 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale, inherit);
+    context.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    Func<T2, TY2>? ymin = null,
-    Func<T2, TY2>? ymax = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
+    Func<T2, TY1>? ymin = null,
+    Func<T2, TY1>? ymax = null,
     IAestheticMapping<T2, string>? _color = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -1423,13 +1378,11 @@ public static class BuilderExtensions
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new ErrorBar<T2, TX2, TY2>(source, x, y, ymin, ymax, _color, tooltip, position, animation, scale, inherit)
+      var geom = new ErrorBar<T2, TX1, TY1>(source, x, y, ymin, ymax, _color, tooltip, position, animation, scale)
       {
         OnClick = onclick,
         OnMouseOver = onmouseover,
@@ -1455,13 +1408,13 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    Func<T2, TY2>? ymin = null,
-    Func<T2, TY2>? ymax = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
+    Func<T2, TY1>? ymin = null,
+    Func<T2, TY1>? ymax = null,
     IAestheticMapping<T2, string>? _color = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -1473,20 +1426,18 @@ public static class BuilderExtensions
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
+    return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    Func<T2, TY2>? ymin = null,
-    Func<T2, TY2>? ymax = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
+    Func<T2, TY1>? ymin = null,
+    Func<T2, TY1>? ymax = null,
     IAestheticMapping<T2, string>? _color = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -1498,22 +1449,20 @@ public static class BuilderExtensions
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
+    context.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
 
     return context;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    Func<T2, TY2>? ymin = null,
-    Func<T2, TY2>? ymax = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
+    Func<T2, TY1>? ymin = null,
+    Func<T2, TY1>? ymax = null,
     IAestheticMapping<T2, string>? _color = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -1525,11 +1474,9 @@ public static class BuilderExtensions
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return context.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
+    return context.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
   }
 
   public static PanelFactory<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
@@ -1551,7 +1498,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_ErrorBar(panel, panel.Context.Source!, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
+    return Geom_ErrorBar(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
@@ -1573,29 +1520,27 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale, inherit);
+    context.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TT>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     Func<T2, double>? _angle = null,
     Func<T2, TT>? text = null,
     IAestheticMapping<T2, string>? _color = null,
     Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Text<T2, TX2, TY2, TT>(source, x, y, _angle, text, _color, scale, inherit)
+      var geom = new Text<T2, TX1, TY1, TT>(source, x, y, _angle, text, _color, scale)
       {
         Aesthetic = new()
         {
@@ -1614,22 +1559,20 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TX2, TY2, TT>(
+  public static PlotContext<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TT>(
     this PlotContext<T1, TX1, TY1> context,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     Func<T2, double>? _angle = null,
     Func<T2, TT>? text = null,
     IAestheticMapping<T2, string>? _color = null,
     Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Text(source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
+    context.Default_Panel().Geom_Text(source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale);
 
     return context;
   }
@@ -1646,7 +1589,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Text(panel, panel.Context.Source!, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
+    return Geom_Text(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _angle, text, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), size, anchor, weight, style, color, angle, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Text<T, TX, TY, TT>(
@@ -1661,25 +1604,24 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Text(x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale, inherit);
+    context.Default_Panel().Geom_Text(x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
+  public static PanelFactory<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2>(
     this PanelFactory<T1, TX1, TY> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2> x,
+    Func<T2, TX1> x,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX1 : struct
-    where TX2 : struct
     where TY : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new VLine<T2, TX2, TY>(source, x, label)
+      var geom = new VLine<T2, TX1, TY>(source, x, label)
       {
         Line = new()
         {
@@ -1705,15 +1647,14 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2, TX2>(
+  public static PlotContext<T1, TX1, TY> Geom_VLine<T1, TX1, TY, T2>(
     this PlotContext<T1, TX1, TY> context,
     IReadOnlyList<T2> source,
-    Func<T2, TX2> x,
+    Func<T2, TX1> x,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX1 : struct
-    where TX2 : struct
     where TY : struct
   {
     context.Default_Panel().Geom_VLine(source, x, label, width, color, opacity, lineType, size, anchor, weight, style);
@@ -1747,20 +1688,19 @@ public static class BuilderExtensions
     return context;
   }
 
-  public static PanelFactory<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
+  public static PanelFactory<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2>(
     this PanelFactory<T1, TX, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TY2> y,
+    Func<T2, TY1> y,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new HLine<T2, TX, TY2>(source, y, label)
+      var geom = new HLine<T2, TX, TY1>(source, y, label)
       {
         Line = new()
         {
@@ -1786,16 +1726,15 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2, TY2>(
+  public static PlotContext<T1, TX, TY1> Geom_HLine<T1, TX, TY1, T2>(
     this PlotContext<T1, TX, TY1> context,
     IReadOnlyList<T2> source,
-    Func<T2, TY2> y,
+    Func<T2, TY1> y,
     Func<T2, string> label,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
     Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
     where TX : struct
     where TY1 : struct
-    where TY2 : struct
   {
     context.Default_Panel().Geom_HLine(source, y, label, width, color, opacity, lineType, size, anchor, weight, style);
 
@@ -1840,9 +1779,9 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new ABLine<T2>(source, a, b, label, transformation)
+      var geom = new ABLine<T2, TX, TY>(source, a, b, label, transformation)
       {
         Line = new()
         {
@@ -1945,20 +1884,18 @@ public static class BuilderExtensions
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_OHLC<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_OHLC<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? open = null,
-    Func<T2, TY2>? high = null,
-    Func<T2, TY2>? low = null,
-    Func<T2, TY2>? close = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? open = null,
+    Func<T2, TY1>? high = null,
+    Func<T2, TY1>? low = null,
+    Func<T2, TY1>? close = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     if (open is null)
     {
@@ -1980,9 +1917,9 @@ public static class BuilderExtensions
       throw new GGNetUserException($"{nameof(close)} selector should not be null");
     }
 
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new OHLC<T2, TX2, TY2>(source, x, open, high, low, close)
+      var geom = new OHLC<T2, TX1, TY1>(source, x, open, high, low, close)
       {
         OnClick = onclick,
         Aesthetic = new()
@@ -2001,20 +1938,18 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_OHLC<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_OHLC<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? open = null,
-    Func<T2, TY2>? high = null,
-    Func<T2, TY2>? low = null,
-    Func<T2, TY2>? close = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? open = null,
+    Func<T2, TY1>? high = null,
+    Func<T2, TY1>? low = null,
+    Func<T2, TY1>? close = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     context.Default_Panel().Geom_OHLC(source, x, open, high, low, close, onclick, width, color, opacity, lineType);
 
@@ -2033,7 +1968,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_OHLC(panel, panel.Context.Source!, x, open, high, low, close, onclick, width, color, opacity, lineType);
+    return Geom_OHLC(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, open, high, low, close, onclick, width, color, opacity, lineType);
   }
 
   public static PlotContext<T, TX, TY> Geom_OHLC<T, TX, TY>(
@@ -2053,19 +1988,17 @@ public static class BuilderExtensions
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? open = null,
-    Func<T2, TY2>? high = null,
-    Func<T2, TY2>? low = null,
-    Func<T2, TY2>? close = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? open = null,
+    Func<T2, TY1>? high = null,
+    Func<T2, TY1>? low = null,
+    Func<T2, TY1>? close = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     if (open is null)
     {
@@ -2087,9 +2020,9 @@ public static class BuilderExtensions
       throw new GGNetUserException($"{nameof(close)} selector should not be null");
     }
 
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Candlestick<T2, TX2, TY2>(source, x, open, high, low, close)
+      var geom = new Candlestick<T2, TX1, TY1>(source, x, open, high, low, close)
       {
         Line = new()
         {
@@ -2111,19 +2044,17 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? open = null,
-    Func<T2, TY2>? high = null,
-    Func<T2, TY2>? low = null,
-    Func<T2, TY2>? close = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? open = null,
+    Func<T2, TY1>? high = null,
+    Func<T2, TY1>? low = null,
+    Func<T2, TY1>? close = null,
     double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     context.Default_Panel().Geom_Candlestick(source, x, open, high, low, close, width, color, opacity, lineType);
 
@@ -2141,7 +2072,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Candlestick(panel, panel.Context.Source!, x, open, high, low, close, width, color, opacity, lineType);
+    return Geom_Candlestick(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, open, high, low, close, width, color, opacity, lineType);
   }
 
   public static PlotContext<T, TX, TY> Geom_Candlestick<T, TX, TY>(
@@ -2160,26 +2091,24 @@ public static class BuilderExtensions
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Volume<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Volume<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? volume = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? volume = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     string fill = "#23d0fc", double opacity = 1.0)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     if (volume is null)
     {
       throw new GGNetUserException($"{nameof(volume)} selector should not be null");
     }
 
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Volume<T2, TX2, TY2>(source, x, volume)
+      var geom = new Volume<T2, TX1, TY1>(source, x, volume)
       {
         OnClick = onclick,
         Aesthetic = new()
@@ -2195,17 +2124,15 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Volume<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Volume<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? volume = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? volume = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     string fill = "#23d0fc", double opacity = 1.0)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     context.Default_Panel().Geom_Volume(source, x, volume, onclick, fill, opacity);
 
@@ -2221,7 +2148,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Volume(panel, panel.Context.Source!, x, volume, onclick, fill, opacity);
+    return Geom_Volume(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, volume, onclick, fill, opacity);
   }
 
   public static PlotContext<T, TX, TY> Geom_Volume<T, TX, TY>(
@@ -2238,13 +2165,13 @@ public static class BuilderExtensions
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    Func<T2, TX2>? dx = null,
-    Func<T2, TY2>? dy = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
+    Func<T2, TX1>? dx = null,
+    Func<T2, TY1>? dy = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -2254,9 +2181,7 @@ public static class BuilderExtensions
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     if (dx is null)
     {
@@ -2268,9 +2193,9 @@ public static class BuilderExtensions
       throw new GGNetUserException($"{nameof(dy)} selector should not be null");
     }
 
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Hex<T2, TX2, TY2>(source, x, y, dx, dy, _fill, tooltip, animation, scale, inherit)
+      var geom = new Hex<T2, TX1, TY1>(source, x, y, dx, dy, _fill, tooltip, animation, scale)
       {
         Aesthetic = new()
         {
@@ -2288,13 +2213,13 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    Func<T2, TX2>? dx = null,
-    Func<T2, TY2>? dy = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
+    Func<T2, TX1>? dx = null,
+    Func<T2, TY1>? dy = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -2304,20 +2229,18 @@ public static class BuilderExtensions
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit);
+    return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    Func<T2, TX2>? dx = null,
-    Func<T2, TY2>? dy = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
+    Func<T2, TX1>? dx = null,
+    Func<T2, TY1>? dy = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -2327,22 +2250,20 @@ public static class BuilderExtensions
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit);
+    context.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
 
     return context;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
-    Func<T2, TX2>? dx = null,
-    Func<T2, TY2>? dy = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
+    Func<T2, TX1>? dx = null,
+    Func<T2, TY1>? dy = null,
     IAestheticMapping<T2, string>? _fill = null,
     Func<T2, MouseEventArgs, Task>? onclick = null,
     Func<T2, MouseEventArgs, Task>? onmouseover = null,
@@ -2352,11 +2273,9 @@ public static class BuilderExtensions
     bool animation = false,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return context.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit);
+    return context.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Hex<T, TX, TY>(
@@ -2376,7 +2295,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Hex(panel, panel.Context.Source!, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit);
+    return Geom_Hex(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, dx, dy, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Hex<T, TX, TY>(
@@ -2396,33 +2315,31 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit);
+    context.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     Func<T2, double>? height = null,
     IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     if (height is null)
     {
       throw new GGNetUserException($"{nameof(height)} selector should not be null");
     }
 
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new RidgeLine<T2, TX2, TY2>(source, x, y, height, _fill, scale, inherit)
+      var geom = new RidgeLine<T2, TX1, TY1>(source, x, y, height, _fill, scale)
       {
         Aesthetic = new Rectangle
         {
@@ -2437,57 +2354,51 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     Func<T2, double>? height = null,
     IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return panel.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, fillOpacity, scale, inherit);
+    return panel.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, fillOpacity, scale);
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     Func<T2, double>? height = null,
     IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_RidgeLine(source, x, y, height, _fill, fill, fillOpacity, scale, inherit);
+    context.Default_Panel().Geom_RidgeLine(source, x, y, height, _fill, fill, fillOpacity, scale);
 
     return context;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_RidgeLine<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     Func<T2, double>? height = null,
     IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double fillOpacity = 1.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return context.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, fillOpacity, scale, inherit);
+    return context.Geom_RidgeLine(new Source<T2>(source), x, y, height, _fill, fill, fillOpacity, scale);
   }
 
   public static PanelFactory<T, TX, TY> Geom_RidgeLine<T, TX, TY>(
@@ -2501,7 +2412,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_RidgeLine(panel, panel.Context.Source!, x, y, height, _fill, fill, fillOpacity, scale, inherit);
+    return Geom_RidgeLine(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, height, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_RidgeLine<T, TX, TY>(
@@ -2515,34 +2426,32 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_RidgeLine(x, y, height, _fill, fill, fillOpacity, scale, inherit);
+    context.Default_Panel().Geom_RidgeLine(x, y, height, _fill, fill, fillOpacity, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     Func<T2, double>? width = null,
     IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
     if (width is null)
     {
       throw new GGNetUserException($"{nameof(width)} selector should not be null");
     }
 
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Violin<T2, TX2, TY2>(source, x, y, width, _fill, position, scale, inherit)
+      var geom = new Violin<T2, TX1, TY1>(source, x, y, width, _fill, position, scale)
       {
         Aesthetic = new()
         {
@@ -2559,60 +2468,54 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2>(
     this PanelFactory<T1, TX1, TY1> panel,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     Func<T2, double>? width = null,
     IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return panel.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, fillOpacity, stroke, position, scale, inherit);
+    return panel.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, fillOpacity, stroke, position, scale);
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     Source<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     Func<T2, double>? width = null,
     IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Violin(source, x, y, width, _fill, fill, fillOpacity, stroke, position, scale, inherit);
+    context.Default_Panel().Geom_Violin(source, x, y, width, _fill, fill, fillOpacity, stroke, position, scale);
 
     return context;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Violin<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IEnumerable<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     Func<T2, double>? width = null,
     IAestheticMapping<T2, string>? _fill = null,
     string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
     PositionAdjustment position = PositionAdjustment.Identity,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    return context.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, fillOpacity, stroke, position, scale, inherit);
+    return context.Geom_Violin(new Source<T2>(source), x, y, width, _fill, fill, fillOpacity, stroke, position, scale);
   }
 
   public static PanelFactory<T, TX, TY> Geom_Violin<T, TX, TY>(
@@ -2627,7 +2530,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Violin(panel, panel.Context.Source!, x, y, width, _fill, fill, fillOpacity, stroke, position, scale, inherit);
+    return Geom_Violin(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, width, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, stroke, position, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Violin<T, TX, TY>(
@@ -2642,28 +2545,26 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Violin(x, y, width, _fill, fill, fillOpacity, stroke, position, scale, inherit);
+    context.Default_Panel().Geom_Violin(x, y, width, _fill, fill, fillOpacity, stroke, position, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PanelFactory<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2>(
   this PanelFactory<T1, TX1, TY1> panel,
   IReadOnlyList<T2> source,
-  Func<T2, TX2>? x = null,
-  Func<T2, TY2>? y = null,
+  Func<T2, TX1>? x = null,
+  Func<T2, TY1>? y = null,
   IAestheticMapping<T2, string>? _fill = null,
   double size = 0.8,
   string fill = "#23d0fc", double fillOpacity = 1.0, double strokeWidth = 2.0,
   (bool x, bool y)? scale = null, bool inherit = true)
   where TX1 : struct
-  where TX2 : struct
   where TY1 : struct
-  where TY2 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Boxplot<T2, TX2, TY2>(source, x, y, _fill, size, scale, inherit)
+      var geom = new Boxplot<T2, TX1, TY1>(source, x, y, _fill, size, scale)
       {
         Aesthetic = new()
         {
@@ -2679,21 +2580,19 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2, TX2, TY2>(
+  public static PlotContext<T1, TX1, TY1> Geom_Boxplot<T1, TX1, TY1, T2>(
     this PlotContext<T1, TX1, TY1> context,
     IReadOnlyList<T2> source,
-    Func<T2, TX2>? x = null,
-    Func<T2, TY2>? y = null,
+    Func<T2, TX1>? x = null,
+    Func<T2, TY1>? y = null,
     IAestheticMapping<T2, string>? _fill = null,
     double size = 0.8,
     string fill = "#23d0fc", double fillOpacity = 1.0, double strokeWidth = 2.0,
     (bool x, bool y)? scale = null, bool inherit = true)
     where TX1 : struct
-    where TX2 : struct
     where TY1 : struct
-    where TY2 : struct
   {
-    context.Default_Panel().Geom_Boxplot(source, x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
+    context.Default_Panel().Geom_Boxplot(source, x, y, _fill, size, fill, fillOpacity, strokeWidth, scale);
 
     return context;
   }
@@ -2709,7 +2608,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Boxplot(panel, panel.Context.Source!, x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
+    return Geom_Boxplot(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), size, fill, fillOpacity, strokeWidth, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Boxplot<T, TX, TY>(
@@ -2723,13 +2622,13 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    context.Default_Panel().Geom_Boxplot(x, y, _fill, size, fill, fillOpacity, strokeWidth, scale, inherit);
+    context.Default_Panel().Geom_Boxplot(x, y, _fill, size, fill, fillOpacity, strokeWidth, scale);
 
     return context;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
-    this PanelFactory<T1, TX1, TY1> panel,
+  public static PanelFactory<T1, double, double> Geom_Map<T1, T2>(
+    this PanelFactory<T1, double, double> panel,
     Source<T2> source,
     Func<T2, Geospacial.Polygon[]> polygons,
     IAestheticMapping<T2, string>? _fill = null,
@@ -2740,12 +2639,10 @@ public static class BuilderExtensions
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TY1 : struct
   {
-    panel.Add(() =>
+    panel.AddTyped(() =>
     {
-      var geom = new Map<T2>(source, polygons, _fill, tooltip, animation, scale, inherit)
+      var geom = new Map<T2>(source, polygons, _fill, tooltip, animation, scale)
       {
         OnClick = onclick,
         OnMouseOver = onmouseover,
@@ -2765,8 +2662,8 @@ public static class BuilderExtensions
     return panel;
   }
 
-  public static PanelFactory<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
-    this PanelFactory<T1, TX1, TY1> panel,
+  public static PanelFactory<T1, double, double> Geom_Map<T1, T2>(
+    this PanelFactory<T1, double, double> panel,
     IEnumerable<T2> source,
     Func<T2, Geospacial.Polygon[]> polygons,
     IAestheticMapping<T2, string>? _fill = null,
@@ -2777,14 +2674,12 @@ public static class BuilderExtensions
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TY1 : struct
   {
-    return Geom_Map(panel, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
+    return Geom_Map(panel, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
   }
 
-  public static PanelFactory<T, TX, TY> Geom_Map<T, TX, TY>(
-    this PanelFactory<T, TX, TY> panel,
+  public static PanelFactory<T, double, double> Geom_Map<T>(
+    this PanelFactory<T, double, double> panel,
     Geospacial.Polygon[] polygons,
     IAestheticMapping<Geospacial.Polygon[], string>? _fill = null,
     Func<Geospacial.Polygon[], MouseEventArgs, Task>? onclick = null,
@@ -2794,14 +2689,12 @@ public static class BuilderExtensions
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
-    where TX : struct
-    where TY : struct
   {
-    return Geom_Map(panel, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
+    return Geom_Map(panel, [.. new[] { polygons }], o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
-    this PlotContext<T1, TX1, TY1> context,
+  public static PlotContext<T1, double, double> Geom_Map<T1, T2>(
+    this PlotContext<T1, double, double> context,
     Source<T2> source,
     Func<T2, Geospacial.Polygon[]> polygons,
     IAestheticMapping<T2, string>? _fill = null,
@@ -2812,16 +2705,14 @@ public static class BuilderExtensions
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TY1 : struct
   {
-    context.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
+    context.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
 
     return context;
   }
 
-  public static PlotContext<T1, TX1, TY1> Geom_Map<T1, TX1, TY1, T2>(
-    this PlotContext<T1, TX1, TY1> context,
+  public static PlotContext<T1, double, double> Geom_Map<T1, T2>(
+    this PlotContext<T1, double, double> context,
     IEnumerable<T2> source,
     Func<T2, Geospacial.Polygon[]> polygons,
     IAestheticMapping<T2, string>? _fill = null,
@@ -2832,14 +2723,12 @@ public static class BuilderExtensions
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
-    where TX1 : struct
-    where TY1 : struct
   {
-    return Geom_Map(context, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
+    return Geom_Map(context, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
   }
 
-  public static PlotContext<T, TX, TY> Geom_Map<T, TX, TY>(
-    this PlotContext<T, TX, TY> context,
+  public static PlotContext<T, double, double> Geom_Map<T>(
+    this PlotContext<T, double, double> context,
     Geospacial.Polygon[] polygons,
     IAestheticMapping<Geospacial.Polygon[], string>? _fill = null,
     Func<Geospacial.Polygon[], MouseEventArgs, Task>? onclick = null,
@@ -2849,14 +2738,12 @@ public static class BuilderExtensions
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
-    where TX : struct
-    where TY : struct
   {
-    return Geom_Map(context, new Source<Geospacial.Polygon[]>([polygons]), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
+    return Geom_Map(context, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
   }
 
-  public static PanelFactory<T, TX, TY> Geom_Map<T, TX, TY>(
-    this PanelFactory<T, TX, TY> panel,
+  public static PanelFactory<T, double, double> Geom_Map<T>(
+    this PanelFactory<T, double, double> panel,
     Func<T, Geospacial.Polygon[]> polygons,
     IAestheticMapping<T, string>? _fill = null,
     Func<T, MouseEventArgs, Task>? onclick = null,
@@ -2866,14 +2753,12 @@ public static class BuilderExtensions
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
-    where TX : struct
-    where TY : struct
   {
-    return Geom_Map(panel, panel.Context.Source!, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
+    return Geom_Map(panel, panel.Context.Source!, polygons, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
   }
 
-  public static PlotContext<T, TX, TY> Geom_Map<T, TX, TY>(
-    this PlotContext<T, TX, TY> context,
+  public static PlotContext<T, double, double> Geom_Map<T>(
+    this PlotContext<T, double, double> context,
     Func<T, Geospacial.Polygon[]> polygons,
     IAestheticMapping<T, string>? _fill = null,
     Func<T, MouseEventArgs, Task>? onclick = null,
@@ -2883,10 +2768,8 @@ public static class BuilderExtensions
     bool animation = false,
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
-    where TX : struct
-    where TY : struct
   {
-    context.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale, inherit);
+    context.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
 
     return context;
   }

@@ -15,7 +15,7 @@ public sealed class Faceting1D<T, TKey>(Func<T, TKey> selector, bool freeX, bool
 
 	public override void Train(T item) => buffer.Add(selector(item));
 
-	public override void Set()
+	public override void Commit()
 	{
 		N = buffer.Count;
 

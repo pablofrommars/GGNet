@@ -21,11 +21,11 @@ public class DateTimePosition : Position<LocalDateTime>
 
 	public override Guide Guide => Guide.None;
 
-	private LocalDate? first = null;
-	private LocalDate? last = null;
+	private LocalDate? first;
+	private LocalDate? last;
 
-	private LocalDateTime? min = null;
-	private LocalDateTime? max = null;
+	private LocalDateTime? min;
+	private LocalDateTime? max;
 
 	public override void Train(LocalDateTime key)
 	{
@@ -82,7 +82,7 @@ public class DateTimePosition : Position<LocalDateTime>
 		}
 	}
 
-	public override void Set(bool grid)
+	public override void Commit(bool grid)
 	{
 		var min = _min ?? 0.0;
 		var max = _max ?? 0.0;

@@ -1,5 +1,6 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
 
 using static System.Math;
 
@@ -16,7 +17,7 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 		Func<T, TY> y,
 		Func<T, TY> yend,
 		(bool x, bool y)? scale = null)
-		: base(source, scale, false)
+		: base(source, scale)
 	{
 		Selectors = new()
 		{
@@ -39,14 +40,14 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 
 	public Elements.Line Aesthetic { get; set; } = default!;
 
-	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
-		Positions.X = XMapping(Selectors.X!, panel.X);
-		Positions.XEnd = XMapping(Selectors.XEnd!, panel.X);
-		Positions.Y = YMapping(Selectors.Y!, panel.Y);
-		Positions.YEnd = YMapping(Selectors.YEnd!, panel.Y);
+		Positions.X = new PositionMapping<T, TX>(Selectors.X!, panel.X);
+		Positions.XEnd = new PositionMapping<T, TX>(Selectors.XEnd!, panel.X);
+		Positions.Y = new PositionMapping<T, TY>(Selectors.Y!, panel.Y);
+		Positions.YEnd = new PositionMapping<T, TY>(Selectors.YEnd!, panel.Y);
 	}
 
 	public override void Train(T item)

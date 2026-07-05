@@ -22,8 +22,8 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 	private Scales.Position<TX> xscale = default!;
 	private Scales.Position<TY> yscale = default!;
 
-	protected SparkLineTooltip tooltip = default!;
-	public ITooltip? Tooltip => tooltip;
+	protected SparkLineTooltip tooltipComponent = default!;
+	public ITooltip? Tooltip => tooltipComponent;
 
 	protected override void OnInitialized()
 	{

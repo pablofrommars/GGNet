@@ -16,7 +16,7 @@ public abstract class Faceting<T>(bool freeX, bool freeY)
 
   public abstract void Train(T item);
 
-  public abstract void Set();
+  public abstract void Commit();
 
   public abstract (int row, int column) Map(T item);
 

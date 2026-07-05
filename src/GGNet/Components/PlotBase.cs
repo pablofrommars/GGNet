@@ -41,7 +41,7 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
     return RenderModeHandler.RefreshAsync(target, token);
   }
 
-  private int disposing = 0;
+  private int disposing;
 
   public ValueTask DisposeAsync()
   {

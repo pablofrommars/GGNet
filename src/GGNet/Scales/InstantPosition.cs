@@ -19,7 +19,7 @@ public class InstantPosition : Position<Instant>
 
   public override Guide Guide => Guide.None;
 
-  public override void Set(bool grid)
+  public override void Commit(bool grid)
   {
     var (start, mappedStart) = (Limits.min, _min) switch
     {

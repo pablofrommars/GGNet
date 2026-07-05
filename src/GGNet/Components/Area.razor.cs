@@ -72,7 +72,7 @@ public partial class Area<T, TX, TY> : ComponentBase
       {
         var (px, py) = P(x, y);
 
-        sb.Append($"{(M ? " M " : " L ")}{px} {py}");
+        sb.Append(CultureInfo.InvariantCulture, $"{(M ? " M " : " L ")}{px} {py}");
 
         M = false;
       }
@@ -100,7 +100,7 @@ public partial class Area<T, TX, TY> : ComponentBase
 
     var (px, py) = P(x, ymax);
 
-    sb.Append($"M {px} {py}");
+    sb.Append(CultureInfo.InvariantCulture, $"M {px} {py}");
 
     for (var j = 1; j < area.Points.Count; j++)
     {
@@ -108,7 +108,7 @@ public partial class Area<T, TX, TY> : ComponentBase
 
       (px, py) = P(x, ymax);
 
-      sb.Append($" L {px} {py}");
+      sb.Append(CultureInfo.InvariantCulture, $" L {px} {py}");
     }
 
     for (var j = 0; j < area.Points.Count; j++)
@@ -118,7 +118,7 @@ public partial class Area<T, TX, TY> : ComponentBase
 
       (px, py) = P(x, ymin);
 
-      sb.Append($" L {px} {py}");
+      sb.Append(CultureInfo.InvariantCulture, $" L {px} {py}");
     }
 
     sb.Append(" Z");
@@ -170,13 +170,13 @@ public partial class Area<T, TX, TY> : ComponentBase
   {
     var (px, py) = P(poly.Longitude[0], poly.Latitude[0]);
 
-    sb.Append($"M {px} {py}");
+    sb.Append(CultureInfo.InvariantCulture, $"M {px} {py}");
 
     for (var i = 1; i < poly.Longitude.Length; i++)
     {
       (px, py) = P(poly.Longitude[i], poly.Latitude[i]);
 
-      sb.Append($" L {px} {py}");
+      sb.Append(CultureInfo.InvariantCulture, $" L {px} {py}");
     }
 
     sb.Append(" Z");

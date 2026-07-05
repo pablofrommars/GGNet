@@ -234,7 +234,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			Faceting!.Train(Source[i]);
 		}
 
-		Faceting!.Set();
+		Faceting!.Commit();
 
 		var facets = Faceting.Facets(Style!);
 
@@ -415,7 +415,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 		for (int i = 0; i < Aesthetics.Scales.Count; i++)
 		{
-			Aesthetics.Scales[i].Set(grid);
+			Aesthetics.Scales[i].Commit(grid);
 		}
 
 		if (grid)
@@ -446,7 +446,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		{
 			var scale = Positions.X.Scales[i];
 
-			scale.Set(grid);
+			scale.Commit(grid);
 
 			if (grid)
 			{
@@ -473,7 +473,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		{
 			var scale = Positions.Y.Scales[i];
 
-			scale.Set(grid);
+			scale.Commit(grid);
 
 			if (grid)
 			{

@@ -18,7 +18,7 @@ public abstract class Scale<TKey, TValue>(ITransformation<TKey>? transformation 
 
     public abstract void Train(TKey key);
 
-	public abstract void Set(bool grid);
+	public abstract void Commit(bool grid);
 
 	public abstract TValue Map(TKey key);
 

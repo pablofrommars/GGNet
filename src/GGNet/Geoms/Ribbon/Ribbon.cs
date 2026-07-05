@@ -2,6 +2,7 @@
 using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;
+using GGNet.Exceptions;
 
 namespace GGNet.Geoms.Ribbon;
 
@@ -18,9 +19,8 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
     Func<T, TY>? ymax,
     IAestheticMapping<T, string>? fill = null,
     Func<T, RenderFragment>? tooltip = null,
-    (bool x, bool y)? scale = null,
-    bool inherit = true)
-    : base(source, scale, inherit)
+    (bool x, bool y)? scale = null)
+    : base(source, scale)
   {
     Selectors = new()
     {
@@ -52,36 +52,30 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 
   public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-  public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+  public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
   {
     base.Init(panel, facet);
 
     if (Selectors.X is null)
     {
-      Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
+      throw new GGNetUserException("X selector is required");
     }
-    else
-    {
-      Positions.X = XMapping(Selectors.X, panel.X);
-    }
+
+    Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
 
     if (Selectors.YMin is null)
     {
-      Positions.YMin = YMapping(panel.Data.Selectors.Y!, panel.Y);
+      throw new GGNetUserException("YMin selector is required");
     }
-    else
-    {
-      Positions.YMin = YMapping(Selectors.YMin, panel.Y);
-    }
+
+    Positions.YMin = new PositionMapping<T, TY>(Selectors.YMin, panel.Y);
 
     if (Selectors.YMax is null)
     {
-      Positions.YMax = YMapping(panel.Data.Selectors.Y!, panel.Y);
+      throw new GGNetUserException("YMax selector is required");
     }
-    else
-    {
-      Positions.YMax = YMapping(Selectors.YMax, panel.Y);
-    }
+
+    Positions.YMax = new PositionMapping<T, TY>(Selectors.YMax, panel.Y);
 
     if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
     {
@@ -109,13 +103,6 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
     {
       onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
     }
-
-    if (!inherit)
-    {
-      return;
-    }
-
-    Aesthetics.Fill ??= panel.Data.Aesthetics.Fill as IAestheticMapping<T, string>;
   }
 
   public override void Train(T item)
@@ -136,7 +123,7 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
     });
   }
 
-  private Shapes.Area? _area = null;
+  private Shapes.Area? _area;
 
   protected override void Shape(T item, bool flip)
   {

@@ -1,5 +1,6 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
 
 namespace GGNet.Geoms.HLine;
 
@@ -11,7 +12,7 @@ internal sealed class HLine<T, TX, TY> : Geom<T, TX, TY>
 		IReadOnlyList<T> source,
 		Func<T, TY> y,
 		Func<T, string> label)
-		: base(source, null, false)
+		: base(source, null)
 	{
 		Selectors = new()
 		{
@@ -28,11 +29,11 @@ internal sealed class HLine<T, TX, TY> : Geom<T, TX, TY>
 
 	public Elements.Text Text { get; set; } = default!;
 
-	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
-		Positions.Y = YMapping(Selectors.Y, panel.Y);
+		Positions.Y = new PositionMapping<T, TY>(Selectors.Y, panel.Y);
 	}
 
 	public override void Train(T item)

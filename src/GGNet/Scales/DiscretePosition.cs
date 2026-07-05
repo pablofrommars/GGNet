@@ -31,7 +31,7 @@ public class DiscretePosition<T> : Position<T>
 
   public override void Train(T key) => values.Add(key);
 
-  protected virtual void Labeling(int start, int end)
+  protected virtual void Labeling(int start, int last)
   {
     var labels = new (double value, string label)[values.Count];
 
@@ -55,7 +55,7 @@ public class DiscretePosition<T> : Position<T>
     }
   }
 
-  public override void Set(bool grid)
+  public override void Commit(bool grid)
   {
     var min = _min ?? 0.0;
     var max = _max ?? 0.0;

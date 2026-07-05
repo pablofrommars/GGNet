@@ -29,7 +29,7 @@ public class FillContinuous(
 		}
 	}
 
-	public override void Set(bool grid)
+	public override void Commit(bool grid)
 	{
 		if (!grid)
 		{
@@ -51,7 +51,7 @@ public class FillContinuous(
 			var mapped = Map(value);
 
 			breaks[i] = mapped;
-			labels[i] = (mapped, value.ToString(format));
+			labels[i] = (mapped, value.ToString(format, CultureInfo.InvariantCulture));
 		}
 
 		Breaks = breaks;

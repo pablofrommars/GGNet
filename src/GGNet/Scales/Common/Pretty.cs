@@ -7,7 +7,7 @@ public static class Pretty
     private static readonly double h = 1.5;
     private static readonly double h5 = 0.5 + 1.5 * h;
     private static readonly double shrink_sml = 0.75;
-    private static readonly int eps_correction = 0;
+    private const int eps_correction = 0;
     private static readonly double rounding_eps = 1e-10;
 
     private static (double lower, double upper, int n) PrettyBase(double lo, double up, int ndiv, int min_n, double shrink_sml, double h, double h5, int eps_correction)

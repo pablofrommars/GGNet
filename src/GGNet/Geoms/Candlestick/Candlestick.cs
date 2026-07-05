@@ -1,5 +1,7 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
+using GGNet.Exceptions;
 
 namespace GGNet.Geoms.Candlestick;
 
@@ -15,7 +17,7 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 		Func<T, TY> low,
 		Func<T, TY> close,
 		(bool x, bool y)? scale = null)
-		: base(source, scale, false)
+		: base(source, scale)
 	{
 		Selectors = new()
 		{
@@ -34,23 +36,21 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 	public Elements.Line Line { get; set; } = default!;
 	public Elements.Rectangle Rectangle { get; set; } = default!;
 
-	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
-		if (Selectors.X == null)
+		if (Selectors.X is null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
-		}
-		else
-		{
-			Positions.X = XMapping(Selectors.X, panel.X);
+			throw new GGNetUserException("X selector is required");
 		}
 
-		Positions.Open = YMapping(Selectors.Open, panel.Y);
-		Positions.High = YMapping(Selectors.High, panel.Y);
-		Positions.Low = YMapping(Selectors.Low, panel.Y);
-		Positions.Close = YMapping(Selectors.Close, panel.Y);
+		Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
+
+		Positions.Open = new PositionMapping<T, TY>(Selectors.Open, panel.Y);
+		Positions.High = new PositionMapping<T, TY>(Selectors.High, panel.Y);
+		Positions.Low = new PositionMapping<T, TY>(Selectors.Low, panel.Y);
+		Positions.Close = new PositionMapping<T, TY>(Selectors.Close, panel.Y);
 	}
 
 	public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;

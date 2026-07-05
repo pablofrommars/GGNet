@@ -41,7 +41,7 @@ public abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 		palette.Add(key);
 	}
 
-	public override void Set(bool grid)
+	public override void Commit(bool grid)
 	{
 		if (!defined)
 		{

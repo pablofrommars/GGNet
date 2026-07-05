@@ -23,19 +23,19 @@ public static partial class Markdown
 
 				if (match.Groups["bold"].Success)
 				{
-					sb.Append($"<tspan font-weight=\"bold\">{match.Groups["bold"].Value}</tspan>");
+					sb.Append(CultureInfo.InvariantCulture, $"<tspan font-weight=\"bold\">{match.Groups["bold"].Value}</tspan>");
 				}
 				else if (match.Groups["italic"].Success)
 				{
-					sb.Append($"<tspan font-style=\"italic\">{match.Groups["italic"].Value}</tspan>");
+					sb.Append(CultureInfo.InvariantCulture, $"<tspan font-style=\"italic\">{match.Groups["italic"].Value}</tspan>");
 				}
 				else if (match.Groups["sub"].Success)
 				{
-					sb.Append($"<tspan baseline-shift=\"sub\" font-size=\"0.7em\">{match.Groups["sub"].Value}</tspan>");
+					sb.Append(CultureInfo.InvariantCulture, $"<tspan baseline-shift=\"sub\" font-size=\"0.7em\">{match.Groups["sub"].Value}</tspan>");
 				}
 				else if (match.Groups["sup"].Success)
 				{
-					sb.Append($"<tspan baseline-shift=\"super\" font-size=\"0.7em\">{match.Groups["sup"].Value}</tspan>");
+					sb.Append(CultureInfo.InvariantCulture, $"<tspan baseline-shift=\"super\" font-size=\"0.7em\">{match.Groups["sup"].Value}</tspan>");
 				}
 
 				lastIndex = match.Index + match.Length;

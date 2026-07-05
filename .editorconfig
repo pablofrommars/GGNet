@@ -1,0 +1,40 @@
+root = true
+
+[*.cs]
+# --- Deliberate API idiom: the fluent ggplot2-style surface (Geom_Point, Scale_X_Continuous, Coord_Polar)
+dotnet_diagnostic.CA1707.severity = none
+
+# --- Deliberate hot-path idiom: visible instance fields on components and shapes
+dotnet_diagnostic.CA1051.severity = none
+
+# --- Static members on generic types: acceptable for the internal helpers that use them
+dotnet_diagnostic.CA1000.severity = none
+
+# --- Culture-sensitive formatting produces broken SVG on comma-decimal locales
+dotnet_diagnostic.CA1305.severity = error
+
+# --- Real correctness rules
+dotnet_diagnostic.CA2215.severity = warning
+dotnet_diagnostic.CA2263.severity = warning
+
+# --- Hygiene rules kept visible
+dotnet_diagnostic.CA1805.severity = warning
+dotnet_diagnostic.CA1708.severity = warning
+dotnet_diagnostic.CA1716.severity = warning
+dotnet_diagnostic.CA1725.severity = warning
+
+# --- Style: namespace must match folder
+dotnet_diagnostic.IDE0130.severity = warning
+dotnet_style_namespace_match_folder = true
+
+# --- Style: collection initialization, unnecessary suppressions
+dotnet_diagnostic.IDE0028.severity = suggestion
+dotnet_diagnostic.IDE0300.severity = suggestion
+dotnet_diagnostic.IDE0305.severity = suggestion
+dotnet_diagnostic.IDE0079.severity = warning
+dotnet_remove_unnecessary_suppression_exclusions = none
+
+# The GGNet.Static namespace is the shipped package name; renaming it to satisfy
+# CA1716 ("Static" is a VB keyword) would be a breaking change with no benefit.
+[src/GGNet.Static/**.cs]
+dotnet_diagnostic.CA1716.severity = none

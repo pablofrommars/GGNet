@@ -9,7 +9,7 @@ public sealed class Binned<T>(Palettes.Binned<T> palette, T na = default!) : Sca
 
 	public override void Train(double key) { }
 
-	public override void Set(bool grid) { }
+	public override void Commit(bool grid) { }
 
 	public override T Map(double key)
 	{

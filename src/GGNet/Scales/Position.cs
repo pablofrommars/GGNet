@@ -47,8 +47,8 @@ public abstract class Position<TKey>(ITransformation<TKey>? transformation, (dou
 		}
 	}
 
-	protected double? _min = null;
-	protected double? _max = null;
+	protected double? _min;
+	protected double? _max;
 
 	public virtual void Shape(double min, double max)
 	{
@@ -98,15 +98,3 @@ public class PositionMapping<T, TKey>(Func<T, TKey> selector, Position<TKey> pos
 	public double Map(T item) => position.Map(selector(item));
 }
 
-public class NumericalPositionMapping<T, TKey>(Func<T, TKey> selector, Position<double> scale) : IPositionMapping<T>
-	where TKey : struct
-{
-	private readonly Func<T, TKey> selector = selector;
-	private readonly Position<double> scale = scale;
-
-    public IPosition Position => scale;
-
-	public void Train(T item) => scale.Train(Convert<TKey>.ToDouble(selector(item)));
-
-	public double Map(T item) => scale.Map(Convert<TKey>.ToDouble(selector(item)));
-}

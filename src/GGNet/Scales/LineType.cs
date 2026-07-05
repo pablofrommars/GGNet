@@ -5,7 +5,7 @@ namespace GGNet.Scales;
 public sealed class LineTypeDiscrete<TKey> : Discrete<TKey, LineType>
   where TKey : notnull
 {
-  private static readonly LineType[] lineTypes = (LineType[])Enum.GetValues(typeof(LineType));
+  private static readonly LineType[] lineTypes = Enum.GetValues<LineType>();
 
   public LineTypeDiscrete(
     Palettes.Discrete<TKey, LineType> palette,

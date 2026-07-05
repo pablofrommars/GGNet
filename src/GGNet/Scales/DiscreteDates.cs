@@ -52,7 +52,7 @@ public class DiscretDates(
 						titles.Add(((mlast + mfirst) / 2.0, Abbreviations[month - 1]));
 					}
 
-					labels.Add((i, date.Day.ToString()));
+					labels.Add((i, date.Day.ToString(CultureInfo.InvariantCulture)));
 					breaks.Add(i);
 				}
 
@@ -77,7 +77,7 @@ public class DiscretDates(
 			{
 				if (j++ % delta == 0)
 				{
-					labels.Add((i, values[i].Day.ToString()));
+					labels.Add((i, values[i].Day.ToString(CultureInfo.InvariantCulture)));
 					breaks.Add(i);
 				}
 
@@ -96,7 +96,7 @@ public class DiscretDates(
 			{
 				if (j++ % delta == 0)
 				{
-					labels.Add((i, values[i].Day.ToString()));
+					labels.Add((i, values[i].Day.ToString(CultureInfo.InvariantCulture)));
 					breaks.Add(i);
 				}
 
@@ -113,7 +113,7 @@ public class DiscretDates(
 				{
 					if (j % delta == 0 && (mlast - k) >= 2)
 					{
-						labels.Add((k, values[k].Day.ToString()));
+						labels.Add((k, values[k].Day.ToString(CultureInfo.InvariantCulture)));
 						breaks.Add(k);
 					}
 
@@ -127,7 +127,7 @@ public class DiscretDates(
 			{
 				if (j++ % delta == 0)
 				{
-					labels.Add((i, values[i].Day.ToString()));
+					labels.Add((i, values[i].Day.ToString(CultureInfo.InvariantCulture)));
 					breaks.Add(i);
 				}
 
@@ -163,7 +163,7 @@ public class DiscretDates(
 			{
 				if (ylast >= 0 && ylast != yfirst)
 				{
-					titles.Add(((ylast + yfirst) / 2.0, year.ToString()));
+					titles.Add(((ylast + yfirst) / 2.0, year.ToString(CultureInfo.InvariantCulture)));
 				}
 
 				year = date.Year;
@@ -201,7 +201,7 @@ public class DiscretDates(
 
 		if (ylast >= 0 && ylast != yfirst)
 		{
-			titles.Add(((ylast + yfirst) / 2.0, year.ToString()));
+			titles.Add(((ylast + yfirst) / 2.0, year.ToString(CultureInfo.InvariantCulture)));
 		}
 
 		if (mlast >= 0 && mlast != mfirst)
@@ -237,7 +237,7 @@ public class DiscretDates(
 			{
 				if (ylast >= 0 && ylast != yfirst)
 				{
-					titles.Add(((ylast + yfirst) / 2.0, year.ToString()));
+					titles.Add(((ylast + yfirst) / 2.0, year.ToString(CultureInfo.InvariantCulture)));
 				}
 
 				year = date.Year;
@@ -272,7 +272,7 @@ public class DiscretDates(
 
 		if (ylast >= 0 && ylast != yfirst)
 		{
-			titles.Add(((ylast + yfirst) / 2.0, year.ToString()));
+			titles.Add(((ylast + yfirst) / 2.0, year.ToString(CultureInfo.InvariantCulture)));
 		}
 
 		Breaks = breaks;
@@ -280,21 +280,21 @@ public class DiscretDates(
 		Titles = titles;
 	}
 
-	protected override void Labeling(int start, int end)
+	protected override void Labeling(int start, int last)
 	{
-		var n = end - start;
+		var n = last - start;
 
 		if (n <= 128)
 		{
-			DayMonth(start, end);
+			DayMonth(start, last);
 		}
 		else if (n <= 384)
 		{
-			MonthYear(start, end);
+			MonthYear(start, last);
 		}
 		else
 		{
-			QuarterYear(start, end);
+			QuarterYear(start, last);
 		}
 	}
 }

@@ -2,6 +2,7 @@
 using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;
+using GGNet.Exceptions;
 
 namespace GGNet.Geoms.Line;
 
@@ -21,9 +22,8 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
     IAestheticMapping<T, LineType>? lineType = null,
     Func<T, RenderFragment>? tooltip = null,
     (bool x, bool y)? scale = null,
-    bool inherit = true,
     bool piecewise = false)
-    : base(source, scale, inherit)
+    : base(source, scale)
   {
     this.piecewise = piecewise;
 
@@ -57,27 +57,23 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
 
   public Elements.Line Aesthetic { get; set; } = default!;
 
-  public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+  public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
   {
     base.Init(panel, facet);
 
     if (Selectors.X is null)
     {
-      Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
+      throw new GGNetUserException("X selector is required");
     }
-    else
-    {
-      Positions.X = XMapping(Selectors.X, panel.X);
-    }
+
+    Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
 
     if (Selectors.Y is null)
     {
-      Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
+      throw new GGNetUserException("Y selector is required");
     }
-    else
-    {
-      Positions.Y = YMapping(Selectors.Y, panel.Y);
-    }
+
+    Positions.Y = new PositionMapping<T, TY>(Selectors.Y, panel.Y);
 
     if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
     {
@@ -105,14 +101,6 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
     {
       onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
     }
-
-    if (!inherit)
-    {
-      return;
-    }
-
-    Aesthetics.Color ??= panel.Data.Aesthetics.Color as IAestheticMapping<T, string>;
-    Aesthetics.LineType ??= panel.Data.Aesthetics.LineType as IAestheticMapping<T, LineType>;
   }
 
   public override void Train(T item)

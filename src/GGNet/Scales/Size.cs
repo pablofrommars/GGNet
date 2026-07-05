@@ -56,7 +56,7 @@ public class SizeContinuous : Continuous<double>
 		}
 	}
 
-	public override void Set(bool grid)
+	public override void Commit(bool grid)
 	{
 		if (!grid)
 		{
@@ -75,7 +75,7 @@ public class SizeContinuous : Continuous<double>
 		{
 			var value = breaks[i];
 
-			labels[i] = (Map(value), value.ToString(format));
+			labels[i] = (Map(value), value.ToString(format, CultureInfo.InvariantCulture));
 		}
 
 		Breaks = breaks;

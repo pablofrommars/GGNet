@@ -21,7 +21,7 @@ public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX
 
   public Buffer<IGeom> Geoms { get; } = new(8, 1);
 
-  public (string? x, string? y) Strip { get; set; } = default;
+  public (string? x, string? y) Strip { get; set; }
 
   public (bool x, bool y) Axis { get; set; }
 

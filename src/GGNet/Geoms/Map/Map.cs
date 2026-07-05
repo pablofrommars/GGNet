@@ -14,9 +14,8 @@ internal sealed class Map<T> : Geom<T, double, double>
     IAestheticMapping<T, string>? fill = null,
     Func<T, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
     bool animation = false,
-    (bool x, bool y)? scale = null,
-    bool inherit = true)
-    : base(source, scale, inherit)
+    (bool x, bool y)? scale = null)
+    : base(source, scale)
   {
     Selectors = new()
     {
@@ -36,7 +35,8 @@ internal sealed class Map<T> : Geom<T, double, double>
 
   public Aesthetics<T> Aesthetics { get; }
 
-  public Positions<T> Positions { get; } = new();
+  private Scales.Position<double> xscale = default!;
+  private Scales.Position<double> yscale = default!;
 
   public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
 
@@ -46,12 +46,14 @@ internal sealed class Map<T> : Geom<T, double, double>
 
   public Elements.Rectangle Aesthetic { get; set; } = default!;
 
-  public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+  public override void Init<T1>(Panel<T1, double, double> panel, Facet<T1>? facet)
   {
     base.Init(panel, facet);
 
-    Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
-    Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
+    // Map only trains the panel scales with polygon extents; it never maps items
+    // through selectors, so it holds the scales directly.
+    xscale = panel.X;
+    yscale = panel.Y;
 
     if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
     {
@@ -78,12 +80,6 @@ internal sealed class Map<T> : Geom<T, double, double>
       };
     }
 
-    if (!inherit)
-    {
-      return;
-    }
-
-    Aesthetics.Fill ??= panel.Data.Aesthetics.Fill as IAestheticMapping<T, string>;
   }
 
   public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;
@@ -175,12 +171,12 @@ internal sealed class Map<T> : Geom<T, double, double>
 
     if (scale.x)
     {
-      Positions.X.Position.Shape(xmin, xmax);
+      xscale.Shape(xmin, xmax);
     }
 
     if (scale.y)
     {
-      Positions.Y.Position.Shape(ymin, ymax);
+      yscale.Shape(ymin, ymax);
     }
   }
 }

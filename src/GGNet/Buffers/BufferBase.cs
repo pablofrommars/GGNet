@@ -10,7 +10,7 @@ public abstract class BufferBase<T>
 	protected int pagesIncrement;
 	protected int pagesCapacity;
 
-	protected int count;
+	protected int total;
 	protected int page;
 	protected int element;
 
@@ -25,12 +25,12 @@ public abstract class BufferBase<T>
 		this.pagesIncrement = pagesIncrement;
 		pagesCapacity = pagesIncrement;
 
-		count = 0;
+		total = 0;
 		page = 0;
 		element = 0;
 	}
 
-	public int Count => count;
+	public int Count => total;
 
 	protected T Get(int i) => pages[i / pageCapacity][i % pageCapacity];
 
@@ -54,7 +54,7 @@ public abstract class BufferBase<T>
 
 	protected void Grow()
 	{
-		count++;
+		total++;
 
 		if (element == pageCapacity)
 		{
@@ -82,7 +82,7 @@ public abstract class BufferBase<T>
 
 	public void Clear()
 	{
-		count = 0;
+		total = 0;
 		page = 0;
 		element = 0;
 	}
