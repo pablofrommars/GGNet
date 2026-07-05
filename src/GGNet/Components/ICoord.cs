@@ -15,4 +15,6 @@ public interface ICoord
 	(double min, double max) YRange { get; }
 
 	ITransformation<double> YTransformation { get; }
+
+	(double x, double y) Project(double x, double y) => (ToX(x), ToY(y));
 }

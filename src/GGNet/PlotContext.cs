@@ -32,6 +32,13 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	internal Selectors<T, TX, TY> Selectors { get; } = new();
 
+	// Default scale factories, chosen at Build time where overload resolution has
+	// already dispatched on TX/TY. Invoked by Init (with the polar flag) only when
+	// the user registered no scale.
+	internal Action<bool>? XScaleDefault { get; set; }
+
+	internal Action<bool>? YScaleDefault { get; set; }
+
 	internal Positions<TX, TY> Positions { get; } = new();
 
 	internal Aesthetics<T> Aesthetics { get; } = new();
@@ -39,6 +46,10 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 	public Faceting<T>? Faceting { get; set; }
 
 	public bool Flip { get; set; }
+
+	public CoordSystem CoordSystem { get; set; } = CoordSystem.Cartesian;
+
+	public PolarOptions PolarOptions { get; } = new();
 
 	public Style? Style { get; set; }
 
@@ -72,30 +83,31 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
     {
       this.grid = grid;
 
+      var polar = CoordSystem == CoordSystem.Polar;
+
+      if (polar && Flip)
+      {
+        throw new GGNetUserException("Flip is not supported with polar coordinates");
+      }
+
       if (Positions.X.Factory is null)
       {
-        if (typeof(TX) == typeof(LocalDate))
-          (this as PlotContext<T, LocalDate, TY>)!.Scale_X_Discrete_Date();
-        else if (typeof(TX) == typeof(LocalDateTime))
-          (this as PlotContext<T, LocalDateTime, TY>)!.Scale_X_Discrete_DateTime();
-        else if (typeof(TX) == typeof(Instant))
-          throw new GGNetUserException("Scale_X_Instant required");
-        else if (typeof(TX) == typeof(double))
-          (this as PlotContext<T, double, TY>)!.Scale_X_Continuous();
-        else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
-          this.Scale_X_Discrete();
-        else
+        if (XScaleDefault is null)
+        {
           throw new GGNetUserException("Type could not be inferred");
+        }
+
+        XScaleDefault(polar);
       }
 
       if (Positions.Y.Factory is null)
       {
-        if (typeof(TY) == typeof(double))
-          (this as PlotContext<T, TX, double>)!.Scale_Y_Continuous();
-        else if (typeof(TY) == typeof(string) || typeof(TY).IsEnum)
-          this.Scale_Y_Discrete();
-        else
+        if (YScaleDefault is null)
+        {
           throw new GGNetUserException("Type could not be inferred");
+        }
+
+        YScaleDefault(polar);
       }
 
       Style ??= Style.Default();
@@ -371,6 +383,24 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			RunFaceting(first);
 		}
 
+		if (first)
+		{
+			for (int p = 0; p < Panels.Count; p++)
+			{
+				var panel = Panels[p];
+
+				for (int g = 0; g < panel.Geoms.Count; g++)
+				{
+					var geom = panel.Geoms[g];
+
+					if ((geom.SupportedCoordSystems & CoordSystem) == 0)
+					{
+						throw new GGNetUserException($"{geom.GetType().Name.Split('`')[0]} does not support {CoordSystem} coordinates");
+					}
+				}
+			}
+		}
+
 		ClearAesthetics(first);
 
 		for (int p = 0; p < Panels.Count; p++)
@@ -459,10 +489,23 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			}
 		}
 
-		Axis = (width, height);
+		if (CoordSystem == CoordSystem.Polar)
+		{
+			// Polar panels draw breaks and labels inside the plotting area;
+			// no cartesian axis bands are reserved around it.
+			Axis = (0.0, 0.0);
 
-		AxisTitles = (xtitles, ytitles);
+			AxisTitles = (0.0, 0.0);
 
-		AxisTitlesVisibility = (xtitlesVisibility, false);
+			AxisTitlesVisibility = (false, false);
+		}
+		else
+		{
+			Axis = (width, height);
+
+			AxisTitles = (xtitles, ytitles);
+
+			AxisTitlesVisibility = (xtitlesVisibility, false);
+		}
 	}
 }

@@ -1,24 +1,23 @@
-﻿using GGNet.Data;
+using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
+using GGNet.Shapes;
 
-namespace GGNet.Geoms.Hex;
+namespace GGNet.Geoms.Radar;
 
-internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
+internal sealed class Radar<T, TX, TY> : Geom<T, TX, TY>
   where TX : struct
   where TY : struct
 {
-  private readonly bool animation;
+  private readonly Dictionary<string, List<(double x, double y)>> series = [];
+  private readonly List<Circle> circles = [];
 
-  public Hex(
-    Source<T> source,
+  public Radar(
+    IReadOnlyList<T> source,
     Func<T, TX>? x,
     Func<T, TY>? y,
-    Func<T, TX> Dx,
-    Func<T, TY> Dy,
     IAestheticMapping<T, string>? fill = null,
     Func<T, RenderFragment>? tooltip = null,
-    bool animation = false,
     (bool x, bool y)? scale = null,
     bool inherit = true)
     : base(source, scale, inherit)
@@ -27,8 +26,6 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
     {
       X = x,
       Y = y,
-      Dx = Dx,
-      Dy = Dy,
       Tooltip = tooltip
     };
 
@@ -36,9 +33,9 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
     {
       Fill = fill
     };
-
-    this.animation = animation;
   }
+
+  public override CoordSystem SupportedCoordSystems => CoordSystem.Polar;
 
   public Selectors<T, TX, TY> Selectors { get; }
 
@@ -78,9 +75,6 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
       Positions.Y = YMapping(Selectors.Y, panel.Y);
     }
 
-    Positions.Dx = XMapping(Selectors.Dx, panel.X);
-    Positions.Dy = YMapping(Selectors.Dy, panel.Y);
-
     if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
     {
       onMouseOver = (item, x, y, _) =>
@@ -113,17 +107,13 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
       return;
     }
 
-    Aesthetics.Fill ??= panel.Data.Aesthetics.Fill as IAestheticMapping<T, string>;
+    Aesthetics.Fill ??= panel.Data.Aesthetics.Color as IAestheticMapping<T, string>;
   }
-
-  public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;
 
   public override void Train(T item)
   {
     Positions.X.Train(item);
     Positions.Y.Train(item);
-    Positions.Dx.Train(item);
-    Positions.Dy.Train(item);
 
     Aesthetics.Fill?.Train(item);
   }
@@ -151,38 +141,104 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
     }
 
     var x = Positions.X.Map(item);
-    var y = Positions.Y.Map(item);
-    var dx = Positions.Dx.Map(item) / 2.0;
-    var dy = Positions.Dy.Map(item) / Math.Sqrt(3.0) / 2.0 * 1.15;
-
-    var hex = new Shapes.Polygon
+    if (double.IsNaN(x))
     {
-      Classes = animation ? "animate-hex" : string.Empty,
-      Path = new()
-      {
-        Longitude = [x + dx, x + dx, x, x - dx, x - dx, x],
-        Latitude = [y + dy, y - dy, y - 2.0 * dy, y - dy, y + dy, y + 2.0 * dy]
-      },
-      Aesthetic = new()
-      {
-        Fill = fill,
-        FillOpacity = Aesthetic.FillOpacity
-      },
-      OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-      OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x, y, e) : null,
-      OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
-    };
+      return;
+    }
 
-    Layer.Add(hex);
+    var y = Positions.Y.Map(item);
+    if (double.IsNaN(y))
+    {
+      return;
+    }
+
+    if (!series.TryGetValue(fill, out var points))
+    {
+      points = [];
+
+      series[fill] = points;
+    }
+
+    points.Add((x, y));
+
+    if (OnClick is not null || OnMouseOver is not null || OnMouseOut is not null || Selectors.Tooltip is not null)
+    {
+      circles.Add(new Circle
+      {
+        X = x,
+        Y = y,
+        Aesthetic = new()
+        {
+          Radius = 3.0 * Aesthetic.StrokeWidth,
+          Fill = "transparent",
+          FillOpacity = 0
+        },
+        OnClick = OnClick is not null ? e => OnClick(item, e) : null,
+        OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x, y, e) : null,
+        OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
+      });
+    }
 
     if (scale.x)
     {
-      Positions.X.Position.Shape(x - dx, x + dx);
+      Positions.X.Position.Shape(x, x);
     }
 
     if (scale.y)
     {
-      Positions.Y.Position.Shape(y - 2.0 * dy, y + 2.0 * dy);
+      // The radial scale is zero-based: the web center is 0, not the data minimum.
+      Positions.Y.Position.Shape(0.0, y);
     }
+  }
+
+  protected override void Set(bool flip)
+  {
+    foreach (var (fill, points) in series)
+    {
+      if (points.Count < 2)
+      {
+        continue;
+      }
+
+      points.Sort((a, b) => a.x.CompareTo(b.x));
+
+      var longitude = new double[points.Count];
+      var latitude = new double[points.Count];
+
+      for (var i = 0; i < points.Count; i++)
+      {
+        (longitude[i], latitude[i]) = points[i];
+      }
+
+      Layer.Add(new Shapes.Polygon
+      {
+        Path = new()
+        {
+          Longitude = longitude,
+          Latitude = latitude
+        },
+        Aesthetic = new()
+        {
+          Fill = fill,
+          FillOpacity = Aesthetic.FillOpacity,
+          Stroke = fill,
+          StrokeWidth = Aesthetic.StrokeWidth
+        }
+      });
+    }
+
+    // Hit-target circles go on top of the polygons so they receive mouse events.
+    for (var i = 0; i < circles.Count; i++)
+    {
+      Layer.Add(circles[i]);
+    }
+  }
+
+  public override void Clear()
+  {
+    base.Clear();
+
+    series.Clear();
+    circles.Clear();
   }
 }

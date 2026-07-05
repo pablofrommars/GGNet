@@ -21,22 +21,25 @@ public sealed class SortedBuffer<T>(int pageCapacity = 32, int pagesIncrement = 
       return;
     }
 
+    // Find the first element greater than item and insert before it, shifting right.
     var found = false;
     var p = 0;
     var i = 0;
 
     while (p <= page)
     {
+      var limit = p == page ? element : pageCapacity;
+
       i = 0;
 
-      while (i < pageCapacity)
+      while (i < limit)
       {
         cmp = comparer.Compare(pages[p][i], item);
         if (cmp == 0)
         {
           return;
         }
-        if (cmp < 0)
+        if (cmp > 0)
         {
           found = true;
           break;
@@ -91,21 +94,6 @@ public sealed class SortedBuffer<T>(int pageCapacity = 32, int pagesIncrement = 
       }
 
       n /= 2;
-    }
-
-    if (element == pageCapacity)
-    {
-      page++;
-
-      if (page == pagesCapacity)
-      {
-        pagesCapacity += pagesIncrement;
-        Array.Resize(ref pages, pagesCapacity);
-      }
-
-      pages[page] ??= new T[pageCapacity];
-
-      element = 0;
     }
 
     return -1;

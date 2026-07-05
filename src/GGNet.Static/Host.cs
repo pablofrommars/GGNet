@@ -1,26 +1,36 @@
 ﻿namespace GGNet.Static;
 
+[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "<Pending>")]
 public sealed class Host
 {
 	private readonly ServiceCollection _serviceCollection = new();
 
 	private readonly Lazy<IServiceProvider> provider;
-	private readonly Lazy<StaticRenderer> renderer;
 
 	private Host()
 	{
 		provider = new(() => _serviceCollection.BuildServiceProvider());
-
-		renderer = new(() => new(provider.Value, new NullLoggerFactory()));
 	}
 
-	internal async Task<RenderedComponent> RenderAsync(Type type, IDictionary<string, object?>? parameters = null)
+	internal async Task RenderAsync(Type type, TextWriter writer, IDictionary<string, object?>? parameters = null)
 	{
-		var component = new RenderedComponent(renderer.Value);
+		// Blazor renderers are single-threaded: attaching root components and reading
+		// render trees must not interleave across renders. A renderer per render keeps
+		// concurrent renders isolated; the (empty) service provider stays shared.
+		var renderer = new StaticRenderer(provider.Value, new NullLoggerFactory());
 
-		await component.RenderAsync(type, parameters is null ? ParameterView.Empty : ParameterView.FromDictionary(parameters));
+		try
+		{
+			var component = new RenderedComponent(renderer);
 
-		return component;
+			await component.RenderAsync(type, parameters is null ? ParameterView.Empty : ParameterView.FromDictionary(parameters));
+
+			component.WriteHTML(writer);
+		}
+		finally
+		{
+			await renderer.DisposeAsync();
+		}
 	}
 
 	private static readonly Lazy<Host> lazy = new(() => new());

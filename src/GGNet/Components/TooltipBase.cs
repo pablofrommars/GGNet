@@ -21,9 +21,11 @@ public abstract class TooltipBase : ComponentBase, ITooltip
 
   public void Show(double x, double y, double offset, RenderFragment content, string? color = null, double? opacity = null)
   {
+    var (px, py) = Coord.Project(x, y);
+
     context = new(
-      X: Coord.ToX(x),
-      Y: Coord.ToY(y),
+      X: px,
+      Y: py,
       Offset: offset,
       Content: content,
       Color: color ?? "#ffffff",

@@ -37,6 +37,8 @@ public partial class Area<T, TX, TY> : ComponentBase
 
   private double Y(double y) => Coord.ToY(y);
 
+  private (double x, double y) P(double x, double y) => Coord.Project(x, y);
+
   private string Path(Path path)
   {
     var sb = pool.Get();
@@ -68,7 +70,9 @@ public partial class Area<T, TX, TY> : ComponentBase
       }
       else
       {
-        sb.Append($"{(M ? " M " : " L ")}{X(x)} {Y(y)}");
+        var (px, py) = P(x, y);
+
+        sb.Append($"{(M ? " M " : " L ")}{px} {py}");
 
         M = false;
       }
@@ -94,13 +98,17 @@ public partial class Area<T, TX, TY> : ComponentBase
   {
     var (x, _, ymax) = area.Points[0];
 
-    sb.Append($"M {X(x)} {Y(ymax)}");
+    var (px, py) = P(x, ymax);
+
+    sb.Append($"M {px} {py}");
 
     for (var j = 1; j < area.Points.Count; j++)
     {
       (x, _, ymax) = area.Points[j];
 
-      sb.Append($" L {X(x)} {Y(ymax)}");
+      (px, py) = P(x, ymax);
+
+      sb.Append($" L {px} {py}");
     }
 
     for (var j = 0; j < area.Points.Count; j++)
@@ -108,7 +116,9 @@ public partial class Area<T, TX, TY> : ComponentBase
       double ymin;
       (x, ymin, _) = area.Points[area.Points.Count - j - 1];
 
-      sb.Append($" L {X(x)} {Y(ymin)}");
+      (px, py) = P(x, ymin);
+
+      sb.Append($" L {px} {py}");
     }
 
     sb.Append(" Z");
@@ -158,11 +168,15 @@ public partial class Area<T, TX, TY> : ComponentBase
 
   private void AppendPolygon(StringBuilder sb, Geospacial.Polygon poly)
   {
-    sb.Append($"M {X(poly.Longitude[0])} {Y(poly.Latitude[0])}");
+    var (px, py) = P(poly.Longitude[0], poly.Latitude[0]);
+
+    sb.Append($"M {px} {py}");
 
     for (var i = 1; i < poly.Longitude.Length; i++)
     {
-      sb.Append($" L {X(poly.Longitude[i])} {Y(poly.Latitude[i])}");
+      (px, py) = P(poly.Longitude[i], poly.Latitude[i]);
+
+      sb.Append($" L {px} {py}");
     }
 
     sb.Append(" Z");

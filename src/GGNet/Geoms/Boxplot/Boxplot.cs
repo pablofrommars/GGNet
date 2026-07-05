@@ -84,6 +84,8 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
     Aesthetics.Fill ??= panel.Data.Aesthetics.Fill as IAestheticMapping<T, string>;
   }
 
+  public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;
+
   public override void Train(T item)
   {
     Positions.X.Train(item);

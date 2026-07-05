@@ -53,6 +53,8 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 		Positions.Close = YMapping(Selectors.Close, panel.Y);
 	}
 
+	public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;
+
 	public override void Train(T item)
 	{
 		Positions.X.Train(item);

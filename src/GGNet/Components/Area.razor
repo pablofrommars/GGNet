@@ -45,8 +45,8 @@
                         RenderPolygon(__builder, shape, polygon);
                         break;
 
-                    case MultiPolygon nulti:
-                        RenderMultiPolygon(__builder, shape, nulti);
+                    case MultiPolygon multi:
+                        RenderMultiPolygon(__builder, shape, multi);
                         break;
 
                     case Text text:
@@ -71,7 +71,9 @@
 
     private void RenderCircle(RenderTreeBuilder __builder, IShape shape, Circle circle)
     {
-        <g transform="translate(@X(circle.X), @Y(circle.Y))">
+        var (px, py) = P(circle.X, circle.Y);
+
+        <g transform="translate(@px, @py)">
             <circle
                     cx="0"
                     cy="0"
@@ -90,10 +92,13 @@
 
     private void RenderLine(RenderTreeBuilder __builder, IShape shape, Line line)
     {
-        <line x1=@X(line.X1)
-              y1=@Y(line.Y1)
-              x2=@X(line.X2)
-              y2=@Y(line.Y2)
+        var (px1, py1) = P(line.X1, line.Y1);
+        var (px2, py2) = P(line.X2, line.Y2);
+
+        <line x1=@px1
+              y1=@py1
+              x2=@px2
+              y2=@py2
               class=@shape.Css
               stroke-width=@line.Aesthetic.StrokeWidth
               stroke=@line.Aesthetic.Stroke
@@ -187,13 +192,15 @@
 
     private void RenderText(RenderTreeBuilder __builder, IShape shape, Text text)
     {
+        var (px, py) = P(text.X, text.Y);
+
         <text><text
                   class="pointer-events-none"
-                  transform="translate(@X(text.X), @Y(text.Y)) rotate(@(text.Aesthetic.Angle)deg)"
+                  transform="translate(@px, @py) rotate(@(text.Aesthetic.Angle)deg)"
                   fill=@(text.Aesthetic.Color)
                   text-anchor=@(text.Aesthetic.Anchor.Render())
                   font-size=@(text.Aesthetic.FontSize)
-                  font-weigth=@(text.Aesthetic.FontWeight)
+                  font-weight=@(text.Aesthetic.FontWeight)
                   font-style=@(text.Aesthetic.FontStyle)
                   clip-path="url(#@(Clip))">
                 @text.Value
@@ -242,7 +249,7 @@
                   fill-opacity=@(vline.Text.Opacity)
                   text-anchor=@(Anchor.Start.Render())
                   font-size=@(vline.Text.FontSize)
-                  font-weigth=@(vline.Text.FontWeight)
+                  font-weight=@(vline.Text.FontWeight)
                   font-style=@(vline.Text.FontStyle)
                   transform="translate(@(x)px, @(y)px) rotate(@(angle)deg)"
                   clip-path="url(#@(Clip))">
@@ -290,7 +297,7 @@
                   fill-opacity=@(hline.Text.Opacity)
                   text-anchor=@(hline.Text.Anchor.Render())
                   font-size=@(hline.Text.FontSize)
-                  font-weigth=@(hline.Text.FontWeight)
+                  font-weight=@(hline.Text.FontWeight)
                   font-style=@(hline.Text.FontStyle)
                   transform="translate(@(x), @(y))"
                   clip-path="url(#@(Clip))">
@@ -465,7 +472,7 @@
                   fill-opacity=@(abline.Text.Opacity)
                   text-anchor=@(abline.Text.Anchor.Render())
                   font-size=@(abline.Text.FontSize)
-                  font-weigth=@(abline.Text.FontWeight)
+                  font-weight=@(abline.Text.FontWeight)
                   font-style=@(abline.Text.FontStyle)
                   clip-path="url(#@(Clip))">
                 @abline.Label

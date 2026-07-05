@@ -20,6 +20,8 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 
   public Buffer<IShape> Layer { get; } = new();
 
+  public virtual CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
+
   protected static IPositionMapping<T> XMapping<T1, TX1>(Func<T1, TX1> selector, Scales.Position<TX1> position)
   where TX1 : struct
   {
@@ -38,7 +40,7 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
     }
     else
     {
-      throw new GGNetUserException("Type could not be infered");
+      throw new GGNetUserException("Type could not be inferred");
     }
   }
 
@@ -55,7 +57,7 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
     }
     else
     {
-      throw new GGNetUserException("Type could not be infered");
+      throw new GGNetUserException("Type could not be inferred");
     }
   }
 
@@ -77,7 +79,7 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
     }
     else
     {
-      throw new GGNetUserException("Type could not be infered");
+      throw new GGNetUserException("Type could not be inferred");
     }
   }
 
@@ -94,7 +96,7 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
     }
     else
     {
-      throw new GGNetUserException("Type could not be infered");
+      throw new GGNetUserException("Type could not be inferred");
     }
   }
 

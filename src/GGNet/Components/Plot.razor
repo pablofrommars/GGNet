@@ -10,7 +10,7 @@
     <svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
 
         <defs>
-            @_renderLegendGradients;
+            @_renderLegendGradients
         </defs>
 
         <clipPath id="@(Id)-plot">
@@ -19,10 +19,10 @@
 
         <rect class="plot" width="100%" height="100%" />
 
-        @_renderLegend;
+        @_renderLegend
 
         <CascadingValue Value=@this IsFixed=true>
-            @_renderPanels;
+            @_renderPanels
         </CascadingValue>
 
     </svg>

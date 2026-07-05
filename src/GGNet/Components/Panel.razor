@@ -12,9 +12,7 @@
 @if (First)
 {
     @_renderTitle
-    ;
     @_renderSubTitle
-    ;
 }
 
 <defs>
@@ -35,19 +33,18 @@ y=@Area.Y
 width=@Area.Width
 height=@Area.Height />
 
-@_renderStrip;
+@_renderStrip
 
-@_renderGrid;
+@_renderGrid
 
 <Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderModeHandler=@areaRenderModeHandler />
 
-@_renderXLab;
-@_renderYLab;
+@_renderXLab
+@_renderYLab
 
 @if (Last)
 {
     @_renderCaption
-    ;
 }
 
 <Tooltip Coord=@this Zone=@Area @ref=@tooltip />
@@ -96,7 +93,7 @@ height=@Area.Height />
                 class="x-strip"
                 x=@(xStrip.X)
                 y=@(xStrip.Y)
-                text-anchor: @(Plot.Style.Strip.Text.X.Anchor.Render())
+                text-anchor=@(Plot.Style.Strip.Text.X.Anchor.Render())
                 font-size=@(Plot.Style.Strip.Text.X.FontSize)
                 clip-path="url(#@(Plot.Id)-plot)">
                 @Data.Strip.x
@@ -110,7 +107,7 @@ height=@Area.Height />
             <text><text
                 class="y-strip"
                 transform="translate(@(yStrip.X), @(yStrip.Y)) rotate(@(Plot.Style.Strip.Text.Y.Angle)deg)"
-                text-anchor: @(Plot.Style.Strip.Text.Y.Anchor.Render())
+                text-anchor=@(Plot.Style.Strip.Text.Y.Anchor.Render())
                 font-size=@(Plot.Style.Strip.Text.Y.FontSize)
                 clip-path="url(#@(Plot.Id)-plot)">
                 @Data.Strip.y
@@ -120,6 +117,13 @@ height=@Area.Height />
 
     private void RenderGrid(RenderTreeBuilder __builder)
     {
+        if (polar)
+        {
+            RenderPolarGrid(__builder);
+
+            return;
+        }
+
         var y1 = Area.Y;
         var y2 = Area.Y + Area.Height;
 
@@ -235,12 +239,141 @@ height=@Area.Height />
                             y=@y
                             text-anchor=@(Plot.Style.Axis.Text.Y.Anchor.Render())
                             font-size=@(Plot.Style.Axis.Text.Y.FontSize)
-                            clip-path="url(#@(clip)">
+                            clip-path="url(#@(clip))">
                             @label
                         </text>
                     </text>
                 }
             }
+        }
+    }
+
+    private void RenderPolarGrid(RenderTreeBuilder __builder)
+    {
+        var spokes = xscale.Breaks.Select(b => xscale.Coord(b)).ToArray();
+        var web = Plot.Style.Polar.Rings == PolarRingType.Polygon && spokes.Length >= 3;
+
+        foreach (var f in spokes)
+        {
+            var (px, py) = ProjectFraction(f, 1.0);
+
+            <line
+            class="x-break"
+            x1=@centerX
+            x2=@px
+            y1=@centerY
+            y2=@py
+            clip-path="url(#@(clip)-area)" />
+        }
+
+        foreach (var b in yscale.Breaks)
+        {
+            var f = yscale.Coord(b);
+
+            if (f < 0.0 || f > 1.0)
+            {
+                continue;
+            }
+
+            if (web)
+            {
+                <path
+                class="y-break"
+                fill="none"
+                d=@PolarRingPath(spokes, f)
+                clip-path="url(#@(clip)-area)" />
+            }
+            else
+            {
+                <circle
+                class="y-break"
+                fill="none"
+                cx=@centerX
+                cy=@centerY
+                r=@(f * radius)
+                clip-path="url(#@(clip)-area)" />
+            }
+        }
+
+        foreach (var b in yscale.MinorBreaks)
+        {
+            var f = yscale.Coord(b);
+
+            if (f < 0.0 || f > 1.0)
+            {
+                continue;
+            }
+
+            if (web)
+            {
+                <path
+                class="y-minor-break"
+                fill="none"
+                d=@PolarRingPath(spokes, f)
+                clip-path="url(#@(clip)-area)" />
+            }
+            else
+            {
+                <circle
+                class="y-minor-break"
+                fill="none"
+                cx=@centerX
+                cy=@centerY
+                r=@(f * radius)
+                clip-path="url(#@(clip)-area)" />
+            }
+        }
+
+        var fontHeight = Plot.Style.Axis.Text.X.FontSize.Height();
+        var labelRadius = radius + Plot.Style.Polar.LabelMargin;
+
+        @foreach (var (value, label) in xscale.Labels)
+        {
+            var theta = GGNet.Coords.Polar.Angle(xscale.Coord(value), Data.Data.PolarOptions.StartAngle, Data.Data.PolarOptions.Clockwise);
+
+            var cos = Math.Cos(theta);
+            var sin = Math.Sin(theta);
+
+            var x = centerX + labelRadius * cos;
+            var y = centerY + labelRadius * sin + (sin + 1.0) / 2.0 * fontHeight * 0.8;
+
+            var anchor = cos < -0.1 ? "end" : cos > 0.1 ? "start" : "middle";
+
+            <text>
+                <text
+                    class="x-break-label"
+                    x=@x
+                    y=@y
+                    text-anchor=@anchor
+                    font-size=@(Plot.Style.Axis.Text.X.FontSize)
+                    clip-path="url(#@(clip))">
+                    @label
+                </text>
+            </text>
+        }
+
+        @foreach (var (value, label) in yscale.Labels)
+        {
+            var f = yscale.Coord(value);
+
+            if (f < 0.0 || f > 1.0)
+            {
+                continue;
+            }
+
+            var (px, py) = ProjectFraction(0.0, f);
+
+            <text>
+                <text
+                    class="y-break-label"
+                    x=@(px + 4)
+                    y=@(py - 2)
+                    text-anchor="start"
+                    font-size=@(Plot.Style.Axis.Text.Y.FontSize)
+                    clip-path="url(#@(clip))">
+                    @label
+                </text>
+            </text>
         }
     }
 
@@ -263,7 +396,7 @@ height=@Area.Height />
 
     private void RenderXLab(RenderTreeBuilder __builder)
     {
-        if (string.IsNullOrEmpty(Data.XLab.text))
+        if (polar || string.IsNullOrEmpty(Data.XLab.text))
         {
             return;
         }
@@ -281,7 +414,7 @@ height=@Area.Height />
 
     private void RenderYLab(RenderTreeBuilder __builder)
     {
-        if (string.IsNullOrEmpty(Data.YLab.text))
+        if (polar || string.IsNullOrEmpty(Data.YLab.text))
         {
             return;
         }

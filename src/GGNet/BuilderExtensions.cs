@@ -16,8 +16,9 @@ using Geoms.Hex;
 using Geoms.HLine;
 using Geoms.Line;
 using Geoms.Map;
-using Geoms.OHCL;
+using Geoms.OHLC;
 using Geoms.Point;
+using Geoms.Radar;
 using Geoms.Ribbon;
 using Geoms.RidgeLine;
 using Geoms.Segment;
@@ -472,6 +473,18 @@ public static class BuilderExtensions
     return context;
   }
 
+  public static PlotContext<T, TX, TY> Coord_Polar<T, TX, TY>(this PlotContext<T, TX, TY> context, double startAngle = -Math.PI / 2.0, bool clockwise = true)
+    where TX : struct
+    where TY : struct
+  {
+    context.CoordSystem = CoordSystem.Polar;
+
+    context.PolarOptions.StartAngle = startAngle;
+    context.PolarOptions.Clockwise = clockwise;
+
+    return context;
+  }
+
   internal static PanelFactory<T1, TX1, TY1> Add<T1, TX1, TY1, T2, TX2, TY2>(this PanelFactory<T1, TX1, TY1> panel, Func<Geom<T2, TX2, TY2>> builder)
     where TX1 : struct
     where TY1 : struct
@@ -735,6 +748,105 @@ public static class BuilderExtensions
     where TY : struct
   {
     context.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, inherit, piecewise);
+
+    return context;
+  }
+
+  public static PanelFactory<T1, TX1, TY1> Geom_Radar<T1, TX1, TY1, T2, TX2, TY2>(
+    this PanelFactory<T1, TX1, TY1> panel,
+    IReadOnlyList<T2> source,
+    Func<T2, TX2>? x = null,
+    Func<T2, TY2>? y = null,
+    IAestheticMapping<T2, string>? _fill = null,
+    Func<T2, MouseEventArgs, Task>? onclick = null,
+    Func<T2, MouseEventArgs, Task>? onmouseover = null,
+    Func<T2, MouseEventArgs, Task>? onmouseout = null,
+    Func<T2, RenderFragment>? tooltip = null,
+    string fill = "#23d0fc", double fillOpacity = 0.25, double width = 2.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
+    where TX1 : struct
+    where TX2 : struct
+    where TY1 : struct
+    where TY2 : struct
+  {
+    panel.Context.CoordSystem = CoordSystem.Polar;
+
+    panel.Add(() =>
+    {
+      var geom = new Radar<T2, TX2, TY2>(source, x, y, _fill, tooltip, scale, inherit)
+      {
+        Aesthetic = new()
+        {
+          Fill = fill,
+          FillOpacity = fillOpacity,
+          Stroke = fill,
+          StrokeWidth = width
+        },
+        OnClick = onclick,
+        OnMouseOver = onmouseover,
+        OnMouseOut = onmouseout
+      };
+
+      return geom;
+    });
+
+    return panel;
+  }
+
+  public static PlotContext<T1, TX1, TY1> Geom_Radar<T1, TX1, TY1, T2, TX2, TY2>(
+    this PlotContext<T1, TX1, TY1> context,
+    IReadOnlyList<T2> source,
+    Func<T2, TX2>? x = null,
+    Func<T2, TY2>? y = null,
+    IAestheticMapping<T2, string>? _fill = null,
+    Func<T2, MouseEventArgs, Task>? onclick = null,
+    Func<T2, MouseEventArgs, Task>? onmouseover = null,
+    Func<T2, MouseEventArgs, Task>? onmouseout = null,
+    Func<T2, RenderFragment>? tooltip = null,
+    string fill = "#23d0fc", double fillOpacity = 0.25, double width = 2.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
+    where TX1 : struct
+    where TX2 : struct
+    where TY1 : struct
+    where TY2 : struct
+  {
+    context.Default_Panel().Geom_Radar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale, inherit);
+
+    return context;
+  }
+
+  public static PanelFactory<T, TX, TY> Geom_Radar<T, TX, TY>(
+    this PanelFactory<T, TX, TY> panel,
+    Func<T, TX>? x = null,
+    Func<T, TY>? y = null,
+    IAestheticMapping<T, string>? _fill = null,
+    Func<T, MouseEventArgs, Task>? onclick = null,
+    Func<T, MouseEventArgs, Task>? onmouseover = null,
+    Func<T, MouseEventArgs, Task>? onmouseout = null,
+    Func<T, RenderFragment>? tooltip = null,
+    string fill = "#23d0fc", double fillOpacity = 0.25, double width = 2.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
+    where TX : struct
+    where TY : struct
+  {
+    return Geom_Radar(panel, panel.Context.Source!, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale, inherit);
+  }
+
+  public static PlotContext<T, TX, TY> Geom_Radar<T, TX, TY>(
+    this PlotContext<T, TX, TY> context,
+    Func<T, TX>? x = null,
+    Func<T, TY>? y = null,
+    IAestheticMapping<T, string>? _fill = null,
+    Func<T, MouseEventArgs, Task>? onclick = null,
+    Func<T, MouseEventArgs, Task>? onmouseover = null,
+    Func<T, MouseEventArgs, Task>? onmouseout = null,
+    Func<T, RenderFragment>? tooltip = null,
+    string fill = "#23d0fc", double fillOpacity = 0.25, double width = 2.0,
+    (bool x, bool y)? scale = null, bool inherit = true)
+    where TX : struct
+    where TY : struct
+  {
+    context.Default_Panel().Geom_Radar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale, inherit);
 
     return context;
   }

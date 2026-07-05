@@ -43,6 +43,11 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
   private Position<TX> xscale = default!;
   private Position<TY> yscale = default!;
 
+  private bool polar;
+  private double centerX;
+  private double centerY;
+  private double radius;
+
   private Zone xStrip;
   private Zone yStrip;
 
@@ -91,6 +96,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
     xscale = Data.X;
     yscale = Data.Y;
+
+    polar = Data.Data.CoordSystem == CoordSystem.Polar;
   }
 
   protected override void OnParametersSet()
@@ -106,6 +113,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
     xscale = Data.X;
     yscale = Data.Y;
+
+    polar = Data.Data.CoordSystem == CoordSystem.Polar;
 
     Refresh(RenderTarget.All);
   }
@@ -144,7 +153,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
       Area.Width -= yStrip.Width;
     }
 
-    if (Data.Axis.y)
+    if (Data.Axis.y && !polar)
     {
       var axisWidth = Data.Data.Axis.width;
 
@@ -188,7 +197,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
       }
     }
 
-    if (Data.Axis.x)
+    if (Data.Axis.x && !polar)
     {
       var xTitlesHeight = Data.XLab.height;
 
@@ -227,6 +236,15 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
       yAxisText.Height = Area.Height;
     }
 
+    if (polar)
+    {
+      var gutter = Data.Data.Style!.Axis.Text.X.FontSize.Height() + Data.Data.Style!.Polar.LabelMargin;
+
+      centerX = Area.X + Area.Width / 2.0;
+      centerY = Area.Y + Area.Height / 2.0;
+      radius = Max(0.0, Min(Area.Width, Area.Height) / 2.0 - gutter);
+    }
+
     if (!firstRender)
     {
       areaRenderModeHandler?.Refresh(RenderTarget.Data);
@@ -248,6 +266,31 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
   public (double min, double max) YRange => yscale.Range;
 
   public ITransformation<double> YTransformation => yscale.RangeTransformation;
+
+  public (double x, double y) Project(double x, double y)
+    => polar
+      ? ProjectFraction(xscale.Coord(x), yscale.Coord(y))
+      : (ToX(x), ToY(y));
+
+  // cx, cy are normalized [0,1] fractions on the angular and radial scales.
+  private (double x, double y) ProjectFraction(double cx, double cy)
+    => Coords.Polar.Project(cx, cy, centerX, centerY, radius, Data.Data.PolarOptions.StartAngle, Data.Data.PolarOptions.Clockwise);
+
+  private string PolarRingPath(double[] spokes, double f)
+  {
+    var sb = new StringBuilder();
+
+    for (var i = 0; i < spokes.Length; i++)
+    {
+      var (px, py) = ProjectFraction(spokes[i], f);
+
+      sb.Append(i == 0 ? "M " : " L ").Append(px).Append(' ').Append(py);
+    }
+
+    sb.Append(" Z");
+
+    return sb.ToString();
+  }
 
   private Task OnClick(MouseEventArgs e)
   {

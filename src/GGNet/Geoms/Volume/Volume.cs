@@ -79,6 +79,8 @@ internal sealed class Volume<T, TX, TY> : Geom<T, TX, TY>
     Positions.Volume = YMapping(Selectors.Volume, panel.Y);
   }
 
+  public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;
+
   public override void Train(T item)
   {
     Positions.X.Train(item);

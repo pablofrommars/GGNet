@@ -6,11 +6,11 @@ public readonly record struct Circle : IElement
 
   public double Radius { get; init; }
 
-  public string Fill { get; init; } = "inhenit";
+  public string Fill { get; init; } = "inherit";
 
   public double FillOpacity { get; init; } = 1.0;
 
-  public string Stroke { get; init; } = "inhenit";
+  public string Stroke { get; init; } = "inherit";
 
   public double StrokeOpacity { get; init; } = 1.0;
 

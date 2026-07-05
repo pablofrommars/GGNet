@@ -1,7 +1,7 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
 
-namespace GGNet.Geoms.OHCL;
+namespace GGNet.Geoms.OHLC;
 
 internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
@@ -154,6 +154,8 @@ internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 		Positions.Low = YMapping(Selectors.Low, panel.Y);
 		Positions.Close = YMapping(Selectors.Close, panel.Y);
 	}
+
+	public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;
 
 	public override void Train(T item)
 	{

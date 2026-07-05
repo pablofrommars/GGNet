@@ -7,6 +7,8 @@ public interface IGeom
 {
 	Buffer<IShape> Layer { get; }
 
+	CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
+
 	void Train();
 
 	void Legend();

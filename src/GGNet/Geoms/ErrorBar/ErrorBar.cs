@@ -154,6 +154,8 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
     Aesthetics.Color ??= panel.Data.Aesthetics.Color as IAestheticMapping<T, string>;
   }
 
+  public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;
+
   public override void Train(T item)
   {
     Positions.X.Train(item);

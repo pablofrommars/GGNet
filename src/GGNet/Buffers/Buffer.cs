@@ -16,9 +16,11 @@ public class Buffer<T>(int pageCapacity = 32, int pagesIncrement = 4) : BufferBa
   {
     var i = 0;
 
-    for (var p = 0; p < page; p++)
+    for (var p = 0; p <= page; p++)
     {
-      for (var j = 0; j < pageCapacity; j++)
+      var limit = p == page ? element : pageCapacity;
+
+      for (var j = 0; j < limit; j++)
       {
         if (comparer.Compare(pages[p][j], item) == 0)
         {
