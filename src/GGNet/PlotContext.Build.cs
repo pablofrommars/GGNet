@@ -118,9 +118,9 @@ public partial class PlotContext
     return context;
   }
 
-  public static PlotContext<IWaiver, double, double> Build()
+  public static PlotContext<NoData, double, double> Build()
   {
-    var context = BuildBase<IWaiver, double, double>(null, null, null);
+    var context = BuildBase<NoData, double, double>(null, null, null);
 
     ContinuousX(context);
     ContinuousY(context);

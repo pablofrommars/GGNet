@@ -618,7 +618,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Point(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _size ?? (inherit ? panel.Context.Aesthetics.Size : null), _color ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale);
+    return Geom_Point(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _size ?? (inherit ? panel.Context.Aesthetics.Size : null), _color ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Point<T, TX, TY>(
@@ -716,7 +716,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Line(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), _lineType ?? (inherit ? panel.Context.Aesthetics.LineType : null), onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, piecewise);
+    return Geom_Line(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), _lineType ?? (inherit ? panel.Context.Aesthetics.LineType : null), onclick, onmouseover, onmouseout, tooltip, width, color, opacity, lineType, scale, piecewise);
   }
 
   public static PlotContext<T, TX, TY> Geom_Line<T, TX, TY>(
@@ -812,7 +812,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Radar(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale);
+    return Geom_Radar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Radar<T, TX, TY>(
@@ -918,7 +918,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Bar(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale);
+    return Geom_Bar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Bar<T, TX, TY>(
@@ -1012,7 +1012,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Segment(panel, panel.Context.Source!, x, xend, y, yend, width, color, opacity, lineType);
+    return Geom_Segment(panel, panel.Context.RequireSource(), x, xend, y, yend, width, color, opacity, lineType);
   }
 
   public static PlotContext<T, TX, TY> Geom_Segment<T, TX, TY>(
@@ -1111,7 +1111,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Tile(panel, panel.Context.Source!, (x ?? panel.Context.Selectors.X)!, (y ?? panel.Context.Selectors.Y)!, width, height, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
+    return Geom_Tile(panel, panel.Context.RequireSource(), (x ?? panel.Context.Selectors.X)!, (y ?? panel.Context.Selectors.Y)!, width, height, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Tile<T, TX, TY>(
@@ -1204,7 +1204,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Area(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
+    return Geom_Area(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Area<T, TX, TY>(
@@ -1337,7 +1337,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Ribbon(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
+    return Geom_Ribbon(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Ribbon<T, TX, TY>(
@@ -1498,7 +1498,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_ErrorBar(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
+    return Geom_ErrorBar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
@@ -1589,7 +1589,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Text(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _angle, text, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), size, anchor, weight, style, color, angle, scale);
+    return Geom_Text(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _angle, text, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), size, anchor, weight, style, color, angle, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Text<T, TX, TY, TT>(
@@ -1671,7 +1671,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_VLine(panel, panel.Context.Source!, x, label, width, color, opacity, lineType, size, anchor, weight, style);
+    return Geom_VLine(panel, panel.Context.RequireSource(), x, label, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PlotContext<T, TX, TY> Geom_VLine<T, TX, TY>(
@@ -1750,7 +1750,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_HLine(panel, panel.Context.Source!, y, label, width, color, opacity, lineType, size, anchor, weight, style);
+    return Geom_HLine(panel, panel.Context.RequireSource(), y, label, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PlotContext<T, TX, TY> Geom_HLine<T, TX, TY>(
@@ -1865,7 +1865,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_ABLine(panel, panel.Context.Source!, a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
+    return Geom_ABLine(panel, panel.Context.RequireSource(), a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
   }
 
   public static PlotContext<T, TX, TY> Geom_ABLine<T, TX, TY>(
@@ -1968,7 +1968,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_OHLC(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, open, high, low, close, onclick, width, color, opacity, lineType);
+    return Geom_OHLC(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, open, high, low, close, onclick, width, color, opacity, lineType);
   }
 
   public static PlotContext<T, TX, TY> Geom_OHLC<T, TX, TY>(
@@ -2072,7 +2072,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Candlestick(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, open, high, low, close, width, color, opacity, lineType);
+    return Geom_Candlestick(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, open, high, low, close, width, color, opacity, lineType);
   }
 
   public static PlotContext<T, TX, TY> Geom_Candlestick<T, TX, TY>(
@@ -2148,7 +2148,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Volume(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, volume, onclick, fill, opacity);
+    return Geom_Volume(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, volume, onclick, fill, opacity);
   }
 
   public static PlotContext<T, TX, TY> Geom_Volume<T, TX, TY>(
@@ -2295,7 +2295,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Hex(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, dx, dy, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+    return Geom_Hex(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, dx, dy, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Hex<T, TX, TY>(
@@ -2412,7 +2412,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_RidgeLine(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, height, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, scale);
+    return Geom_RidgeLine(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, height, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_RidgeLine<T, TX, TY>(
@@ -2530,7 +2530,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Violin(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, width, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, stroke, position, scale);
+    return Geom_Violin(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, width, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, stroke, position, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Violin<T, TX, TY>(
@@ -2608,7 +2608,7 @@ public static class BuilderExtensions
     where TX : struct
     where TY : struct
   {
-    return Geom_Boxplot(panel, panel.Context.Source!, x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), size, fill, fillOpacity, strokeWidth, scale);
+    return Geom_Boxplot(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), size, fill, fillOpacity, strokeWidth, scale);
   }
 
   public static PlotContext<T, TX, TY> Geom_Boxplot<T, TX, TY>(
@@ -2754,7 +2754,7 @@ public static class BuilderExtensions
     string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
     (bool x, bool y)? scale = null, bool inherit = true)
   {
-    return Geom_Map(panel, panel.Context.Source!, polygons, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
+    return Geom_Map(panel, panel.Context.RequireSource(), polygons, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
   }
 
   public static PlotContext<T, double, double> Geom_Map<T>(

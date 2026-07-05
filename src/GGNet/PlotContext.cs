@@ -20,6 +20,9 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	public IReadOnlyList<T>? Source { get; init; }
 
+	internal IReadOnlyList<T> RequireSource()
+		=> Source ?? throw new GGNetUserException("This plot was built without a source; use the Geom_Xxx overloads that take one");
+
 	internal bool Initialized { get; set; }
 
 	internal string? Title { get; set; }
