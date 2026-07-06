@@ -6,6 +6,8 @@ internal interface IGeom
 {
 	List<Shape> Layer { get; }
 
+	IStatSource? StatSource => null;
+
 	CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 
 	void Train();

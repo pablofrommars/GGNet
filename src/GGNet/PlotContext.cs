@@ -383,6 +383,8 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	private void Reset()
 	{
+		RecomputeStats();
+
 		for (var i = 0; i < Positions.X.Scales.Count; i++)
 		{
 			Positions.X.Scales[i].Clear();
@@ -413,6 +415,30 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		// Clear contents, never replace the instance: geoms capture the container
 		// reference at panel-build time, and default-path panels outlive passes.
 		Legends.Clear();
+	}
+
+	private void RecomputeStats()
+	{
+		HashSet<IStatSource>? seen = null;
+
+		if (Source is IStatSource plotStat)
+		{
+			(seen ??= []).Add(plotStat);
+			plotStat.Recompute();
+		}
+
+		for (var p = 0; p < Panels.Count; p++)
+		{
+			var panel = Panels[p];
+
+			for (var g = 0; g < panel.Geoms.Count; g++)
+			{
+				if (panel.Geoms[g].StatSource is { } stat && (seen ??= []).Add(stat))
+				{
+					stat.Recompute();
+				}
+			}
+		}
 	}
 
 	private void EnsurePanels()

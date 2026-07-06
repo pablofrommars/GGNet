@@ -90,6 +90,33 @@ public class GalleryTests
 	public Task Bar()
 		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Bar().Style());
 
+	private sealed record Reading(double Value, double Tank);
+
+	private static readonly Reading[] readings =
+	[
+		.. from tank in new[] { 1.0, 2.0 }
+		   from i in Enumerable.Range(0, 40)
+		   let center = tank == 1.0 ? 3.0 : 6.0
+		   select new Reading(center + Math.Sin(i * 2.399) * (1.0 + i % 3), tank)
+	];
+
+	[Fact]
+	public Task Histogram()
+		// The stats acid test: Stat.Bin + Geom_Bar composes a histogram —
+		// no Histogram geom exists.
+		=> VerifyPlot(PlotContext.Build(Stat.Bin(readings, r => r.Value, bins: 12), b => b.Mid, b => b.Count)
+			.Geom_Bar(width: 1.0)
+			.Style());
+
+	[Fact]
+	public Task HistogramFaceted()
+		// Per-facet statistics are grouped statistics: bin per group, facet
+		// the output on the same key.
+		=> VerifyPlot(PlotContext.Build(Stat.Bin(readings, r => r.Value, r => r.Tank, bins: 10), b => b.Mid, b => b.Count)
+			.Geom_Bar(width: 1.0)
+			.Facet_Wrap(b => b.Group)
+			.Style());
+
 	[Fact]
 	public Task BarFlipped()
 		// Pins Flip() output ahead of the coord-strategy absorption (session D).

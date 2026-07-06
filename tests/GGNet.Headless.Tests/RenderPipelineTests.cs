@@ -56,6 +56,49 @@ public class RenderPipelineTests
 	}
 
 	[Fact]
+	public async Task RenderTwiceThroughStatSourceIdentical()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(Stat.Bin(xy, i => i.Y, bins: 4), b => b.Mid, b => b.Count)
+			.Geom_Bar()
+			.Style();
+
+		// Act
+
+		var one = await plot.AsStringAsync();
+		var two = await plot.AsStringAsync();
+
+		// Assert
+
+		two.Should().Be(one);
+	}
+
+	[Fact]
+	public async Task StatSourceRebinsOnRefresh()
+	{
+		// Arrange
+
+		var live = new List<XY> { new(1, 2.0, 1), new(2, 3.5, 1), new(3, 2.8, 2) };
+
+		var plot = PlotContext.Build(Stat.Bin(live, i => i.Y, bins: 3), b => b.Mid, b => b.Count)
+			.Geom_Bar()
+			.Style();
+
+		var before = await plot.AsStringAsync();
+
+		// Act
+
+		live.Add(new(4, 9.0, 2));
+
+		var after = await plot.AsStringAsync();
+
+		// Assert
+
+		after.Should().NotBe(before);
+	}
+
+	[Fact]
 	public async Task RenderTwiceFacetedIdentical()
 	{
 		// Arrange

@@ -1,4 +1,6 @@
 ﻿GGNet.Anchor
+GGNet.Bin
+GGNet.Bin`1
 GGNet.BuilderExtensions
 GGNet.Colors
 GGNet.Colors+Brewer
@@ -27,6 +29,7 @@ GGNet.Geospacial.Point
 GGNet.Geospacial.Polygon
 GGNet.Guide
 GGNet.IPlotContext
+GGNet.IStatSource
 GGNet.LineType
 GGNet.NoData
 GGNet.Palettes.Discrete`2
@@ -45,6 +48,8 @@ GGNet.Scales.IAestheticMapping
 GGNet.Scales.IAestheticMapping`2
 GGNet.Size
 GGNet.Source`1
+GGNet.Stat
+GGNet.StatSource`1
 GGNet.Style
 GGNet.Style+StyleAxis
 GGNet.Style+StyleAxisText

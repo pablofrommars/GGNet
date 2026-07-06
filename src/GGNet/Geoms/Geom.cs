@@ -17,6 +17,10 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 
 	public List<Shape> Layer { get; } = [];
 
+	// Capability check, captured once: a stat-backed source participates in
+	// the pipeline's per-pass Reset.
+	public IStatSource? StatSource { get; } = source as IStatSource;
+
 	public virtual CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 
 	// Geoms share the panel's axis types by construction, so position mappings are
