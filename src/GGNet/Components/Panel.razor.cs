@@ -43,6 +43,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 	private Coords.ICoordinateSystem coord = default!;
 	private Coords.GridComposition grid = new();
+	private GridStamp? gridStamp;
 
 	private Zone xStrip;
 	private Zone yStrip;
@@ -112,10 +113,32 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 		coord = Data.Data.MakeCoordinateSystem();
 
+		gridStamp = null;
+
 		Refresh(RenderTarget.All);
 	}
 
 	protected void Render(bool firstRender)
+	{
+		// Recompose layout and grid only when their inputs changed: the stamp is
+		// a structural snapshot, so a match proves the stored zones and grid are
+		// exact. Streaming refreshes with pinned scales skip straight to shapes.
+		var stamp = GridStamp.Capture(new Zone { X = X, Y = Y, Width = Width, Height = Height }, xscale, yscale, Data.Data.Axis);
+
+		if (firstRender || !stamp.Matches(gridStamp))
+		{
+			gridStamp = stamp;
+
+			ComposePanel();
+		}
+
+		if (!firstRender)
+		{
+			areaRenderModeHandler?.Refresh(RenderTarget.Data);
+		}
+	}
+
+	private void ComposePanel()
 	{
 		var zones = Layout.PanelLayout.Compute(new(
 			Outer: new Zone { X = X, Y = Y, Width = Width, Height = Height },
@@ -155,16 +178,11 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 			XLabelY: xAxisText.Y,
 			XTitleY: xAxisTitle.Y,
 			YLabelX: yAxisText.X));
-
-		if (!firstRender)
-		{
-			areaRenderModeHandler?.Refresh(RenderTarget.Data);
-		}
 	}
 
 	public void Refresh(RenderTarget target) => renderModeHandler?.Refresh(target);
 
-	protected override bool ShouldRender() => renderModeHandler?.ShouldRender() ?? true;
+	protected override bool ShouldRender() => renderModeHandler?.ShouldRender(RenderTarget.Data) ?? true;
 
 	public double ToX(double value) => Area.X + xscale.Coord(value) * Area.Width;
 

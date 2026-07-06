@@ -44,7 +44,16 @@ internal sealed class InteractiveRenderModeHandler : RenderModeHandler
 		private volatile int render;
 
 		public void Refresh(RenderTarget target)
-		  => Interlocked.Exchange(ref render, (int)target);
+		{
+			// Merge, don't overwrite: a queued Data refresh must survive a
+			// later Theme refresh arriving before the render is consumed.
+			int seen;
+			do
+			{
+				seen = render;
+			}
+			while (Interlocked.CompareExchange(ref render, seen | (int)target, seen) != seen);
+		}
 
 		public bool ShouldRender(RenderTarget target = RenderTarget.All)
 		  => ((RenderTarget)Interlocked.Exchange(ref render, 0) & target) != RenderTarget.None;

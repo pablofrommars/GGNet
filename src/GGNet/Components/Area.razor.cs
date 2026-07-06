@@ -28,5 +28,5 @@ public partial class Area<T, TX, TY> : ComponentBase
 		renderShapes = RenderShapes;
 	}
 
-	protected override bool ShouldRender() => RenderModeHandler.ShouldRender();
+	protected override bool ShouldRender() => RenderModeHandler.ShouldRender(RenderTarget.Data);
 }
