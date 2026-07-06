@@ -1,6 +1,6 @@
 using VerifyXunit;
 
-namespace GGNet.Static.Tests;
+namespace GGNet.Headless.Tests;
 
 // Golden gallery: one snapshot per geom. First recording is characterization
 // (pins current behavior); thereafter regression. Snapshots live in Gallery/

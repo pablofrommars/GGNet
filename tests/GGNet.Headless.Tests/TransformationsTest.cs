@@ -1,6 +1,6 @@
 using GGNet.Transformations;
 
-namespace GGNet.Static.Tests;
+namespace GGNet.Headless.Tests;
 
 public class TransformationsTest
 {

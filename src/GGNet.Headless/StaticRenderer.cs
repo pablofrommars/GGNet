@@ -1,7 +1,7 @@
-﻿namespace GGNet.Static;
+﻿namespace GGNet.Headless;
 
-[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Static")]
-internal sealed class StaticRenderer(IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
+[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Headless")]
+internal sealed class HeadlessRenderer(IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
 	: Renderer(serviceProvider, loggerFactory)
 {
 	private Exception? unhandledException;

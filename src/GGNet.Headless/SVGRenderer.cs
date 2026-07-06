@@ -1,6 +1,6 @@
-﻿namespace GGNet.Static;
+﻿namespace GGNet.Headless;
 
-[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Static")]
+[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Headless")]
 internal sealed class SVGRenderer
 {
 	private static readonly HtmlEncoder encoder = HtmlEncoder.Default;
@@ -15,7 +15,7 @@ internal sealed class SVGRenderer
 
 	// Static export serializes the svg element only: the surrounding div and the
 	// loading indicator belong to the interactive component experience.
-	public static void Render(StaticRenderer renderer, int componentId, TextWriter writer)
+	public static void Render(HeadlessRenderer renderer, int componentId, TextWriter writer)
 	{
 		var context = new Context(renderer, writer);
 
@@ -301,13 +301,13 @@ internal sealed class SVGRenderer
 		return position + maxElements;
 	}
 
-	private sealed class Context(StaticRenderer renderer, TextWriter writer)
+	private sealed class Context(HeadlessRenderer renderer, TextWriter writer)
 	{
 		private readonly TextWriter writer = writer;
 
 		private bool first = true;
 
-		public StaticRenderer Renderer { get; } = renderer;
+		public HeadlessRenderer Renderer { get; } = renderer;
 
 		public string? ClosestSelectValueAsString { get; set; }
 

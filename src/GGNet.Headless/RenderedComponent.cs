@@ -1,12 +1,12 @@
-﻿namespace GGNet.Static;
+﻿namespace GGNet.Headless;
 
 public sealed class RenderedComponent
 {
-	private readonly StaticRenderer renderer;
+	private readonly HeadlessRenderer renderer;
 	private readonly ContainerComponent container;
 	private int id;
 
-	internal RenderedComponent(StaticRenderer renderer)
+	internal RenderedComponent(HeadlessRenderer renderer)
 	{
 		this.renderer = renderer;
 		container = new(this.renderer);

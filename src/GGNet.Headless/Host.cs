@@ -1,6 +1,6 @@
-﻿namespace GGNet.Static;
+﻿namespace GGNet.Headless;
 
-[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Static")]
+[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Headless")]
 public sealed class Host
 {
 	private readonly ServiceCollection _serviceCollection = new();
@@ -17,7 +17,7 @@ public sealed class Host
 		// Blazor renderers are single-threaded: attaching root components and reading
 		// render trees must not interleave across renders. A renderer per render keeps
 		// concurrent renders isolated; the (empty) service provider stays shared.
-		var renderer = new StaticRenderer(provider.Value, new NullLoggerFactory());
+		var renderer = new HeadlessRenderer(provider.Value, new NullLoggerFactory());
 
 		try
 		{

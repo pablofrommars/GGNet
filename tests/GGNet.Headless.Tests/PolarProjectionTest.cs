@@ -1,6 +1,6 @@
 using GGNet.Coords;
 
-namespace GGNet.Static.Tests;
+namespace GGNet.Headless.Tests;
 
 public class PolarProjectionTest
 {

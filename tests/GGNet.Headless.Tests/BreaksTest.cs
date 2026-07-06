@@ -1,6 +1,6 @@
 using GGNet.Scales.Common;
 
-namespace GGNet.Static.Tests;
+namespace GGNet.Headless.Tests;
 
 public class BreaksTest
 {

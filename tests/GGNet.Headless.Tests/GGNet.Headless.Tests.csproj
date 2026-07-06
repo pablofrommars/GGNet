@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\GGNet.Static\GGNet.Static.csproj" />
+    <ProjectReference Include="..\..\src\GGNet.Headless\GGNet.Headless.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
-namespace GGNet.Static.Tests;
+namespace GGNet.Headless.Tests;
 
-public class StaticSvgTest
+public class SmokeSvgTest
 {
 	[Fact]
 	public async Task RenderAsync()

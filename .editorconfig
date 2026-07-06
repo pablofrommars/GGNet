@@ -39,10 +39,6 @@ dotnet_diagnostic.IDE0305.severity = suggestion
 dotnet_diagnostic.IDE0079.severity = warning
 dotnet_remove_unnecessary_suppression_exclusions = none
 
-# The GGNet.Static namespace is the shipped package name; renaming it to satisfy
-# CA1716 ("Static" is a VB keyword) would be a breaking change with no benefit.
-[src/GGNet.Static/**.cs]
-dotnet_diagnostic.CA1716.severity = none
 
 [*.razor]
 trim_trailing_whitespace = true

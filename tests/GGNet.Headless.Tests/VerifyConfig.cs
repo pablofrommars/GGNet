@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using VerifyTests;
 using VerifyXunit;
 
-namespace GGNet.Static.Tests;
+namespace GGNet.Headless.Tests;
 
 public static class VerifyConfig
 {

@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace GGNet.Static.Tests;
+namespace GGNet.Headless.Tests;
 
 public class PolarGridSvgTest
 {

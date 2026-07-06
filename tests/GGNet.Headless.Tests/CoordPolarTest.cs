@@ -1,7 +1,7 @@
 using GGNet.Exceptions;
 using GGNet.Scales;
 
-namespace GGNet.Static.Tests;
+namespace GGNet.Headless.Tests;
 
 public class CoordPolarTest
 {

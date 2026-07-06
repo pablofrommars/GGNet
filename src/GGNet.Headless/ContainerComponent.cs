@@ -1,12 +1,12 @@
-﻿namespace GGNet.Static;
+﻿namespace GGNet.Headless;
 
-[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Static")]
+[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Headless")]
 internal sealed class ContainerComponent : IComponent
 {
-	private readonly StaticRenderer renderer;
+	private readonly HeadlessRenderer renderer;
 	private readonly int id;
 
-	public ContainerComponent(StaticRenderer renderer)
+	public ContainerComponent(HeadlessRenderer renderer)
 	{
 		this.renderer = renderer;
 

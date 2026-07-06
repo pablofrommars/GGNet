@@ -1,4 +1,4 @@
-﻿namespace GGNet.Static;
+﻿namespace GGNet.Headless;
 
 public static class IPlotContextExtensions
 {
