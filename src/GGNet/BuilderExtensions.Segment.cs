@@ -16,14 +16,21 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1> xend,
 	  Func<T2, TY1> y,
 	  Func<T2, TY1> yend,
+	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T2, RenderFragment>? tooltip = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
 		panel.AddTyped(() =>
 		{
-			var geom = new Segment<T2, TX1, TY1>(source, x, xend, y, yend)
+			var geom = new Segment<T2, TX1, TY1>(source, x, xend, y, yend, tooltip)
 			{
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout,
 				Aesthetic = new()
 				{
 					Stroke = color,
@@ -46,11 +53,15 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1> xend,
 	  Func<T2, TY1> y,
 	  Func<T2, TY1> yend,
+	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T2, RenderFragment>? tooltip = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Segment(source, x, xend, y, yend, strokeWidth, color, opacity, lineType);
+		context.Default_Panel().Geom_Segment(source, x, xend, y, yend, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType);
 
 		return context;
 	}
@@ -62,10 +73,14 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1> xend,
 	  Func<T2, TY1> y,
 	  Func<T2, TY1> yend,
+	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T2, RenderFragment>? tooltip = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
-	  => context.Geom_Segment(new Source<T2>(source), x, xend, y, yend, strokeWidth, color, opacity, lineType);
+	  => context.Geom_Segment(new Source<T2>(source), x, xend, y, yend, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType);
 
 	public static PanelFactory<T, TX, TY> Geom_Segment<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
@@ -73,11 +88,15 @@ public static partial class BuilderExtensions
 	  Func<T, TX> xend,
 	  Func<T, TY> y,
 	  Func<T, TY> yend,
+	  Func<T, MouseEventArgs, Task>? onclick = null,
+	  Func<T, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T, RenderFragment>? tooltip = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Segment(panel, panel.Context.RequireSource(), x, xend, y, yend, strokeWidth, color, opacity, lineType);
+		return Geom_Segment(panel, panel.Context.RequireSource(), x, xend, y, yend, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Segment<T, TX, TY>(
@@ -86,11 +105,15 @@ public static partial class BuilderExtensions
 	  Func<T, TX> xend,
 	  Func<T, TY> y,
 	  Func<T, TY> yend,
+	  Func<T, MouseEventArgs, Task>? onclick = null,
+	  Func<T, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T, RenderFragment>? tooltip = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Segment(x, xend, y, yend, strokeWidth, color, opacity, lineType);
+		context.Default_Panel().Geom_Segment(x, xend, y, yend, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType);
 
 		return context;
 	}

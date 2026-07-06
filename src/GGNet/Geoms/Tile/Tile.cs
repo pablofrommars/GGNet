@@ -17,6 +17,7 @@ where TY : struct
 	  Func<T, double> width,
 	  Func<T, double> height,
 	  IAestheticMapping<T, string>? fill = null,
+	  Func<T, RenderFragment>? tooltip = null,
 	  (bool x, bool y)? scale = null)
 	  : base(source, scale)
 	{
@@ -25,7 +26,8 @@ where TY : struct
 			X = x,
 			Y = y,
 			Width = width,
-			Height = height
+			Height = height,
+			Tooltip = tooltip
 		};
 
 		Aesthetics = new()
@@ -39,6 +41,14 @@ where TY : struct
 	public Aesthetics<T> Aesthetics { get; }
 
 	public Positions<T> Positions { get; } = new();
+
+	public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
+
+	public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
+
+	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
+
+	private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
 
 	public Elements.Rectangle Aesthetic { get; set; } = default!;
 
@@ -59,6 +69,33 @@ where TY : struct
 		}
 
 		Positions.Y = new PositionMapping<T, TY>(Selectors.Y, panel.Y);
+
+		if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
+		{
+			onMouseOver = (item, x, y, _) =>
+			{
+				panel.Component?.Tooltip?.Show(
+					x,
+					y,
+					0,
+					Selectors.Tooltip(item),
+					Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
+					Aesthetic.FillOpacity);
+
+				return Task.CompletedTask;
+			};
+
+			OnMouseOut = (_, __) =>
+			{
+				panel.Component?.Tooltip?.Hide();
+
+				return Task.CompletedTask;
+			};
+		}
+		else if (OnMouseOver is not null)
+		{
+			onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
+		}
 	}
 
 	public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;
@@ -109,7 +146,10 @@ where TY : struct
 				FillOpacity = Aesthetic.FillOpacity,
 				Stroke = Aesthetic.Stroke,
 				StrokeWidth = Aesthetic.StrokeWidth
-			}
+			},
+			OnClick = OnClick is not null ? e => OnClick(item, e) : null,
+			OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x + width / 2.0, y + height, e) : null,
+			OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
 		};
 
 		Layer.Add(rectangle);

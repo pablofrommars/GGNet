@@ -19,6 +19,8 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? low = null,
 	  Func<T2, TY1>? close = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
@@ -48,6 +50,8 @@ public static partial class BuilderExtensions
 			var geom = new OHLC<T2, TX1, TY1>(source, x, open, high, low, close)
 			{
 				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout,
 				Aesthetic = new()
 				{
 					Stroke = color,
@@ -73,11 +77,13 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? low = null,
 	  Func<T2, TY1>? close = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_OHLC(source, x, open, high, low, close, onclick, strokeWidth, color, opacity, lineType);
+		context.Default_Panel().Geom_OHLC(source, x, open, high, low, close, onclick, onmouseover, onmouseout, strokeWidth, color, opacity, lineType);
 
 		return context;
 	}
@@ -90,11 +96,13 @@ public static partial class BuilderExtensions
 	  Func<T, TY>? low = null,
 	  Func<T, TY>? close = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
+	  Func<T, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_OHLC(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, open, high, low, close, onclick, strokeWidth, color, opacity, lineType);
+		return Geom_OHLC(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, open, high, low, close, onclick, onmouseover, onmouseout, strokeWidth, color, opacity, lineType);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_OHLC<T, TX, TY>(
@@ -105,11 +113,13 @@ public static partial class BuilderExtensions
 	  Func<T, TY>? low = null,
 	  Func<T, TY>? close = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
+	  Func<T, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_OHLC(x, open, high, low, close, onclick, strokeWidth, color, opacity, lineType);
+		context.Default_Panel().Geom_OHLC(x, open, high, low, close, onclick, onmouseover, onmouseout, strokeWidth, color, opacity, lineType);
 
 		return context;
 	}

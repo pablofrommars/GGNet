@@ -92,6 +92,12 @@ internal sealed class Volume<T, TX, TY> : Geom<T, TX, TY>
 		var x = Positions.X.Map(item);
 		var volume = Positions.Volume.Map(item);
 
+		Func<MouseEventArgs, Task>? onclick = null;
+		if (OnClick is not null)
+		{
+			onclick = e => OnClick(item, e);
+		}
+
 		Func<MouseEventArgs, Task>? onmouseover = null;
 		if (OnMouseOver is not null)
 		{
@@ -111,6 +117,7 @@ internal sealed class Volume<T, TX, TY> : Geom<T, TX, TY>
 			Width = 0.9,
 			Height = volume,
 			Aesthetic = Aesthetic,
+			OnClick = onclick,
 			OnMouseOver = onmouseover,
 			OnMouseOut = onmouseout
 		});

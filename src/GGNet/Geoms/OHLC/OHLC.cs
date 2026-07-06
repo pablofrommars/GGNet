@@ -175,6 +175,12 @@ internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 		var low = Positions.Low.Map(item);
 		var close = Positions.Close.Map(item);
 
+		Func<MouseEventArgs, Task>? onclick = null;
+		if (OnClick is not null)
+		{
+			onclick = e => OnClick(item, e);
+		}
+
 		Func<MouseEventArgs, Task>? onmouseover = null;
 		if (OnMouseOver is not null)
 		{
@@ -194,6 +200,7 @@ internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 			Y1 = open,
 			Y2 = open,
 			Aesthetic = Aesthetic,
+			OnClick = onclick,
 			OnMouseOver = onmouseover,
 			OnMouseOut = onmouseout
 		});
@@ -205,6 +212,7 @@ internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 			Y1 = low,
 			Y2 = high,
 			Aesthetic = Aesthetic,
+			OnClick = onclick,
 			OnMouseOver = onmouseover,
 			OnMouseOut = onmouseout
 		});
@@ -216,9 +224,9 @@ internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 			Y1 = close,
 			Y2 = close,
 			Aesthetic = Aesthetic,
+			OnClick = onclick,
 			OnMouseOver = onmouseover,
 			OnMouseOut = onmouseout
-
 		});
 
 		Positions.X.Position.Shape(x - 0.5, x + 0.5);

@@ -17,6 +17,10 @@ public static partial class BuilderExtensions
 	  Func<T2, double> width,
 	  Func<T2, double> height,
 	  IAestheticMapping<T2, string>? _fill = null,
+	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T2, RenderFragment>? tooltip = null,
 	  string fill = "#23d0fc", double fillOpacity = 1.0,
 	  string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
@@ -25,8 +29,11 @@ public static partial class BuilderExtensions
 	{
 		panel.AddTyped(() =>
 		{
-			var geom = new Tile<T2, TX1, TY1>(source, x, y, width, height, _fill, scale)
+			var geom = new Tile<T2, TX1, TY1>(source, x, y, width, height, _fill, tooltip, scale)
 			{
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout,
 				Aesthetic = new()
 				{
 					Fill = fill,
@@ -51,13 +58,17 @@ public static partial class BuilderExtensions
 	  Func<T2, double> width,
 	  Func<T2, double> height,
 	  IAestheticMapping<T2, string>? _fill = null,
+	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T2, RenderFragment>? tooltip = null,
 	  string fill = "#23d0fc", double fillOpacity = 1.0,
 	  string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Tile(source, x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
+		context.Default_Panel().Geom_Tile(source, x, y, width, height, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
 
 		return context;
 	}
@@ -70,12 +81,16 @@ public static partial class BuilderExtensions
 	  Func<T2, double> width,
 	  Func<T2, double> height,
 	  IAestheticMapping<T2, string>? _fill = null,
+	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T2, RenderFragment>? tooltip = null,
 	  string fill = "#23d0fc", double fillOpacity = 1.0,
 	  string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
 	  where TY1 : struct
-	  => context.Geom_Tile(new Source<T2>(source), x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
+	  => context.Geom_Tile(new Source<T2>(source), x, y, width, height, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
 
 	public static PanelFactory<T, TX, TY> Geom_Tile<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
@@ -84,13 +99,17 @@ public static partial class BuilderExtensions
 	  Func<T, double> width,
 	  Func<T, double> height,
 	  IAestheticMapping<T, string>? _fill = null,
+	  Func<T, MouseEventArgs, Task>? onclick = null,
+	  Func<T, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T, RenderFragment>? tooltip = null,
 	  string fill = "#23d0fc", double fillOpacity = 1.0,
 	  string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Tile(panel, panel.Context.RequireSource(), (x ?? panel.Context.Selectors.X)!, (y ?? panel.Context.Selectors.Y)!, width, height, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
+		return Geom_Tile(panel, panel.Context.RequireSource(), (x ?? panel.Context.Selectors.X)!, (y ?? panel.Context.Selectors.Y)!, width, height, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Tile<T, TX, TY>(
@@ -100,13 +119,17 @@ public static partial class BuilderExtensions
 	  Func<T, double> width,
 	  Func<T, double> height,
 	  IAestheticMapping<T, string>? _fill = null,
+	  Func<T, MouseEventArgs, Task>? onclick = null,
+	  Func<T, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T, RenderFragment>? tooltip = null,
 	  string fill = "#23d0fc", double fillOpacity = 1.0,
 	  string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Tile(x, y, width, height, _fill, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
+		context.Default_Panel().Geom_Tile(x, y, width, height, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
 
 		return context;
 	}

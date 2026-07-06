@@ -16,6 +16,8 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? volume = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  string fill = "#23d0fc", double opacity = 1.0)
 	  where TX1 : struct
 	  where TY1 : struct
@@ -30,6 +32,8 @@ public static partial class BuilderExtensions
 			var geom = new Volume<T2, TX1, TY1>(source, x, volume)
 			{
 				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout,
 				Aesthetic = new()
 				{
 					Fill = fill,
@@ -49,11 +53,13 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? volume = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  string fill = "#23d0fc", double opacity = 1.0)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Volume(source, x, volume, onclick, fill, opacity);
+		context.Default_Panel().Geom_Volume(source, x, volume, onclick, onmouseover, onmouseout, fill, opacity);
 
 		return context;
 	}
@@ -63,11 +69,13 @@ public static partial class BuilderExtensions
 	  Func<T, TX>? x = null,
 	  Func<T, TY>? volume = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
+	  Func<T, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  string fill = "#23d0fc", double opacity = 1.0)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Volume(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, volume, onclick, fill, opacity);
+		return Geom_Volume(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, volume, onclick, onmouseover, onmouseout, fill, opacity);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Volume<T, TX, TY>(
@@ -75,11 +83,13 @@ public static partial class BuilderExtensions
 	  Func<T, TX>? x = null,
 	  Func<T, TY>? volume = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
+	  Func<T, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  string fill = "#23d0fc", double opacity = 1.0)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Volume(x, volume, onclick, fill, opacity);
+		context.Default_Panel().Geom_Volume(x, volume, onclick, onmouseover, onmouseout, fill, opacity);
 
 		return context;
 	}

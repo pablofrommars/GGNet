@@ -16,6 +16,7 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 		Func<T, TX> xend,
 		Func<T, TY> y,
 		Func<T, TY> yend,
+		Func<T, RenderFragment>? tooltip = null,
 		(bool x, bool y)? scale = null)
 		: base(source, scale)
 	{
@@ -24,7 +25,8 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 			X = x,
 			XEnd = xend,
 			Y = y,
-			YEnd = yend
+			YEnd = yend,
+			Tooltip = tooltip
 		};
 	}
 
@@ -35,6 +37,8 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 	public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
 
 	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
+
+	private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
 
 	public Positions<T> Positions { get; } = new();
 
@@ -48,6 +52,33 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 		Positions.XEnd = new PositionMapping<T, TX>(Selectors.XEnd!, panel.X);
 		Positions.Y = new PositionMapping<T, TY>(Selectors.Y!, panel.Y);
 		Positions.YEnd = new PositionMapping<T, TY>(Selectors.YEnd!, panel.Y);
+
+		if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
+		{
+			onMouseOver = (item, x, y, _) =>
+			{
+				panel.Component?.Tooltip?.Show(
+					x,
+					y,
+					0,
+					Selectors.Tooltip(item),
+					Aesthetic.Stroke,
+					Aesthetic.StrokeOpacity);
+
+				return Task.CompletedTask;
+			};
+
+			OnMouseOut = (_, __) =>
+			{
+				panel.Component?.Tooltip?.Hide();
+
+				return Task.CompletedTask;
+			};
+		}
+		else if (OnMouseOver is not null)
+		{
+			onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
+		}
 	}
 
 	public override void Train(T item)
@@ -73,7 +104,7 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 			Y2 = yend,
 			Aesthetic = Aesthetic,
 			OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-			OnMouseOver = OnMouseOver is not null ? e => OnMouseOver(item, e) : null,
+			OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, (x + xend) / 2.0, (y + yend) / 2.0, e) : null,
 			OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
 		};
 
