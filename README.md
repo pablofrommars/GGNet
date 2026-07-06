@@ -16,7 +16,7 @@ A plot is one fluent chain: `PlotContext.Build(source, x, y)` establishes the da
 var plot = PlotContext.Build(points, o => o.X, o => o.Y)
 	.Geom_Line(strokeWidth: 2, color: "#23d0fc")
 	.Geom_HLine([1.0], y: o => o, label: o => "Baseline", lineType: LineType.Dashed)
-	.Scale_Y_Continuous(format: "N2")
+	.Scale_Y_Continuous(formatter: new DoubleFormatter("N2"))
 	.Style();
 ```
 

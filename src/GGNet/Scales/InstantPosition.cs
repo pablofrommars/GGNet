@@ -2,19 +2,18 @@ namespace GGNet.Scales;
 
 using Common;
 
+using GGNet.Formats;
+
 internal class InstantPosition : Position<Instant>
 {
-	private readonly ZonedDateTimePattern pattern;
-	private readonly DateTimeZone timezone;
+	private readonly IFormatter<Instant> formatter;
 
-	public InstantPosition(Instant? start, Instant? end, string format = "H:mm:ss", string timezone = "UTC")
+	public InstantPosition(Instant? start, Instant? end, IFormatter<Instant>? formatter = null)
 	  : base(null, (0, 0, 0, 0))
 	{
 		Limits = (start, end);
 
-		pattern = ZonedDateTimePattern.CreateWithInvariantCulture(format, null);
-
-		this.timezone = DateTimeZoneProviders.Tzdb[timezone];
+		this.formatter = formatter ?? new InstantFormatter("H:mm:ss");
 	}
 
 	public override Guide Guide => Guide.None;
@@ -54,9 +53,7 @@ internal class InstantPosition : Position<Instant>
 
 		for (var i = 0; i < labels.Length; i++)
 		{
-			var zoned = Instant.FromUnixTimeMilliseconds((long)breaks[i]).InZone(timezone);
-
-			labels[i] = (breaks[i], pattern.Format(zoned));
+			labels[i] = (breaks[i], formatter.Format(Instant.FromUnixTimeMilliseconds((long)breaks[i])));
 		}
 
 		Labels = labels;

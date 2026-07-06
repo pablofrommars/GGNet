@@ -1,4 +1,5 @@
-﻿using GGNet.Scales.Common;
+﻿using GGNet.Formats;
+using GGNet.Scales.Common;
 
 using static System.Math;
 
@@ -7,11 +8,11 @@ namespace GGNet.Scales;
 internal class FillContinuous(
 	string[] colors,
 	int m = 5,
-	string format = "0.##") : Scale<double, string>()
+	IFormatter<double>? formatter = null) : Scale<double, string>()
 {
 	private readonly string[] colors = colors;
 	private readonly int m = m;
-	private readonly string format = format;
+	private readonly IFormatter<double> formatter = formatter ?? new DoubleFormatter("0.##");
 
 	protected (double min, double max) limits = (0.0, 0.0);
 
@@ -51,7 +52,7 @@ internal class FillContinuous(
 			var mapped = Map(value);
 
 			breaks[i] = mapped;
-			labels[i] = (mapped, value.ToString(format, CultureInfo.InvariantCulture));
+			labels[i] = (mapped, formatter.Format(value));
 		}
 
 		Breaks = breaks;

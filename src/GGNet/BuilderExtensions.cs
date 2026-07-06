@@ -49,16 +49,14 @@ public static partial class BuilderExtensions
 	/// </summary>
 	/// <param name="start">Window start; null keeps the data-driven bound.</param>
 	/// <param name="end">Window end; null keeps the data-driven bound.</param>
-	/// <param name="format">Tick label pattern (NodaTime).</param>
-	/// <param name="timezone">IANA time zone for tick labels.</param>
+	/// <param name="formatter">Break-label formatter; defaults to invariant H:mm:ss in UTC.</param>
 	public static PlotContext<T, Instant, TY> Scale_X_Instant<T, TY>(
 	  this PlotContext<T, Instant, TY> context,
 	  Instant? start = null, Instant? end = null,
-	  string format = "H:mm:ss",
-	  string timezone = "UTC")
+	  IFormatter<Instant>? formatter = null)
 	  where TY : struct
 	{
-		context.Positions.X.Factory = () => new InstantPosition(start, end, format, timezone);
+		context.Positions.X.Factory = () => new InstantPosition(start, end, formatter);
 
 		return context;
 	}
@@ -88,30 +86,6 @@ public static partial class BuilderExtensions
 	}
 
 	/// <summary>
-	/// Configures the continuous x scale (Wilkinson-extended breaks).
-	/// </summary>
-	/// <param name="format">Break-label numeric format string, applied invariantly.</param>
-	/// <param name="transformation">Value transformation (log10, sqrt) applied before mapping; breaks and labels stay in data units.</param>
-	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
-	/// <param name="hide">Train and map normally but render no axis.</param>
-	/// <param name="includeMinorBreaks">Midpoint gridlines between major breaks.</param>
-	public static PlotContext<T, double, TY> Scale_X_Continuous<T, TY>(
-	  this PlotContext<T, double, TY> context,
-	  string? format,
-	  ITransformation<double>? transformation = null,
-	  (double? min, double? max)? limits = null,
-	  (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	  bool hide = false,
-	  bool includeMinorBreaks = true)
-	  where TY : struct
-	{
-		context.Scale_X_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide, includeMinorBreaks);
-
-		return context;
-	}
-
-	/// <summary>
 	/// Configures the discrete x scale: one slot per distinct trained value, in sort order.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
@@ -135,28 +109,6 @@ public static partial class BuilderExtensions
 	}
 
 	/// <summary>
-	/// Configures the discrete x scale: one slot per distinct trained value, in sort order.
-	/// </summary>
-	/// <param name="format">Break-label numeric format string, applied invariantly.</param>
-	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
-	/// <param name="offset">Break and label offset from the category index, in axis units.</param>
-	/// <param name="hide">Train and map normally but render no axis.</param>
-	public static PlotContext<T, double, TY> Scale_X_Discrete<T, TY>(
-	 this PlotContext<T, double, TY> context,
-	  string? format = null,
-	 (double? min, double? max)? limits = null,
-	 (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	 double offset = 0.0,
-	 bool hide = false)
-	 where TY : struct
-	{
-		context.Scale_X_Discrete(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, offset, hide);
-
-		return context;
-	}
-
-	/// <summary>
 	/// Clamps the x range, in data units.
 	/// </summary>
 	/// <param name="min">Lower bound; null keeps the data-driven bound.</param>
@@ -166,7 +118,7 @@ public static partial class BuilderExtensions
 	{
 		if (context.Positions.X.Factory is null)
 		{
-			context.Scale_X_Continuous(format: "N2");
+			context.Scale_X_Continuous(formatter: new DoubleFormatter("N2"));
 		}
 
 		var old = context.Positions.X.Factory!;
@@ -237,30 +189,6 @@ public static partial class BuilderExtensions
 	/// <summary>
 	/// Configures the continuous y scale (Wilkinson-extended breaks).
 	/// </summary>
-	/// <param name="format">Break-label numeric format string, applied invariantly.</param>
-	/// <param name="transformation">Value transformation (log10, sqrt) applied before mapping; breaks and labels stay in data units.</param>
-	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
-	/// <param name="hide">Train and map normally but render no axis.</param>
-	/// <param name="includeMinorBreaks">Midpoint gridlines between major breaks.</param>
-	public static PlotContext<T, TX, double> Scale_Y_Continuous<T, TX>(
-	   this PlotContext<T, TX, double> context,
-	   string? format,
-	   ITransformation<double>? transformation = null,
-	   (double? min, double? max)? limits = null,
-	   (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	   bool hide = false,
-	  bool includeMinorBreaks = true)
-	   where TX : struct
-	{
-		context.Positions.Y.Factory = () => new Extended(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide, includeMinorBreaks);
-
-		return context;
-	}
-
-	/// <summary>
-	/// Configures the continuous y scale (Wilkinson-extended breaks).
-	/// </summary>
 	/// <param name="transformation">Value transformation (log10, sqrt) applied before mapping; breaks and labels stay in data units.</param>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
 	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
@@ -283,55 +211,31 @@ public static partial class BuilderExtensions
 	}
 
 	/// <summary>
-	/// Configures the continuous y scale (Wilkinson-extended breaks).
-	/// </summary>
-	/// <param name="format">Break-label numeric format string, applied invariantly.</param>
-	/// <param name="transformation">Value transformation (log10, sqrt) applied before mapping; breaks and labels stay in data units.</param>
-	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
-	/// <param name="hide">Train and map normally but render no axis.</param>
-	/// <param name="includeMinorBreaks">Midpoint gridlines between major breaks.</param>
-	public static PanelFactory<T, TX, double> Scale_Y_Continuous<T, TX>(
-	  this PanelFactory<T, TX, double> panel,
-	  string? format,
-	  ITransformation<double>? transformation = null,
-	  (double? min, double? max)? limits = null,
-	  (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	   bool hide = false,
-	  bool includeMinorBreaks = true)
-		  where TX : struct
-	{
-		panel.Scale_Y_Continuous(transformation, limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, hide, includeMinorBreaks);
-
-		return panel;
-	}
-
-	/// <summary>
 	/// Configures a square-root-transformed continuous x scale.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
 	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
-	/// <param name="format">Break-label numeric format string, applied invariantly.</param>
+	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
 	/// <param name="includeMinorBreaks">Midpoint gridlines between major breaks.</param>
 	public static PlotContext<T, double, TY> Scale_X_Sqrt<T, TY>(
 	  this PlotContext<T, double, TY> context,
 	  (double? min, double? max)? limits = null,
 	  (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	  string? format = null,
+	  IFormatter<double>? formatter = null,
 	  bool hide = false,
 	  bool includeMinorBreaks = true)
 	  where TY : struct
-	  => context.Scale_X_Continuous(format, Sqrt.Instance, limits, expand, hide, includeMinorBreaks);
+	  => context.Scale_X_Continuous(Sqrt.Instance, limits, expand, formatter, hide, includeMinorBreaks);
 
 	public static PlotContext<T, double, TY> Scale_X_Log10<T, TY>(
 	  this PlotContext<T, double, TY> context,
 	  (double? min, double? max)? limits = null,
 	  (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	  string? format = null)
+	  IFormatter<double>? formatter = null)
 	  where TY : struct
 	{
-		context.Positions.X.Factory = () => new Scales.Log10(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+		context.Positions.X.Factory = () => new Scales.Log10(limits, expand, formatter);
 
 		return context;
 	}
@@ -341,41 +245,41 @@ public static partial class BuilderExtensions
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
 	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
-	/// <param name="format">Break-label numeric format string, applied invariantly.</param>
+	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
 	public static PanelFactory<T, TX, double> Scale_Y_Sqrt<T, TX>(
 	  this PanelFactory<T, TX, double> panel,
 	  (double? min, double? max)? limits = null,
 	  (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	  string? format = null,
+	  IFormatter<double>? formatter = null,
 	  bool hide = false)
 	  where TX : struct
-	  => panel.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand, hide);
+	  => panel.Scale_Y_Continuous(Sqrt.Instance, limits, expand, formatter, hide);
 
 	/// <summary>
 	/// Configures a square-root-transformed continuous y scale.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
 	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
-	/// <param name="format">Break-label numeric format string, applied invariantly.</param>
+	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
 	public static PlotContext<T, TX, double> Scale_Y_Sqrt<T, TX>(
 	  this PlotContext<T, TX, double> context,
 	  (double? min, double? max)? limits = null,
 	  (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	  string? format = null,
+	  IFormatter<double>? formatter = null,
 	  bool hide = false)
 	  where TX : struct
-	  => context.Scale_Y_Continuous(format, Sqrt.Instance, limits, expand, hide);
+	  => context.Scale_Y_Continuous(Sqrt.Instance, limits, expand, formatter, hide);
 
 	public static PanelFactory<T, TX, double> Scale_Y_Log10<T, TX>(
 	  this PanelFactory<T, TX, double> panel,
 	  (double? min, double? max)? limits = null,
 	  (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	  string? format = null)
+	  IFormatter<double>? formatter = null)
 	  where TX : struct
 	{
-		panel.Y = () => new Scales.Log10(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+		panel.Y = () => new Scales.Log10(limits, expand, formatter);
 
 		return panel;
 	}
@@ -384,10 +288,10 @@ public static partial class BuilderExtensions
 	  this PlotContext<T, TX, double> context,
 	  (double? min, double? max)? limits = null,
 	  (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	  string? format = null)
+	  IFormatter<double>? formatter = null)
 	  where TX : struct
 	{
-		context.Positions.Y.Factory = () => new Scales.Log10(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null);
+		context.Positions.Y.Factory = () => new Scales.Log10(limits, expand, formatter);
 
 		return context;
 	}
@@ -411,28 +315,6 @@ public static partial class BuilderExtensions
 	   where TY : struct
 	{
 		context.Positions.Y.Factory = () => new DiscretePosition<TY>(null, limits, expand, formatter, offset, hide);
-
-		return context;
-	}
-
-	/// <summary>
-	/// Configures the discrete y scale: one slot per distinct trained value, in sort order.
-	/// </summary>
-	/// <param name="format">Break-label numeric format string, applied invariantly.</param>
-	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
-	/// <param name="offset">Break and label offset from the category index, in axis units.</param>
-	/// <param name="hide">Train and map normally but render no axis.</param>
-	public static PlotContext<T, TX, double> Scale_Y_Discrete<T, TX>(
-	 this PlotContext<T, TX, double> context,
-	  string? format,
-	 (double? min, double? max)? limits = null,
-	 (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
-	 double offset = 0.0,
-	 bool hide = false)
-	 where TX : struct
-	{
-		context.Scale_Y_Discrete(limits, expand, !string.IsNullOrEmpty(format) ? new DoubleFormatter(format) : null, offset, hide);
 
 		return context;
 	}
@@ -504,7 +386,7 @@ public static partial class BuilderExtensions
 	{
 		if (panel.Y is null)
 		{
-			panel.Scale_Y_Continuous(format: "N2");
+			panel.Scale_Y_Continuous(formatter: new DoubleFormatter("N2"));
 		}
 
 		var old = panel.Y!;
@@ -805,20 +687,20 @@ public static partial class BuilderExtensions
 	/// <param name="selector">Value mapped to a fill per item.</param>
 	/// <param name="palette">Gradient stops, interpolated across the bins.</param>
 	/// <param name="m">Number of gradient bins.</param>
-	/// <param name="format">Colorbar tick format, applied invariantly.</param>
+	/// <param name="formatter">Colorbar tick formatter; defaults to invariant 0.##.</param>
 	/// <param name="guide">Show a legend entry for this scale.</param>
 	/// <param name="name">Legend title.</param>
 	public static PlotContext<T, TX, TY> Scale_Fill_Continuous<T, TX, TY>(this PlotContext<T, TX, TY> context,
 	  Func<T, double> selector,
 	  string[] palette,
 	  int m = 5,
-	  string format = "0.##",
+	  IFormatter<double>? formatter = null,
 	  bool guide = true,
 	  string? name = null)
 	  where TX : struct
 	  where TY : struct
 	{
-		var scale = new FillContinuous(palette, m, format);
+		var scale = new FillContinuous(palette, m, formatter);
 
 		context.Aesthetics.Scales.Add(scale);
 
@@ -848,7 +730,7 @@ public static partial class BuilderExtensions
 	/// Maps a numeric selector to point sizes.
 	/// </summary>
 	/// <param name="selector">Value mapped to a size per item.</param>
-	/// <param name="format">Legend label format, applied invariantly.</param>
+	/// <param name="formatter">Legend label formatter; defaults to invariant 0.##.</param>
 	/// <param name="limits">Input clamp for the mapping.</param>
 	/// <param name="range">Output size range in pixels.</param>
 	/// <param name="oob">Map out-of-range values to the nearest edge instead of dropping them.</param>
@@ -862,11 +744,11 @@ public static partial class BuilderExtensions
 	  bool oob = false,
 	  bool guide = true,
 	  string? name = null,
-	  string format = "0.##")
+	  IFormatter<double>? formatter = null)
 	  where TX : struct
 	  where TY : struct
 	{
-		var scale = new SizeContinuous(limits, range, oob, format);
+		var scale = new SizeContinuous(limits, range, oob, formatter);
 
 		context.Aesthetics.Scales.Add(scale);
 
