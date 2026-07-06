@@ -19,7 +19,7 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, RenderFragment>? tooltip = null,
-	  string fill = "#23d0fc", double fillOpacity = 0.25, double width = 2.0,
+	  string fill = "#23d0fc", double fillOpacity = 0.25, double strokeWidth = 2.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
 	  where TY1 : struct
@@ -35,7 +35,7 @@ public static partial class BuilderExtensions
 					Fill = fill,
 					FillOpacity = fillOpacity,
 					Stroke = fill,
-					StrokeWidth = width
+					StrokeWidth = strokeWidth
 				},
 				OnClick = onclick,
 				OnMouseOver = onmouseover,
@@ -58,12 +58,12 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, RenderFragment>? tooltip = null,
-	  string fill = "#23d0fc", double fillOpacity = 0.25, double width = 2.0,
+	  string fill = "#23d0fc", double fillOpacity = 0.25, double strokeWidth = 2.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Radar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale);
+		context.Default_Panel().Geom_Radar(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeWidth, scale);
 
 		return context;
 	}
@@ -77,12 +77,12 @@ public static partial class BuilderExtensions
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T, RenderFragment>? tooltip = null,
-	  string fill = "#23d0fc", double fillOpacity = 0.25, double width = 2.0,
+	  string fill = "#23d0fc", double fillOpacity = 0.25, double strokeWidth = 2.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Radar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale);
+		return Geom_Radar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeWidth, scale);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Radar<T, TX, TY>(
@@ -94,12 +94,12 @@ public static partial class BuilderExtensions
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T, RenderFragment>? tooltip = null,
-	  string fill = "#23d0fc", double fillOpacity = 0.25, double width = 2.0,
+	  string fill = "#23d0fc", double fillOpacity = 0.25, double strokeWidth = 2.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Radar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, width, scale);
+		context.Default_Panel().Geom_Radar(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeWidth, scale);
 
 		return context;
 	}

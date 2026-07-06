@@ -14,7 +14,7 @@ public static partial class BuilderExtensions
 	  IReadOnlyList<T2> source,
 	  Func<T2, TX1> x,
 	  Func<T2, string> label,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
 	  where TX1 : struct
 	  where TY : struct
@@ -27,7 +27,7 @@ public static partial class BuilderExtensions
 				{
 					Stroke = color,
 					StrokeOpacity = opacity,
-					StrokeWidth = width,
+					StrokeWidth = strokeWidth,
 					LineType = lineType
 				},
 				Text = new()
@@ -52,12 +52,12 @@ public static partial class BuilderExtensions
 	  IReadOnlyList<T2> source,
 	  Func<T2, TX1> x,
 	  Func<T2, string> label,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
 	  where TX1 : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_VLine(source, x, label, width, color, opacity, lineType, size, anchor, weight, style);
+		context.Default_Panel().Geom_VLine(source, x, label, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 
 		return context;
 	}
@@ -66,24 +66,24 @@ public static partial class BuilderExtensions
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX> x,
 	  Func<T, string> label,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_VLine(panel, panel.Context.RequireSource(), x, label, width, color, opacity, lineType, size, anchor, weight, style);
+		return Geom_VLine(panel, panel.Context.RequireSource(), x, label, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_VLine<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX> x,
 	  Func<T, string> label,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_VLine(x, label, width, color, opacity, lineType, size, anchor, weight, style);
+		context.Default_Panel().Geom_VLine(x, label, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 
 		return context;
 	}

@@ -16,7 +16,7 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1> xend,
 	  Func<T2, TY1> y,
 	  Func<T2, TY1> yend,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
@@ -28,7 +28,7 @@ public static partial class BuilderExtensions
 				{
 					Stroke = color,
 					StrokeOpacity = opacity,
-					StrokeWidth = width,
+					StrokeWidth = strokeWidth,
 					LineType = lineType
 				}
 			};
@@ -46,11 +46,11 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1> xend,
 	  Func<T2, TY1> y,
 	  Func<T2, TY1> yend,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Segment(source, x, xend, y, yend, width, color, opacity, lineType);
+		context.Default_Panel().Geom_Segment(source, x, xend, y, yend, strokeWidth, color, opacity, lineType);
 
 		return context;
 	}
@@ -62,10 +62,10 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1> xend,
 	  Func<T2, TY1> y,
 	  Func<T2, TY1> yend,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
-	  => context.Geom_Segment(new Source<T2>(source), x, xend, y, yend, width, color, opacity, lineType);
+	  => context.Geom_Segment(new Source<T2>(source), x, xend, y, yend, strokeWidth, color, opacity, lineType);
 
 	public static PanelFactory<T, TX, TY> Geom_Segment<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
@@ -73,11 +73,11 @@ public static partial class BuilderExtensions
 	  Func<T, TX> xend,
 	  Func<T, TY> y,
 	  Func<T, TY> yend,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Segment(panel, panel.Context.RequireSource(), x, xend, y, yend, width, color, opacity, lineType);
+		return Geom_Segment(panel, panel.Context.RequireSource(), x, xend, y, yend, strokeWidth, color, opacity, lineType);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Segment<T, TX, TY>(
@@ -86,11 +86,11 @@ public static partial class BuilderExtensions
 	  Func<T, TX> xend,
 	  Func<T, TY> y,
 	  Func<T, TY> yend,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Segment(x, xend, y, yend, width, color, opacity, lineType);
+		context.Default_Panel().Geom_Segment(x, xend, y, yend, strokeWidth, color, opacity, lineType);
 
 		return context;
 	}

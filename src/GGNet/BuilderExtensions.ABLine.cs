@@ -16,7 +16,7 @@ public static partial class BuilderExtensions
 	  Func<T2, double> b,
 	  Func<T2, string>? label = null,
 	  (bool x, bool y)? transformation = null,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
 	  where TX : struct
 	  where TY : struct
@@ -29,7 +29,7 @@ public static partial class BuilderExtensions
 				{
 					Stroke = color,
 					StrokeOpacity = opacity,
-					StrokeWidth = width,
+					StrokeWidth = strokeWidth,
 					LineType = lineType
 				},
 				Text = new()
@@ -56,12 +56,12 @@ public static partial class BuilderExtensions
 	  Func<T2, double> b,
 	  Func<T2, string>? label = null,
 	  (bool x, bool y)? transformation = null,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
 	  where TX : struct
 	  where TY : struct
 	{
-		return panel.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
+		return panel.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 	}
 
 	public static PlotContext<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
@@ -71,12 +71,12 @@ public static partial class BuilderExtensions
 	  Func<T2, double> b,
 	  Func<T2, string>? label = null,
 	  (bool x, bool y)? transformation = null,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_ABLine(source, a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
+		context.Default_Panel().Geom_ABLine(source, a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 
 		return context;
 	}
@@ -88,12 +88,12 @@ public static partial class BuilderExtensions
 	  Func<T2, double> b,
 	  Func<T2, string>? label = null,
 	  (bool x, bool y)? transformation = null,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
 	  where TX : struct
 	  where TY : struct
 	{
-		return context.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
+		return context.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_ABLine<T, TX, TY>(
@@ -102,12 +102,12 @@ public static partial class BuilderExtensions
 	  Func<T, double> b,
 	  Func<T, string>? label = null,
 	  (bool x, bool y)? transformation = null,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_ABLine(panel, panel.Context.RequireSource(), a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
+		return Geom_ABLine(panel, panel.Context.RequireSource(), a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_ABLine<T, TX, TY>(
@@ -116,12 +116,12 @@ public static partial class BuilderExtensions
 	  Func<T, double> b,
 	  Func<T, string>? label = null,
 	  (bool x, bool y)? transformation = null,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  Size? size = null, Anchor anchor = End, string weight = "normal", string style = "normal")
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_ABLine(a, b, label, transformation, width, color, opacity, lineType, size, anchor, weight, style);
+		context.Default_Panel().Geom_ABLine(a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 
 		return context;
 	}

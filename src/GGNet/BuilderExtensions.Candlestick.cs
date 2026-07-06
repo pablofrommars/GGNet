@@ -18,7 +18,7 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? high = null,
 	  Func<T2, TY1>? low = null,
 	  Func<T2, TY1>? close = null,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
@@ -50,7 +50,7 @@ public static partial class BuilderExtensions
 				{
 					Stroke = color,
 					StrokeOpacity = opacity,
-					StrokeWidth = width,
+					StrokeWidth = strokeWidth,
 					LineType = lineType
 				},
 				Rectangle = new()
@@ -74,11 +74,11 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? high = null,
 	  Func<T2, TY1>? low = null,
 	  Func<T2, TY1>? close = null,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Candlestick(source, x, open, high, low, close, width, color, opacity, lineType);
+		context.Default_Panel().Geom_Candlestick(source, x, open, high, low, close, strokeWidth, color, opacity, lineType);
 
 		return context;
 	}
@@ -90,11 +90,11 @@ public static partial class BuilderExtensions
 	  Func<T, TY>? high = null,
 	  Func<T, TY>? low = null,
 	  Func<T, TY>? close = null,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Candlestick(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, open, high, low, close, width, color, opacity, lineType);
+		return Geom_Candlestick(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, open, high, low, close, strokeWidth, color, opacity, lineType);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Candlestick<T, TX, TY>(
@@ -104,11 +104,11 @@ public static partial class BuilderExtensions
 	  Func<T, TY>? high = null,
 	  Func<T, TY>? low = null,
 	  Func<T, TY>? close = null,
-	  double width = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Candlestick(x, open, high, low, close, width, color, opacity, lineType);
+		context.Default_Panel().Geom_Candlestick(x, open, high, low, close, strokeWidth, color, opacity, lineType);
 
 		return context;
 	}

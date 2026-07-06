@@ -19,7 +19,7 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
 		panel.AddTyped(() =>
@@ -34,7 +34,7 @@ public static partial class BuilderExtensions
 					Fill = fill,
 					FillOpacity = fillOpacity,
 					Stroke = stroke,
-					StrokeWidth = width
+					StrokeWidth = strokeWidth
 				}
 			};
 
@@ -54,10 +54,10 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(panel, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
+		return Geom_Map(panel, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
 	}
 
 	public static PanelFactory<T, double, double> Geom_Map<T>(
@@ -69,10 +69,10 @@ public static partial class BuilderExtensions
 	  Func<Geospacial.Polygon[], MouseEventArgs, Task>? onmouseout = null,
 	  Func<Geospacial.Polygon[], (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(panel, [.. new[] { polygons }], o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
+		return Geom_Map(panel, [.. new[] { polygons }], o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
 	}
 
 	public static PlotContext<T1, double, double> Geom_Map<T1, T2>(
@@ -85,10 +85,10 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		context.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
+		context.Default_Panel().Geom_Map(source, polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
 
 		return context;
 	}
@@ -103,10 +103,10 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(context, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
+		return Geom_Map(context, new Source<T2>(source), polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
 	}
 
 	public static PlotContext<T, double, double> Geom_Map<T>(
@@ -118,10 +118,10 @@ public static partial class BuilderExtensions
 	  Func<Geospacial.Polygon[], MouseEventArgs, Task>? onmouseout = null,
 	  Func<Geospacial.Polygon[], (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(context, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
+		return Geom_Map(context, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
 	}
 
 	public static PanelFactory<T, double, double> Geom_Map<T>(
@@ -133,10 +133,10 @@ public static partial class BuilderExtensions
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(panel, panel.Context.RequireSource(), polygons, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
+		return Geom_Map(panel, panel.Context.RequireSource(), polygons, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
 	}
 
 	public static PlotContext<T, double, double> Geom_Map<T>(
@@ -148,10 +148,10 @@ public static partial class BuilderExtensions
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double width = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		context.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, width, scale);
+		context.Default_Panel().Geom_Map(polygons, _fill, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
 
 		return context;
 	}

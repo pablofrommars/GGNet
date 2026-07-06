@@ -21,7 +21,7 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, RenderFragment>? tooltip = null,
-	  double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  double radius = 5,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  bool animation = false,
@@ -38,15 +38,15 @@ public static partial class BuilderExtensions
 				OnMouseOut = onmouseout,
 				Line = new()
 				{
-					StrokeWidth = width,
+					StrokeWidth = strokeWidth,
 					Stroke = color,
-					StrokeOpacity = alpha,
+					StrokeOpacity = opacity,
 					LineType = lineType
 				},
 				Circle = new()
 				{
 					Fill = color,
-					FillOpacity = alpha,
+					FillOpacity = opacity,
 					Radius = radius
 				}
 			};
@@ -69,7 +69,7 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, RenderFragment>? tooltip = null,
-	  double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  double radius = 5,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  bool animation = false,
@@ -77,7 +77,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
+		return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
 	}
 
 	public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
@@ -92,7 +92,7 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, RenderFragment>? tooltip = null,
-	  double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  double radius = 5,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  bool animation = false,
@@ -100,7 +100,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
+		context.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
 
 		return context;
 	}
@@ -117,7 +117,7 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, RenderFragment>? tooltip = null,
-	  double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  double radius = 5,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  bool animation = false,
@@ -125,7 +125,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return context.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
+		return context.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
@@ -139,7 +139,7 @@ public static partial class BuilderExtensions
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T, RenderFragment>? tooltip = null,
-	  double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  double radius = 5,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  bool animation = false,
@@ -147,7 +147,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_ErrorBar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
+		return Geom_ErrorBar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
@@ -161,7 +161,7 @@ public static partial class BuilderExtensions
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T, RenderFragment>? tooltip = null,
-	  double width = 1.07, string color = "#23d0fc", double alpha = 1.0, LineType lineType = Solid,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
 	  double radius = 5,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  bool animation = false,
@@ -169,7 +169,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, width, color, alpha, lineType, radius, position, animation, scale);
+		context.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, _color, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
 
 		return context;
 	}
