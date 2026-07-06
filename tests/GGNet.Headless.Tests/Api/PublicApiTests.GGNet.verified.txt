@@ -17,7 +17,10 @@ GGNet.Components.TooltipBase
 GGNet.Components.VerticalOpacityGradient
 GGNet.Components.Zone
 GGNet.CoordSystem
+GGNet.Count`1
 GGNet.Data.Panel`3
+GGNet.DensityPoint
+GGNet.DensityPoint`1
 GGNet.Direction
 GGNet.Elements.Margin
 GGNet.Elements.Text
@@ -61,6 +64,8 @@ GGNet.Style+StylePlot
 GGNet.Style+StylePolar
 GGNet.Style+StyleStrip
 GGNet.Style+StyleStripText
+GGNet.Summary
+GGNet.Summary`1
 GGNet.Transformations.ITransformation`1
 GGNet.Units
 GGNet._Imports

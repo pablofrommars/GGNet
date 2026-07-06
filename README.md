@@ -27,6 +27,35 @@ var plot = PlotContext.Build(points, o => o.X, o => o.Y)
 - **The vocabulary is SVG's.** `strokeWidth`, `opacity`, `fillOpacity`, `strokeOpacity`, `strokeColor` mean exactly what they mean in SVG. `width` and `height` are reserved for geometric extent in data units (`Geom_Bar`, `Geom_Tile`, `Geom_Violin`).
 - **Interactivity is a uniform block.** Every data-mark geom takes `onclick`, `onmouseover`, `onmouseout`, and (where a hover surface makes sense) `tooltip`. When `tooltip` is set and no explicit hover handlers are given, the default hover shows it. Annotation geoms (`Geom_ABLine`, `Geom_HLine`, `Geom_VLine`, `Geom_Text`) and statistical summaries (`Geom_Boxplot`, `Geom_Violin`, `Geom_RidgeLine`) deliberately take no event block.
 
+### Stats
+
+Stats are sources, not layers: each `Stat.*` call returns a typed source that any geom draws unchanged, recomputed on every render pass so streaming data stays current.
+
+```csharp
+// a histogram is Stat.Bin + Geom_Bar — there is no Histogram geom
+PlotContext.Build(Stat.Bin(readings, r => r.Value, bins: 20), b => b.Mid, b => b.Count)
+	.Geom_Bar(width: 1.0)
+	.Style();
+```
+
+| Stat | Output | Draw with |
+|-|-|-|
+| `Stat.Bin` | `Bin` / `Bin<TKey>` (min, mid, max, count, density) | `Geom_Bar(x: b => b.Mid, y: b => b.Count)` |
+| `Stat.Density` | `DensityPoint` / `DensityPoint<TKey>` (at, density) | `Geom_Area`, `Geom_Line`, `Geom_Violin(width: d => d.Density)` |
+| `Stat.Count` | `Count<TKey>` (key, n) | `Geom_Bar` over categories |
+| `Stat.Summary` | `Summary` / `Summary<TKey>` (x, center, lower, upper) | `Geom_ErrorBar(y: s => s.Center, ymin: s => s.Lower, ymax: s => s.Upper)` |
+
+**Per-facet statistics are grouped statistics.** Compute with `groupBy:` and facet the output on the same key — the key is deliberately stated twice; a mismatch between them is almost certainly a bug:
+
+```csharp
+PlotContext.Build(Stat.Bin(readings, r => r.Value, r => r.Tank, bins: 10), b => b.Mid, b => b.Count)
+	.Geom_Bar(width: 1.0)
+	.Facet_Wrap(b => b.Group)
+	.Style();
+```
+
+Statistics run over the whole source (per group when grouped). Stats that would depend on panel-trained state — a function traced over each panel's free-scale range — are out of scope by design.
+
 ### Geoms
 
 | Geom | Selectors | Mappings | Constants | Events | Tooltip |

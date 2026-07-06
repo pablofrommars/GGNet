@@ -94,6 +94,112 @@ public class StatTests
 	}
 
 	[Fact]
+	public void DensityMatchesAnalyticReference()
+	{
+		// Arrange
+
+		// Two points at ±1 with bandwidth 1: f(0) = φ(1), f(1) = (φ(0) + φ(2)) / 2.
+		double[] values = [-1.0, 1.0];
+
+		// Act
+
+		// Grid −4..4 with 9 points lands exactly on 0 and 1.
+		var density = Stat.Density(values, v => v, bandwidth: 1.0, n: 9, from: -4, to: 4);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		density.Should().HaveCount(9);
+		density[4].At.Should().Be(0.0);
+		density[4].Density.Should().BeApproximately(0.2419707245191434, 1e-12);
+		density[5].At.Should().Be(1.0);
+		density[5].Density.Should().BeApproximately(0.22646662345731037, 1e-12);
+	}
+
+	[Fact]
+	public void DensityIntegratesToOne()
+	{
+		// Arrange
+
+		var rng = new Random(11);
+		var values = Enumerable.Range(0, 200).Select(_ => rng.NextDouble() * 4 - 2).ToArray();
+
+		// Act
+
+		var density = Stat.Density(values, v => v, n: 512);
+
+		// Assert
+
+		var step = density[1].At - density[0].At;
+
+		density.Sum(d => d.Density * step).Should().BeApproximately(1.0, 1e-2);
+	}
+
+	[Fact]
+	public void Nrd0MatchesSilvermansRule()
+	{
+		// Arrange
+
+		double[] values = [1.0, 2.0, 3.0, 4.0, 5.0];
+
+		// Act
+
+		var h = Stat.Nrd0(values);
+
+		// Assert
+
+		// sd = √2.5, IQR (type 7) = 2 → min(1.5811, 1.4925) · 0.9 · 5^(−1/5).
+		h.Should().BeApproximately(0.9736, 1e-3);
+	}
+
+	[Fact]
+	public void CountOrdersByKey()
+	{
+		// Arrange
+
+		string[] items = ["b", "a", "b", "c", "b", "a"];
+
+		// Act
+
+		var counts = Stat.Count(items, s => s);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		counts.Select(c => c.Key).Should().Equal("a", "b", "c");
+		counts.Select(c => c.N).Should().Equal(2, 3, 1);
+	}
+
+	[Fact]
+	public void SummaryComputesMeanAndSpread()
+	{
+		// Arrange
+
+		(double x, double y)[] items = [(1, 2.0), (1, 4.0), (2, 10.0)];
+
+		// Act
+
+		var summary = Stat.Summary(items, i => i.x, i => i.y);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		summary.Should().HaveCount(2);
+
+		// x=1: mean 3, sample sd √2.
+		summary[0].Center.Should().Be(3.0);
+		summary[0].Lower.Should().BeApproximately(3.0 - Math.Sqrt(2.0), 1e-12);
+		summary[0].Upper.Should().BeApproximately(3.0 + Math.Sqrt(2.0), 1e-12);
+
+		// Single observation: zero spread.
+		summary[1].Center.Should().Be(10.0);
+		summary[1].Lower.Should().Be(10.0);
+	}
+
+	[Fact]
 	public void StatSourceRecomputesOverLiveData()
 	{
 		// Arrange

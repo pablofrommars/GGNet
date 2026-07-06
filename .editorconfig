@@ -88,3 +88,8 @@ dotnet_remove_unnecessary_suppression_exclusions = none
 [*.razor]
 trim_trailing_whitespace = true
 insert_final_newline = true
+
+# Stats are DSL-surface types (Stat.Bin next to PlotContext.Build): they live
+# in the root namespace deliberately, foldered only for navigation.
+[src/GGNet/Stats/*.cs]
+dotnet_diagnostic.IDE0130.severity = none

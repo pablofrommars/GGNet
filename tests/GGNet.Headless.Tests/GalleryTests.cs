@@ -118,6 +118,26 @@ public class GalleryTests
 			.Style());
 
 	[Fact]
+	public Task DensityArea()
+		=> VerifyPlot(PlotContext.Build(Stat.Density(readings, r => r.Value, n: 128), d => d.At, d => d.Density)
+			.Geom_Area()
+			.Style());
+
+	[Fact]
+	public Task ViolinFromDensity()
+		// Stat.Density is the producer Geom_Violin's precomputed-profile
+		// contract always wanted.
+		=> VerifyPlot(PlotContext.Build(Stat.Density(readings, r => r.Value, r => r.Tank, n: 64), d => d.Group, d => d.At)
+			.Geom_Violin(width: d => d.Density)
+			.Style());
+
+	[Fact]
+	public Task SummaryErrorBar()
+		=> VerifyPlot(PlotContext.Build(Stat.Summary(readings, r => r.Tank, r => r.Value), s => s.X, s => s.Center)
+			.Geom_ErrorBar(ymin: s => s.Lower, ymax: s => s.Upper)
+			.Style());
+
+	[Fact]
 	public Task BarFlipped()
 		// Pins Flip() output ahead of the coord-strategy absorption (session D).
 		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Bar().Flip().Style());
