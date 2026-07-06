@@ -1,7 +1,6 @@
 root = true
 
 [*.cs]
-# --- Formatting (one-time normalization 2026-07-06; tabs won 151 files to 113 and match the author's convention)
 indent_style = tab
 tab_width = 4
 trim_trailing_whitespace = true
