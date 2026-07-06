@@ -4,7 +4,7 @@ namespace GGNet.Geoms;
 
 internal interface IGeom
 {
-	List<IShape> Layer { get; }
+	List<Shape> Layer { get; }
 
 	CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 

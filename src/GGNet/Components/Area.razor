@@ -15,52 +15,25 @@
 
         for (var i = 0; i < scene.Count; i++)
         {
-            switch (scene[i])
+            // Exhaustive over the ScreenPrimitive union (CS8509 is an error):
+            // a primitive the walker cannot render is a compile failure.
+            _ = scene[i] switch
             {
-                case ScreenCircle circle:
-                    RenderCircle(__builder, circle);
-                    break;
-
-                case ScreenLine line:
-                    RenderLine(__builder, line);
-                    break;
-
-                case ScreenRect rect:
-                    RenderRect(__builder, rect);
-                    break;
-
-                case ScreenFill fill:
-                    RenderFill(__builder, fill);
-                    break;
-
-                case ScreenStroke stroke:
-                    RenderStroke(__builder, stroke);
-                    break;
-
-                case ScreenPolygon polygon:
-                    RenderPolygon(__builder, polygon);
-                    break;
-
-                case ScreenRule rule:
-                    RenderRule(__builder, rule);
-                    break;
-
-                case ScreenText text:
-                    RenderText(__builder, text);
-                    break;
-
-                case ScreenLabel label:
-                    RenderLabel(__builder, label);
-                    break;
-
-                case ScreenAngledLabel label:
-                    RenderAngledLabel(__builder, label);
-                    break;
-            }
+                ScreenCircle circle => RenderCircle(__builder, circle),
+                ScreenLine line => RenderLine(__builder, line),
+                ScreenRect rect => RenderRect(__builder, rect),
+                ScreenFill fill => RenderFill(__builder, fill),
+                ScreenStroke stroke => RenderStroke(__builder, stroke),
+                ScreenPolygon polygon => RenderPolygon(__builder, polygon),
+                ScreenRule rule => RenderRule(__builder, rule),
+                ScreenText text => RenderText(__builder, text),
+                ScreenLabel label => RenderLabel(__builder, label),
+                ScreenAngledLabel angled => RenderAngledLabel(__builder, angled)
+            };
         }
     }
 
-    private void RenderCircle(RenderTreeBuilder __builder, ScreenCircle circle)
+    private bool RenderCircle(RenderTreeBuilder __builder, ScreenCircle circle)
     {
         <g transform=@Attr($"translate({circle.X}, {circle.Y})")>
             <circle
@@ -77,9 +50,11 @@
                     @onmouseover=@circle.OnMouseOver
                     @onmouseout=@circle.OnMouseOut />
         </g>
+
+        return true;
     }
 
-    private void RenderLine(RenderTreeBuilder __builder, ScreenLine line)
+    private bool RenderLine(RenderTreeBuilder __builder, ScreenLine line)
     {
         <line x1=@Num(line.X1)
               y1=@Num(line.Y1)
@@ -94,9 +69,11 @@
               @onclick=@line.OnClick
               @onmouseover=@line.OnMouseOver
               @onmouseout=@line.OnMouseOut />
+
+        return true;
     }
 
-    private void RenderRect(RenderTreeBuilder __builder, ScreenRect rect)
+    private bool RenderRect(RenderTreeBuilder __builder, ScreenRect rect)
     {
         <rect x=@Num(rect.X)
               y=@Num(rect.Y)
@@ -112,17 +89,21 @@
               @onclick=@rect.OnClick
               @onmouseover=@rect.OnMouseOver
               @onmouseout=@rect.OnMouseOut />
+
+        return true;
     }
 
-    private void RenderFill(RenderTreeBuilder __builder, ScreenFill fill)
+    private bool RenderFill(RenderTreeBuilder __builder, ScreenFill fill)
     {
         <path d=@fill.D
               fill=@fill.Fill
               fill-opacity=@Num(fill.FillOpacity)
               clip-path="url(#@(Clip))" />
+
+        return true;
     }
 
-    private void RenderStroke(RenderTreeBuilder __builder, ScreenStroke stroke)
+    private bool RenderStroke(RenderTreeBuilder __builder, ScreenStroke stroke)
     {
         <path d=@stroke.D
               fill="none"
@@ -131,9 +112,11 @@
               stroke-opacity=@Num(stroke.StrokeOpacity)
               stroke-dasharray=@(stroke.LineType.Render())
               clip-path="url(#@(Clip))" />
+
+        return true;
     }
 
-    private void RenderPolygon(RenderTreeBuilder __builder, ScreenPolygon polygon)
+    private bool RenderPolygon(RenderTreeBuilder __builder, ScreenPolygon polygon)
     {
         <path d=@polygon.D
               class=@polygon.Css
@@ -145,9 +128,11 @@
               @onclick=@polygon.OnClick
               @onmouseover=@polygon.OnMouseOver
               @onmouseout=@polygon.OnMouseOut />
+
+        return true;
     }
 
-    private void RenderRule(RenderTreeBuilder __builder, ScreenRule rule)
+    private bool RenderRule(RenderTreeBuilder __builder, ScreenRule rule)
     {
         <line x1=@Num(rule.X1)
               y1=@Num(rule.Y1)
@@ -158,9 +143,11 @@
               stroke-opacity=@Num(rule.StrokeOpacity)
               stroke-dasharray=@(rule.LineType.Render())
               clip-path="url(#@(Clip))" />
+
+        return true;
     }
 
-    private void RenderText(RenderTreeBuilder __builder, ScreenText text)
+    private bool RenderText(RenderTreeBuilder __builder, ScreenText text)
     {
         <text><text
                   class="pointer-events-none"
@@ -173,9 +160,11 @@
                   clip-path="url(#@(Clip))">
                 @text.Value
             </text></text>
+
+        return true;
     }
 
-    private void RenderLabel(RenderTreeBuilder __builder, ScreenLabel label)
+    private bool RenderLabel(RenderTreeBuilder __builder, ScreenLabel label)
     {
         <text><text
                   class="pointer-events-none"
@@ -189,9 +178,11 @@
                   clip-path="url(#@(Clip))">
                 @label.Value
             </text></text>
+
+        return true;
     }
 
-    private void RenderAngledLabel(RenderTreeBuilder __builder, ScreenAngledLabel label)
+    private bool RenderAngledLabel(RenderTreeBuilder __builder, ScreenAngledLabel label)
     {
         <text><text
                   transform=@label.Transform
@@ -205,5 +196,7 @@
                   clip-path="url(#@(Clip))">
                 @label.Value
             </text></text>
+
+        return true;
     }
 }

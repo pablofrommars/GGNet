@@ -18,6 +18,10 @@ dotnet_diagnostic.CA1000.severity = none
 # --- Culture-sensitive formatting produces broken SVG on comma-decimal locales
 dotnet_diagnostic.CA1305.severity = error
 
+# --- Union exhaustiveness is a gate, not a suggestion: a missing switch-
+# expression arm over a closed union must fail the build.
+dotnet_diagnostic.CS8509.severity = error
+
 # --- Real correctness rules
 dotnet_diagnostic.CA2215.severity = warning
 dotnet_diagnostic.CA2263.severity = warning
@@ -27,6 +31,13 @@ dotnet_diagnostic.CA1805.severity = warning
 dotnet_diagnostic.CA1708.severity = warning
 dotnet_diagnostic.CA1716.severity = warning
 dotnet_diagnostic.CA1725.severity = warning
+
+# --- SDK parity: the net11 preview SDK surfaces hundreds of new style
+# suggestions as build warnings, several contradicting repo style (IDE0008
+# vs var, IDE0160 vs file-scoped namespaces). Style analyzers are silent by
+# default; the enforced style gate is exactly the rules listed explicitly
+# in this file — rule-level severities override the category default.
+dotnet_analyzer_diagnostic.category-Style.severity = silent
 
 # --- Style: namespace must match folder
 dotnet_diagnostic.IDE0130.severity = warning

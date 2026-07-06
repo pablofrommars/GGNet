@@ -1,6 +1,6 @@
 namespace GGNet.Elements;
 
-internal readonly record struct HLine : IElement
+internal readonly record struct HLine
 {
 	public required string Stroke { get; init; }
 

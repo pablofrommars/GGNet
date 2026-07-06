@@ -172,7 +172,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 		points.Add((x, y, item));
 	}
 
-	private void Interactivity(List<IShape> circles, T item, double x, double y)
+	private void Interactivity(List<Shape> circles, T item, double x, double y)
 	{
 		if (OnClick is not null || onMouseOver is not null || OnMouseOut is not null)
 		{
@@ -205,7 +205,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 	private void Stack()
 	{
 		var sum = new SortedBuffer<(double x, double y)>(comparer: sumComparer);
-		var circles = new List<IShape>();
+		var circles = new List<Shape>();
 
 		for (var i = 0; i < series.Count; i++)
 		{
@@ -356,7 +356,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 
 	private void Identity()
 	{
-		var circles = new List<IShape>();
+		var circles = new List<Shape>();
 
 		for (var i = 0; i < series.Count; i++)
 		{

@@ -4,7 +4,7 @@ using static System.Math;
 
 namespace GGNet.Data;
 
-internal sealed class Elements(double size) : List<Dimension<IElement>>
+internal sealed class Elements(double size) : List<Dimension<Element>>
 {
 	private readonly double size = size;
 
@@ -12,9 +12,9 @@ internal sealed class Elements(double size) : List<Dimension<IElement>>
 
 	public double Height { get; set; }
 
-	public Dimension<IElement> Add(IElement element)
+	public Dimension<Element> Add(Element element)
 	{
-		var dim = new Dimension<IElement>
+		var dim = new Dimension<Element>
 		{
 			Value = element,
 			Width = size,

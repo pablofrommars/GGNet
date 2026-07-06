@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Elements;
 
-internal readonly record struct Rectangle : IElement
+internal readonly record struct Rectangle
 {
 	public Rectangle() { }
 

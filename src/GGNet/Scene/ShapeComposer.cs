@@ -11,9 +11,9 @@ internal static class ShapeComposer
 {
 	private static readonly ObjectPool<StringBuilder> pool = new DefaultObjectPoolProvider().CreateStringBuilderPool();
 
-	public static List<IScreenPrimitive> Compose(IReadOnlyList<IGeom> geoms, ICoord coord, Zone zone)
+	public static List<ScreenPrimitive> Compose(IReadOnlyList<IGeom> geoms, ICoord coord, Zone zone)
 	{
-		var scene = new List<IScreenPrimitive>();
+		var scene = new List<ScreenPrimitive>();
 
 		for (var g = 0; g < geoms.Count; g++)
 		{
@@ -23,59 +23,29 @@ internal static class ShapeComposer
 			{
 				var shape = geom.Layer[l];
 
-				switch (shape)
+				// Exhaustive over the Shape union: an unhandled case is a
+				// compile error (CS8509 as error), not a silently dropped shape.
+				_ = shape switch
 				{
-					case Circle circle:
-						ComposeCircle(scene, coord, shape, circle);
-						break;
-
-					case Line line:
-						ComposeLine(scene, coord, shape, line);
-						break;
-
-					case Rectangle rectangle:
-						ComposeRectangle(scene, coord, shape, rectangle);
-						break;
-
-					case Shapes.Area area:
-						ComposeArea(scene, coord, area);
-						break;
-
-					case Shapes.Path path:
-						ComposePath(scene, coord, path);
-						break;
-
-					case Polygon polygon:
-						ComposePolygon(scene, coord, shape, polygon);
-						break;
-
-					case MultiPolygon multi:
-						ComposeMultiPolygon(scene, coord, shape, multi);
-						break;
-
-					case Text text:
-						ComposeText(scene, coord, text);
-						break;
-
-					case VLine vline:
-						ComposeVLine(scene, coord, zone, vline);
-						break;
-
-					case HLine hline:
-						ComposeHLine(scene, coord, zone, hline);
-						break;
-
-					case ABLine abline:
-						ComposeABLine(scene, coord, zone, abline);
-						break;
-				}
+					Circle circle => ComposeCircle(scene, coord, circle, circle),
+					Line line => ComposeLine(scene, coord, line, line),
+					Rectangle rectangle => ComposeRectangle(scene, coord, rectangle, rectangle),
+					Shapes.Area area => ComposeArea(scene, coord, area),
+					Shapes.Path path => ComposePath(scene, coord, path),
+					Polygon polygon => ComposePolygon(scene, coord, polygon, polygon),
+					MultiPolygon multi => ComposeMultiPolygon(scene, coord, multi, multi),
+					Text text => ComposeText(scene, coord, text),
+					VLine vline => ComposeVLine(scene, coord, zone, vline),
+					HLine hline => ComposeHLine(scene, coord, zone, hline),
+					ABLine abline => ComposeABLine(scene, coord, zone, abline)
+				};
 			}
 		}
 
 		return scene;
 	}
 
-	private static void ComposeCircle(List<IScreenPrimitive> scene, ICoord coord, IShape shape, Circle circle)
+	private static bool ComposeCircle(List<ScreenPrimitive> scene, ICoord coord, IShape shape, Circle circle)
 	{
 		var (px, py) = coord.Project(circle.X, circle.Y);
 
@@ -90,9 +60,11 @@ internal static class ShapeComposer
 			shape.OnClickHandler,
 			shape.OnMouseOverHandler,
 			shape.OnMouseOutHandler));
+
+		return true;
 	}
 
-	private static void ComposeLine(List<IScreenPrimitive> scene, ICoord coord, IShape shape, Line line)
+	private static bool ComposeLine(List<ScreenPrimitive> scene, ICoord coord, IShape shape, Line line)
 	{
 		var (px1, py1) = coord.Project(line.X1, line.Y1);
 		var (px2, py2) = coord.Project(line.X2, line.Y2);
@@ -110,9 +82,11 @@ internal static class ShapeComposer
 			shape.OnClickHandler,
 			shape.OnMouseOverHandler,
 			shape.OnMouseOutHandler));
+
+		return true;
 	}
 
-	private static void ComposeRectangle(List<IScreenPrimitive> scene, ICoord coord, IShape shape, Rectangle rectangle)
+	private static bool ComposeRectangle(List<ScreenPrimitive> scene, ICoord coord, IShape shape, Rectangle rectangle)
 	{
 		var x = coord.ToX(rectangle.X);
 		var y = coord.ToY(rectangle.Y + rectangle.Height);
@@ -133,13 +107,15 @@ internal static class ShapeComposer
 			shape.OnClickHandler,
 			shape.OnMouseOverHandler,
 			shape.OnMouseOutHandler));
+
+		return true;
 	}
 
-	private static void ComposeArea(List<IScreenPrimitive> scene, ICoord coord, Shapes.Area area)
+	private static bool ComposeArea(List<ScreenPrimitive> scene, ICoord coord, Shapes.Area area)
 	{
 		if (area.Points.Count == 0)
 		{
-			return;
+			return true;
 		}
 
 		var sb = pool.Get();
@@ -179,13 +155,15 @@ internal static class ShapeComposer
 			sb.Clear();
 			pool.Return(sb);
 		}
+
+		return true;
 	}
 
-	private static void ComposePath(List<IScreenPrimitive> scene, ICoord coord, Shapes.Path path)
+	private static bool ComposePath(List<ScreenPrimitive> scene, ICoord coord, Shapes.Path path)
 	{
 		if (path.Points.Count == 0)
 		{
-			return;
+			return true;
 		}
 
 		var sb = pool.Get();
@@ -223,6 +201,8 @@ internal static class ShapeComposer
 			sb.Clear();
 			pool.Return(sb);
 		}
+
+		return true;
 	}
 
 	private static void AppendPolygon(StringBuilder sb, ICoord coord, Geospacial.Polygon poly)
@@ -241,7 +221,7 @@ internal static class ShapeComposer
 		sb.Append(" Z");
 	}
 
-	private static void ComposePolygon(List<IScreenPrimitive> scene, ICoord coord, IShape shape, Polygon polygon)
+	private static bool ComposePolygon(List<ScreenPrimitive> scene, ICoord coord, IShape shape, Polygon polygon)
 	{
 		var sb = pool.Get();
 		try
@@ -264,9 +244,11 @@ internal static class ShapeComposer
 			sb.Clear();
 			pool.Return(sb);
 		}
+
+		return true;
 	}
 
-	private static void ComposeMultiPolygon(List<IScreenPrimitive> scene, ICoord coord, IShape shape, MultiPolygon multi)
+	private static bool ComposeMultiPolygon(List<ScreenPrimitive> scene, ICoord coord, IShape shape, MultiPolygon multi)
 	{
 		var sb = pool.Get();
 		try
@@ -296,9 +278,11 @@ internal static class ShapeComposer
 			sb.Clear();
 			pool.Return(sb);
 		}
+
+		return true;
 	}
 
-	private static void ComposeText(List<IScreenPrimitive> scene, ICoord coord, Text text)
+	private static bool ComposeText(List<ScreenPrimitive> scene, ICoord coord, Text text)
 	{
 		var (px, py) = coord.Project(text.X, text.Y);
 
@@ -310,9 +294,11 @@ internal static class ShapeComposer
 			text.Aesthetic.FontWeight,
 			text.Aesthetic.FontStyle,
 			text.Value));
+
+		return true;
 	}
 
-	private static void ComposeVLine(List<IScreenPrimitive> scene, ICoord coord, Zone zone, VLine vline)
+	private static bool ComposeVLine(List<ScreenPrimitive> scene, ICoord coord, Zone zone, VLine vline)
 	{
 		var x = coord.ToX(vline.X);
 
@@ -328,7 +314,7 @@ internal static class ShapeComposer
 
 		if (string.IsNullOrEmpty(vline.Label))
 		{
-			return;
+			return true;
 		}
 
 		var offset = 0.025 * zone.Height;
@@ -358,9 +344,11 @@ internal static class ShapeComposer
 			vline.Text.FontStyle,
 			string.Create(CultureInfo.InvariantCulture, $"translate({x}px, {y}px) rotate({angle}deg)"),
 			vline.Label));
+
+		return true;
 	}
 
-	private static void ComposeHLine(List<IScreenPrimitive> scene, ICoord coord, Zone zone, HLine hline)
+	private static bool ComposeHLine(List<ScreenPrimitive> scene, ICoord coord, Zone zone, HLine hline)
 	{
 		var y = coord.ToY(hline.Y);
 
@@ -376,7 +364,7 @@ internal static class ShapeComposer
 
 		if (string.IsNullOrEmpty(hline.Label))
 		{
-			return;
+			return true;
 		}
 
 		var offset = 0.025 * zone.Width;
@@ -403,9 +391,11 @@ internal static class ShapeComposer
 			hline.Text.FontStyle,
 			string.Create(CultureInfo.InvariantCulture, $"translate({x}, {y})"),
 			hline.Label));
+
+		return true;
 	}
 
-	private static void ComposeABLine(List<IScreenPrimitive> scene, ICoord coord, Zone zone, ABLine abline)
+	private static bool ComposeABLine(List<ScreenPrimitive> scene, ICoord coord, Zone zone, ABLine abline)
 	{
 		var ymin = coord.XRange.min;
 		var ymax = coord.XRange.max;
@@ -439,7 +429,7 @@ internal static class ShapeComposer
 
 		if (string.IsNullOrEmpty(abline.Label))
 		{
-			return;
+			return true;
 		}
 
 		var x = 0.0;
@@ -569,5 +559,7 @@ internal static class ShapeComposer
 			abline.Text.FontWeight,
 			abline.Text.FontStyle,
 			abline.Label));
+
+		return true;
 	}
 }

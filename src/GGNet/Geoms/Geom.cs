@@ -16,7 +16,7 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 	private Facet<T>? facet;
 	private Legends? legends;
 
-	public List<IShape> Layer { get; } = [];
+	public List<Shape> Layer { get; } = [];
 
 	public virtual CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 
@@ -49,7 +49,7 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 		}
 	}
 
-	protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.IElement> element)
+	protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.Element> element)
 	{
 		if (legends is null)
 		{
@@ -69,7 +69,7 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 		}
 	}
 
-	protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.IElement[]> elements)
+	protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.Element[]> elements)
 	{
 		if (legends is null)
 		{

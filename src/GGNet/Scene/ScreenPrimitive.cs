@@ -2,8 +2,9 @@ namespace GGNet.Scene;
 
 // Screen-space primitives: final pixel coordinates and attribute values,
 // composed from data-space shapes. One record per markup template in the
-// Area walker, attribute-for-attribute.
-internal interface IScreenPrimitive;
+// Area walker, attribute-for-attribute. A closed union: the walker's
+// dispatch is exhaustiveness-checked at compile time.
+internal union ScreenPrimitive(ScreenCircle, ScreenLine, ScreenRect, ScreenFill, ScreenStroke, ScreenPolygon, ScreenRule, ScreenText, ScreenLabel, ScreenAngledLabel);
 
 internal sealed record ScreenCircle(
 	string Css,
@@ -15,7 +16,7 @@ internal sealed record ScreenCircle(
 	double FillOpacity,
 	Func<MouseEventArgs, Task> OnClick,
 	Func<MouseEventArgs, Task> OnMouseOver,
-	Func<MouseEventArgs, Task> OnMouseOut) : IScreenPrimitive;
+	Func<MouseEventArgs, Task> OnMouseOut);
 
 internal sealed record ScreenLine(
 	string Css,
@@ -29,7 +30,7 @@ internal sealed record ScreenLine(
 	LineType LineType,
 	Func<MouseEventArgs, Task> OnClick,
 	Func<MouseEventArgs, Task> OnMouseOver,
-	Func<MouseEventArgs, Task> OnMouseOut) : IScreenPrimitive;
+	Func<MouseEventArgs, Task> OnMouseOut);
 
 internal sealed record ScreenRect(
 	string Css,
@@ -44,13 +45,13 @@ internal sealed record ScreenRect(
 	double StrokeWidth,
 	Func<MouseEventArgs, Task> OnClick,
 	Func<MouseEventArgs, Task> OnMouseOver,
-	Func<MouseEventArgs, Task> OnMouseOut) : IScreenPrimitive;
+	Func<MouseEventArgs, Task> OnMouseOut);
 
 // A filled outline with no stroke or interactivity (Shapes.Area).
 internal sealed record ScreenFill(
 	string D,
 	string Fill,
-	double FillOpacity) : IScreenPrimitive;
+	double FillOpacity);
 
 // A stroked path with no fill or interactivity (Shapes.Path).
 internal sealed record ScreenStroke(
@@ -58,7 +59,7 @@ internal sealed record ScreenStroke(
 	double StrokeWidth,
 	string Stroke,
 	double StrokeOpacity,
-	LineType LineType) : IScreenPrimitive;
+	LineType LineType);
 
 internal sealed record ScreenPolygon(
 	string Css,
@@ -69,7 +70,7 @@ internal sealed record ScreenPolygon(
 	double StrokeWidth,
 	Func<MouseEventArgs, Task> OnClick,
 	Func<MouseEventArgs, Task> OnMouseOver,
-	Func<MouseEventArgs, Task> OnMouseOut) : IScreenPrimitive;
+	Func<MouseEventArgs, Task> OnMouseOut);
 
 // An annotation rule: no css class, no interactivity (V/H/AB line strokes).
 internal sealed record ScreenRule(
@@ -80,7 +81,7 @@ internal sealed record ScreenRule(
 	double StrokeWidth,
 	string Stroke,
 	double StrokeOpacity,
-	LineType LineType) : IScreenPrimitive;
+	LineType LineType);
 
 // Shapes.Text template: transform second, no fill-opacity.
 internal sealed record ScreenText(
@@ -90,7 +91,7 @@ internal sealed record ScreenText(
 	Size FontSize,
 	string FontWeight,
 	string FontStyle,
-	string? Value) : IScreenPrimitive;
+	string? Value);
 
 // V/HLine label template: transform late.
 internal sealed record ScreenLabel(
@@ -101,7 +102,7 @@ internal sealed record ScreenLabel(
 	string FontWeight,
 	string FontStyle,
 	string Transform,
-	string Value) : IScreenPrimitive;
+	string Value);
 
 // ABLine label template: transform first.
 internal sealed record ScreenAngledLabel(
@@ -112,4 +113,4 @@ internal sealed record ScreenAngledLabel(
 	Size FontSize,
 	string FontWeight,
 	string FontStyle,
-	string Value) : IScreenPrimitive;
+	string Value);

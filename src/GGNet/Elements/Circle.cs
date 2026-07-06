@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Elements;
 
-internal readonly record struct Circle : IElement
+internal readonly record struct Circle
 {
 	public Circle() { }
 

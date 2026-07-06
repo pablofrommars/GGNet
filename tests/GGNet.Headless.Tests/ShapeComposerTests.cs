@@ -27,7 +27,7 @@ public class ShapeComposerTests
 
 	private sealed class FakeGeom : IGeom
 	{
-		public List<IShape> Layer { get; } = [];
+		public List<Shape> Layer { get; } = [];
 
 		public void Train()
 		{
@@ -46,7 +46,7 @@ public class ShapeComposerTests
 
 	private static readonly Zone zone = new() { X = 0, Y = 0, Width = 100, Height = 100 };
 
-	private static List<IScreenPrimitive> Compose(params IShape[] shapes)
+	private static List<ScreenPrimitive> Compose(params Shape[] shapes)
 	{
 		var geom = new FakeGeom();
 
@@ -75,7 +75,9 @@ public class ShapeComposerTests
 
 		scene.Should().HaveCount(1);
 
-		var screen = scene[0].Should().BeOfType<ScreenCircle>().Subject;
+		// Unions box as the union wrapper and expose no case casts: access is
+		// pattern matching only — BeOfType/reflection see ScreenPrimitive.
+		var screen = scene[0] switch { ScreenCircle c => c, var other => throw new InvalidOperationException($"expected circle, got {other}") };
 
 		screen.X.Should().Be(20);
 		screen.Y.Should().Be(70);
@@ -100,8 +102,9 @@ public class ShapeComposerTests
 
 		// Assert
 
-		scene[0].Should().BeOfType<ScreenStroke>()
-			.Which.D.Should().Be(" M 10 90 M 30 80");
+		var stroke = scene[0] switch { ScreenStroke v => v, var other => throw new InvalidOperationException($"expected stroke, got {other}") };
+
+		stroke.D.Should().Be(" M 10 90 M 30 80");
 	}
 
 	[Fact]
@@ -121,8 +124,9 @@ public class ShapeComposerTests
 		// Assert
 
 		// Forward along ymax, backward along ymin, closed.
-		scene[0].Should().BeOfType<ScreenFill>()
-			.Which.D.Should().Be("M 10 80 L 20 70 L 20 90 L 10 95 Z");
+		var fill = scene[0] switch { ScreenFill v => v, var other => throw new InvalidOperationException($"expected fill, got {other}") };
+
+		fill.D.Should().Be("M 10 80 L 20 70 L 20 90 L 10 95 Z");
 	}
 
 	[Fact]
@@ -148,9 +152,11 @@ public class ShapeComposerTests
 
 		scene.Should().HaveCount(2);
 
-		scene[0].Should().BeOfType<ScreenRule>().Which.X1.Should().Be(40);
+		var rule = scene[0] switch { ScreenRule v => v, var other => throw new InvalidOperationException($"expected rule, got {other}") };
 
-		var label = scene[1].Should().BeOfType<ScreenLabel>().Subject;
+		rule.X1.Should().Be(40);
+
+		var label = scene[1] switch { ScreenLabel v => v, var other => throw new InvalidOperationException($"expected label, got {other}") };
 
 		label.Transform.Should().Be("translate(43px, 2.5px) rotate(90deg)");
 		label.Anchor.Should().Be("start");
@@ -172,7 +178,7 @@ public class ShapeComposerTests
 
 		using var _ = new AssertionScope();
 
-		scene[0].Should().BeOfType<ScreenCircle>();
-		scene[1].Should().BeOfType<ScreenLine>();
+		(scene[0] is ScreenCircle).Should().BeTrue();
+		(scene[1] is ScreenLine).Should().BeTrue();
 	}
 }

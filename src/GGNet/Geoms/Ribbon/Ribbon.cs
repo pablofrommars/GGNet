@@ -135,7 +135,7 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 			{
 				_area = new Shapes.Area { Aesthetic = Aesthetic };
 
-				Layer.Add(_area);
+				Layer.Add(_area.Value);
 			}
 
 			area = _area;
@@ -163,7 +163,7 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 					}
 				};
 
-				Layer.Add(area);
+				Layer.Add(area.Value);
 
 				areas[fill] = area.Value;
 			}

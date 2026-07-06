@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Elements;
 
-internal readonly record struct Line : IElement
+internal readonly record struct Line
 {
 	public Line() { }
 
