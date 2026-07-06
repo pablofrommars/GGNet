@@ -23,7 +23,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="GGNet.Headless" />
         <InternalsVisibleTo Include="GGNet.Headless.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Themes\*.css" />
     </ItemGroup>
 
     <ItemGroup>

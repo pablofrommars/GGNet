@@ -79,6 +79,19 @@ public class GalleryTests
 	}
 
 	[Fact]
+	public async Task SelfContained()
+	{
+		// Self-contained export embeds the theme css; pinned separately so the
+		// default lean output stays byte-stable.
+		var svg = await PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Point().Style()
+			.AsStringAsync(selfContained: true);
+
+		XDocument.Parse(svg);
+
+		await Verifier.Verify(svg, extension: "svg");
+	}
+
+	[Fact]
 	public Task Point()
 		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Point().Style());
 
