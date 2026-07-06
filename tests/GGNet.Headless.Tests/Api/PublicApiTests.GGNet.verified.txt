@@ -27,7 +27,10 @@ GGNet.Elements.Text
 GGNet.Exceptions.GGNetException
 GGNet.Exceptions.GGNetInternalException
 GGNet.Exceptions.GGNetUserException
+GGNet.Formats.DoubleFormatter
 GGNet.Formats.IFormatter`1
+GGNet.Formats.InstantFormatter
+GGNet.Formats.Standard`1
 GGNet.Geospacial.Point
 GGNet.Geospacial.Polygon
 GGNet.Guide

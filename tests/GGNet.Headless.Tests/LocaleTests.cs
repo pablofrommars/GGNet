@@ -77,6 +77,37 @@ public class LocaleTests
 	}
 
 	[Fact]
+	public async Task LocalizedTicksAreAnExplicitOptIn()
+	{
+		// Arrange
+
+		var culture = CultureInfo.GetCultureInfo("sv-SE");
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Scale_Y_Continuous(formatter: new Formats.DoubleFormatter("N1", culture))
+			.Geom_Point()
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		// Label text localizes (comma decimals) ...
+		svg.Should().MatchRegex(@">-?\d+,\d</text>");
+
+		// ... while geometry stays invariant: no decimal comma inside any
+		// attribute value (translate(x, y) separators carry a space).
+		foreach (var attribute in XDocument.Parse(svg).Descendants().Attributes())
+		{
+			attribute.Value.Should().NotMatchRegex(@"\d,\d", $"attribute '{attribute.Name}' must serialize invariantly");
+		}
+	}
+
+	[Fact]
 	public async Task PolarGeometryIsCultureInvariant()
 	{
 		// Arrange
