@@ -39,7 +39,6 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 	private Position<TX> xscale = default!;
 	private Position<TY> yscale = default!;
 
-	private bool polar;
 	private Coords.ICoordinateSystem coord = default!;
 	private Coords.GridComposition grid = new();
 
@@ -92,9 +91,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 		xscale = Data.X;
 		yscale = Data.Y;
 
-		polar = Data.Data.CoordSystem == CoordSystem.Polar;
-
-		coord = MakeCoord();
+		coord = Data.Data.MakeCoordinateSystem();
 	}
 
 	protected override void OnParametersSet()
@@ -111,17 +108,10 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 		xscale = Data.X;
 		yscale = Data.Y;
 
-		polar = Data.Data.CoordSystem == CoordSystem.Polar;
-
-		coord = MakeCoord();
+		coord = Data.Data.MakeCoordinateSystem();
 
 		Refresh(RenderTarget.All);
 	}
-
-	private Coords.ICoordinateSystem MakeCoord()
-	  => polar
-		? new Coords.PolarCoordinateSystem(Data.Data.PolarOptions, Data.Data.Style!)
-		: new Coords.CartesianCoordinateSystem(Data.Data.Style!);
 
 	protected void Render(bool firstRender)
 	{
@@ -131,7 +121,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 			YStripText: Data.Strip.y,
 			XAxis: Data.Axis.x,
 			YAxis: Data.Axis.y,
-			CarveAxes: !polar,
+			CarveAxes: coord.CarvesAxisBands,
 			AxisWidth: Data.Data.Axis.width,
 			AxisHeight: Data.Data.Axis.height,
 			YLabWidth: Data.YLab.width,

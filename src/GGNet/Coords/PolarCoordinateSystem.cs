@@ -7,6 +7,17 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 	private readonly PolarOptions options = options;
 	private readonly Style style = style;
 
+	public bool CarvesAxisBands => false;
+
+	// The angular scale spans the full turn: discrete (0,0,0,1) maps n
+	// categories to fractions i/n with the extra slot as the closing wrap
+	// segment. The radial scale is zero-based at the center.
+	public (double minMult, double minAdd, double maxMult, double maxAdd)? XExpansion(bool discrete)
+	  => discrete ? (0.0, 0.0, 0.0, 1.0) : (0.0, 0.0, 0.0, 0.0);
+
+	public (double minMult, double minAdd, double maxMult, double maxAdd)? YExpansion(bool discrete)
+	  => discrete ? null : (0.0, 0.0, 0.05, 0.0);
+
 	public double CenterX { get; private set; }
 
 	public double CenterY { get; private set; }

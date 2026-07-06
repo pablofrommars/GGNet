@@ -36,11 +36,11 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 	internal Selectors<T, TX, TY> Selectors { get; } = new();
 
 	// Default scale factories, chosen at Build time where overload resolution has
-	// already dispatched on TX/TY. Invoked by Init (with the polar flag) only when
-	// the user registered no scale.
-	internal Action<bool>? XScaleDefault { get; set; }
+	// already dispatched on TX/TY. Invoked by Init (with the coordinate system's
+	// expansion hints) only when the user registered no scale.
+	internal Action<Coords.ICoordinateSystem>? XScaleDefault { get; set; }
 
-	internal Action<bool>? YScaleDefault { get; set; }
+	internal Action<Coords.ICoordinateSystem>? YScaleDefault { get; set; }
 
 	internal Positions<TX, TY> Positions { get; } = new();
 
@@ -51,6 +51,25 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 	public bool Flip { get; set; }
 
 	public CoordSystem CoordSystem { get; set; } = CoordSystem.Cartesian;
+
+	// The plot-level strategy instance answers plot-level policy (axis bands,
+	// expansion hints); panels materialize their own measured instances.
+	internal Coords.ICoordinateSystem Coord { get; private set; } = default!;
+
+	internal Coords.ICoordinateSystem MakeCoordinateSystem()
+	{
+		if (CoordSystem == CoordSystem.Polar)
+		{
+			if (Flip)
+			{
+				throw new GGNetUserException("Flip is not supported with polar coordinates");
+			}
+
+			return new Coords.PolarCoordinateSystem(PolarOptions, Style!);
+		}
+
+		return new Coords.CartesianCoordinateSystem(Style!);
+	}
 
 	public PolarOptions PolarOptions { get; } = new();
 
@@ -89,12 +108,9 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 		this.grid = grid;
 
-		var polar = CoordSystem == CoordSystem.Polar;
+		Style ??= Style.Default();
 
-		if (polar && Flip)
-		{
-			throw new GGNetUserException("Flip is not supported with polar coordinates");
-		}
+		Coord = MakeCoordinateSystem();
 
 		if (Positions.X.Factory is null)
 		{
@@ -103,7 +119,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 				throw new GGNetUserException("Type could not be inferred");
 			}
 
-			XScaleDefault(polar);
+			XScaleDefault(Coord);
 		}
 
 		if (Positions.Y.Factory is null)
@@ -113,10 +129,8 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 				throw new GGNetUserException("Type could not be inferred");
 			}
 
-			YScaleDefault(polar);
+			YScaleDefault(Coord);
 		}
-
-		Style ??= Style.Default();
 
 		Legends = new(Style);
 
@@ -534,10 +548,10 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			}
 		}
 
-		if (CoordSystem == CoordSystem.Polar)
+		if (!Coord.CarvesAxisBands)
 		{
-			// Polar panels draw breaks and labels inside the plotting area;
-			// no cartesian axis bands are reserved around it.
+			// Breaks and labels live inside the plotting area;
+			// no axis bands are reserved around it.
 			Axis = (0.0, 0.0);
 
 			AxisTitles = (0.0, 0.0);

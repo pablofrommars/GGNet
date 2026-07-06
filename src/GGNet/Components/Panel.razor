@@ -203,7 +203,7 @@ height=@Num(Area.Height) />
 
     private void RenderXLab(RenderTreeBuilder __builder)
     {
-        if (polar || string.IsNullOrEmpty(Data.XLab.text))
+        if (!coord.CarvesAxisBands || string.IsNullOrEmpty(Data.XLab.text))
         {
             return;
         }
@@ -221,7 +221,7 @@ height=@Num(Area.Height) />
 
     private void RenderYLab(RenderTreeBuilder __builder)
     {
-        if (polar || string.IsNullOrEmpty(Data.YLab.text))
+        if (!coord.CarvesAxisBands || string.IsNullOrEmpty(Data.YLab.text))
         {
             return;
         }

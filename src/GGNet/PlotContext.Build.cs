@@ -21,23 +21,21 @@ public partial class PlotContext
 
 	// Default scales are decided here, where overload resolution has already
 	// dispatched on TX/TY; Init invokes them only when the user registered no
-	// scale. Polar plots use different expansions: the angular scale spans the
-	// full turn (discrete (0,0,0,1) maps n categories to fractions i/n, the
-	// extra slot being the closing wrap segment) and the radial scale is
-	// zero-based at the center.
+	// scale. Expansions come from the coordinate system's hints (polar: angular
+	// wraps the full turn, radial is zero-based at the center).
 
 	private static void ContinuousX<T, TY>(PlotContext<T, double, TY> context)
 	  where TY : struct
-	  => context.XScaleDefault = polar => context.Scale_X_Continuous(expand: polar ? (0.0, 0.0, 0.0, 0.0) : null);
+	  => context.XScaleDefault = coord => context.Scale_X_Continuous(expand: coord.XExpansion(discrete: false));
 
 	private static void DiscreteX<T, TX, TY>(PlotContext<T, TX, TY> context)
 	  where TX : struct, Enum
 	  where TY : struct
-	  => context.XScaleDefault = polar => context.Scale_X_Discrete(expand: polar ? (0.0, 0.0, 0.0, 1.0) : null);
+	  => context.XScaleDefault = coord => context.Scale_X_Discrete(expand: coord.XExpansion(discrete: true));
 
 	private static void ContinuousY<T, TX>(PlotContext<T, TX, double> context)
 	  where TX : struct
-	  => context.YScaleDefault = polar => context.Scale_Y_Continuous(expand: polar ? (0.0, 0.0, 0.05, 0.0) : null);
+	  => context.YScaleDefault = coord => context.Scale_Y_Continuous(expand: coord.YExpansion(discrete: false));
 
 	private static void DiscreteY<T, TX, TY>(PlotContext<T, TX, TY> context)
 	  where TX : struct

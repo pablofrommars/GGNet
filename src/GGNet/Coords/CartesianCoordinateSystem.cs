@@ -8,6 +8,12 @@ internal sealed class CartesianCoordinateSystem(Style style) : ICoordinateSystem
 
 	private Zone area;
 
+	public bool CarvesAxisBands => true;
+
+	public (double minMult, double minAdd, double maxMult, double maxAdd)? XExpansion(bool discrete) => null;
+
+	public (double minMult, double minAdd, double maxMult, double maxAdd)? YExpansion(bool discrete) => null;
+
 	public void Measure(Zone area) => this.area = area;
 
 	public (double x, double y) Project(double cx, double cy)

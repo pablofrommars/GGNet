@@ -9,6 +9,15 @@ namespace GGNet.Coords;
 // state (center, radius) Project and grid composition need.
 internal interface ICoordinateSystem
 {
+	// Cartesian reserves axis bands around the plotting area; polar draws
+	// breaks and labels inside it and reserves none.
+	bool CarvesAxisBands { get; }
+
+	// Expansion hints for defaulted scales; null means the scale's own default.
+	(double minMult, double minAdd, double maxMult, double maxAdd)? XExpansion(bool discrete);
+
+	(double minMult, double minAdd, double maxMult, double maxAdd)? YExpansion(bool discrete);
+
 	void Measure(Zone area);
 
 	(double x, double y) Project(double cx, double cy);
