@@ -94,13 +94,6 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
 		loading = false;
 
-		// Only the Data bit implies recompose: a Theme refresh is a css-attribute
-		// change, so the pipeline, layout and compositions are all reusable.
-		if ((target & RenderTarget.Data) == RenderTarget.None)
-		{
-			return true;
-		}
-
 		Context.Render();
 
 		var zones = Layout.PlotLayout.Compute(new(
