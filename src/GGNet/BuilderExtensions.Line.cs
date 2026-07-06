@@ -98,7 +98,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Line(source, x, y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, piecewise);
+		context.Default_Panel().Geom_Line(source, x, y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, inherit, piecewise);
 
 		return context;
 	}
@@ -136,7 +136,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Line(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, colorBy ?? (inherit ? panel.Context.Aesthetics.Color : null), lineTypeBy ?? (inherit ? panel.Context.Aesthetics.LineType : null), onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, piecewise);
+		return Geom_Line(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, colorBy ?? (inherit ? panel.Context.Aesthetics.Color : null), lineTypeBy ?? (inherit ? panel.Context.Aesthetics.LineType : null), onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, inherit, piecewise);
 	}
 
 	/// <summary>
@@ -172,7 +172,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Line(x, y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, piecewise);
+		context.Default_Panel().Geom_Line(x, y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, inherit, piecewise);
 
 		return context;
 	}

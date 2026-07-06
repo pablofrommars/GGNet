@@ -175,6 +175,24 @@ public class GalleryTests
 			.Style());
 
 	[Fact]
+	public Task LegendLineVertical()
+		// Pins the vertical-legend line-swatch path (LegendVHLine), where the
+		// x1=Legend.Y axis typo lived unexercised until this snapshot.
+		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+			.Scale_Color_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
+			.Geom_Line()
+			.Style());
+
+	[Fact]
+	public Task LegendBarHorizontal()
+		// Pins the horizontal-legend rectangle-swatch path (LegendHRect), where
+		// stroke was bound to StrokeOpacity.
+		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+			.Scale_Fill_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
+			.Geom_Bar(position: PositionAdjustment.Dodge)
+			.Style(legend: Position.Top));
+
+	[Fact]
 	public Task Area()
 		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Area().Style());
 

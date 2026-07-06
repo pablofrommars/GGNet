@@ -332,7 +332,7 @@
     }
     private bool LegendVHLine(RenderTreeBuilder __builder, Elements.HLine hline, double width, double offset, double height)
     {
-        <line x1=@Num(Legend.Y)
+        <line x1=@Num(Legend.X)
               x2=@Num(Legend.X + width)
               y1=@Num(offset + height / 2.0)
               y2=@Num(offset + height / 2.0)
@@ -435,15 +435,13 @@
 
     private bool LegendHRect(RenderTreeBuilder __builder, Elements.Rectangle rect, double offset, double width, double height, double middle)
     {
-        @* stroke=@rect.StrokeOpacity reproduces the pre-union markup exactly;
-           flagged as a pinned oddity in ASSESSMENT (stroke bound to opacity). *@
         <rect x=@Num(offset)
               y=@Num(middle - height / 2.0)
               width=@Num(width)
               height=@Num(height)
               fill=@rect.Fill
               fill-opacity=@Num(rect.FillOpacity)
-              stroke=@rect.StrokeOpacity
+              stroke=@rect.Stroke
               stroke-width=@Num(rect.StrokeWidth)
               clip-path="url(#@(Id)-plot)" />
 
