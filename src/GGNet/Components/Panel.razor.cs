@@ -112,7 +112,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 		coord = Data.Data.MakeCoordinateSystem();
 
-		Refresh(RenderTarget.All);
+		Refresh();
 	}
 
 	protected void Render(bool firstRender)
@@ -158,11 +158,11 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 		if (!firstRender)
 		{
-			areaRenderModeHandler?.Refresh(RenderTarget.Data);
+			areaRenderModeHandler?.Refresh();
 		}
 	}
 
-	public void Refresh(RenderTarget target) => renderModeHandler?.Refresh(target);
+	public void Refresh() => renderModeHandler?.Refresh();
 
 	protected override bool ShouldRender() => renderModeHandler?.ShouldRender() ?? true;
 

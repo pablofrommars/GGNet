@@ -4,12 +4,11 @@ internal sealed class StaticRenderModeHandler(IPlotRendering plot) : RenderModeH
 {
 	public sealed class ChildRenderHandler : IChildRenderModeHandler
 	{
-		public void Refresh(RenderTarget target = RenderTarget.All)
+		public void Refresh()
 		{
 		}
 
-		public bool ShouldRender(RenderTarget target = RenderTarget.All)
-			=> false;
+		public bool ShouldRender() => false;
 	}
 
 	public override IChildRenderModeHandler Child() => new ChildRenderHandler();

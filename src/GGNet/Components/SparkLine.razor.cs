@@ -51,8 +51,8 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 	public override void Render(RenderTarget target)
 	{
 		Context.Render();
-		definitionsRenderModeHandler?.Refresh(target);
-		renderModeHandler?.Refresh(target);
+		definitionsRenderModeHandler?.Refresh();
+		renderModeHandler?.Refresh();
 	}
 
 	public double ToX(double value) => Area.X + xscale.Coord(value) * Area.Width;

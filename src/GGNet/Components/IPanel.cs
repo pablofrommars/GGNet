@@ -2,7 +2,7 @@
 
 internal interface IPanel
 {
-	void Refresh(RenderTarget target) { }
+	void Refresh() { }
 
 	ITooltip? Tooltip { get; }
 }

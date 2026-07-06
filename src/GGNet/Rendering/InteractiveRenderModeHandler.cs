@@ -43,20 +43,10 @@ internal sealed class InteractiveRenderModeHandler : RenderModeHandler
 	{
 		private volatile int render;
 
-		public void Refresh(RenderTarget target)
-		{
-			// Merge, don't overwrite: a queued Data refresh must survive a
-			// later Theme refresh arriving before the render is consumed.
-			int seen;
-			do
-			{
-				seen = render;
-			}
-			while (Interlocked.CompareExchange(ref render, seen | (int)target, seen) != seen);
-		}
+		// Single-bit pending: set-then-consume cannot lose an update.
+		public void Refresh() => Interlocked.Exchange(ref render, 1);
 
-		public bool ShouldRender(RenderTarget target = RenderTarget.All)
-		  => ((RenderTarget)Interlocked.Exchange(ref render, 0) & target) != RenderTarget.None;
+		public bool ShouldRender() => Interlocked.Exchange(ref render, 0) == 1;
 	}
 
 	public override IChildRenderModeHandler Child() => new ChildRenderHandler();
@@ -69,19 +59,28 @@ internal sealed class InteractiveRenderModeHandler : RenderModeHandler
 			{
 				try
 				{
-					var mask = RenderTarget.None;
+					var pendingRender = false;
+					var pendingLoading = false;
 
 					while (channel.Reader.TryRead(out var target))
 					{
-						mask |= target;
+						if (target == RenderTarget.Render)
+						{
+							pendingRender = true;
+						}
+						else
+						{
+							pendingLoading = true;
+						}
 					}
 
-					if (mask == RenderTarget.None)
+					if (!pendingRender && !pendingLoading)
 					{
 						continue;
 					}
 
-					plot.Render(mask);
+					// A queued render subsumes any queued loading state.
+					plot.Render(pendingRender ? RenderTarget.Render : RenderTarget.Loading);
 
 					Interlocked.Exchange(ref render, 1);
 

@@ -4,7 +4,7 @@ internal sealed class InteractiveAutoRenderModeHandler(IPlotRendering plot) : Re
 {
 	public override Task RefreshAsync(RenderTarget target, CancellationToken token)
 	{
-		plot.Render(RenderTarget.All);
+		plot.Render(RenderTarget.Render);
 
 		return Task.CompletedTask;
 	}
@@ -13,11 +13,11 @@ internal sealed class InteractiveAutoRenderModeHandler(IPlotRendering plot) : Re
 
 	public sealed class ChildRenderHandler : IChildRenderModeHandler
 	{
-		public void Refresh(RenderTarget target = RenderTarget.All)
+		public void Refresh()
 		{
 		}
 
-		public bool ShouldRender(RenderTarget target) => true;
+		public bool ShouldRender() => true;
 	}
 
 	public override IChildRenderModeHandler Child() => new ChildRenderHandler();

@@ -1,10 +1,11 @@
 namespace GGNet;
 
-public enum RenderTarget : ushort
+// What a refresh asks of the plot: re-render the composed output, or just
+// surface the loading state. The former Data/Theme/All flag vocabulary was
+// granularity nothing consumed — measurement showed a full recompose costs
+// single-digit milliseconds at realistic sizes, so re-render is one thing.
+public enum RenderTarget
 {
-	None = 0,
-	Loading = 1,
-	Data = 1 << 2,
-	Theme = 1 << 4,
-	All = 0xffff
+	Render = 0,
+	Loading = 1
 }

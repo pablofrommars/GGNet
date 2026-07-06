@@ -65,7 +65,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
 		definitionsRenderModeHandler = RenderModeHandler?.Child();
 
-		Compose(RenderTarget.All);
+		Compose(RenderTarget.Render);
 	}
 
 	protected override async Task OnParametersSetAsync()
@@ -77,7 +77,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 			Context.Init();
 			Context.Render();
 
-			await RefreshAsync(RenderTarget.All, CancellationToken.None);
+			await RefreshAsync(RenderTarget.Render, CancellationToken.None);
 		}
 	}
 
@@ -122,11 +122,11 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 			return;
 		}
 
-		definitionsRenderModeHandler?.Refresh(target);
+		definitionsRenderModeHandler?.Refresh();
 
 		for (var i = 0; i < Context.Panels.Count; i++)
 		{
-			Context.Panels[i].Component?.Refresh(target);
+			Context.Panels[i].Component?.Refresh();
 		}
 	}
 }
