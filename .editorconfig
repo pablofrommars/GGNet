@@ -43,3 +43,7 @@ dotnet_remove_unnecessary_suppression_exclusions = none
 # CA1716 ("Static" is a VB keyword) would be a breaking change with no benefit.
 [src/GGNet.Static/**.cs]
 dotnet_diagnostic.CA1716.severity = none
+
+[*.razor]
+trim_trailing_whitespace = true
+insert_final_newline = true

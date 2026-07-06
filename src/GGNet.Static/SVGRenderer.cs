@@ -108,13 +108,37 @@ internal sealed class SVGRenderer
 			case RenderTreeFrameType.Attribute:
 				throw new InvalidOperationException($"Attributes should only be encountered within {nameof(RenderElement)}");
 			case RenderTreeFrameType.Text:
-				context.Write(encoder.Encode(frame.TextContent));
-				return ++position;
+				{
+					// Razor source-file whitespace is not document structure.
+					var text = frame.TextContent.Trim();
+					if (text.Length > 0)
+					{
+						context.Write(encoder.Encode(text));
+						context.WroteText = true;
+					}
+					return ++position;
+				}
 			case RenderTreeFrameType.Markup:
-				// Static razor fragments arrive as raw markup with the scoped-CSS
-				// marker baked in; strip it like the attribute-frame path does.
-				context.Write(scopeAttribute.Replace(frame.MarkupContent, ""));
-				return ++position;
+				{
+					// Static razor fragments arrive as raw markup with the scoped-CSS
+					// marker baked in; strip it like the attribute-frame path does.
+					var markup = scopeAttribute.Replace(frame.MarkupContent, "").Trim();
+					if (markup.Length > 0)
+					{
+						if (markup[0] == '<')
+						{
+							context.WriteIndent();
+							context.WroteElement = true;
+						}
+						else
+						{
+							context.WroteText = true;
+						}
+
+						context.Write(markup);
+					}
+					return ++position;
+				}
 			case RenderTreeFrameType.Component:
 				return RenderChildComponent(context, frames, position);
 			case RenderTreeFrameType.Region:
@@ -138,6 +162,7 @@ internal sealed class SVGRenderer
 	private static int RenderElement(Context context, ArrayRange<RenderTreeFrame> frames, int position)
 	{
 		ref var frame = ref frames.Array[position];
+		context.WriteIndent();
 		context.Write("<");
 		context.Write(frame.ElementName);
 		var afterAttributes = RenderAttributes(context, frames, position + 1, frame.ElementSubtreeLength - 1, out var capturedValueAttribute);
@@ -163,7 +188,14 @@ internal sealed class SVGRenderer
 				context.ClosestSelectValueAsString = capturedValueAttribute;
 			}
 
+			context.WroteElement = false;
+			context.WroteText = false;
+			context.Depth++;
+
 			var afterElement = RenderChildren(context, frames, afterAttributes, remainingElements);
+
+			context.Depth--;
+			var hadElementChildren = context.WroteElement;
 
 			if (isSelect)
 			{
@@ -172,9 +204,18 @@ internal sealed class SVGRenderer
 				context.ClosestSelectValueAsString = null;
 			}
 
+			// Close on its own line only when the content was elements; text content stays inline.
+			if (hadElementChildren)
+			{
+				context.WroteText = false;
+				context.WriteIndent();
+			}
+
 			context.Write("</");
 			context.Write(frame.ElementName);
 			context.Write(">");
+			context.WroteElement = true;
+			context.WroteText = false;
 			Debug.Assert(afterElement == position + frame.ElementSubtreeLength);
 			return afterElement;
 		}
@@ -191,6 +232,8 @@ internal sealed class SVGRenderer
 				context.Write(frame.ElementName);
 				context.Write(">");
 			}
+			context.WroteElement = true;
+			context.WroteText = false;
 			Debug.Assert(afterAttributes == position + frame.ElementSubtreeLength);
 			return afterAttributes;
 		}
@@ -262,10 +305,41 @@ internal sealed class SVGRenderer
 	{
 		private readonly TextWriter writer = writer;
 
+		private bool first = true;
+
 		public StaticRenderer Renderer { get; } = renderer;
 
 		public string? ClosestSelectValueAsString { get; set; }
 
+		public int Depth { get; set; }
+
+		public bool WroteElement { get; set; }
+
+		public bool WroteText { get; set; }
+
 		public void Write(string str) => writer.Write(str);
+
+		// Newline + depth tabs before structural content; suppressed for the root
+		// and when flowing after inline text.
+		public void WriteIndent()
+		{
+			if (first)
+			{
+				first = false;
+				return;
+			}
+
+			if (WroteText)
+			{
+				return;
+			}
+
+			writer.Write('\n');
+
+			for (var i = 0; i < Depth; i++)
+			{
+				writer.Write('\t');
+			}
+		}
 	}
 }
