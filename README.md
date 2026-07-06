@@ -82,6 +82,28 @@ Statistics run over the whole source (per group when grouped). Stats that would 
 | `Geom_HLine` | `y`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor` | — | — |
 | `Geom_VLine` | `x`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor` | — | — |
 
+### Theming
+
+Styling is split by one rule: **if it moves layout it's C# (`Style` — font sizes, margins, positions, because the server measures them); if it's paint it's CSS.** Paint targets stable semantic classes (`panel`, `x-break`, `legend-title`, …) scoped under `.ggnet[theme=name]`, selected by the `Theme` parameter on the `Plot` component.
+
+A theme is a block of variable overrides, not a stylesheet fork:
+
+```css
+.ggnet[theme=mytheme] {
+	--ggnet-bg: #1e1e1e;
+	--ggnet-grid: #333;
+	--ggnet-break-label: #9ca3af;
+}
+```
+
+The base rules in `Themes/Default.css` read every paint through a `--ggnet-*` variable (backgrounds, grid, labels, titles, strips, legend, spinner — the file documents the full set), so a theme overrides only what it changes, anything it omits degrades to the default instead of rendering unstyled, and classes added by future GGNet versions are painted automatically. A test (`ThemeContractTests`) enforces the contract: every emitted class painted, every referenced variable defined, theme files only setting known variables.
+
+Notes:
+
+- Geom parameters accept css custom properties — `color: "var(--color-temperature)"` wires a layer to your design tokens.
+- Changing `--ggnet-font` affects rendering only: server-side text measurement assumes Inter until font metrics ship with the theme.
+- **Self-contained export**: `plot.AsStringAsync(selfContained: true)` / `SaveAsync(..., selfContained: true)` embeds the bundled theme as a `<style>` element so the SVG renders standalone; off by default — app-hosted output is styled by the app's stylesheet.
+
 ### Examples Gallery
 
 | | | |
