@@ -5,5 +5,7 @@ public sealed class Standard<T> : IFormatter<T>
 {
 	public static Standard<T> Instance => new();
 
-	public string Format(T value) => value.ToString()!;
+	public string Format(T value) => value is IFormattable formattable
+		? formattable.ToString(null, CultureInfo.InvariantCulture)
+		: value.ToString()!;
 }

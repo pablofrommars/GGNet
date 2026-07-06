@@ -10,7 +10,7 @@ public readonly record struct Size
 
 	public Units Units { get; init; } = EM;
 
-	public override string ToString() => $"{Value}{Units.Render()}";
+	public override string ToString() => FormattableString.Invariant($"{Value}{Units.Render()}");
 
 	public static implicit operator Size(double value) => new() { Value = value };
 

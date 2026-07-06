@@ -3,15 +3,16 @@
 @typeparam TY
 
 @inherits PlotBase<T, TX, TY>
+@using static GGNet.Components.SvgFormat
 
-<svg id=@Id class="ggnet" theme="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
+<svg id=@Id class="ggnet" theme="default" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox=@Attr($"0 0 {Width} {Height}")>
     <defs>
         <clipPath id=@(Id + "-" + Panel.Id + "-area")>
-            <rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height />
+            <rect x=@Num(Area.X) y=@Num(Area.Y) width=@Num(Area.Width) height=@Num(Area.Height) />
         </clipPath>
     </defs>
 
-    <rect class="panel" x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height />
+    <rect class="panel" x=@Num(Area.X) y=@Num(Area.Y) width=@Num(Area.Width) height=@Num(Area.Height) />
 
     <Area T=T TX=TX TY=TY Panel=@Panel Coord=@this Zone=@Area Clip=@(Id + "-" + Panel.Id + "-area") RenderModeHandler=@renderModeHandler />
 

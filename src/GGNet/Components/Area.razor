@@ -5,6 +5,7 @@
 @typeparam TY
 
 @using Shapes
+@using static GGNet.Components.SvgFormat
 
 @renderShapes
 
@@ -73,17 +74,17 @@
     {
         var (px, py) = P(circle.X, circle.Y);
 
-        <g transform="translate(@px, @py)">
+        <g transform=@Attr($"translate({px}, {py})")>
             <circle
                     cx="0"
                     cy="0"
-                    r=@circle.Aesthetic.Radius
+                    r=@Num(circle.Aesthetic.Radius)
                     class=@shape.Css
                     stroke-width="0.71"
                     stroke=@circle.Aesthetic.Fill
-                    stroke-opacity=@circle.Aesthetic.StrokeOpacity
+                    stroke-opacity=@Num(circle.Aesthetic.StrokeOpacity)
                     fill=@circle.Aesthetic.Fill
-                    fill-opacity=@circle.Aesthetic.FillOpacity
+                    fill-opacity=@Num(circle.Aesthetic.FillOpacity)
                     @onclick=@shape.OnClickHandler
                     @onmouseover=@shape.OnMouseOverHandler
                     @onmouseout=@shape.OnMouseOutHandler />
@@ -95,14 +96,14 @@
         var (px1, py1) = P(line.X1, line.Y1);
         var (px2, py2) = P(line.X2, line.Y2);
 
-        <line x1=@px1
-              y1=@py1
-              x2=@px2
-              y2=@py2
+        <line x1=@Num(px1)
+              y1=@Num(py1)
+              x2=@Num(px2)
+              y2=@Num(py2)
               class=@shape.Css
-              stroke-width=@line.Aesthetic.StrokeWidth
+              stroke-width=@Num(line.Aesthetic.StrokeWidth)
               stroke=@line.Aesthetic.Stroke
-              stroke-opacity=@line.Aesthetic.StrokeOpacity
+              stroke-opacity=@Num(line.Aesthetic.StrokeOpacity)
               stroke-dasharray=@(line.Aesthetic.LineType.Render())
               clip-path="url(#@(Clip))"
               @onclick=@shape.OnClickHandler
@@ -117,16 +118,16 @@
         var width = X(rectangle.X + rectangle.Width) - x;
         var height = Y(rectangle.Y) - y;
 
-        <rect x=@x
-              y=@y
-              width=@width
-              height=@height
+        <rect x=@Num(x)
+              y=@Num(y)
+              width=@Num(width)
+              height=@Num(height)
               class=@shape.Css
               fill=@rectangle.Aesthetic.Fill
-              fill-opacity=@rectangle.Aesthetic.FillOpacity
+              fill-opacity=@Num(rectangle.Aesthetic.FillOpacity)
               stroke=@rectangle.Aesthetic.Stroke
-              stroke-opacity=@rectangle.Aesthetic.StrokeOpacity
-              stroke-width=@rectangle.Aesthetic.StrokeWidth
+              stroke-opacity=@Num(rectangle.Aesthetic.StrokeOpacity)
+              stroke-width=@Num(rectangle.Aesthetic.StrokeWidth)
               clip-path="url(#@(Clip))"
               @onclick=@shape.OnClickHandler
               @onmouseover=@shape.OnMouseOverHandler
@@ -142,7 +143,7 @@
 
         <path d=@(Path(area))
               fill=@area.Aesthetic.Fill
-              fill-opacity=@area.Aesthetic.FillOpacity
+              fill-opacity=@Num(area.Aesthetic.FillOpacity)
               clip-path="url(#@(Clip))" />
     }
 
@@ -155,9 +156,9 @@
 
         <path d=@(Path(path))
               fill="none"
-              stroke-width=@path.Aesthetic.StrokeWidth
+              stroke-width=@Num(path.Aesthetic.StrokeWidth)
               stroke=@path.Aesthetic.Stroke
-              stroke-opacity=@path.Aesthetic.StrokeOpacity
+              stroke-opacity=@Num(path.Aesthetic.StrokeOpacity)
               stroke-dasharray=@(path.Aesthetic.LineType.Render())
               clip-path="url(#@(Clip))" />
     }
@@ -167,9 +168,9 @@
         <path d=@(Path(polygon.Path))
               class=@shape.Css
               fill=@polygon.Aesthetic.Fill
-              fill-opacity=@polygon.Aesthetic.FillOpacity
+              fill-opacity=@Num(polygon.Aesthetic.FillOpacity)
               stroke=@polygon.Aesthetic.Stroke
-              stroke-width=@polygon.Aesthetic.StrokeWidth
+              stroke-width=@Num(polygon.Aesthetic.StrokeWidth)
               clip-path="url(#@(Clip))"
               @onclick=@shape.OnClickHandler
               @onmouseover=@shape.OnMouseOverHandler
@@ -181,9 +182,9 @@
         <path d=@(Path(multi.Polygons))
               class=@shape.Css
               fill=@multi.Aesthetic.Fill
-              fill-opacity=@multi.Aesthetic.FillOpacity
+              fill-opacity=@Num(multi.Aesthetic.FillOpacity)
               stroke=@multi.Aesthetic.Stroke
-              stroke-width=@multi.Aesthetic.StrokeWidth
+              stroke-width=@Num(multi.Aesthetic.StrokeWidth)
               clip-path="url(#@(Clip))"
               @onclick=@shape.OnClickHandler
               @onmouseover=@shape.OnMouseOverHandler
@@ -196,7 +197,7 @@
 
         <text><text
                   class="pointer-events-none"
-                  transform="translate(@px, @py) rotate(@(text.Aesthetic.Angle)deg)"
+                  transform=@Attr($"translate({px}, {py}) rotate({text.Aesthetic.Angle}deg)")
                   fill=@(text.Aesthetic.Color)
                   text-anchor=@(text.Aesthetic.Anchor.Render())
                   font-size=@(text.Aesthetic.FontSize)
@@ -211,13 +212,13 @@
     {
         var x = X(vline.X);
 
-        <line x1=@x
-              y1=@Zone.Y
-              x2=@x
-              y2=@(Zone.Y + Zone.Height)
-              stroke-width=@vline.Line.StrokeWidth
+        <line x1=@Num(x)
+              y1=@Num(Zone.Y)
+              x2=@Num(x)
+              y2=@Num(Zone.Y + Zone.Height)
+              stroke-width=@Num(vline.Line.StrokeWidth)
               stroke=@vline.Line.Stroke
-              stroke-opacity=@vline.Line.StrokeOpacity
+              stroke-opacity=@Num(vline.Line.StrokeOpacity)
               stroke-dasharray=@(vline.Line.LineType.Render())
               clip-path="url(#@(Clip))" />
 
@@ -246,12 +247,12 @@
         <text><text
                   class="pointer-events-none"
                   fill=@(vline.Text.Color)
-                  fill-opacity=@(vline.Text.Opacity)
+                  fill-opacity=@Num(vline.Text.Opacity)
                   text-anchor=@(Anchor.Start.Render())
                   font-size=@(vline.Text.FontSize)
                   font-weight=@(vline.Text.FontWeight)
                   font-style=@(vline.Text.FontStyle)
-                  transform="translate(@(x)px, @(y)px) rotate(@(angle)deg)"
+                  transform=@Attr($"translate({x}px, {y}px) rotate({angle}deg)")
                   clip-path="url(#@(Clip))">
                 @vline.Label
             </text></text>
@@ -261,13 +262,13 @@
     {
         var y = Y(hline.Y);
 
-        <line x1=@Zone.X
-              y1=@y
-              x2=@(Zone.X + Zone.Width)
-              y2=@y
-              stroke-width=@hline.Line.StrokeWidth
+        <line x1=@Num(Zone.X)
+              y1=@Num(y)
+              x2=@Num(Zone.X + Zone.Width)
+              y2=@Num(y)
+              stroke-width=@Num(hline.Line.StrokeWidth)
               stroke=@hline.Line.Stroke
-              stroke-opacity=@hline.Line.StrokeOpacity
+              stroke-opacity=@Num(hline.Line.StrokeOpacity)
               stroke-dasharray=@(hline.Line.LineType.Render())
               clip-path="url(#@(Clip))" />
 
@@ -294,12 +295,12 @@
         <text><text
                   class="pointer-events-none"
                   fill=@(hline.Text.Color)
-                  fill-opacity=@(hline.Text.Opacity)
+                  fill-opacity=@Num(hline.Text.Opacity)
                   text-anchor=@(hline.Text.Anchor.Render())
                   font-size=@(hline.Text.FontSize)
                   font-weight=@(hline.Text.FontWeight)
                   font-style=@(hline.Text.FontStyle)
-                  transform="translate(@(x), @(y))"
+                  transform=@Attr($"translate({x}, {y})")
                   clip-path="url(#@(Clip))">
                 @hline.Label
             </text></text>
@@ -327,13 +328,13 @@
         var y1 = Y(ymin);
         var y2 = Y(ymax);
 
-        <line x1=@Zone.X
-              y1=@y1
-              x2=@(Zone.X + Zone.Width)
-              y2=@y2
-              stroke-width=@abline.Line.StrokeWidth
+        <line x1=@Num(Zone.X)
+              y1=@Num(y1)
+              x2=@Num(Zone.X + Zone.Width)
+              y2=@Num(y2)
+              stroke-width=@Num(abline.Line.StrokeWidth)
               stroke=@abline.Line.Stroke
-              stroke-opacity=@abline.Line.StrokeOpacity
+              stroke-opacity=@Num(abline.Line.StrokeOpacity)
               stroke-dasharray=@(abline.Line.LineType.Render())
               clip-path="url(#@(Clip))" />
 
@@ -466,10 +467,10 @@
         }
 
         <text><text
-                  transform="translate(@(x), @(y)) rotate(@(-angle)rad)"
+                  transform=@Attr($"translate({x}, {y}) rotate({-angle}rad)")
                   class="pointer-events-none"
                   fill=@(abline.Text.Color)
-                  fill-opacity=@(abline.Text.Opacity)
+                  fill-opacity=@Num(abline.Text.Opacity)
                   text-anchor=@(abline.Text.Anchor.Render())
                   font-size=@(abline.Text.FontSize)
                   font-weight=@(abline.Text.FontWeight)

@@ -3,6 +3,7 @@
 @typeparam T
 @typeparam TX
 @typeparam TY
+@using static GGNet.Components.SvgFormat
 
 @{
     Render(firstRender);
@@ -17,21 +18,21 @@
 
 <defs>
     <clipPath id=@(clip)>
-        <rect x=@X y=@Y width=@Width height=@Height />
+        <rect x=@Num(X) y=@Num(Y) width=@Num(Width) height=@Num(Height) />
     </clipPath>
 
     <clipPath id="@(clip)-area">
-        <rect x=@Area.X y=@Area.Y width=@Area.Width height=@Area.Height />
+        <rect x=@Num(Area.X) y=@Num(Area.Y) width=@Num(Area.Width) height=@Num(Area.Height) />
     </clipPath>
 </defs>
 
 <rect
 class="panel"
 @onclick=OnClick
-x=@Area.X
-y=@Area.Y
-width=@Area.Width
-height=@Area.Height />
+x=@Num(Area.X)
+y=@Num(Area.Y)
+width=@Num(Area.Width)
+height=@Num(Area.Height) />
 
 @_renderStrip
 
@@ -60,8 +61,8 @@ height=@Area.Height />
 
         <text><text
             class="title"
-            x=@(Plot.Title.X + Area.X)
-            y=@(Plot.Title.Y)
+            x=@Num(Plot.Title.X + Area.X)
+            y=@Num(Plot.Title.Y)
             font-size=@(Plot.Style.Plot.Title.FontSize)
             clip-path="url(#@(Plot.Id)-plot)">
             @((MarkupString)Plot.Context.Title)
@@ -77,8 +78,8 @@ height=@Area.Height />
 
         <text><text
             class="sub-title"
-            x=@(Plot.SubTitle.X + Area.X)
-            y=@Plot.SubTitle.Y
+            x=@Num(Plot.SubTitle.X + Area.X)
+            y=@Num(Plot.SubTitle.Y)
             font-size=@(Plot.Style.Plot.SubTitle.FontSize)
             clip-path="url(#@(Plot.Id)-plot)">
             @((MarkupString)Plot.Context.SubTitle)
@@ -91,8 +92,8 @@ height=@Area.Height />
         {
             <text><text
                 class="x-strip"
-                x=@(xStrip.X)
-                y=@(xStrip.Y)
+                x=@Num(xStrip.X)
+                y=@Num(xStrip.Y)
                 text-anchor=@(Plot.Style.Strip.Text.X.Anchor.Render())
                 font-size=@(Plot.Style.Strip.Text.X.FontSize)
                 clip-path="url(#@(Plot.Id)-plot)">
@@ -104,7 +105,7 @@ height=@Area.Height />
         {
             <text><text
                 class="y-strip"
-                transform="translate(@(yStrip.X), @(yStrip.Y)) rotate(@(Plot.Style.Strip.Text.Y.Angle)deg)"
+                transform=@Attr($"translate({yStrip.X}, {yStrip.Y}) rotate({Plot.Style.Strip.Text.Y.Angle}deg)")
                 text-anchor=@(Plot.Style.Strip.Text.Y.Anchor.Render())
                 font-size=@(Plot.Style.Strip.Text.Y.FontSize)
                 clip-path="url(#@(Plot.Id)-plot)">
@@ -130,10 +131,10 @@ height=@Area.Height />
             var x = ToX(b);
             <line
             class="x-break"
-            x1=@x
-            x2=@x
-            y1=@y1
-            y2=@y2
+            x1=@Num(x)
+            x2=@Num(x)
+            y1=@Num(y1)
+            y2=@Num(y2)
             clip-path="url(#@(clip)-area)" />
         }
 
@@ -142,10 +143,10 @@ height=@Area.Height />
             var x = ToX(b);
             <line
             class="x-minor-break"
-            x1=@x
-            x2=@x
-            y1=@y1
-            y2=@y2
+            x1=@Num(x)
+            x2=@Num(x)
+            y1=@Num(y1)
+            y2=@Num(y2)
             clip-path="url(#@(clip)-area)" />
         }
 
@@ -160,8 +161,8 @@ height=@Area.Height />
                     <text>
                         <text
                             class="x-break-label"
-                            x=@x
-                            y=@(xAxisText.Y)
+                            x=@Num(x)
+                            y=@Num(xAxisText.Y)
                             text-anchor=@(Plot.Style.Axis.Text.X.Anchor.Render())
                             font-size=@(Plot.Style.Axis.Text.X.FontSize)
                             clip-path="url(#@(Plot.Id)-plot)">
@@ -180,8 +181,8 @@ height=@Area.Height />
                     <text>
                         <text
                             class="x-break-title"
-                            x=@x
-                            y=@(xAxisTitle.Y)
+                            x=@Num(x)
+                            y=@Num(xAxisTitle.Y)
                             text-anchor="middle"
                             font-size=@(Plot.Style.Axis.Title.X.FontSize)
                             clip-path="url(#@(Plot.Id)-plot)">
@@ -200,10 +201,10 @@ height=@Area.Height />
             var y = ToY(b);
             <line
             class="y-break"
-            x1=@x1
-            x2=@x2
-            y1=@y
-            y2=@y
+            x1=@Num(x1)
+            x2=@Num(x2)
+            y1=@Num(y)
+            y2=@Num(y)
             clip-path="url(#@(clip)-area)" />
         }
 
@@ -212,10 +213,10 @@ height=@Area.Height />
             var y = ToY(b);
             <line
             class="y-minor-break"
-            x1=@x1
-            x2=@x2
-            y1=@y
-            y2=@y
+            x1=@Num(x1)
+            x2=@Num(x2)
+            y1=@Num(y)
+            y2=@Num(y)
             clip-path="url(#@(clip)-area)" />
         }
 
@@ -233,8 +234,8 @@ height=@Area.Height />
                     <text>
                         <text
                             class="y-break-label"
-                            x=@(yAxisText.X)
-                            y=@y
+                            x=@Num(yAxisText.X)
+                            y=@Num(y)
                             text-anchor=@(Plot.Style.Axis.Text.Y.Anchor.Render())
                             font-size=@(Plot.Style.Axis.Text.Y.FontSize)
                             clip-path="url(#@(clip))">
@@ -257,10 +258,10 @@ height=@Area.Height />
 
             <line
             class="x-break"
-            x1=@centerX
-            x2=@px
-            y1=@centerY
-            y2=@py
+            x1=@Num(centerX)
+            x2=@Num(px)
+            y1=@Num(centerY)
+            y2=@Num(py)
             clip-path="url(#@(clip)-area)" />
         }
 
@@ -286,9 +287,9 @@ height=@Area.Height />
                 <circle
                 class="y-break"
                 fill="none"
-                cx=@centerX
-                cy=@centerY
-                r=@(f * radius)
+                cx=@Num(centerX)
+                cy=@Num(centerY)
+                r=@Num(f * radius)
                 clip-path="url(#@(clip)-area)" />
             }
         }
@@ -315,9 +316,9 @@ height=@Area.Height />
                 <circle
                 class="y-minor-break"
                 fill="none"
-                cx=@centerX
-                cy=@centerY
-                r=@(f * radius)
+                cx=@Num(centerX)
+                cy=@Num(centerY)
+                r=@Num(f * radius)
                 clip-path="url(#@(clip)-area)" />
             }
         }
@@ -340,8 +341,8 @@ height=@Area.Height />
             <text>
                 <text
                     class="x-break-label"
-                    x=@x
-                    y=@y
+                    x=@Num(x)
+                    y=@Num(y)
                     text-anchor=@anchor
                     font-size=@(Plot.Style.Axis.Text.X.FontSize)
                     clip-path="url(#@(clip))">
@@ -364,8 +365,8 @@ height=@Area.Height />
             <text>
                 <text
                     class="y-break-label"
-                    x=@(px + 4)
-                    y=@(py - 2)
+                    x=@Num(px + 4)
+                    y=@Num(py - 2)
                     text-anchor="start"
                     font-size=@(Plot.Style.Axis.Text.Y.FontSize)
                     clip-path="url(#@(clip))">
@@ -384,8 +385,8 @@ height=@Area.Height />
 
         <text><text
             class="caption"
-            x=@(Area.X + Area.Width - Plot.Style.Plot.Caption.Margin.Right)
-            y=@(Plot.Caption.Y)
+            x=@Num(Area.X + Area.Width - Plot.Style.Plot.Caption.Margin.Right)
+            y=@Num(Plot.Caption.Y)
             font-size=@(Plot.Style.Plot.Caption.FontSize)
             clip-path="url(#@(Plot.Id)-plot)">
             @((MarkupString)Plot.Context.Caption)
@@ -401,8 +402,8 @@ height=@Area.Height />
 
         <text><text
             class="x-title"
-            x=@(xAxisTitle.X)
-            y=@(xAxisTitle.Y)
+            x=@Num(xAxisTitle.X)
+            y=@Num(xAxisTitle.Y)
             text-anchor=@(Plot.Style.Axis.Title.X.Anchor.Render())
             font-size=@(Plot.Style.Axis.Title.X.FontSize)
             clip-path="url(#@(Plot.Id)-plot)">
@@ -421,7 +422,7 @@ height=@Area.Height />
             class="y-title"
             x="0"
             y="0"
-            transform="rotate(@(Plot.Style.Axis.Title.Y.Angle)) translate(-@(yAxisTitle.Y), @(yAxisTitle.X))"
+            transform=@Attr($"rotate({Plot.Style.Axis.Title.Y.Angle}) translate({-yAxisTitle.Y}, {yAxisTitle.X})")
             text-anchor=@(Plot.Style.Axis.Title.Y.Anchor.Render())
             font-size=@(Plot.Style.Axis.Title.Y.FontSize)>
             @((MarkupString)Data.YLab.text)

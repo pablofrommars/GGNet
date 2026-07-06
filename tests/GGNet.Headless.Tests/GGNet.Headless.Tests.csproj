@@ -6,7 +6,6 @@
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
-		<InvariantGlobalization>true</InvariantGlobalization>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
