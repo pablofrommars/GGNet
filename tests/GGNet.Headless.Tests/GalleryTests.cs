@@ -1,11 +1,9 @@
-using VerifyXunit;
-
 namespace GGNet.Headless.Tests;
 
 // Golden gallery: one snapshot per geom. First recording is characterization
 // (pins current behavior); thereafter regression. Snapshots live in Gallery/
 // as .verified.svg — open them in a browser to review.
-public class GalleryTest
+public class GalleryTests
 {
 	private sealed record XY(double X, double Y);
 
@@ -75,7 +73,7 @@ public class GalleryTest
 		var svg = await plot.AsStringAsync();
 
 		// Static export must be pure, well-formed SVG — not an HTML fragment.
-		System.Xml.Linq.XDocument.Parse(svg);
+		XDocument.Parse(svg);
 
 		await Verifier.Verify(svg, extension: "svg");
 	}

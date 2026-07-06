@@ -1,9 +1,3 @@
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
-
-using VerifyTests;
-using VerifyXunit;
-
 namespace GGNet.Headless.Tests;
 
 public static class VerifyConfig
@@ -21,6 +15,6 @@ public static class VerifyConfig
 		});
 
 		Verifier.DerivePathInfo((sourceFile, projectDirectory, type, method) =>
-			new(Path.Combine(projectDirectory, "Gallery"), type.Name, method.Name));
+			new(Path.Combine(projectDirectory, type.Name == nameof(PublicApiTests) ? "Api" : "Gallery"), type.Name, method.Name));
 	}
 }

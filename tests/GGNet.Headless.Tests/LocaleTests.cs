@@ -1,11 +1,6 @@
-using System.Globalization;
-using System.Text.RegularExpressions;
-
 namespace GGNet.Headless.Tests;
 
-// SVG geometry must serialize with '.' decimals and '-' minus regardless of the
-// host culture; no global culture workaround is allowed in the library.
-public class LocaleTest
+public class LocaleTests
 {
 	private sealed class CultureScope : IDisposable
 	{
@@ -54,6 +49,10 @@ public class LocaleTest
 	[InlineData("fr-FR")]
 	public async Task GeometryIsCultureInvariant(string culture)
 	{
+		// Arrange
+
+		// Act
+
 		string invariant;
 		using (new CultureScope(""))
 		{
@@ -66,17 +65,22 @@ public class LocaleTest
 			localized = Normalize(await RenderAsync());
 		}
 
-		Assert.Equal(invariant, localized);
+		// Assert
 
-		Assert.DoesNotMatch(@"\d,\d", localized);
-		Assert.DoesNotContain('−', localized);
+		using var _ = new AssertionScope();
 
-		System.Xml.Linq.XDocument.Parse(localized);
+		localized.Should().Be(invariant);
+		localized.Should().NotMatchRegex(@"\d,\d");
+		localized.Should().NotContain("−");
+
+		XDocument.Parse(localized);
 	}
 
 	[Fact]
 	public async Task PolarGeometryIsCultureInvariant()
 	{
+		// Arrange
+
 		using var _ = new CultureScope("sv-SE");
 
 		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
@@ -84,8 +88,12 @@ public class LocaleTest
 			.Coord_Polar()
 			.Style();
 
+		// Act
+
 		var svg = await plot.AsStringAsync();
 
-		Assert.DoesNotMatch(@"\d,\d", svg);
+		// Assert
+
+		svg.Should().NotMatchRegex(@"\d,\d");
 	}
 }
