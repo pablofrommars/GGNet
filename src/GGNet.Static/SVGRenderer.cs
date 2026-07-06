@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Static;
 
-[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "<Pending>")]
+[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Static")]
 internal sealed class SVGRenderer
 {
 	private static readonly HtmlEncoder encoder = HtmlEncoder.Default;
@@ -165,14 +165,6 @@ internal sealed class SVGRenderer
 				capturedValueAttribute = frame.AttributeValue as string;
 			}
 
-			/*
-			if (frame.AttributeEventHandlerId > 0)
-			{
-				context.Write($" {frame.AttributeName}=\"{frame.AttributeEventHandlerId}\"");
-				continue;
-			}
-			*/
-
 			switch (frame.AttributeValue)
 			{
 				case bool flag when flag:
@@ -195,18 +187,11 @@ internal sealed class SVGRenderer
 		return position + maxElements;
 	}
 
-	private sealed class Context
+	private sealed class Context(StaticRenderer renderer, TextWriter writer)
 	{
-		private readonly TextWriter writer;
+		private readonly TextWriter writer = writer;
 
-		public Context(StaticRenderer renderer, TextWriter writer)
-		{
-			Renderer = renderer;
-
-			this.writer = writer;
-		}
-
-		public StaticRenderer Renderer { get; }
+		public StaticRenderer Renderer { get; } = renderer;
 
 		public string? ClosestSelectValueAsString { get; set; }
 

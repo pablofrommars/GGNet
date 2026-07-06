@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Static;
 
-[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "<Pending>")]
+[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Static")]
 public sealed class Host
 {
 	private readonly ServiceCollection _serviceCollection = new();

@@ -1,16 +1,10 @@
 ﻿namespace GGNet.Static;
 
-[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "<Pending>")]
-internal sealed class StaticRenderer : Renderer
+[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Static")]
+internal sealed class StaticRenderer(IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
+	: Renderer(serviceProvider, loggerFactory)
 {
 	private Exception? unhandledException;
-
-	private TaskCompletionSource<object> nextRenderTcs = new();
-
-	public StaticRenderer(IServiceProvider serviceProvider, ILoggerFactory loggerFactory)
-		: base(serviceProvider, loggerFactory)
-	{
-	}
 
 	public new ArrayRange<RenderTreeFrame> GetCurrentRenderTreeFrames(int componentId)
 		=> base.GetCurrentRenderTreeFrames(componentId);
@@ -20,8 +14,6 @@ internal sealed class StaticRenderer : Renderer
 
 	public override Dispatcher Dispatcher { get; } = Dispatcher.CreateDefault();
 
-	public Task NextRender => nextRenderTcs.Task;
-
 	protected override void HandleException(Exception exception)
 	{
 		unhandledException = exception;
@@ -29,9 +21,6 @@ internal sealed class StaticRenderer : Renderer
 
 	protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)
 	{
-		//var prevTcs = nextRenderTcs;
-		nextRenderTcs = new TaskCompletionSource<object>();
-		//prevTcs.SetResult(default);
 		return Task.CompletedTask;
 	}
 

@@ -45,6 +45,8 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
 
 	public ValueTask DisposeAsync()
 	{
+		GC.SuppressFinalize(this);
+
 		if (Interlocked.CompareExchange(ref disposing, 1, 0) == 1)
 		{
 			return ValueTask.CompletedTask;

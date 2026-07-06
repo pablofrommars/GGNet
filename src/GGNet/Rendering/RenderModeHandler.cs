@@ -16,7 +16,11 @@ public abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHandle
 	public abstract IChildRenderModeHandler Child();
 
 	public virtual ValueTask DisposeAsync()
-		=> ValueTask.CompletedTask;
+	{
+		GC.SuppressFinalize(this);
+
+		return ValueTask.CompletedTask;
+	}
 
 	public static IRenderModeHandler Factory(RenderMode mode, IPlotRendering component)
 		=> mode switch
