@@ -377,85 +377,36 @@
 
     private void RenderPanels(RenderTreeBuilder __builder)
     {
-        var width = wrapper.Width - Context.Strip - (Context.N.cols - 1.0) * Style.Panel.Spacing.X;
+        var panels = new (int row, int col, double width, double height)[Context.Panels.Count];
 
-        if (!Context.AxisVisibility.y)
+        for (var i = 0; i < Context.Panels.Count; i++)
         {
-            width -= Context.Axis.width;
+            var p = Context.Panels[i];
+
+            panels[i] = (p.Coord.row, p.Coord.col, p.Width, p.Height);
         }
 
-        var height = wrapper.Height - Context.Strip - (Context.N.rows - 1.0) * Style.Panel.Spacing.Y;
-
-        if (!Context.AxisVisibility.x)
-        {
-            height -= Context.Axis.height;
-        }
-
-        if (!Context.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Context.XLab))
-        {
-            height -= Context.AxisTitles.x;
-        }
-
-        var xOffsetReset = wrapper.X;
-
-        var xOffset = xOffsetReset;
-        var yOffset = wrapper.Y;
+        var zones = Layout.PlotLayout.Subdivide(new(
+            Wrapper: wrapper,
+            N: Context.N,
+            Strip: Context.Strip,
+            Axis: Context.Axis,
+            AxisVisibility: Context.AxisVisibility,
+            AxisTitles: Context.AxisTitles,
+            AxisTitlesVisibility: Context.AxisTitlesVisibility,
+            HasXLab: !string.IsNullOrEmpty(Context.XLab),
+            Style: Style), panels);
 
         for (var i = 0; i < Context.Panels.Count; i++)
         {
             var panel = Context.Panels[i];
-
-            var x = xOffset;
-            var y = yOffset;
-
-            var w = panel.Width * width;
-            var h = panel.Height * height;
-
-            if (panel.Coord.row == 0)
-            {
-                h += Context.Strip;
-            }
-
-            if (panel.Coord.col == 0 && !Context.AxisVisibility.y && Style.Axis.Y == Position.Left)
-            {
-                w += Context.Axis.width;
-            }
-
-            if (panel.Coord.row == (Context.N.rows - 1))
-            {
-                if (!Context.AxisVisibility.x)
-                {
-                    h += Context.Axis.height;
-                }
-
-                if (!Context.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Context.XLab))
-                {
-                    h += Context.AxisTitles.x;
-                }
-            }
-
-            if (panel.Coord.col == (Context.N.cols - 1))
-            {
-                w += Context.Strip;
-
-                if (!Context.AxisVisibility.y && Style.Axis.Y == Position.Right)
-                {
-                    w += Context.Axis.width;
-                }
-
-                xOffset = xOffsetReset;
-                yOffset += h + Style.Panel.Spacing.Y;
-            }
-            else
-            {
-                xOffset += w + Style.Panel.Spacing.X;
-            }
+            var zone = zones[i];
 
             <Panel Data=@panel
-                   X=@x
-                   Y=@y
-                   Width=@w
-                   Height=@h
+                   X=@zone.X
+                   Y=@zone.Y
+                   Width=@zone.Width
+                   Height=@zone.Height
                    First=@(i == 0)
                    Last=@(i == (Context.Panels.Count - 1))
                    T=T TX=TX TY=TY />
