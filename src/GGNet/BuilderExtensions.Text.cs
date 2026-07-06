@@ -14,9 +14,9 @@ public static partial class BuilderExtensions
 	  IReadOnlyList<T2> source,
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? y = null,
-	  Func<T2, double>? _angle = null,
+	  Func<T2, double>? angleBy = null,
 	  Func<T2, TT>? text = null,
-	  IAestheticMapping<T2, string>? _color = null,
+	  IAestheticMapping<T2, string>? colorBy = null,
 	  Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
@@ -24,7 +24,7 @@ public static partial class BuilderExtensions
 	{
 		panel.AddTyped(() =>
 		{
-			var geom = new Text<T2, TX1, TY1, TT>(source, x, y, _angle, text, _color, scale)
+			var geom = new Text<T2, TX1, TY1, TT>(source, x, y, angleBy, text, colorBy, scale)
 			{
 				Aesthetic = new()
 				{
@@ -48,15 +48,15 @@ public static partial class BuilderExtensions
 	  IReadOnlyList<T2> source,
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? y = null,
-	  Func<T2, double>? _angle = null,
+	  Func<T2, double>? angleBy = null,
 	  Func<T2, TT>? text = null,
-	  IAestheticMapping<T2, string>? _color = null,
+	  IAestheticMapping<T2, string>? colorBy = null,
 	  Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Text(source, x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale);
+		context.Default_Panel().Geom_Text(source, x, y, angleBy, text, colorBy, size, anchor, weight, style, color, angle, scale);
 
 		return context;
 	}
@@ -65,30 +65,30 @@ public static partial class BuilderExtensions
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
 	  Func<T, TY>? y = null,
-	  Func<T, double>? _angle = null,
+	  Func<T, double>? angleBy = null,
 	  Func<T, TT>? text = null,
-	  IAestheticMapping<T, string>? _color = null,
+	  IAestheticMapping<T, string>? colorBy = null,
 	  Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Text(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _angle, text, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), size, anchor, weight, style, color, angle, scale);
+		return Geom_Text(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, angleBy, text, colorBy ?? (inherit ? panel.Context.Aesthetics.Color : null), size, anchor, weight, style, color, angle, scale);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Text<T, TX, TY, TT>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
 	  Func<T, TY>? y = null,
-	  Func<T, double>? _angle = null,
+	  Func<T, double>? angleBy = null,
 	  Func<T, TT>? text = null,
-	  IAestheticMapping<T, string>? _color = null,
+	  IAestheticMapping<T, string>? colorBy = null,
 	  Size? size = null, Anchor anchor = Middle, string weight = "normal", string style = "normal", string color = "#23d0fc", double angle = 0.0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Text(x, y, _angle, text, _color, size, anchor, weight, style, color, angle, scale);
+		context.Default_Panel().Geom_Text(x, y, angleBy, text, colorBy, size, anchor, weight, style, color, angle, scale);
 
 		return context;
 	}

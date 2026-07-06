@@ -14,7 +14,7 @@ public static partial class BuilderExtensions
 	  IReadOnlyList<T2> source,
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? y = null,
-	  IAestheticMapping<T2, string>? _fill = null,
+	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -27,7 +27,7 @@ public static partial class BuilderExtensions
 	{
 		panel.AddTyped(() =>
 		{
-			var geom = new Area<T2, TX1, TY1>(source, x, y, _fill, tooltip, position, scale)
+			var geom = new Area<T2, TX1, TY1>(source, x, y, fillBy, tooltip, position, scale)
 			{
 				OnClick = onclick,
 				OnMouseOver = onmouseover,
@@ -50,7 +50,7 @@ public static partial class BuilderExtensions
 	  IReadOnlyList<T2> source,
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? y = null,
-	  IAestheticMapping<T2, string>? _fill = null,
+	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -61,7 +61,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Area(source, x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
+		context.Default_Panel().Geom_Area(source, x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
 
 		return context;
 	}
@@ -70,7 +70,7 @@ public static partial class BuilderExtensions
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
 	  Func<T, TY>? y = null,
-	  IAestheticMapping<T, string>? _fill = null,
+	  IAestheticMapping<T, string>? fillBy = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
@@ -81,14 +81,14 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Area(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
+		return Geom_Area(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Area<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
 	  Func<T, TY>? y = null,
-	  IAestheticMapping<T, string>? _fill = null,
+	  IAestheticMapping<T, string>? fillBy = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
@@ -99,7 +99,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Area(x, y, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
+		context.Default_Panel().Geom_Area(x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale);
 
 		return context;
 	}

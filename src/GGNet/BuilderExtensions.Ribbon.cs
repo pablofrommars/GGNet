@@ -15,7 +15,7 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? ymin = null,
 	  Func<T2, TY1>? ymax = null,
-	  IAestheticMapping<T2, string>? _fill = null,
+	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -27,7 +27,7 @@ public static partial class BuilderExtensions
 	{
 		panel.AddTyped(() =>
 		{
-			var geom = new Ribbon<T2, TX1, TY1>(source, x, ymin, ymax, _fill, tooltip, scale)
+			var geom = new Ribbon<T2, TX1, TY1>(source, x, ymin, ymax, fillBy, tooltip, scale)
 			{
 				OnClick = onclick,
 				OnMouseOver = onmouseover,
@@ -51,7 +51,7 @@ public static partial class BuilderExtensions
 	   Func<T2, TX1>? x = null,
 	   Func<T2, TY1>? ymin = null,
 	   Func<T2, TY1>? ymax = null,
-	   IAestheticMapping<T2, string>? _fill = null,
+	   IAestheticMapping<T2, string>? fillBy = null,
 	   Func<T2, MouseEventArgs, Task>? onclick = null,
 	   Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	   Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -61,7 +61,7 @@ public static partial class BuilderExtensions
 	   where TX1 : struct
 	   where TY1 : struct
 	{
-		return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
+		return panel.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
 	}
 
 	public static PlotContext<T1, TX1, TY1> Geom_Ribbon<T1, TX1, TY1, T2>(
@@ -70,7 +70,7 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? ymin = null,
 	  Func<T2, TY1>? ymax = null,
-	  IAestheticMapping<T2, string>? _fill = null,
+	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -80,7 +80,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
+		context.Default_Panel().Geom_Ribbon(source, x, ymin, ymax, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
 
 		return context;
 	}
@@ -91,7 +91,7 @@ public static partial class BuilderExtensions
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? ymin = null,
 	  Func<T2, TY1>? ymax = null,
-	  IAestheticMapping<T2, string>? _fill = null,
+	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -101,7 +101,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return context.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
+		return context.Geom_Ribbon(new Source<T2>(source), x, ymin, ymax, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Ribbon<T, TX, TY>(
@@ -109,7 +109,7 @@ public static partial class BuilderExtensions
 	  Func<T, TX>? x = null,
 	  Func<T, TY>? ymin = null,
 	  Func<T, TY>? ymax = null,
-	  IAestheticMapping<T, string>? _fill = null,
+	  IAestheticMapping<T, string>? fillBy = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
@@ -119,7 +119,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Ribbon(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
+		return Geom_Ribbon(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Ribbon<T, TX, TY>(
@@ -127,7 +127,7 @@ public static partial class BuilderExtensions
 	  Func<T, TX>? x = null,
 	  Func<T, TY>? ymin = null,
 	  Func<T, TY>? ymax = null,
-	  IAestheticMapping<T, string>? _fill = null,
+	  IAestheticMapping<T, string>? fillBy = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
@@ -137,7 +137,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Ribbon(x, ymin, ymax, _fill, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
+		context.Default_Panel().Geom_Ribbon(x, ymin, ymax, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, scale);
 
 		return context;
 	}

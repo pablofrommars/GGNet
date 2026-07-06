@@ -17,7 +17,7 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? y = null,
 	  Func<T2, TX1>? dx = null,
 	  Func<T2, TY1>? dy = null,
-	  IAestheticMapping<T2, string>? _fill = null,
+	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -40,7 +40,7 @@ public static partial class BuilderExtensions
 
 		panel.AddTyped(() =>
 		{
-			var geom = new Hex<T2, TX1, TY1>(source, x, y, dx, dy, _fill, tooltip, animation, scale)
+			var geom = new Hex<T2, TX1, TY1>(source, x, y, dx, dy, fillBy, tooltip, animation, scale)
 			{
 				Aesthetic = new()
 				{
@@ -65,7 +65,7 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? y = null,
 	  Func<T2, TX1>? dx = null,
 	  Func<T2, TY1>? dy = null,
-	  IAestheticMapping<T2, string>? _fill = null,
+	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -76,7 +76,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+		return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
 	}
 
 	public static PlotContext<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2>(
@@ -86,7 +86,7 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? y = null,
 	  Func<T2, TX1>? dx = null,
 	  Func<T2, TY1>? dy = null,
-	  IAestheticMapping<T2, string>? _fill = null,
+	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -97,7 +97,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Hex(source, x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+		context.Default_Panel().Geom_Hex(source, x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
 
 		return context;
 	}
@@ -109,7 +109,7 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? y = null,
 	  Func<T2, TX1>? dx = null,
 	  Func<T2, TY1>? dy = null,
-	  IAestheticMapping<T2, string>? _fill = null,
+	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -120,7 +120,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return context.Geom_Hex(new Source<T2>(source), x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+		return context.Geom_Hex(new Source<T2>(source), x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
 	}
 
 	public static PanelFactory<T, TX, TY> Geom_Hex<T, TX, TY>(
@@ -129,7 +129,7 @@ public static partial class BuilderExtensions
 	  Func<T, TY>? y = null,
 	  Func<T, TX>? dx = null,
 	  Func<T, TY>? dy = null,
-	  IAestheticMapping<T, string>? _fill = null,
+	  IAestheticMapping<T, string>? fillBy = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
@@ -140,7 +140,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Hex(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, dx, dy, _fill ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+		return Geom_Hex(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, dx, dy, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Hex<T, TX, TY>(
@@ -149,7 +149,7 @@ public static partial class BuilderExtensions
 	  Func<T, TY>? y = null,
 	  Func<T, TX>? dx = null,
 	  Func<T, TY>? dy = null,
-	  IAestheticMapping<T, string>? _fill = null,
+	  IAestheticMapping<T, string>? fillBy = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
@@ -160,7 +160,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Hex(x, y, dx, dy, _fill, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+		context.Default_Panel().Geom_Hex(x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
 
 		return context;
 	}

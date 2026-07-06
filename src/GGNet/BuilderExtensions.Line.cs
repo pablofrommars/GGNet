@@ -14,8 +14,8 @@ public static partial class BuilderExtensions
 	  IReadOnlyList<T2> source,
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? y = null,
-	  IAestheticMapping<T2, string>? _color = null,
-	  IAestheticMapping<T2, LineType>? _lineType = null,
+	  IAestheticMapping<T2, string>? colorBy = null,
+	  IAestheticMapping<T2, LineType>? lineTypeBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -27,7 +27,7 @@ public static partial class BuilderExtensions
 	{
 		panel.AddTyped(() =>
 		{
-			var geom = new Line<T2, TX1, TY1>(source, x, y, _color, _lineType, tooltip, scale, piecewise)
+			var geom = new Line<T2, TX1, TY1>(source, x, y, colorBy, lineTypeBy, tooltip, scale, piecewise)
 			{
 				Aesthetic = new()
 				{
@@ -52,8 +52,8 @@ public static partial class BuilderExtensions
 	  IReadOnlyList<T2> source,
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? y = null,
-	  IAestheticMapping<T2, string>? _color = null,
-	  IAestheticMapping<T2, LineType>? _lineType = null,
+	  IAestheticMapping<T2, string>? colorBy = null,
+	  IAestheticMapping<T2, LineType>? lineTypeBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
@@ -63,7 +63,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Line(source, x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, piecewise);
+		context.Default_Panel().Geom_Line(source, x, y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, piecewise);
 
 		return context;
 	}
@@ -72,8 +72,8 @@ public static partial class BuilderExtensions
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
 	  Func<T, TY>? y = null,
-	  IAestheticMapping<T, string>? _color = null,
-	  IAestheticMapping<T, LineType>? _lineType = null,
+	  IAestheticMapping<T, string>? colorBy = null,
+	  IAestheticMapping<T, LineType>? lineTypeBy = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
@@ -83,15 +83,15 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Line(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, _color ?? (inherit ? panel.Context.Aesthetics.Color : null), _lineType ?? (inherit ? panel.Context.Aesthetics.LineType : null), onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, piecewise);
+		return Geom_Line(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, colorBy ?? (inherit ? panel.Context.Aesthetics.Color : null), lineTypeBy ?? (inherit ? panel.Context.Aesthetics.LineType : null), onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, piecewise);
 	}
 
 	public static PlotContext<T, TX, TY> Geom_Line<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
 	  Func<T, TY>? y = null,
-	  IAestheticMapping<T, string>? _color = null,
-	  IAestheticMapping<T, LineType>? _lineType = null,
+	  IAestheticMapping<T, string>? colorBy = null,
+	  IAestheticMapping<T, LineType>? lineTypeBy = null,
 	  Func<T, MouseEventArgs, Task>? onclick = null,
 	  Func<T, MouseEventArgs, Task>? onmouseover = null,
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
@@ -101,7 +101,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Line(x, y, _color, _lineType, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, piecewise);
+		context.Default_Panel().Geom_Line(x, y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, piecewise);
 
 		return context;
 	}

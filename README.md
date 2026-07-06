@@ -22,7 +22,7 @@ var plot = PlotContext.Build(points, o => o.X, o => o.Y)
 
 ### Conventions
 
-- **`_`-prefix means data-driven.** `_color`, `_fill`, `_size`, `_lineType` take an aesthetic *mapping* (built by `Scale_Color_Discrete`, `Scale_Fill_Continuous`, …): the value is computed per item, trains a scale, and feeds the legend. The unprefixed twin (`color`, `fill`, `size`, `lineType`) is a constant applied to the whole layer. Set one or the other, not both.
+- **`xxxBy` means data-driven.** `colorBy`, `fillBy`, `sizeBy`, `lineTypeBy` take an aesthetic *mapping* (built by `Scale_Color_Discrete`, `Scale_Fill_Continuous`, …): the value is computed per item, trains a scale, and feeds the legend. The unsuffixed twin (`color`, `fill`, `size`, `lineType`) is a constant applied to the whole layer. When a mapping is present it wins for its own aesthetic; the constant then still serves as the base for *other* aesthetics' legend swatches (a line-type legend draws its swatches in the constant color), so setting both is meaningful rather than an error.
 - **Positional arguments stop at the selectors.** Source and selector parameters (`x`, `y`, `ymin`, `open`, …) may be passed positionally; every aesthetic, event, or option after them is passed by name. The signatures are wide by design — configuration lives in one call — and named arguments are what keep call sites readable and stable.
 - **The vocabulary is SVG's.** `strokeWidth`, `opacity`, `fillOpacity`, `strokeOpacity`, `strokeColor` mean exactly what they mean in SVG. `width` and `height` are reserved for geometric extent in data units (`Geom_Bar`, `Geom_Tile`, `Geom_Violin`).
 - **Interactivity is a uniform block.** Every data-mark geom takes `onclick`, `onmouseover`, `onmouseout`, and (where a hover surface makes sense) `tooltip`. When `tooltip` is set and no explicit hover handlers are given, the default hover shows it. Annotation geoms (`Geom_ABLine`, `Geom_HLine`, `Geom_VLine`, `Geom_Text`) and statistical summaries (`Geom_Boxplot`, `Geom_Violin`, `Geom_RidgeLine`) deliberately take no event block.
@@ -31,24 +31,24 @@ var plot = PlotContext.Build(points, o => o.X, o => o.Y)
 
 | Geom | Selectors | Mappings | Constants | Events | Tooltip |
 |-|-|-|-|-|-|
-| `Geom_Point` | `x`, `y` | `_size`, `_color` | `size`, `color`, `opacity` | ✓ | ✓ |
-| `Geom_Line` | `x`, `y` | `_color`, `_lineType` | `strokeWidth`, `color`, `opacity`, `lineType`, `piecewise` | ✓ | ✓ |
-| `Geom_Bar` | `x`, `y` | `_fill` | `fill`, `fillOpacity`, `strokeColor`, `strokeOpacity`, `strokeWidth`, `position`, `width` | ✓ | ✓ |
-| `Geom_Area` | `x`, `y` | `_fill` | `fill`, `fillOpacity`, `position` | ✓ | ✓ |
-| `Geom_Ribbon` | `x`, `ymin`, `ymax` | `_fill` | `fill`, `fillOpacity` | ✓ | ✓ |
-| `Geom_ErrorBar` | `x`, `y`, `ymin`, `ymax` | `_color` | `strokeWidth`, `color`, `opacity`, `lineType`, `radius`, `position` | ✓ | ✓ |
+| `Geom_Point` | `x`, `y` | `sizeBy`, `colorBy` | `size`, `color`, `opacity` | ✓ | ✓ |
+| `Geom_Line` | `x`, `y` | `colorBy`, `lineTypeBy` | `strokeWidth`, `color`, `opacity`, `lineType`, `piecewise` | ✓ | ✓ |
+| `Geom_Bar` | `x`, `y` | `fillBy` | `fill`, `fillOpacity`, `strokeColor`, `strokeOpacity`, `strokeWidth`, `position`, `width` | ✓ | ✓ |
+| `Geom_Area` | `x`, `y` | `fillBy` | `fill`, `fillOpacity`, `position` | ✓ | ✓ |
+| `Geom_Ribbon` | `x`, `ymin`, `ymax` | `fillBy` | `fill`, `fillOpacity` | ✓ | ✓ |
+| `Geom_ErrorBar` | `x`, `y`, `ymin`, `ymax` | `colorBy` | `strokeWidth`, `color`, `opacity`, `lineType`, `radius`, `position` | ✓ | ✓ |
 | `Geom_Segment` | `x`, `xend`, `y`, `yend` | — | `strokeWidth`, `color`, `opacity`, `lineType` | ✓ | ✓ |
-| `Geom_Tile` | `x`, `y`, `width`, `height` | `_fill` | `fill`, `fillOpacity`, `strokeColor`, `strokeOpacity`, `strokeWidth` | ✓ | ✓ |
-| `Geom_Hex` | `x`, `y`, `dx`, `dy` | `_fill` | `fill`, `opacity` | ✓ | ✓ |
-| `Geom_Radar` | `x`, `y` | `_fill` | `fill`, `fillOpacity`, `strokeWidth` | ✓ | ✓ |
-| `Geom_Map` | `polygons` | `_fill` | `fill`, `fillOpacity`, `stroke`, `strokeWidth` | ✓ | ✓ |
+| `Geom_Tile` | `x`, `y`, `width`, `height` | `fillBy` | `fill`, `fillOpacity`, `strokeColor`, `strokeOpacity`, `strokeWidth` | ✓ | ✓ |
+| `Geom_Hex` | `x`, `y`, `dx`, `dy` | `fillBy` | `fill`, `opacity` | ✓ | ✓ |
+| `Geom_Radar` | `x`, `y` | `fillBy` | `fill`, `fillOpacity`, `strokeWidth` | ✓ | ✓ |
+| `Geom_Map` | `polygons` | `fillBy` | `fill`, `fillOpacity`, `stroke`, `strokeWidth` | ✓ | ✓ |
 | `Geom_Candlestick` | `x`, `open`, `high`, `low`, `close` | — | `strokeWidth`, `color`, `opacity`, `lineType` | ✓ | — |
 | `Geom_OHLC` | `x`, `open`, `high`, `low`, `close` | — | `strokeWidth`, `color`, `opacity`, `lineType` | ✓ | — |
 | `Geom_Volume` | `x`, `volume` | — | `fill`, `opacity` | ✓ | — |
-| `Geom_Boxplot` | `x`, `y` | `_fill` | `size`, `fill`, `fillOpacity`, `strokeWidth` | — | — |
-| `Geom_Violin` | `x`, `y`, `width` | `_fill` | `fill`, `fillOpacity`, `stroke`, `position` | — | — |
-| `Geom_RidgeLine` | `x`, `y`, `height` | `_fill` | `fill`, `fillOpacity` | — | — |
-| `Geom_Text` | `x`, `y`, `text`, `_angle` | `_color` | `size`, `anchor`, `weight`, `style`, `color`, `angle` | — | — |
+| `Geom_Boxplot` | `x`, `y` | `fillBy` | `size`, `fill`, `fillOpacity`, `strokeWidth` | — | — |
+| `Geom_Violin` | `x`, `y`, `width` | `fillBy` | `fill`, `fillOpacity`, `stroke`, `position` | — | — |
+| `Geom_RidgeLine` | `x`, `y`, `height` | `fillBy` | `fill`, `fillOpacity` | — | — |
+| `Geom_Text` | `x`, `y`, `text`, `angleBy` | `colorBy` | `size`, `anchor`, `weight`, `style`, `color`, `angle` | — | — |
 | `Geom_ABLine` | `a`, `b`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor` | — | — |
 | `Geom_HLine` | `y`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor` | — | — |
 | `Geom_VLine` | `x`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor` | — | — |
