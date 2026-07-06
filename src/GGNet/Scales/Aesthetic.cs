@@ -18,7 +18,7 @@ internal sealed class Aesthetic<T, TKey, TValue>(
 
 	public void Train(T item) => scale.Train(selector(item));
 
-	public TValue Map(T item) => scale.Map(selector(item));
+	public TValue? Map(T item) => scale.Map(selector(item));
 
 	public IEnumerable<(TValue value, string label)> Labels => scale.Labels;
 }
