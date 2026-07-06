@@ -1,11 +1,10 @@
-using GGNet.Buffers;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms;
 
 internal interface IGeom
 {
-	Buffer<IShape> Layer { get; }
+	List<IShape> Layer { get; }
 
 	CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 

@@ -1,4 +1,3 @@
-using GGNet.Buffers;
 using GGNet.Components;
 using GGNet.Geoms;
 using GGNet.Scene;
@@ -28,7 +27,7 @@ public class ShapeComposerTests
 
 	private sealed class FakeGeom : IGeom
 	{
-		public Buffer<IShape> Layer { get; } = new();
+		public List<IShape> Layer { get; } = [];
 
 		public void Train()
 		{
@@ -56,10 +55,7 @@ public class ShapeComposerTests
 			geom.Layer.Add(shape);
 		}
 
-		var geoms = new Buffer<IGeom>();
-		geoms.Add(geom);
-
-		return ShapeComposer.Compose(geoms, new TestCoord(), zone);
+		return ShapeComposer.Compose([geom], new TestCoord(), zone);
 	}
 
 	[Fact]

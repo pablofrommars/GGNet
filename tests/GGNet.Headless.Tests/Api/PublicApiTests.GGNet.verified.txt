@@ -1,6 +1,4 @@
 ﻿GGNet.Anchor
-GGNet.Buffers.BufferBase`1
-GGNet.Buffers.Buffer`1
 GGNet.BuilderExtensions
 GGNet.Colors
 GGNet.Colors+Brewer

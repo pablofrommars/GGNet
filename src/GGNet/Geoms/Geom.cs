@@ -1,5 +1,4 @@
-﻿using GGNet.Buffers;
-using GGNet.Data;
+﻿using GGNet.Data;
 using GGNet.Exceptions;
 using GGNet.Facets;
 using GGNet.Scales;
@@ -17,7 +16,7 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 	private Facet<T>? facet;
 	private Legends? legends;
 
-	public Buffer<IShape> Layer { get; } = new();
+	public List<IShape> Layer { get; } = [];
 
 	public virtual CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 

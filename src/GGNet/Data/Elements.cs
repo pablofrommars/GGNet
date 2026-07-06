@@ -1,11 +1,10 @@
-using GGNet.Buffers;
 using GGNet.Elements;
 
 using static System.Math;
 
 namespace GGNet.Data;
 
-internal sealed class Elements(double size) : Buffer<Dimension<IElement>>(4, 1)
+internal sealed class Elements(double size) : List<Dimension<IElement>>
 {
 	private readonly double size = size;
 

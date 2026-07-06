@@ -1,11 +1,10 @@
-using GGNet.Buffers;
 
 namespace GGNet.Data;
 
 internal sealed class Position<T>
   where T : struct
 {
-	public Buffer<Scales.Position<T>> Scales { get; } = new(16, 1);
+	public List<Scales.Position<T>> Scales { get; } = [];
 
 	public Func<Scales.Position<T>> Factory { get; set; } = default!;
 

@@ -1,4 +1,3 @@
-using GGNet.Buffers;
 using GGNet.Components;
 using GGNet.Geoms;
 using GGNet.Shapes;
@@ -12,7 +11,7 @@ internal static class ShapeComposer
 {
 	private static readonly ObjectPool<StringBuilder> pool = new DefaultObjectPoolProvider().CreateStringBuilderPool();
 
-	public static List<IScreenPrimitive> Compose(Buffer<IGeom> geoms, ICoord coord, Zone zone)
+	public static List<IScreenPrimitive> Compose(IReadOnlyList<IGeom> geoms, ICoord coord, Zone zone)
 	{
 		var scene = new List<IScreenPrimitive>();
 

@@ -1,27 +1,33 @@
 ﻿namespace GGNet;
 
-using Buffers;
-
-public sealed class Source<T> : Buffer<T>, IReadOnlyList<T>
+public sealed class Source<T> : IReadOnlyList<T>
 {
+	private readonly List<T> items = [];
+
 	public Source()
-	  : base()
 	{
 	}
 
 	public Source(IEnumerable<T> items)
-	  : this()
 	{
-		Add(items);
+		this.items.AddRange(items);
 	}
 
-	public IEnumerator<T> GetEnumerator()
+	public int Count => items.Count;
+
+	public T this[int i]
 	{
-		for (var i = 0; i < Count; i++)
-		{
-			yield return Get(i);
-		}
+		get => items[i];
+		set => items[i] = value;
 	}
+
+	public void Add(T item) => items.Add(item);
+
+	public void Add(IEnumerable<T> items) => this.items.AddRange(items);
+
+	public void Clear() => items.Clear();
+
+	public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
 
 	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

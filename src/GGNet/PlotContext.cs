@@ -1,5 +1,4 @@
-﻿using GGNet.Buffers;
-using GGNet.Data;
+﻿using GGNet.Data;
 using GGNet.Exceptions;
 using GGNet.Facets;
 
@@ -77,9 +76,9 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	public PanelFactory<T, TX, TY>? DefaultFactory { get; set; }
 
-	public Buffer<PanelFactory<T, TX, TY>> PanelFactories { get; } = new(4, 1);
+	internal List<PanelFactory<T, TX, TY>> PanelFactories { get; } = [];
 
-	internal Buffer<Panel<T, TX, TY>> Panels { get; } = new(16, 1);
+	internal List<Panel<T, TX, TY>> Panels { get; } = [];
 
 	internal Legends Legends { get; set; } = default!;
 

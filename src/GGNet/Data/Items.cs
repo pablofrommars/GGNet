@@ -1,8 +1,7 @@
-using GGNet.Buffers;
 
 namespace GGNet.Data;
 
-internal sealed class Items(Style style) : Buffer<(Dimension<string> label, Elements elements)>(8, 1)
+internal sealed class Items(Style style) : List<(Dimension<string> label, Elements elements)>
 {
 	private readonly Style style = style;
 
@@ -10,7 +9,7 @@ internal sealed class Items(Style style) : Buffer<(Dimension<string> label, Elem
 	{
 		for (var i = 0; i < Count; i++)
 		{
-			var ret = Get(i);
+			var ret = this[i];
 			if (ret.label.Value == label)
 			{
 				return ret;

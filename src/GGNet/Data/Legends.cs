@@ -1,4 +1,3 @@
-using GGNet.Buffers;
 using GGNet.Scales;
 
 using static System.Math;
@@ -7,7 +6,7 @@ namespace GGNet.Data;
 
 using static Direction;
 
-internal sealed class Legends(Style style) : Buffer<Legend>(8, 1)
+internal sealed class Legends(Style style) : List<Legend>
 {
 	private readonly Style style = style;
 
@@ -15,7 +14,7 @@ internal sealed class Legends(Style style) : Buffer<Legend>(8, 1)
 	{
 		for (var i = 0; i < Count; i++)
 		{
-			var ret = Get(i);
+			var ret = this[i];
 			if (ret.Aes == aes)
 			{
 				return ret;
@@ -36,7 +35,7 @@ internal sealed class Legends(Style style) : Buffer<Legend>(8, 1)
 
 		for (var i = 0; i < Count; i++)
 		{
-			var legend = Get(i);
+			var legend = this[i];
 
 			if (legend.Title?.Width > 0)
 			{

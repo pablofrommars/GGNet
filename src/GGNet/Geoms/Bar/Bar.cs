@@ -11,14 +11,14 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
   where TX : struct
   where TY : struct
 {
-	private sealed class Comparer : IComparer<(double x, Buffer<(T item, string fill, double value)> y)>
+	private sealed class Comparer : IComparer<(double x, List<(T item, string fill, double value)> y)>
 	{
-		public int Compare((double x, Buffer<(T item, string fill, double value)> y) x, (double x, Buffer<(T item, string fill, double value)> y) y) => x.x.CompareTo(y.x);
+		public int Compare((double x, List<(T item, string fill, double value)> y) x, (double x, List<(T item, string fill, double value)> y) y) => x.x.CompareTo(y.x);
 
 		public static readonly Comparer Instance = new();
 	}
 
-	private readonly SortedBuffer<(double x, Buffer<(T item, string fill, double value)> y)> bars = new(Comparer.Instance);
+	private readonly SortedBuffer<(double x, List<(T item, string fill, double value)> y)> bars = new(Comparer.Instance);
 
 	private readonly PositionAdjustment position;
 	private readonly double width;
@@ -169,7 +169,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 
 			if (!exist)
 			{
-				var bar = new Buffer<(T item, string fill, double value)>(8, 1);
+				var bar = new List<(T item, string fill, double value)>();
 				bar.Add((item, fill, x));
 				bars.Add((y, bar));
 			}
@@ -189,7 +189,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 
 			if (!exist)
 			{
-				var bar = new Buffer<(T item, string fill, double value)>(8, 1);
+				var bar = new List<(T item, string fill, double value)>();
 				bar.Add((item, fill, y));
 				bars.Add((x, bar));
 			}

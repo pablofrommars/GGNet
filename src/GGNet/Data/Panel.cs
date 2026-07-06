@@ -1,5 +1,4 @@
-﻿using GGNet.Buffers;
-using GGNet.Geoms;
+﻿using GGNet.Geoms;
 
 namespace GGNet.Data;
 
@@ -19,7 +18,7 @@ public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX
 
 	public string Id { get; } = $"{coord.row}_{coord.col}";
 
-	internal Buffer<IGeom> Geoms { get; } = new(8, 1);
+	internal List<IGeom> Geoms { get; } = [];
 
 	public (string? x, string? y) Strip { get; set; }
 

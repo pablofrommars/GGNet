@@ -11,15 +11,15 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
   where TX : struct
   where TY : struct
 {
-	private sealed class Comparer : IComparer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)>
+	private sealed class Comparer : IComparer<(double x, List<(string color, double y, double ymin, double ymax, T item)> bars)>
 	{
 		public static readonly Comparer Instance = new();
 
-		public int Compare((double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars) x, (double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars) y)
+		public int Compare((double x, List<(string color, double y, double ymin, double ymax, T item)> bars) x, (double x, List<(string color, double y, double ymin, double ymax, T item)> bars) y)
 		  => x.x.CompareTo(y.x);
 	}
 
-	private readonly SortedBuffer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)> bars = new(Comparer.Instance);
+	private readonly SortedBuffer<(double x, List<(string color, double y, double ymin, double ymax, T item)> bars)> bars = new(Comparer.Instance);
 
 	private readonly PositionAdjustment position;
 	private readonly bool animation;
@@ -205,7 +205,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 
 		if (!exist)
 		{
-			var bar = new Buffer<(string color, double y, double ymin, double ymax, T item)>(8, 1);
+			var bar = new List<(string color, double y, double ymin, double ymax, T item)>();
 			bar.Add((color, y, ymin, ymax, item));
 			bars.Add((x, bar));
 		}
