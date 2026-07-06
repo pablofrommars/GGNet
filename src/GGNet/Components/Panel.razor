@@ -116,264 +116,72 @@ height=@Num(Area.Height) />
 
     private void RenderGrid(RenderTreeBuilder __builder)
     {
-        if (polar)
+        foreach (var line in grid.XLines)
         {
-            RenderPolarGrid(__builder);
-
-            return;
-        }
-
-        var y1 = Area.Y;
-        var y2 = Area.Y + Area.Height;
-
-        foreach (var b in xscale.Breaks)
-        {
-            var x = ToX(b);
             <line
-            class="x-break"
-            x1=@Num(x)
-            x2=@Num(x)
-            y1=@Num(y1)
-            y2=@Num(y2)
+            class=@line.Class
+            x1=@Num(line.X1)
+            x2=@Num(line.X2)
+            y1=@Num(line.Y1)
+            y2=@Num(line.Y2)
             clip-path="url(#@(clip)-area)" />
         }
 
-        foreach (var b in xscale.MinorBreaks)
+        foreach (var ring in grid.Rings)
         {
-            var x = ToX(b);
-            <line
-            class="x-minor-break"
-            x1=@Num(x)
-            x2=@Num(x)
-            y1=@Num(y1)
-            y2=@Num(y2)
+            <circle
+            class=@ring.Class
+            fill="none"
+            cx=@Num(ring.CenterX)
+            cy=@Num(ring.CenterY)
+            r=@Num(ring.Radius)
             clip-path="url(#@(clip)-area)" />
         }
 
-        if (Data.Axis.x)
+        foreach (var path in grid.RingPaths)
         {
-            @foreach (var (value, label) in xscale.Labels)
-            {
-                var x = ToX(value);
-
-                if (Area.X < x && x < (Area.X + Area.Width))
-                {
-                    <text>
-                        <text
-                            class="x-break-label"
-                            x=@Num(x)
-                            y=@Num(xAxisText.Y)
-                            text-anchor=@(Plot.Style.Axis.Text.X.Anchor.Render())
-                            font-size=@(Plot.Style.Axis.Text.X.FontSize)
-                            clip-path="url(#@(Plot.Id)-plot)">
-                            @label
-                        </text>
-                    </text>
-                }
-            }
-
-            @foreach (var (value, label) in xscale.Titles)
-            {
-                var x = ToX(value);
-
-                if (Area.X < x && x < (Area.X + Area.Width))
-                {
-                    <text>
-                        <text
-                            class="x-break-title"
-                            x=@Num(x)
-                            y=@Num(xAxisTitle.Y)
-                            text-anchor="middle"
-                            font-size=@(Plot.Style.Axis.Title.X.FontSize)
-                            clip-path="url(#@(Plot.Id)-plot)">
-                            @label
-                        </text>
-                    </text>
-                }
-            }
-        }
-
-        var x1 = Area.X;
-        var x2 = Area.X + Area.Width;
-
-        foreach (var b in yscale.Breaks)
-        {
-            var y = ToY(b);
-            <line
-            class="y-break"
-            x1=@Num(x1)
-            x2=@Num(x2)
-            y1=@Num(y)
-            y2=@Num(y)
+            <path
+            class=@path.Class
+            fill="none"
+            d=@RingPath(path.Points)
             clip-path="url(#@(clip)-area)" />
         }
 
-        foreach (var b in yscale.MinorBreaks)
+        @foreach (var label in grid.XLabels)
         {
-            var y = ToY(b);
+            RenderGridLabel(__builder, label);
+        }
+
+        foreach (var line in grid.YLines)
+        {
             <line
-            class="y-minor-break"
-            x1=@Num(x1)
-            x2=@Num(x2)
-            y1=@Num(y)
-            y2=@Num(y)
+            class=@line.Class
+            x1=@Num(line.X1)
+            x2=@Num(line.X2)
+            y1=@Num(line.Y1)
+            y2=@Num(line.Y2)
             clip-path="url(#@(clip)-area)" />
         }
 
-        if (Data.Axis.y)
+        @foreach (var label in grid.YLabels)
         {
-            var height = Data.Data.Style!.Axis.Text.Y.FontSize.Height();
-            var offset = height / 4.0;
-
-            @foreach (var (value, label) in yscale.Labels)
-            {
-                var y = ToY(value) + offset;
-
-                if (Area.Y < (y - height / 2.0) && (y + offset) < (Area.Y + Area.Height))
-                {
-                    <text>
-                        <text
-                            class="y-break-label"
-                            x=@Num(yAxisText.X)
-                            y=@Num(y)
-                            text-anchor=@(Plot.Style.Axis.Text.Y.Anchor.Render())
-                            font-size=@(Plot.Style.Axis.Text.Y.FontSize)
-                            clip-path="url(#@(clip))">
-                            @label
-                        </text>
-                    </text>
-                }
-            }
+            RenderGridLabel(__builder, label);
         }
     }
 
-    private void RenderPolarGrid(RenderTreeBuilder __builder)
+    private void RenderGridLabel(RenderTreeBuilder __builder, Coords.GridLabel label)
     {
-        var spokes = xscale.Breaks.Select(b => xscale.Coord(b)).ToArray();
-        var web = Plot.Style.Polar.Rings == PolarRingType.Polygon && spokes.Length >= 3;
-
-        foreach (var f in spokes)
-        {
-            var (px, py) = ProjectFraction(f, 1.0);
-
-            <line
-            class="x-break"
-            x1=@Num(polarCoord!.CenterX)
-            x2=@Num(px)
-            y1=@Num(polarCoord!.CenterY)
-            y2=@Num(py)
-            clip-path="url(#@(clip)-area)" />
-        }
-
-        foreach (var b in yscale.Breaks)
-        {
-            var f = yscale.Coord(b);
-
-            if (f < 0.0 || f > 1.0)
-            {
-                continue;
-            }
-
-            if (web)
-            {
-                <path
-                class="y-break"
-                fill="none"
-                d=@PolarRingPath(spokes, f)
-                clip-path="url(#@(clip)-area)" />
-            }
-            else
-            {
-                <circle
-                class="y-break"
-                fill="none"
-                cx=@Num(polarCoord!.CenterX)
-                cy=@Num(polarCoord!.CenterY)
-                r=@Num(f * polarCoord!.Radius)
-                clip-path="url(#@(clip)-area)" />
-            }
-        }
-
-        foreach (var b in yscale.MinorBreaks)
-        {
-            var f = yscale.Coord(b);
-
-            if (f < 0.0 || f > 1.0)
-            {
-                continue;
-            }
-
-            if (web)
-            {
-                <path
-                class="y-minor-break"
-                fill="none"
-                d=@PolarRingPath(spokes, f)
-                clip-path="url(#@(clip)-area)" />
-            }
-            else
-            {
-                <circle
-                class="y-minor-break"
-                fill="none"
-                cx=@Num(polarCoord!.CenterX)
-                cy=@Num(polarCoord!.CenterY)
-                r=@Num(f * polarCoord!.Radius)
-                clip-path="url(#@(clip)-area)" />
-            }
-        }
-
-        var fontHeight = Plot.Style.Axis.Text.X.FontSize.Height();
-        var labelRadius = polarCoord!.Radius + Plot.Style.Polar.LabelMargin;
-
-        @foreach (var (value, label) in xscale.Labels)
-        {
-            var theta = GGNet.Coords.Polar.Angle(xscale.Coord(value), Data.Data.PolarOptions.StartAngle, Data.Data.PolarOptions.Clockwise);
-
-            var cos = Math.Cos(theta);
-            var sin = Math.Sin(theta);
-
-            var x = polarCoord!.CenterX + labelRadius * cos;
-            var y = polarCoord!.CenterY + labelRadius * sin + (sin + 1.0) / 2.0 * fontHeight * 0.8;
-
-            var anchor = cos < -0.1 ? "end" : cos > 0.1 ? "start" : "middle";
-
-            <text>
-                <text
-                    class="x-break-label"
-                    x=@Num(x)
-                    y=@Num(y)
-                    text-anchor=@anchor
-                    font-size=@(Plot.Style.Axis.Text.X.FontSize)
-                    clip-path="url(#@(clip))">
-                    @label
-                </text>
+        <text>
+            <text
+                class=@label.Class
+                x=@Num(label.X)
+                y=@Num(label.Y)
+                text-anchor=@label.Anchor
+                font-size=@label.FontSize
+                clip-path="url(#@(GridClipId(label.Clip)))">
+                @label.Text
             </text>
-        }
-
-        @foreach (var (value, label) in yscale.Labels)
-        {
-            var f = yscale.Coord(value);
-
-            if (f < 0.0 || f > 1.0)
-            {
-                continue;
-            }
-
-            var (px, py) = ProjectFraction(0.0, f);
-
-            <text>
-                <text
-                    class="y-break-label"
-                    x=@Num(px + 4)
-                    y=@Num(py - 2)
-                    text-anchor="start"
-                    font-size=@(Plot.Style.Axis.Text.Y.FontSize)
-                    clip-path="url(#@(clip))">
-                    @label
-                </text>
-            </text>
-        }
+        </text>
     }
 
     private void RenderCaption(RenderTreeBuilder __builder)

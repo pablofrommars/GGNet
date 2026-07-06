@@ -12,4 +12,6 @@ internal interface ICoordinateSystem
 	void Measure(Zone area);
 
 	(double x, double y) Project(double cx, double cy);
+
+	GridComposition ComposeGrid(GridInputs inputs);
 }

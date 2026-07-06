@@ -45,7 +45,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 	private bool polar;
 	private Coords.ICoordinateSystem coord = default!;
-	private Coords.PolarCoordinateSystem? polarCoord;
+	private Coords.GridComposition grid = new();
 
 	private Zone xStrip;
 	private Zone yStrip;
@@ -123,11 +123,9 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 	}
 
 	private Coords.ICoordinateSystem MakeCoord()
-	{
-		polarCoord = polar ? new Coords.PolarCoordinateSystem(Data.Data.PolarOptions, Data.Data.Style!) : null;
-
-		return polarCoord ?? (Coords.ICoordinateSystem)new Coords.CartesianCoordinateSystem();
-	}
+	  => polar
+		? new Coords.PolarCoordinateSystem(Data.Data.PolarOptions, Data.Data.Style!)
+		: new Coords.CartesianCoordinateSystem(Data.Data.Style!);
 
 	protected void Render(bool firstRender)
 	{
@@ -247,6 +245,20 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 		coord.Measure(Area);
 
+		grid = coord.ComposeGrid(new(
+			XAxis: Data.Axis.x,
+			YAxis: Data.Axis.y,
+			XBreaks: [.. xscale.Breaks.Select(xscale.Coord)],
+			XMinorBreaks: [.. xscale.MinorBreaks.Select(xscale.Coord)],
+			XLabels: [.. xscale.Labels.Select(l => (xscale.Coord(l.value), l.label))],
+			XTitles: [.. xscale.Titles.Select(t => (xscale.Coord(t.value), t.title))],
+			YBreaks: [.. yscale.Breaks.Select(yscale.Coord)],
+			YMinorBreaks: [.. yscale.MinorBreaks.Select(yscale.Coord)],
+			YLabels: [.. yscale.Labels.Select(l => (yscale.Coord(l.value), l.label))],
+			XLabelY: xAxisText.Y,
+			XTitleY: xAxisTitle.Y,
+			YLabelX: yAxisText.X));
+
 		if (!firstRender)
 		{
 			areaRenderModeHandler?.Refresh(RenderTarget.Data);
@@ -272,25 +284,25 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 	public (double x, double y) Project(double x, double y)
 	  => coord.Project(xscale.Coord(x), yscale.Coord(y));
 
-	// cx, cy are normalized [0,1] fractions on the angular and radial scales.
-	private (double x, double y) ProjectFraction(double cx, double cy)
-	  => coord.Project(cx, cy);
-
-	private string PolarRingPath(double[] spokes, double f)
+	private static string RingPath(IReadOnlyList<(double x, double y)> points)
 	{
 		var sb = new StringBuilder();
 
-		for (var i = 0; i < spokes.Length; i++)
+		for (var i = 0; i < points.Count; i++)
 		{
-			var (px, py) = ProjectFraction(spokes[i], f);
-
-			sb.Append(CultureInfo.InvariantCulture, $"{(i == 0 ? "M " : " L ")}{px} {py}");
+			sb.Append(CultureInfo.InvariantCulture, $"{(i == 0 ? "M " : " L ")}{points[i].x} {points[i].y}");
 		}
 
 		sb.Append(" Z");
 
 		return sb.ToString();
 	}
+
+	private string GridClipId(Coords.GridClip clipKind) => clipKind switch
+	{
+		Coords.GridClip.Plot => Plot.Id + "-plot",
+		_ => clip,
+	};
 
 	private Task OnClick(MouseEventArgs e)
 	{
