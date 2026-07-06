@@ -2,7 +2,7 @@ namespace GGNet.Rendering;
 
 public sealed class StaticRenderModeHandler(IPlotRendering plot) : RenderModeHandler(plot)
 {
-    public sealed class ChildRenderHandler : IChildRenderModeHandler
+	public sealed class ChildRenderHandler : IChildRenderModeHandler
 	{
 		public void Refresh(RenderTarget target = RenderTarget.All)
 		{

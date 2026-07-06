@@ -5,7 +5,7 @@ public sealed class Binned<T>(Palettes.Binned<T> palette, T na = default!) : Sca
 	private readonly Palettes.Binned<T> palette = palette;
 	private readonly T na = na;
 
-    public override Guide Guide => Guide.Items;
+	public override Guide Guide => Guide.Items;
 
 	public override void Train(double key) { }
 

@@ -82,45 +82,45 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	public void Init(bool grid = true)
 	{
-    try
-    {
-      this.grid = grid;
+		try
+		{
+			this.grid = grid;
 
-      var polar = CoordSystem == CoordSystem.Polar;
+			var polar = CoordSystem == CoordSystem.Polar;
 
-      if (polar && Flip)
-      {
-        throw new GGNetUserException("Flip is not supported with polar coordinates");
-      }
+			if (polar && Flip)
+			{
+				throw new GGNetUserException("Flip is not supported with polar coordinates");
+			}
 
-      if (Positions.X.Factory is null)
-      {
-        if (XScaleDefault is null)
-        {
-          throw new GGNetUserException("Type could not be inferred");
-        }
+			if (Positions.X.Factory is null)
+			{
+				if (XScaleDefault is null)
+				{
+					throw new GGNetUserException("Type could not be inferred");
+				}
 
-        XScaleDefault(polar);
-      }
+				XScaleDefault(polar);
+			}
 
-      if (Positions.Y.Factory is null)
-      {
-        if (YScaleDefault is null)
-        {
-          throw new GGNetUserException("Type could not be inferred");
-        }
+			if (Positions.Y.Factory is null)
+			{
+				if (YScaleDefault is null)
+				{
+					throw new GGNetUserException("Type could not be inferred");
+				}
 
-        YScaleDefault(polar);
-      }
+				YScaleDefault(polar);
+			}
 
-      Style ??= Style.Default();
+			Style ??= Style.Default();
 
-      Legends = new(Style);
-    }
-    finally
-    {
-      Initialized = true;
-    }
+			Legends = new(Style);
+		}
+		finally
+		{
+			Initialized = true;
+		}
 	}
 
 	protected void RunDefaultPanel(bool first)

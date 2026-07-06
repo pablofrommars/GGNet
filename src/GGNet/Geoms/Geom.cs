@@ -11,116 +11,116 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
   where TX : struct
   where TY : struct
 {
-  protected readonly IReadOnlyList<T> source = source;
-  protected readonly (bool x, bool y) scale = scale ?? (true, true);
+	protected readonly IReadOnlyList<T> source = source;
+	protected readonly (bool x, bool y) scale = scale ?? (true, true);
 
-  private Facet<T>? facet;
-  private Legends? legends;
+	private Facet<T>? facet;
+	private Legends? legends;
 
-  public Buffer<IShape> Layer { get; } = new();
+	public Buffer<IShape> Layer { get; } = new();
 
-  public virtual CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
+	public virtual CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 
-  // Geoms share the panel's axis types by construction, so position mappings are
-  // direct — no runtime type tests.
-  public virtual void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
-  {
-    if (facet is not null && panel.Data.Source is not null && panel.Data.Source.Equals(source))
-    {
-      this.facet = (facet as Facet<T>)!;
-    }
+	// Geoms share the panel's axis types by construction, so position mappings are
+	// direct — no runtime type tests.
+	public virtual void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
+	{
+		if (facet is not null && panel.Data.Source is not null && panel.Data.Source.Equals(source))
+		{
+			this.facet = (facet as Facet<T>)!;
+		}
 
-    legends = panel.Data.Legends;
-  }
+		legends = panel.Data.Legends;
+	}
 
-  public abstract void Train(T item);
+	public abstract void Train(T item);
 
-  public void Train()
-  {
-    for (var i = 0; i < source.Count; i++)
-    {
-      var item = source[i];
+	public void Train()
+	{
+		for (var i = 0; i < source.Count; i++)
+		{
+			var item = source[i];
 
-      if (facet is not null && !facet.Include(item))
-      {
-        continue;
-      }
+			if (facet is not null && !facet.Include(item))
+			{
+				continue;
+			}
 
-      Train(item);
-    }
-  }
+			Train(item);
+		}
+	}
 
-  protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.IElement> element)
-  {
-    if (legends is null)
-    {
-      return;
-    }
+	protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.IElement> element)
+	{
+		if (legends is null)
+		{
+			return;
+		}
 
-    if (aes is null || !aes.Guide)
-    {
-      return;
-    }
+		if (aes is null || !aes.Guide)
+		{
+			return;
+		}
 
-    var legend = legends.GetOrAdd(aes);
+		var legend = legends.GetOrAdd(aes);
 
-    foreach (var (value, label) in aes.Labels)
-    {
-      legend.Add(label, element(value));
-    }
-  }
+		foreach (var (value, label) in aes.Labels)
+		{
+			legend.Add(label, element(value));
+		}
+	}
 
-  protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.IElement[]> elements)
-  {
-    if (legends is null)
-    {
-      return;
-    }
+	protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.IElement[]> elements)
+	{
+		if (legends is null)
+		{
+			return;
+		}
 
-    if (aes is null || !aes.Guide)
-    {
-      return;
-    }
+		if (aes is null || !aes.Guide)
+		{
+			return;
+		}
 
-    var legend = legends.GetOrAdd(aes);
+		var legend = legends.GetOrAdd(aes);
 
-    foreach (var (value, label) in aes.Labels)
-    {
-      var array = elements(value);
+		foreach (var (value, label) in aes.Labels)
+		{
+			var array = elements(value);
 
-      for (var j = 0; j < array.Length; j++)
-      {
-        legend.Add(label, array[j]);
-      }
-    }
-  }
+			for (var j = 0; j < array.Length; j++)
+			{
+				legend.Add(label, array[j]);
+			}
+		}
+	}
 
-  public virtual void Legend()
-  {
-  }
+	public virtual void Legend()
+	{
+	}
 
-  protected abstract void Shape(T item, bool flip);
+	protected abstract void Shape(T item, bool flip);
 
-  protected virtual void Set(bool flip)
-  {
-  }
+	protected virtual void Set(bool flip)
+	{
+	}
 
-  public void Shape(bool flip)
-  {
-    for (var i = 0; i < source.Count; i++)
-    {
-      var item = source[i];
+	public void Shape(bool flip)
+	{
+		for (var i = 0; i < source.Count; i++)
+		{
+			var item = source[i];
 
-      if (facet is not null && !facet.Include(item))
-      {
-        continue;
-      }
+			if (facet is not null && !facet.Include(item))
+			{
+				continue;
+			}
 
-      Shape(item, flip);
-    }
+			Shape(item, flip);
+		}
 
-    Set(flip);
-  }
+		Set(flip);
+	}
 
-  public virtual void Clear() => Layer?.Clear();
+	public virtual void Clear() => Layer?.Clear();
 }

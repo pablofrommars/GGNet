@@ -2,115 +2,115 @@ namespace GGNet.Rendering;
 
 public sealed class InteractiveRenderModeHandler : RenderModeHandler
 {
-  private readonly CancellationTokenSource cancellationTokenSource = new();
+	private readonly CancellationTokenSource cancellationTokenSource = new();
 
-  private readonly SemaphoreSlim semaphore = new(0, 1);
+	private readonly SemaphoreSlim semaphore = new(0, 1);
 
-  private volatile int render;
+	private volatile int render;
 
-  readonly Channel<RenderTarget> channel = Channel.CreateUnbounded<RenderTarget>(new()
-  {
-    SingleReader = true,
-    SingleWriter = true
-  });
+	readonly Channel<RenderTarget> channel = Channel.CreateUnbounded<RenderTarget>(new()
+	{
+		SingleReader = true,
+		SingleWriter = true
+	});
 
-  private readonly Task background;
+	private readonly Task background;
 
-  public InteractiveRenderModeHandler(IPlotRendering plot)
-    : base(plot)
-  {
-    background = RunBackground();
-  }
+	public InteractiveRenderModeHandler(IPlotRendering plot)
+	  : base(plot)
+	{
+		background = RunBackground();
+	}
 
-  public override async Task RefreshAsync(RenderTarget target, CancellationToken token)
-  {
-    await channel.Writer.WriteAsync(target, token);
-  }
+	public override async Task RefreshAsync(RenderTarget target, CancellationToken token)
+	{
+		await channel.Writer.WriteAsync(target, token);
+	}
 
-  public override bool ShouldRender() => Interlocked.Exchange(ref render, 0) == 1;
+	public override bool ShouldRender() => Interlocked.Exchange(ref render, 0) == 1;
 
-  public override void OnAfterRender(bool firstRender)
-  {
-    if (firstRender)
-    {
-      return;
-    }
+	public override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender)
+		{
+			return;
+		}
 
-    semaphore.TryRelease();
-  }
+		semaphore.TryRelease();
+	}
 
-  public sealed class ChildRenderHandler : IChildRenderModeHandler
-  {
-    private volatile int render;
+	public sealed class ChildRenderHandler : IChildRenderModeHandler
+	{
+		private volatile int render;
 
-    public void Refresh(RenderTarget target)
-      => Interlocked.Exchange(ref render, (int)target);
+		public void Refresh(RenderTarget target)
+		  => Interlocked.Exchange(ref render, (int)target);
 
-    public bool ShouldRender(RenderTarget target = RenderTarget.All)
-      => ((RenderTarget)Interlocked.Exchange(ref render, 0) & target) != RenderTarget.None;
-  }
+		public bool ShouldRender(RenderTarget target = RenderTarget.All)
+		  => ((RenderTarget)Interlocked.Exchange(ref render, 0) & target) != RenderTarget.None;
+	}
 
-  public override IChildRenderModeHandler Child() => new ChildRenderHandler();
+	public override IChildRenderModeHandler Child() => new ChildRenderHandler();
 
-  private async Task RunBackground()
-  {
-    try
-    {
-      while (await channel.Reader.WaitToReadAsync(cancellationTokenSource.Token).ConfigureAwait(false))
-      {
-        try
-        {
-          var mask = RenderTarget.None;
+	private async Task RunBackground()
+	{
+		try
+		{
+			while (await channel.Reader.WaitToReadAsync(cancellationTokenSource.Token).ConfigureAwait(false))
+			{
+				try
+				{
+					var mask = RenderTarget.None;
 
-          while (channel.Reader.TryRead(out var target))
-          {
-            mask |= target;
-          }
+					while (channel.Reader.TryRead(out var target))
+					{
+						mask |= target;
+					}
 
-          if (mask == RenderTarget.None)
-          {
-            continue;
-          }
+					if (mask == RenderTarget.None)
+					{
+						continue;
+					}
 
-          plot.Render(mask);
+					plot.Render(mask);
 
-          Interlocked.Exchange(ref render, 1);
+					Interlocked.Exchange(ref render, 1);
 
-          await plot.StateHasChangedAsync();
+					await plot.StateHasChangedAsync();
 
-          await semaphore.WaitAsync(cancellationTokenSource.Token);
-        }
-        catch (Exception)
-        {
-        }
-      }
-    }
-    catch (OperationCanceledException)
-    {
-    }
-    catch (Exception)
-    {
-    }
-  }
+					await semaphore.WaitAsync(cancellationTokenSource.Token);
+				}
+				catch (Exception)
+				{
+				}
+			}
+		}
+		catch (OperationCanceledException)
+		{
+		}
+		catch (Exception)
+		{
+		}
+	}
 
-  private volatile int disposing;
+	private volatile int disposing;
 
-  public override async ValueTask DisposeAsync()
-  {
-    if (Interlocked.CompareExchange(ref disposing, 1, 0) == 0)
-    {
-      cancellationTokenSource.Cancel();
+	public override async ValueTask DisposeAsync()
+	{
+		if (Interlocked.CompareExchange(ref disposing, 1, 0) == 0)
+		{
+			cancellationTokenSource.Cancel();
 
-      if (background is not null)
-      {
-        await background.ConfigureAwait(false);
-      }
+			if (background is not null)
+			{
+				await background.ConfigureAwait(false);
+			}
 
-      cancellationTokenSource.Dispose();
+			cancellationTokenSource.Dispose();
 
-      semaphore.Dispose();
-    }
+			semaphore.Dispose();
+		}
 
-    await base.DisposeAsync().ConfigureAwait(false);
-  }
+		await base.DisposeAsync().ConfigureAwait(false);
+	}
 }

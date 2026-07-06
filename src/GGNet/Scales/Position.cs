@@ -16,7 +16,7 @@ public abstract class Position<TKey>(ITransformation<TKey>? transformation, (dou
 {
 	protected readonly (double minMult, double minAdd, double maxMult, double maxAdd) expand = expand;
 
-    public override void Train(TKey key) { }
+	public override void Train(TKey key) { }
 
 	public (double min, double max) Range { get; protected set; }
 
@@ -91,7 +91,7 @@ public class PositionMapping<T, TKey>(Func<T, TKey> selector, Position<TKey> pos
 	private readonly Func<T, TKey> selector = selector;
 	private readonly Position<TKey> position = position;
 
-    public IPosition Position => position;
+	public IPosition Position => position;
 
 	public void Train(T item) => position.Train(selector(item));
 

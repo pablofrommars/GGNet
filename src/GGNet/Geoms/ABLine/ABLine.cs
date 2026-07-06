@@ -26,7 +26,7 @@ internal sealed class ABLine<T, TX, TY> : Geom<T, TX, TY>
 
 	public Selectors<T> Selectors { get; }
 
-	public Elements.Line Line { get; set; } = default!; 
+	public Elements.Line Line { get; set; } = default!;
 
 	public Elements.Text Text { get; set; } = default!;
 

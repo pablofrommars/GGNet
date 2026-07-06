@@ -1,6 +1,12 @@
 root = true
 
 [*.cs]
+# --- Formatting (one-time normalization 2026-07-06; tabs won 151 files to 113 and match the author's convention)
+indent_style = tab
+tab_width = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
 # --- Deliberate API idiom: the fluent ggplot2-style surface (Geom_Point, Scale_X_Continuous, Coord_Polar)
 dotnet_diagnostic.CA1707.severity = none
 

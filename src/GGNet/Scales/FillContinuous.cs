@@ -5,9 +5,9 @@ using static System.Math;
 namespace GGNet.Scales;
 
 public class FillContinuous(
-    string[] colors,
-    int m = 5,
-    string format = "0.##") : Scale<double, string>()
+	string[] colors,
+	int m = 5,
+	string format = "0.##") : Scale<double, string>()
 {
 	private readonly string[] colors = colors;
 	private readonly int m = m;
@@ -15,7 +15,7 @@ public class FillContinuous(
 
 	protected (double min, double max) limits = (0.0, 0.0);
 
-    public override Guide Guide => Guide.ColorBar;
+	public override Guide Guide => Guide.ColorBar;
 
 	public override void Train(double key)
 	{

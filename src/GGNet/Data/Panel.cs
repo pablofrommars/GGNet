@@ -7,43 +7,43 @@ public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX
   where TX : struct
   where TY : struct
 {
-  public (int row, int col) Coord { get; } = coord;
+	public (int row, int col) Coord { get; } = coord;
 
-  public PlotContext<T, TX, TY> Data { get; } = context;
+	public PlotContext<T, TX, TY> Data { get; } = context;
 
-  public double Width { get; } = width;
+	public double Width { get; } = width;
 
-  public double Height { get; } = height;
+	public double Height { get; } = height;
 
-  public Func<MouseEventArgs, Task>? OnClick { get; } = onClick;
+	public Func<MouseEventArgs, Task>? OnClick { get; } = onClick;
 
-  public string Id { get; } = $"{coord.row}_{coord.col}";
+	public string Id { get; } = $"{coord.row}_{coord.col}";
 
-  public Buffer<IGeom> Geoms { get; } = new(8, 1);
+	public Buffer<IGeom> Geoms { get; } = new(8, 1);
 
-  public (string? x, string? y) Strip { get; set; }
+	public (string? x, string? y) Strip { get; set; }
 
-  public (bool x, bool y) Axis { get; set; }
+	public (bool x, bool y) Axis { get; set; }
 
-  public (double height, string? text) XLab { get; set; }
+	public (double height, string? text) XLab { get; set; }
 
-  public (double width, string? text) YLab { get; set; }
+	public (double width, string? text) YLab { get; set; }
 
-  public Components.IPanel? Component { get; set; }
+	public Components.IPanel? Component { get; set; }
 
-  internal bool Registered { get; set; }
+	internal bool Registered { get; set; }
 
-  public void Register(Components.IPanel component)
-  {
-    Component = component;
-    Registered = true;
-  }
+	public void Register(Components.IPanel component)
+	{
+		Component = component;
+		Registered = true;
+	}
 
-  internal Scales.Position<TX> X => Data.Positions.X.Scales.Count == 1
-    ? Data.Positions.X.Scales[0]
-    : Data.Positions.X.Scales[Coord.row * Data.N.cols + Coord.col];
+	internal Scales.Position<TX> X => Data.Positions.X.Scales.Count == 1
+	  ? Data.Positions.X.Scales[0]
+	  : Data.Positions.X.Scales[Coord.row * Data.N.cols + Coord.col];
 
-  internal Scales.Position<TY> Y => Data.Positions.Y.Scales.Count == 1
-    ? Data.Positions.Y.Scales[0]
-    : Data.Positions.Y.Scales[Coord.row * Data.N.cols + Coord.col];
+	internal Scales.Position<TY> Y => Data.Positions.Y.Scales.Count == 1
+	  ? Data.Positions.Y.Scales[0]
+	  : Data.Positions.Y.Scales[Coord.row * Data.N.cols + Coord.col];
 }

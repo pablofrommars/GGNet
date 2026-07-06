@@ -6,7 +6,7 @@ public abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHandle
 {
 	protected readonly IPlotRendering plot = plot;
 
-    public virtual Task RefreshAsync(RenderTarget target, CancellationToken token)
+	public virtual Task RefreshAsync(RenderTarget target, CancellationToken token)
 		=> Task.CompletedTask;
 
 	public virtual bool ShouldRender() => false;

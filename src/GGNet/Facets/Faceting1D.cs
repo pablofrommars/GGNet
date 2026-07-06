@@ -11,7 +11,7 @@ public sealed class Faceting1D<T, TKey>(Func<T, TKey> selector, bool freeX, bool
 	private readonly int? nrows = nrows;
 	private readonly int? ncolumns = ncolumns;
 
-    public override bool Strip => false;
+	public override bool Strip => false;
 
 	public override void Train(T item) => buffer.Add(selector(item));
 
@@ -37,7 +37,7 @@ public sealed class Faceting1D<T, TKey>(Func<T, TKey> selector, bool freeX, bool
 	public override (Facet<T> facet, bool showX, bool showY)[] Facets(Style style)
 	{
 		var n = buffer.Count;
-		var facets = new(Facet<T> facet, bool showX, bool showY)[n];
+		var facets = new (Facet<T> facet, bool showX, bool showY)[n];
 
 		var r = 0;
 		var c = 0;

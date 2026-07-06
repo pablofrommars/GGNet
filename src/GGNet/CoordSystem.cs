@@ -5,6 +5,6 @@ namespace GGNet;
 [Flags]
 public enum CoordSystem
 {
-  Cartesian = 1 << 0,
-  Polar = 1 << 1
+	Cartesian = 1 << 0,
+	Polar = 1 << 1
 }

@@ -72,10 +72,10 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 			Y1 = y,
 			Y2 = yend,
 			Aesthetic = Aesthetic,
-      OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-      OnMouseOver = OnMouseOver is not null ? e => OnMouseOver(item, e) : null,
-      OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
-    };
+			OnClick = OnClick is not null ? e => OnClick(item, e) : null,
+			OnMouseOver = OnMouseOver is not null ? e => OnMouseOver(item, e) : null,
+			OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
+		};
 
 		Layer.Add(line);
 

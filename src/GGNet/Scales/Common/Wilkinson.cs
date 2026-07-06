@@ -180,12 +180,12 @@ public static class Wilkinson
 			return null;
 		}
 
-    var scaled = new double[breaks.Length];
-    for (var i = 0; i < breaks.Length; i++)
-    {
-      scaled[i] = 1_000.0 * scale * breaks[i];
-    }
+		var scaled = new double[breaks.Length];
+		for (var i = 0; i < breaks.Length; i++)
+		{
+			scaled[i] = 1_000.0 * scale * breaks[i];
+		}
 
-    return scaled;
+		return scaled;
 	}
 }

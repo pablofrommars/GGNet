@@ -10,7 +10,7 @@ public sealed class Faceting2D<T, TRow, TColumn>(Func<T, TRow> row, Func<T, TCol
 	private readonly Func<T, TRow> row = row;
 	private readonly Func<T, TColumn> column = column;
 
-    public override bool Strip => true;
+	public override bool Strip => true;
 
 	public override void Train(T item)
 	{
@@ -42,7 +42,7 @@ public sealed class Faceting2D<T, TRow, TColumn>(Func<T, TRow> row, Func<T, TCol
 
 	public override (Facet<T> facet, bool showX, bool showY)[] Facets(Style style)
 	{
-		var facets = new(Facet<T> facet, bool showX, bool showY)[N];
+		var facets = new (Facet<T> facet, bool showX, bool showY)[N];
 
 		var i = 0;
 

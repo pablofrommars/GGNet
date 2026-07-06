@@ -14,8 +14,8 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 	[Parameter]
 	public double Height { get; set; } = 50;
 
-  private IChildRenderModeHandler? renderModeHandler;
-  private IChildRenderModeHandler? definitionsRenderModeHandler;
+	private IChildRenderModeHandler? renderModeHandler;
+	private IChildRenderModeHandler? definitionsRenderModeHandler;
 
 	private Zone Area;
 	private Data.Panel<T, TX, TY> Panel = default!;

@@ -1,7 +1,7 @@
 ﻿namespace GGNet.Palettes;
 
 public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
-    where TKey : notnull
+	where TKey : notnull
 {
 	private readonly TValue[] palette = palette;
 	private readonly int direction = direction;
@@ -9,7 +9,7 @@ public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
 	private int i;
 	private readonly Dictionary<TKey, (int i, TValue value)> map = [];
 
-    public TValue this[TKey key]
+	public TValue this[TKey key]
 	{
 		get => map[key].value;
 	}

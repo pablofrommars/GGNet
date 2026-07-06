@@ -3,7 +3,7 @@
 namespace GGNet.Scales;
 
 public abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
-    where TKey : notnull
+	where TKey : notnull
 {
 	private readonly bool defined;
 	private readonly Palettes.Discrete<TKey, TValue> palette;
@@ -13,7 +13,7 @@ public abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 		Palettes.Discrete<TKey, TValue> palette,
 		TValue na,
 		ITransformation<TKey>? transformation)
-		    : base(transformation)
+			: base(transformation)
 	{
 		defined = true;
 		this.palette = palette;
@@ -25,7 +25,7 @@ public abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 		int direction,
 		TValue na,
 		ITransformation<TKey>? transformation)
-		    : base(transformation)
+			: base(transformation)
 	{
 		this.palette = new Palettes.Discrete<TKey, TValue>(palette, direction);
 		this.na = na;

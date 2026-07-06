@@ -1,7 +1,8 @@
 ﻿namespace GGNet.Elements;
 
-public interface IElement {
-  string StopColor => "inherit";
+public interface IElement
+{
+	string StopColor => "inherit";
 
-  double StopOpacity => 1.0;
+	double StopOpacity => 1.0;
 }

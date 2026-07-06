@@ -9,7 +9,7 @@ internal sealed class ContainerComponent : IComponent
 	public ContainerComponent(StaticRenderer renderer)
 	{
 		this.renderer = renderer;
-        
+
 		id = renderer.AttachContainer(this);
 	}
 

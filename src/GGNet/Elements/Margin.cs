@@ -2,9 +2,9 @@
 
 public readonly record struct Margin
 {
-  public Margin() { }
+	public Margin() { }
 
-  public double Top { get; init; }
+	public double Top { get; init; }
 
 	public double Right { get; init; }
 

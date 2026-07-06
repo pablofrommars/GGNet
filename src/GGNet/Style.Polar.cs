@@ -2,10 +2,10 @@ namespace GGNet;
 
 public sealed partial class Style
 {
-  public sealed class StylePolar
-  {
-    public PolarRingType Rings { get; set; } = PolarRingType.Polygon;
+	public sealed class StylePolar
+	{
+		public PolarRingType Rings { get; set; } = PolarRingType.Polygon;
 
-    public double LabelMargin { get; set; } = 8.0;
-  }
+		public double LabelMargin { get; set; } = 8.0;
+	}
 }

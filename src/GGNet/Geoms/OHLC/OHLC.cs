@@ -199,27 +199,27 @@ internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 		});
 
 		Layer.Add(new Shapes.Line()
-        {
-            X1 = x,
-            X2 = x,
-            Y1 = low,
-            Y2 = high,
+		{
+			X1 = x,
+			X2 = x,
+			Y1 = low,
+			Y2 = high,
 			Aesthetic = Aesthetic,
 			OnMouseOver = onmouseover,
 			OnMouseOut = onmouseout
-        });
+		});
 
 		Layer.Add(new Shapes.Line()
-        {
-            X1 = x,
-            X2 = x + 0.5,
-            Y1 = close,
-            Y2 = close,
+		{
+			X1 = x,
+			X2 = x + 0.5,
+			Y1 = close,
+			Y2 = close,
 			Aesthetic = Aesthetic,
 			OnMouseOver = onmouseover,
 			OnMouseOut = onmouseout
 
-        });
+		});
 
 		Positions.X.Position.Shape(x - 0.5, x + 0.5);
 		/*

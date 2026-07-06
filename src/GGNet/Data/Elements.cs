@@ -9,7 +9,7 @@ internal sealed class Elements(double size) : Buffer<Dimension<IElement>>(4, 1)
 {
 	private readonly double size = size;
 
-    public double Width { get; set; }
+	public double Width { get; set; }
 
 	public double Height { get; set; }
 
