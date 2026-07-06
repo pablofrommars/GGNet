@@ -91,6 +91,11 @@ public class GalleryTests
 		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Bar().Style());
 
 	[Fact]
+	public Task BarFlipped()
+		// Pins Flip() output ahead of the coord-strategy absorption (session D).
+		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Bar().Flip().Style());
+
+	[Fact]
 	public Task Area()
 		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Area().Style());
 
