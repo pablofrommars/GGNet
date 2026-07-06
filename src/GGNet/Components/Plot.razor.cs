@@ -18,14 +18,14 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 	public string Theme { get; init; } = "default";
 
 	[Parameter(CaptureUnmatchedValues = true)]
-	public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-	public Zone Title;
-	public Zone SubTitle;
+	internal Zone Title;
+	internal Zone SubTitle;
 
-	public Zone Legend;
+	internal Zone Legend;
 
-	public Zone Caption;
+	internal Zone Caption;
 
 	private Zone wrapper;
 
@@ -46,7 +46,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
 	private string? CssClass()
 	{
-		var @class = (string)(AdditionalAttributes?.GetValueOr("class", string.Empty) ?? string.Empty);
+		var @class = (string)(AdditionalAttributes?.GetValueOrDefault("class", string.Empty) ?? string.Empty);
 
 		return (@class, loading) switch
 		{

@@ -2,7 +2,7 @@
 
 namespace GGNet.Scales;
 
-public abstract class Scale<TKey, TValue>(ITransformation<TKey>? transformation = null) : IScale
+internal abstract class Scale<TKey, TValue>(ITransformation<TKey>? transformation = null) : IScale
 {
 	protected readonly ITransformation<TKey> transformation = transformation ?? Transformations.Identity<TKey>.Instance;
 

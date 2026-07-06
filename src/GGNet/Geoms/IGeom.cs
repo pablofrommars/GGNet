@@ -3,7 +3,7 @@ using GGNet.Shapes;
 
 namespace GGNet.Geoms;
 
-public interface IGeom
+internal interface IGeom
 {
 	Buffer<IShape> Layer { get; }
 

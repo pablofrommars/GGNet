@@ -2,7 +2,7 @@
 
 namespace GGNet.Shapes;
 
-public readonly record struct Area : IShape
+internal readonly record struct Area : IShape
 {
 	public Area() { }
 

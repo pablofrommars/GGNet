@@ -2,7 +2,7 @@ using GGNet.Exceptions;
 
 namespace GGNet.Rendering;
 
-public abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHandler
+internal abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHandler
 {
 	protected readonly IPlotRendering plot = plot;
 

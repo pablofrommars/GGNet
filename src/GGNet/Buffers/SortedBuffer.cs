@@ -1,6 +1,6 @@
 namespace GGNet.Buffers;
 
-public sealed class SortedBuffer<T>(int pageCapacity = 32, int pagesIncrement = 4, IComparer<T>? comparer = null) : BufferBase<T>(pageCapacity, pagesIncrement, comparer)
+internal sealed class SortedBuffer<T>(int pageCapacity = 32, int pagesIncrement = 4, IComparer<T>? comparer = null) : BufferBase<T>(pageCapacity, pagesIncrement, comparer)
 {
 	public override void Add(T item)
 	{

@@ -1,6 +1,6 @@
 namespace GGNet.Scales;
 
-public interface IScale
+internal interface IScale
 {
 	void Commit(bool grid);
 

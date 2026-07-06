@@ -4,14 +4,14 @@ using static System.Math;
 
 namespace GGNet.Scales;
 
-public interface IPosition : IScale
+internal interface IPosition : IScale
 {
 	void Shape(double min, double max);
 
 	double Coord(double value);
 }
 
-public abstract class Position<TKey>(ITransformation<TKey>? transformation, (double minMult, double minAdd, double maxMult, double maxAdd) expand) : Continuous<TKey>(transformation), IPosition
+internal abstract class Position<TKey>(ITransformation<TKey>? transformation, (double minMult, double minAdd, double maxMult, double maxAdd) expand) : Continuous<TKey>(transformation), IPosition
 	where TKey : struct
 {
 	protected readonly (double minMult, double minAdd, double maxMult, double maxAdd) expand = expand;
@@ -76,7 +76,7 @@ public abstract class Position<TKey>(ITransformation<TKey>? transformation, (dou
 	}
 }
 
-public interface IPositionMapping<T>
+internal interface IPositionMapping<T>
 {
 	IPosition Position { get; }
 
@@ -85,7 +85,7 @@ public interface IPositionMapping<T>
 	double Map(T item);
 }
 
-public class PositionMapping<T, TKey>(Func<T, TKey> selector, Position<TKey> position) : IPositionMapping<T>
+internal class PositionMapping<T, TKey>(Func<T, TKey> selector, Position<TKey> position) : IPositionMapping<T>
 	where TKey : struct
 {
 	private readonly Func<T, TKey> selector = selector;

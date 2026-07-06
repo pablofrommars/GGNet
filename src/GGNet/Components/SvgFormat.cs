@@ -1,6 +1,6 @@
 namespace GGNet.Components;
 
-public static class SvgFormat
+internal static class SvgFormat
 {
 	public static string Num(double value) => value.ToString(CultureInfo.InvariantCulture);
 

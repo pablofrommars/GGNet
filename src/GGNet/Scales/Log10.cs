@@ -4,7 +4,7 @@ using GGNet.Scales.Common;
 
 namespace GGNet.Scales;
 
-public sealed class Log10 : Position<double>
+internal sealed class Log10 : Position<double>
 {
 	private readonly IFormatter<double> formatter;
 
@@ -50,7 +50,7 @@ public sealed class Log10 : Position<double>
 	public override ITransformation<double> RangeTransformation => transformation!;
 }
 
-public static class Log10Utils
+internal static class Log10Utils
 {
 	public static double[] MinorBreaks(double max)
 	{

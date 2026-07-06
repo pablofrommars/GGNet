@@ -1,7 +1,7 @@
 ﻿namespace GGNet;
 
 //TODO: width are font specific. Run pixelWidthCalculator.html logic in interop?
-public static class TextExtensions
+internal static class TextExtensions
 {
 	public static double Width(this string? text, Size size)
 	{

@@ -2,7 +2,7 @@ namespace GGNet.Scales;
 
 using Common;
 
-public class InstantPosition : Position<Instant>
+internal class InstantPosition : Position<Instant>
 {
 	private readonly ZonedDateTimePattern pattern;
 	private readonly DateTimeZone timezone;

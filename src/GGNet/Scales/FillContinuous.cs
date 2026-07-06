@@ -4,7 +4,7 @@ using static System.Math;
 
 namespace GGNet.Scales;
 
-public class FillContinuous(
+internal class FillContinuous(
 	string[] colors,
 	int m = 5,
 	string format = "0.##") : Scale<double, string>()

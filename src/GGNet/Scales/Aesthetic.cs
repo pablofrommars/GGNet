@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Scales;
 
-public sealed class Aesthetic<T, TKey, TValue>(
+internal sealed class Aesthetic<T, TKey, TValue>(
 	Func<T, TKey> selector,
 	Scale<TKey, TValue> scale,
 	bool guide,

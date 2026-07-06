@@ -1,6 +1,6 @@
 namespace GGNet;
 
-public static partial class Markdown
+internal static partial class Markdown
 {
 	[GeneratedRegex(@"\*\*(?<bold>.+?)\*\*|\*(?<italic>.+?)\*|~(?<sub>.+?)~|\^(?<sup>.+?)\^", RegexOptions.Singleline)]
 	private static partial Regex TokenRegex();

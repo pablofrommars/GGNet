@@ -2,7 +2,7 @@
 
 namespace GGNet.Palettes;
 
-public sealed class Continuous<T>(T[] values)
+internal sealed class Continuous<T>(T[] values)
 {
 	private readonly T[] values = values;
 

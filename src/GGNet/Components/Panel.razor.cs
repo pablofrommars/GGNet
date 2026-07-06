@@ -51,13 +51,13 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 	private Zone xStrip;
 	private Zone yStrip;
 
-	public Zone yAxisText;
+	internal Zone yAxisText;
 	private Zone yAxisTitle;
 
 	private Zone xAxisText;
 	private Zone xAxisTitle;
 
-	public Zone Area;
+	internal Zone Area;
 
 	protected Tooltip tooltipComponent = default!;
 	public ITooltip? Tooltip => tooltipComponent;

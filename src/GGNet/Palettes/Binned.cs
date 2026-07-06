@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Palettes;
 
-public sealed class Binned<T>(double[] breaks, T[] values)
+internal sealed class Binned<T>(double[] breaks, T[] values)
 {
 	private readonly double[] breaks = breaks;
 	private readonly T[] values = values;

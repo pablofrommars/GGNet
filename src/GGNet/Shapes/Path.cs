@@ -2,7 +2,7 @@
 
 namespace GGNet.Shapes;
 
-public readonly record struct Path : IShape
+internal readonly record struct Path : IShape
 {
 	public Path() { }
 

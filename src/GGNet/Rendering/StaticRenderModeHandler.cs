@@ -1,6 +1,6 @@
 namespace GGNet.Rendering;
 
-public sealed class StaticRenderModeHandler(IPlotRendering plot) : RenderModeHandler(plot)
+internal sealed class StaticRenderModeHandler(IPlotRendering plot) : RenderModeHandler(plot)
 {
 	public sealed class ChildRenderHandler : IChildRenderModeHandler
 	{

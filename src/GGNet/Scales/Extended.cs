@@ -4,7 +4,7 @@ using GGNet.Transformations;
 
 namespace GGNet.Scales;
 
-public sealed class Extended : Position<double>
+internal sealed class Extended : Position<double>
 {
 	private readonly IFormatter<double> formatter;
 	private readonly bool hide;

@@ -46,7 +46,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	internal Aesthetics<T> Aesthetics { get; } = new();
 
-	public Faceting<T>? Faceting { get; set; }
+	internal Faceting<T>? Faceting { get; set; }
 
 	public bool Flip { get; set; }
 

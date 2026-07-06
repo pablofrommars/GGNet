@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Facets;
 
-public abstract class Faceting<T>(bool freeX, bool freeY)
+internal abstract class Faceting<T>(bool freeX, bool freeY)
 {
 	public bool FreeX { get; } = freeX;
 

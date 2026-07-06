@@ -2,7 +2,7 @@
 
 namespace GGNet.Facets;
 
-public sealed class Faceting2D<T, TRow, TColumn>(Func<T, TRow> row, Func<T, TColumn> column, bool freeX, bool freeY) : Faceting<T>(freeX, freeY)
+internal sealed class Faceting2D<T, TRow, TColumn>(Func<T, TRow> row, Func<T, TColumn> column, bool freeX, bool freeY) : Faceting<T>(freeX, freeY)
 {
 	private readonly SortedBuffer<TRow> rows = new(4, 1);
 	private readonly SortedBuffer<TColumn> columns = new(4, 1);

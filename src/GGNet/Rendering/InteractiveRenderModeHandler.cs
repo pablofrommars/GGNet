@@ -1,6 +1,6 @@
 namespace GGNet.Rendering;
 
-public sealed class InteractiveRenderModeHandler : RenderModeHandler
+internal sealed class InteractiveRenderModeHandler : RenderModeHandler
 {
 	private readonly CancellationTokenSource cancellationTokenSource = new();
 

@@ -1,6 +1,6 @@
 namespace GGNet.Rendering;
 
-public sealed class InteractiveAutoRenderModeHandler(IPlotRendering plot) : RenderModeHandler(plot)
+internal sealed class InteractiveAutoRenderModeHandler(IPlotRendering plot) : RenderModeHandler(plot)
 {
 	public override Task RefreshAsync(RenderTarget target, CancellationToken token)
 	{

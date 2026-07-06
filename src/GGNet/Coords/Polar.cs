@@ -1,6 +1,6 @@
 namespace GGNet.Coords;
 
-public static class Polar
+internal static class Polar
 {
 	// cx, cy are normalized [0,1] scale fractions (angular, radial).
 	public static (double x, double y) Project(

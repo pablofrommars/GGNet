@@ -2,7 +2,7 @@
 
 namespace GGNet.Scales.Common;
 
-public static class Pretty
+internal static class Pretty
 {
 	private static readonly double h = 1.5;
 	private static readonly double h5 = 0.5 + 1.5 * h;

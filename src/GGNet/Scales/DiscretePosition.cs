@@ -4,7 +4,7 @@ using GGNet.Transformations;
 
 namespace GGNet.Scales;
 
-public class DiscretePosition<T> : Position<T>
+internal class DiscretePosition<T> : Position<T>
   where T : struct
 {
 	protected readonly SortedBuffer<T> values = new(16, 1);

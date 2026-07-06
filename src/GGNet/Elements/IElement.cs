@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Elements;
 
-public interface IElement
+internal interface IElement
 {
 	string StopColor => "inherit";
 

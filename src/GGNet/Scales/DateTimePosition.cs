@@ -3,7 +3,7 @@ using GGNet.Transformations;
 
 namespace GGNet.Scales;
 
-public class DateTimePosition : Position<LocalDateTime>
+internal class DateTimePosition : Position<LocalDateTime>
 {
 	private static readonly LocalTimePattern timePattern = LocalTimePattern.CreateWithInvariantCulture("HH:mm");
 	private static readonly LocalDatePattern datePattern = LocalDatePattern.CreateWithInvariantCulture("MM/dd");

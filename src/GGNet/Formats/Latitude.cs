@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Formats;
 
-public sealed class Latitude : IFormatter<double>
+internal sealed class Latitude : IFormatter<double>
 {
 	public static Latitude Instance => new();
 

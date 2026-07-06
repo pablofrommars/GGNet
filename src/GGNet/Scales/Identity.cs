@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Scales;
 
-public sealed class Identity<T> : Scale<T, T>
+internal sealed class Identity<T> : Scale<T, T>
 {
 	public Identity() : base(null) { }
 

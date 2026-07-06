@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Transformations;
 
-public sealed class Identity<T> : ITransformation<T>
+internal sealed class Identity<T> : ITransformation<T>
 {
 	public static readonly Identity<T> Instance = new();
 

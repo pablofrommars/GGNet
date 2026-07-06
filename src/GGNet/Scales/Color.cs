@@ -2,7 +2,7 @@
 
 namespace GGNet.Scales;
 
-public sealed class ColorDiscrete<TKey> : Discrete<TKey, string>
+internal sealed class ColorDiscrete<TKey> : Discrete<TKey, string>
 	where TKey : notnull
 {
 	public ColorDiscrete(

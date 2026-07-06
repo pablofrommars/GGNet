@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Facets;
 
-public sealed class Facet<T>(Faceting<T> faceting, (int row, int column) coord, string? xStrip = null, string? yStrip = null)
+internal sealed class Facet<T>(Faceting<T> faceting, (int row, int column) coord, string? xStrip = null, string? yStrip = null)
 {
 	public Faceting<T> Faceting { get; } = faceting;
 

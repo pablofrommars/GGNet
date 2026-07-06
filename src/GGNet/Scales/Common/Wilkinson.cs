@@ -6,7 +6,7 @@ using static System.Math;
  *  Talbot, Lin, and Hanrahan. An Extension of Wilkinson’s Algorithm for Positioning Tick Labels on Axes, Infovis 2010.
  */
 
-public static class Wilkinson
+internal static class Wilkinson
 {
 	private static readonly double[] w = [0.25, 0.2, 0.5, 0.05];
 

@@ -5,7 +5,7 @@ using static System.Math;
 
 namespace GGNet.Scales;
 
-public class SizeContinuous : Continuous<double>
+internal class SizeContinuous : Continuous<double>
 {
 	protected readonly bool defined;
 	protected (double min, double max) limits;

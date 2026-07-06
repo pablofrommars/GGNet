@@ -2,7 +2,7 @@
 
 using static System.Math;
 
-public static class Utils
+internal static class Utils
 {
 	public static double[]? MinorBreaks(double[] b, double min, double max, int n = 2)
 	{

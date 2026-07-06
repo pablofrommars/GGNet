@@ -1,6 +1,6 @@
 namespace GGNet;
 
-public static class UnitsExtensions
+internal static class UnitsExtensions
 {
 	public static string Render(this Units unit) => unit switch
 	{

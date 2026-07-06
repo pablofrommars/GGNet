@@ -2,7 +2,7 @@
 
 namespace GGNet.Scales;
 
-public abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
+internal abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 	where TKey : notnull
 {
 	private readonly bool defined;

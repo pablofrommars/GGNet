@@ -2,7 +2,7 @@
 
 namespace GGNet.Scales;
 
-public sealed class LineTypeDiscrete<TKey> : Discrete<TKey, LineType>
+internal sealed class LineTypeDiscrete<TKey> : Discrete<TKey, LineType>
   where TKey : notnull
 {
 	private static readonly LineType[] lineTypes = Enum.GetValues<LineType>();

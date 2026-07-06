@@ -1,6 +1,6 @@
 namespace GGNet.Rendering;
 
-public static class SemaphoreSlimExtensions
+internal static class SemaphoreSlimExtensions
 {
 	public static bool TryRelease(this SemaphoreSlim semaphore)
 	{

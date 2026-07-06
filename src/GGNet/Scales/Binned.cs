@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Scales;
 
-public sealed class Binned<T>(Palettes.Binned<T> palette, T na = default!) : Scale<double, T>()
+internal sealed class Binned<T>(Palettes.Binned<T> palette, T na = default!) : Scale<double, T>()
 {
 	private readonly Palettes.Binned<T> palette = palette;
 	private readonly T na = na;

@@ -19,7 +19,7 @@ public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX
 
 	public string Id { get; } = $"{coord.row}_{coord.col}";
 
-	public Buffer<IGeom> Geoms { get; } = new(8, 1);
+	internal Buffer<IGeom> Geoms { get; } = new(8, 1);
 
 	public (string? x, string? y) Strip { get; set; }
 
@@ -29,11 +29,11 @@ public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX
 
 	public (double width, string? text) YLab { get; set; }
 
-	public Components.IPanel? Component { get; set; }
+	internal Components.IPanel? Component { get; set; }
 
 	internal bool Registered { get; set; }
 
-	public void Register(Components.IPanel component)
+	internal void Register(Components.IPanel component)
 	{
 		Component = component;
 		Registered = true;

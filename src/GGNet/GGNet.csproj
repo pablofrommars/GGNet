@@ -21,6 +21,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="GGNet.Headless.Tests" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ThemeCssFiles Include="Themes\*.css" />
         <_CurrentProjectDiscoveredScopedCssFiles Include="@(ThemeCssFiles)" RelativePath="%(Identity)" BasePath="_content/$(AssemblyName)" />
     </ItemGroup>

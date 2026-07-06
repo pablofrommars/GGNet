@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Shapes;
 
-public interface IShape
+internal interface IShape
 {
 	string? Classes { get; }
 

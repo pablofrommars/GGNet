@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Shapes;
 
-public readonly record struct MultiPolygon : IShape
+internal readonly record struct MultiPolygon : IShape
 {
 	public string? Classes { get; init; }
 

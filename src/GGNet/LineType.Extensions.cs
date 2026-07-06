@@ -1,6 +1,6 @@
 namespace GGNet;
 
-public static class LineTypeExtensions
+internal static class LineTypeExtensions
 {
 	public static string Render(this LineType type) => type switch
 	{

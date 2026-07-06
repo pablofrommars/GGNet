@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Shapes;
 
-public readonly record struct Text : IShape
+internal readonly record struct Text : IShape
 {
 	public string? Classes { get; init; }
 

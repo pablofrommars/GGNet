@@ -2,7 +2,7 @@ using GGNet.Transformations;
 
 namespace GGNet.Scales;
 
-public sealed class FillDiscrete<TKey> : Discrete<TKey, string>
+internal sealed class FillDiscrete<TKey> : Discrete<TKey, string>
 	where TKey : notnull
 {
 	public FillDiscrete(
