@@ -11,12 +11,10 @@ public static class VerifyConfig
 	[ModuleInitializer]
 	public static void Init()
 	{
-		// Per-instance plot ids (gg<hash>) and Blazor CSS scope attributes are the
-		// only nondeterministic parts of the output.
+		// Per-instance plot ids (gg<hash>) are the only nondeterministic part of the output.
 		VerifierSettings.AddScrubber(sb =>
 		{
 			var scrubbed = Regex.Replace(sb.ToString(), @"gg[A-Za-z0-9_-]+", "ggID");
-			scrubbed = Regex.Replace(scrubbed, @" b-[a-z0-9]+(?=[ =>])", " b-SCOPE");
 
 			sb.Clear();
 			sb.Append(scrubbed);

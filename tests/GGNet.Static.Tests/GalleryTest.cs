@@ -74,6 +74,9 @@ public class GalleryTest
 	{
 		var svg = await plot.AsStringAsync();
 
+		// Static export must be pure, well-formed SVG — not an HTML fragment.
+		System.Xml.Linq.XDocument.Parse(svg);
+
 		await Verifier.Verify(svg, extension: "svg");
 	}
 

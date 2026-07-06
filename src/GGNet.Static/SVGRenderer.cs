@@ -5,18 +5,80 @@ internal sealed class SVGRenderer
 {
 	private static readonly HtmlEncoder encoder = HtmlEncoder.Default;
 
+	private static readonly Regex scopeAttribute = new(@"\sb-[a-zA-Z0-9]+(?=[\s/>])", RegexOptions.Compiled);
+
 	private static readonly HashSet<string> selfClosingElements = new(StringComparer.OrdinalIgnoreCase)
 		{
             //"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"
             "line", "circle", "rect", "path", "stop"
 		};
 
+	// Static export serializes the svg element only: the surrounding div and the
+	// loading indicator belong to the interactive component experience.
 	public static void Render(StaticRenderer renderer, int componentId, TextWriter writer)
 	{
-		var frames = renderer.GetCurrentRenderTreeFrames(componentId);
 		var context = new Context(renderer, writer);
-		var newPosition = RenderFrames(context, frames, 0, frames.Count);
-		Debug.Assert(newPosition == frames.Count);
+
+		if (!FindAndRenderSvg(context, renderer.GetCurrentRenderTreeFrames(componentId)))
+		{
+			throw new InvalidOperationException("No svg element found in the rendered component");
+		}
+	}
+
+	private static bool FindAndRenderSvg(Context context, ArrayRange<RenderTreeFrame> frames)
+		=> FindAndRenderSvg(context, frames, 0, frames.Count);
+
+	private static bool FindAndRenderSvg(Context context, ArrayRange<RenderTreeFrame> frames, int position, int count)
+	{
+		var end = position + count;
+		var i = position;
+
+		while (i < end)
+		{
+			ref var frame = ref frames.Array[i];
+
+			switch (frame.FrameType)
+			{
+				case RenderTreeFrameType.Element:
+					if (string.Equals(frame.ElementName, "svg", StringComparison.OrdinalIgnoreCase))
+					{
+						RenderElement(context, frames, i);
+						return true;
+					}
+
+					if (FindAndRenderSvg(context, frames, i + 1, frame.ElementSubtreeLength - 1))
+					{
+						return true;
+					}
+
+					i += frame.ElementSubtreeLength;
+					break;
+
+				case RenderTreeFrameType.Component:
+					if (FindAndRenderSvg(context, context.Renderer.GetCurrentRenderTreeFrames(frame.ComponentId)))
+					{
+						return true;
+					}
+
+					i += frame.ComponentSubtreeLength;
+					break;
+
+				case RenderTreeFrameType.Region:
+					if (FindAndRenderSvg(context, frames, i + 1, frame.RegionSubtreeLength - 1))
+					{
+						return true;
+					}
+
+					i += frame.RegionSubtreeLength;
+					break;
+
+				default:
+					i++;
+					break;
+			}
+		}
+
+		return false;
 	}
 
 	private static int RenderFrames(Context context, ArrayRange<RenderTreeFrame> frames, int position, int maxElements)
@@ -49,7 +111,9 @@ internal sealed class SVGRenderer
 				context.Write(encoder.Encode(frame.TextContent));
 				return ++position;
 			case RenderTreeFrameType.Markup:
-				context.Write(frame.MarkupContent);
+				// Static razor fragments arrive as raw markup with the scoped-CSS
+				// marker baked in; strip it like the attribute-frame path does.
+				context.Write(scopeAttribute.Replace(frame.MarkupContent, ""));
 				return ++position;
 			case RenderTreeFrameType.Component:
 				return RenderChildComponent(context, frames, position);
@@ -163,6 +227,13 @@ internal sealed class SVGRenderer
 			if (frame.AttributeName.Equals("value", StringComparison.OrdinalIgnoreCase))
 			{
 				capturedValueAttribute = frame.AttributeValue as string;
+			}
+
+			// Blazor scoped-CSS marker attributes: meaningless outside the component,
+			// and valueless attributes break XML validity.
+			if (frame.AttributeName.StartsWith("b-", StringComparison.Ordinal))
+			{
+				continue;
 			}
 
 			switch (frame.AttributeValue)
