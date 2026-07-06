@@ -7,7 +7,7 @@ namespace GGNet.Scales;
 internal class DiscretePosition<T> : Position<T>
   where T : struct
 {
-	protected readonly SortedBuffer<T> values = new(16, 1);
+	protected readonly SortedBuffer<T> values = new();
 
 	protected readonly IFormatter<T> formatter;
 	private readonly double offset;

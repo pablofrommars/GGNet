@@ -4,7 +4,7 @@ namespace GGNet.Facets;
 
 internal sealed class Faceting1D<T, TKey>(Func<T, TKey> selector, bool freeX, bool freeY, int? nrows, int? ncolumns) : Faceting<T>(freeX, freeY)
 {
-	private readonly SortedBuffer<TKey> buffer = new(8, 1);
+	private readonly SortedBuffer<TKey> buffer = new();
 
 	private readonly Func<T, TKey> selector = selector;
 

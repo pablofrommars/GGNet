@@ -115,13 +115,13 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 		{
 			if (!xviolins.TryGetValue(fill, out violin))
 			{
-				violin = new(64, 1, Comparer.Instance);
+				violin = new(Comparer.Instance);
 				xviolins[fill] = violin;
 			}
 		}
 		else
 		{
-			violin = new(64, 1, Comparer.Instance);
+			violin = new(Comparer.Instance);
 
 			violins[x] = new()
 			{

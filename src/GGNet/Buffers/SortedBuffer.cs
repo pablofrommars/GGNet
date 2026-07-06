@@ -1,101 +1,48 @@
 namespace GGNet.Buffers;
 
-internal sealed class SortedBuffer<T>(int pageCapacity = 32, int pagesIncrement = 4, IComparer<T>? comparer = null) : BufferBase<T>(pageCapacity, pagesIncrement, comparer)
+// Sorted, distinct-by-comparer, index-addressable. BCL-backed: binary-search
+// insert into a List<T> — the BCL offers no single type combining sorted,
+// distinct and indexed. Items comparing equal to an existing element are
+// dropped (first one wins).
+internal sealed class SortedBuffer<T>(IComparer<T>? comparer = null)
 {
-	public override void Add(T item)
+	private readonly IComparer<T> comparer = comparer ?? Comparer<T>.Default;
+	private readonly List<T> items = [];
+
+	public int Count => items.Count;
+
+	// The setter is for in-place updates that preserve the sort key (Area's
+	// stacking rewrites y at a fixed x); replacing the key is the caller's bug.
+	public T this[int i]
 	{
-		if (Count == 0)
-		{
-			Append(item);
-			return;
-		}
-
-		var cmp = comparer.Compare(pages[page][element - 1], item);
-		if (cmp == 0)
-		{
-			return;
-		}
-		else if (cmp < 0)
-		{
-			Append(item);
-			return;
-		}
-
-		// Find the first element greater than item and insert before it, shifting right.
-		var found = false;
-		var p = 0;
-		var i = 0;
-
-		while (p <= page)
-		{
-			var limit = p == page ? element : pageCapacity;
-
-			i = 0;
-
-			while (i < limit)
-			{
-				cmp = comparer.Compare(pages[p][i], item);
-				if (cmp == 0)
-				{
-					return;
-				}
-				if (cmp > 0)
-				{
-					found = true;
-					break;
-				}
-
-				i++;
-			}
-
-			if (found)
-			{
-				break;
-			}
-
-			p++;
-		}
-
-		Grow();
-
-		while (p <= page)
-		{
-			while (i < pageCapacity)
-			{
-				(item, pages[p][i]) = (pages[p][i], item);
-				i++;
-			}
-
-			i = 0;
-			p++;
-		}
-
-		element++;
+		get => items[i];
+		set => items[i] = value;
 	}
 
-	public override int IndexOf(T item)
+	public void Add(T item)
 	{
-		var start = 0;
-		var n = Count;
+		var index = items.BinarySearch(item, comparer);
 
-		while (n > 0)
+		if (index < 0)
 		{
-			var m = start + (n - 1) / 2;
-			var mvalue = this[m];
-
-			var cmp = comparer.Compare(item, mvalue);
-			if (cmp == 0)
-			{
-				return m;
-			}
-			else if (cmp > 0)
-			{
-				start = m + 1;
-			}
-
-			n /= 2;
+			items.Insert(~index, item);
 		}
-
-		return -1;
 	}
+
+	public void Add(IEnumerable<T> items)
+	{
+		foreach (var item in items)
+		{
+			Add(item);
+		}
+	}
+
+	public int IndexOf(T item)
+	{
+		var index = items.BinarySearch(item, comparer);
+
+		return index < 0 ? -1 : index;
+	}
+
+	public void Clear() => items.Clear();
 }

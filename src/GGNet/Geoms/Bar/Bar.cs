@@ -18,7 +18,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 		public static readonly Comparer Instance = new();
 	}
 
-	private readonly SortedBuffer<(double x, Buffer<(T item, string fill, double value)> y)> bars = new(32, 1, Comparer.Instance);
+	private readonly SortedBuffer<(double x, Buffer<(T item, string fill, double value)> y)> bars = new(Comparer.Instance);
 
 	private readonly PositionAdjustment position;
 	private readonly double width;

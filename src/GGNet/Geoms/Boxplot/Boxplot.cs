@@ -19,7 +19,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 		public static readonly Comparer Instance = new();
 	}
 
-	private readonly SortedBuffer<(double coord, Dictionary<string, SortedBuffer<double>> data)> boxes = new(32, 1, Comparer.Instance);
+	private readonly SortedBuffer<(double coord, Dictionary<string, SortedBuffer<double>> data)> boxes = new(Comparer.Instance);
 
 	private readonly double size;
 
@@ -111,7 +111,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 				}
 				else
 				{
-					points = new SortedBuffer<double>(8, 1);
+					points = new SortedBuffer<double>();
 					points.Add(x);
 					data[fill] = points;
 				}
@@ -123,7 +123,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 
 		if (!exist)
 		{
-			var points = new SortedBuffer<double>(8, 1);
+			var points = new SortedBuffer<double>();
 			points.Add(x);
 
 			boxes.Add((y, new() { [fill] = points }));

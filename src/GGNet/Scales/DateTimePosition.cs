@@ -9,7 +9,7 @@ internal class DateTimePosition : Position<LocalDateTime>
 	private static readonly LocalDatePattern datePattern = LocalDatePattern.CreateWithInvariantCulture("MM/dd");
 	private static readonly Period sampling = Period.FromMinutes(1);
 
-	protected readonly SortedBuffer<LocalDateTime> values = new(512, 1);
+	protected readonly SortedBuffer<LocalDateTime> values = new();
 
 	public DateTimePosition(ITransformation<LocalDateTime>? transformation = null,
 		(LocalDateTime? min, LocalDateTime? max)? limits = null,

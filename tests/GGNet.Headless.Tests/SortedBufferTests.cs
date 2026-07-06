@@ -62,11 +62,11 @@ public class SortedBufferTests
 	}
 
 	[Fact]
-	public void AddAcrossPages()
+	public void AddInterleaved()
 	{
 		// Arrange
 
-		var sut = new SortedBuffer<int>(pageCapacity: 4, pagesIncrement: 1);
+		var sut = new SortedBuffer<int>();
 
 		// Act
 
@@ -87,7 +87,7 @@ public class SortedBufferTests
 	{
 		// Arrange
 
-		var sut = new SortedBuffer<int>(pageCapacity: 4, pagesIncrement: 1);
+		var sut = new SortedBuffer<int>();
 
 		// Act
 
@@ -106,12 +106,11 @@ public class SortedBufferTests
 	}
 
 	[Fact]
-	public void IndexOfMissDoesNotCorruptState()
+	public void IndexOfMissLeavesStateIntact()
 	{
 		// Arrange
 
-		// Fill the last page exactly, then miss: IndexOf must not advance the page cursor.
-		var sut = new SortedBuffer<int>(pageCapacity: 4, pagesIncrement: 1);
+		var sut = new SortedBuffer<int>();
 		sut.Add([1, 2, 3, 4]);
 
 		// Act
@@ -133,7 +132,7 @@ public class SortedBufferTests
 	{
 		// Arrange
 
-		var sut = new SortedBuffer<int>(pageCapacity: 4, pagesIncrement: 1);
+		var sut = new SortedBuffer<int>();
 
 		// Act
 
@@ -170,11 +169,32 @@ public class SortedBufferTests
 	}
 
 	[Fact]
+	public void SetPreservingSortKey()
+	{
+		// Arrange
+
+		// Area's stacking rewrites y in place at a fixed x.
+		var sut = new SortedBuffer<(double x, double y)>(comparer: Comparer<(double x, double y)>.Create((a, b) => a.x.CompareTo(b.x)));
+		sut.Add([(1.0, 10.0), (2.0, 20.0), (3.0, 30.0)]);
+
+		// Act
+
+		sut[1] = (2.0, 99.0);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		sut[1].y.Should().Be(99.0);
+		sut.IndexOf((2.0, 0.0)).Should().Be(1);
+	}
+
+	[Fact]
 	public void ClearAndReuse()
 	{
 		// Arrange
 
-		var sut = new SortedBuffer<int>(pageCapacity: 4, pagesIncrement: 1);
+		var sut = new SortedBuffer<int>();
 		sut.Add([3, 1, 2, 5, 4]);
 
 		// Act

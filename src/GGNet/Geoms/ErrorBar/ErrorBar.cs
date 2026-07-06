@@ -19,7 +19,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 		  => x.x.CompareTo(y.x);
 	}
 
-	private readonly SortedBuffer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)> bars = new(32, 1, Comparer.Instance);
+	private readonly SortedBuffer<(double x, Buffer<(string color, double y, double ymin, double ymax, T item)> bars)> bars = new(Comparer.Instance);
 
 	private readonly PositionAdjustment position;
 	private readonly bool animation;
