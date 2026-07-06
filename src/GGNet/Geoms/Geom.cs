@@ -1,5 +1,4 @@
 ﻿using GGNet.Data;
-using GGNet.Exceptions;
 using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;

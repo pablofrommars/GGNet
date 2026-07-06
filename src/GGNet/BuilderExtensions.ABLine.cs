@@ -1,14 +1,28 @@
 ﻿namespace GGNet;
 
 using Geoms.ABLine;
-using Elements;
-using Scales;
 
 using static Anchor;
 using static LineType;
 
 public static partial class BuilderExtensions
 {
+	/// <summary>
+	/// Adds reference lines y = a·x + b with labels, one per item. Annotation: takes no event block.
+	/// </summary>
+	/// <param name="source">Items to annotate; one line per item.</param>
+	/// <param name="a">Slope, in data units.</param>
+	/// <param name="b">Intercept, in y-axis data units.</param>
+	/// <param name="label">Label text per item.</param>
+	/// <param name="transformation">Which of the (x, y) scale transformations to honor when tracing the line.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and label color.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="size">Label font size; null takes the theme’s.</param>
+	/// <param name="anchor"><c>End</c> places the label at the line’s right end; <c>Start</c> at the left.</param>
+	/// <param name="weight">Label font weight (<c>"normal"</c>, <c>"bold"</c>).</param>
+	/// <param name="style">Label font style (<c>"normal"</c>, <c>"italic"</c>).</param>
 	public static PanelFactory<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
 	  this PanelFactory<T1, TX, TY> panel,
 	  Source<T2> source,
@@ -49,6 +63,22 @@ public static partial class BuilderExtensions
 		return panel;
 	}
 
+	/// <summary>
+	/// Adds reference lines y = a·x + b with labels, one per item. Annotation: takes no event block.
+	/// </summary>
+	/// <param name="source">Items to annotate; one line per item.</param>
+	/// <param name="a">Slope, in data units.</param>
+	/// <param name="b">Intercept, in y-axis data units.</param>
+	/// <param name="label">Label text per item.</param>
+	/// <param name="transformation">Which of the (x, y) scale transformations to honor when tracing the line.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and label color.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="size">Label font size; null takes the theme’s.</param>
+	/// <param name="anchor"><c>End</c> places the label at the line’s right end; <c>Start</c> at the left.</param>
+	/// <param name="weight">Label font weight (<c>"normal"</c>, <c>"bold"</c>).</param>
+	/// <param name="style">Label font style (<c>"normal"</c>, <c>"italic"</c>).</param>
 	public static PanelFactory<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
 	  this PanelFactory<T1, TX, TY> panel,
 	  IEnumerable<T2> source,
@@ -64,6 +94,22 @@ public static partial class BuilderExtensions
 		return panel.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 	}
 
+	/// <summary>
+	/// Adds reference lines y = a·x + b with labels, one per item. Annotation: takes no event block.
+	/// </summary>
+	/// <param name="source">Items to annotate; one line per item.</param>
+	/// <param name="a">Slope, in data units.</param>
+	/// <param name="b">Intercept, in y-axis data units.</param>
+	/// <param name="label">Label text per item.</param>
+	/// <param name="transformation">Which of the (x, y) scale transformations to honor when tracing the line.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and label color.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="size">Label font size; null takes the theme’s.</param>
+	/// <param name="anchor"><c>End</c> places the label at the line’s right end; <c>Start</c> at the left.</param>
+	/// <param name="weight">Label font weight (<c>"normal"</c>, <c>"bold"</c>).</param>
+	/// <param name="style">Label font style (<c>"normal"</c>, <c>"italic"</c>).</param>
 	public static PlotContext<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
 	  this PlotContext<T1, TX, TY> context,
 	  Source<T2> source,
@@ -81,6 +127,22 @@ public static partial class BuilderExtensions
 		return context;
 	}
 
+	/// <summary>
+	/// Adds reference lines y = a·x + b with labels, one per item. Annotation: takes no event block.
+	/// </summary>
+	/// <param name="source">Items to annotate; one line per item.</param>
+	/// <param name="a">Slope, in data units.</param>
+	/// <param name="b">Intercept, in y-axis data units.</param>
+	/// <param name="label">Label text per item.</param>
+	/// <param name="transformation">Which of the (x, y) scale transformations to honor when tracing the line.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and label color.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="size">Label font size; null takes the theme’s.</param>
+	/// <param name="anchor"><c>End</c> places the label at the line’s right end; <c>Start</c> at the left.</param>
+	/// <param name="weight">Label font weight (<c>"normal"</c>, <c>"bold"</c>).</param>
+	/// <param name="style">Label font style (<c>"normal"</c>, <c>"italic"</c>).</param>
 	public static PlotContext<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
 	  this PlotContext<T1, TX, TY> context,
 	  IEnumerable<T2> source,
@@ -96,6 +158,21 @@ public static partial class BuilderExtensions
 		return context.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 	}
 
+	/// <summary>
+	/// Adds reference lines y = a·x + b with labels, one per item. Annotation: takes no event block.
+	/// </summary>
+	/// <param name="a">Slope, in data units.</param>
+	/// <param name="b">Intercept, in y-axis data units.</param>
+	/// <param name="label">Label text per item.</param>
+	/// <param name="transformation">Which of the (x, y) scale transformations to honor when tracing the line.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and label color.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="size">Label font size; null takes the theme’s.</param>
+	/// <param name="anchor"><c>End</c> places the label at the line’s right end; <c>Start</c> at the left.</param>
+	/// <param name="weight">Label font weight (<c>"normal"</c>, <c>"bold"</c>).</param>
+	/// <param name="style">Label font style (<c>"normal"</c>, <c>"italic"</c>).</param>
 	public static PanelFactory<T, TX, TY> Geom_ABLine<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, double> a,
@@ -110,6 +187,21 @@ public static partial class BuilderExtensions
 		return Geom_ABLine(panel, panel.Context.RequireSource(), a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 	}
 
+	/// <summary>
+	/// Adds reference lines y = a·x + b with labels, one per item. Annotation: takes no event block.
+	/// </summary>
+	/// <param name="a">Slope, in data units.</param>
+	/// <param name="b">Intercept, in y-axis data units.</param>
+	/// <param name="label">Label text per item.</param>
+	/// <param name="transformation">Which of the (x, y) scale transformations to honor when tracing the line.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and label color.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="size">Label font size; null takes the theme’s.</param>
+	/// <param name="anchor"><c>End</c> places the label at the line’s right end; <c>Start</c> at the left.</param>
+	/// <param name="weight">Label font weight (<c>"normal"</c>, <c>"bold"</c>).</param>
+	/// <param name="style">Label font style (<c>"normal"</c>, <c>"italic"</c>).</param>
 	public static PlotContext<T, TX, TY> Geom_ABLine<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, double> a,

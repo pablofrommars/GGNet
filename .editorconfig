@@ -18,6 +18,15 @@ dotnet_diagnostic.CA1000.severity = none
 # --- Culture-sensitive formatting produces broken SVG on comma-decimal locales
 dotnet_diagnostic.CA1305.severity = error
 
+# --- XML docs are additive: the public builder surface is documented (the
+# DSL's manual lives in IntelliSense), everything else keeps the repo's
+# no-XML-docs convention without warnings.
+dotnet_diagnostic.CS1591.severity = none
+
+# --- Extension receivers (this PlotContext/PanelFactory) are not part of the
+# call-site surface and stay undocumented by design.
+dotnet_diagnostic.CS1573.severity = none
+
 # --- Union exhaustiveness is a gate, not a suggestion: a missing switch-
 # expression arm over a closed union must fail the build.
 dotnet_diagnostic.CS8509.severity = error
@@ -38,6 +47,31 @@ dotnet_diagnostic.CA1725.severity = warning
 # default; the enforced style gate is exactly the rules listed explicitly
 # in this file — rule-level severities override the category default.
 dotnet_analyzer_diagnostic.category-Style.severity = silent
+
+# GenerateDocumentationFile re-triggers style reporting on the preview SDK
+# despite the category default; the offenders are disabled by id. The
+# enforced style gate remains the explicitly-elevated rules below.
+dotnet_diagnostic.IDE0008.severity = none
+dotnet_diagnostic.IDE0011.severity = none
+dotnet_diagnostic.IDE0022.severity = none
+dotnet_diagnostic.IDE0023.severity = none
+dotnet_diagnostic.IDE0024.severity = none
+dotnet_diagnostic.IDE0026.severity = none
+dotnet_diagnostic.IDE0040.severity = none
+dotnet_diagnostic.IDE0045.severity = none
+dotnet_diagnostic.IDE0046.severity = none
+dotnet_diagnostic.IDE0047.severity = none
+dotnet_diagnostic.IDE0059.severity = none
+dotnet_diagnostic.IDE0060.severity = none
+dotnet_diagnostic.IDE0065.severity = none
+dotnet_diagnostic.IDE0078.severity = none
+dotnet_diagnostic.IDE0160.severity = none
+dotnet_diagnostic.IDE0200.severity = none
+dotnet_diagnostic.IDE0306.severity = none
+
+# --- Unused usings are debris: visible and auto-fixable (needs
+# GenerateDocumentationFile in every project to report — roslyn#41640).
+dotnet_diagnostic.IDE0005.severity = warning
 
 # --- Style: namespace must match folder
 dotnet_diagnostic.IDE0130.severity = warning

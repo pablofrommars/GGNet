@@ -2,8 +2,6 @@
 
 using Rendering;
 
-using static Position;
-
 public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
   where TX : struct
   where TY : struct

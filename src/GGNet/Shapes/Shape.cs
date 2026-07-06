@@ -4,4 +4,4 @@ namespace GGNet.Shapes;
 // composer's dispatch is exhaustiveness-checked: adding a shape here is a
 // compile error at every switch until it renders — a shape can no longer be
 // silently dropped.
-internal union Shape(ABLine, Area, Circle, HLine, Line, MultiPolygon, Path, Polygon, Rectangle, Text, VLine);
+internal readonly union Shape(ABLine, Area, Circle, HLine, Line, MultiPolygon, Path, Polygon, Rectangle, Text, VLine);

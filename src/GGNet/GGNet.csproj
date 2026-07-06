@@ -8,6 +8,7 @@
         <AnalysisMode>Recommended</AnalysisMode>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <IsPackable>true</IsPackable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <Authors>Pablo Belin</Authors>
         <Title>GG.Net Data Visualization</Title>

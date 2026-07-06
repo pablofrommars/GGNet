@@ -1,14 +1,26 @@
 ﻿namespace GGNet;
 
 using Geoms.Segment;
-using Elements;
-using Scales;
-
-using static Anchor;
 using static LineType;
 
 public static partial class BuilderExtensions
 {
+	/// <summary>
+	/// Adds a segment layer: one line from (x, y) to (xend, yend) per item.
+	/// </summary>
+	/// <param name="source">Items to plot; one segment per item.</param>
+	/// <param name="x">Start x, in x-axis data units.</param>
+	/// <param name="xend">End x, in x-axis data units.</param>
+	/// <param name="y">Start y, in y-axis data units.</param>
+	/// <param name="yend">End y, in y-axis data units.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the segment midpoint when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke color for the layer.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IReadOnlyList<T2> source,
@@ -46,6 +58,22 @@ public static partial class BuilderExtensions
 		return panel;
 	}
 
+	/// <summary>
+	/// Adds a segment layer: one line from (x, y) to (xend, yend) per item.
+	/// </summary>
+	/// <param name="source">Items to plot; one segment per item.</param>
+	/// <param name="x">Start x, in x-axis data units.</param>
+	/// <param name="xend">End x, in x-axis data units.</param>
+	/// <param name="y">Start y, in y-axis data units.</param>
+	/// <param name="yend">End y, in y-axis data units.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the segment midpoint when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke color for the layer.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  Source<T2> source,
@@ -66,6 +94,22 @@ public static partial class BuilderExtensions
 		return context;
 	}
 
+	/// <summary>
+	/// Adds a segment layer: one line from (x, y) to (xend, yend) per item.
+	/// </summary>
+	/// <param name="source">Items to plot; one segment per item.</param>
+	/// <param name="x">Start x, in x-axis data units.</param>
+	/// <param name="xend">End x, in x-axis data units.</param>
+	/// <param name="y">Start y, in y-axis data units.</param>
+	/// <param name="yend">End y, in y-axis data units.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the segment midpoint when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke color for the layer.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IEnumerable<T2> source,
@@ -82,6 +126,21 @@ public static partial class BuilderExtensions
 	  where TY1 : struct
 	  => context.Geom_Segment(new Source<T2>(source), x, xend, y, yend, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType);
 
+	/// <summary>
+	/// Adds a segment layer: one line from (x, y) to (xend, yend) per item.
+	/// </summary>
+	/// <param name="x">Start x, in x-axis data units.</param>
+	/// <param name="xend">End x, in x-axis data units.</param>
+	/// <param name="y">Start y, in y-axis data units.</param>
+	/// <param name="yend">End y, in y-axis data units.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the segment midpoint when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke color for the layer.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
 	public static PanelFactory<T, TX, TY> Geom_Segment<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX> x,
@@ -99,6 +158,21 @@ public static partial class BuilderExtensions
 		return Geom_Segment(panel, panel.Context.RequireSource(), x, xend, y, yend, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType);
 	}
 
+	/// <summary>
+	/// Adds a segment layer: one line from (x, y) to (xend, yend) per item.
+	/// </summary>
+	/// <param name="x">Start x, in x-axis data units.</param>
+	/// <param name="xend">End x, in x-axis data units.</param>
+	/// <param name="y">Start y, in y-axis data units.</param>
+	/// <param name="yend">End y, in y-axis data units.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the segment midpoint when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke color for the layer.</param>
+	/// <param name="opacity">Stroke opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
 	public static PlotContext<T, TX, TY> Geom_Segment<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX> x,

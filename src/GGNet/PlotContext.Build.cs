@@ -42,6 +42,12 @@ public partial class PlotContext
 	  where TY : struct, Enum
 	  => context.YScaleDefault = _ => context.Scale_Y_Discrete();
 
+	/// <summary>
+	/// Creates a plot over the source; x and y become the default selectors layers inherit, and their types pick the default scales (double: continuous; enum: discrete; LocalDate/LocalDateTime: date; Instant: requires Scale_X_Instant).
+	/// </summary>
+	/// <param name="source">Data source shared by inheriting layers.</param>
+	/// <param name="x">Default x selector for layers.</param>
+	/// <param name="y">Default y selector for layers.</param>
 	public static PlotContext<T, LocalDate, double> Build<T>(IReadOnlyList<T> source, Func<T, LocalDate> x, Func<T, double>? y = null)
 	{
 		var context = BuildBase(source, x, y);
@@ -52,6 +58,12 @@ public partial class PlotContext
 		return context;
 	}
 
+	/// <summary>
+	/// Creates a plot over the source; x and y become the default selectors layers inherit, and their types pick the default scales (double: continuous; enum: discrete; LocalDate/LocalDateTime: date; Instant: requires Scale_X_Instant).
+	/// </summary>
+	/// <param name="source">Data source shared by inheriting layers.</param>
+	/// <param name="x">Default x selector for layers.</param>
+	/// <param name="y">Default y selector for layers.</param>
 	public static PlotContext<T, LocalDateTime, double> Build<T>(IReadOnlyList<T> source, Func<T, LocalDateTime> x, Func<T, double>? y = null)
 	{
 		var context = BuildBase(source, x, y);
@@ -62,6 +74,12 @@ public partial class PlotContext
 		return context;
 	}
 
+	/// <summary>
+	/// Creates a plot over the source; x and y become the default selectors layers inherit, and their types pick the default scales (double: continuous; enum: discrete; LocalDate/LocalDateTime: date; Instant: requires Scale_X_Instant).
+	/// </summary>
+	/// <param name="source">Data source shared by inheriting layers.</param>
+	/// <param name="x">Default x selector for layers.</param>
+	/// <param name="y">Default y selector for layers.</param>
 	public static PlotContext<T, Instant, double> Build<T>(IReadOnlyList<T> source, Func<T, Instant> x, Func<T, double>? y = null)
 	{
 		var context = BuildBase(source, x, y);
@@ -72,6 +90,12 @@ public partial class PlotContext
 		return context;
 	}
 
+	/// <summary>
+	/// Creates a plot over the source; x and y become the default selectors layers inherit, and their types pick the default scales (double: continuous; enum: discrete; LocalDate/LocalDateTime: date; Instant: requires Scale_X_Instant).
+	/// </summary>
+	/// <param name="source">Data source shared by inheriting layers.</param>
+	/// <param name="x">Default x selector for layers.</param>
+	/// <param name="y">Default y selector for layers.</param>
 	public static PlotContext<T, TX, double> Build<T, TX>(IReadOnlyList<T> source, Func<T, TX> x, Func<T, double>? y = null)
 	  where TX : struct, Enum
 	{
@@ -83,6 +107,12 @@ public partial class PlotContext
 		return context;
 	}
 
+	/// <summary>
+	/// Creates a plot over the source; x and y become the default selectors layers inherit, and their types pick the default scales (double: continuous; enum: discrete; LocalDate/LocalDateTime: date; Instant: requires Scale_X_Instant).
+	/// </summary>
+	/// <param name="source">Data source shared by inheriting layers.</param>
+	/// <param name="x">Default x selector for layers.</param>
+	/// <param name="y">Default y selector for layers.</param>
 	public static PlotContext<T, TX, TY> Build<T, TX, TY>(IReadOnlyList<T> source, Func<T, TX> x, Func<T, TY> y)
 	  where TX : struct, Enum
 	  where TY : struct, Enum
@@ -95,6 +125,12 @@ public partial class PlotContext
 		return context;
 	}
 
+	/// <summary>
+	/// Creates a plot over the source; x and y become the default selectors layers inherit, and their types pick the default scales (double: continuous; enum: discrete; LocalDate/LocalDateTime: date; Instant: requires Scale_X_Instant).
+	/// </summary>
+	/// <param name="source">Data source shared by inheriting layers.</param>
+	/// <param name="x">Default x selector for layers.</param>
+	/// <param name="y">Default y selector for layers.</param>
 	public static PlotContext<T, double, TY> Build<T, TY>(IReadOnlyList<T> source, Func<T, double> x, Func<T, TY> y)
 	  where TY : struct, Enum
 	{
@@ -106,6 +142,12 @@ public partial class PlotContext
 		return context;
 	}
 
+	/// <summary>
+	/// Creates a plot over the source; x and y become the default selectors layers inherit, and their types pick the default scales (double: continuous; enum: discrete; LocalDate/LocalDateTime: date; Instant: requires Scale_X_Instant).
+	/// </summary>
+	/// <param name="source">Data source shared by inheriting layers.</param>
+	/// <param name="x">Default x selector for layers.</param>
+	/// <param name="y">Default y selector for layers.</param>
 	public static PlotContext<T, double, double> Build<T>(IReadOnlyList<T> source, Func<T, double>? x = null, Func<T, double>? y = null)
 	{
 		var context = BuildBase(source, x, y);
@@ -116,6 +158,9 @@ public partial class PlotContext
 		return context;
 	}
 
+	/// <summary>
+	/// Creates a sourceless plot: every layer must bring its own source via the source-taking geom overloads.
+	/// </summary>
 	public static PlotContext<NoData, double, double> Build()
 	{
 		var context = BuildBase<NoData, double, double>(null, null, null);

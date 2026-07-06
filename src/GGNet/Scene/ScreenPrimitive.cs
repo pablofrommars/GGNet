@@ -4,7 +4,7 @@ namespace GGNet.Scene;
 // composed from data-space shapes. One record per markup template in the
 // Area walker, attribute-for-attribute. A closed union: the walker's
 // dispatch is exhaustiveness-checked at compile time.
-internal union ScreenPrimitive(ScreenCircle, ScreenLine, ScreenRect, ScreenFill, ScreenStroke, ScreenPolygon, ScreenRule, ScreenText, ScreenLabel, ScreenAngledLabel);
+internal readonly union ScreenPrimitive(ScreenCircle, ScreenLine, ScreenRect, ScreenFill, ScreenStroke, ScreenPolygon, ScreenRule, ScreenText, ScreenLabel, ScreenAngledLabel);
 
 internal sealed record ScreenCircle(
 	string Css,

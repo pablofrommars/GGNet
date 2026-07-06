@@ -1,15 +1,27 @@
 ﻿namespace GGNet;
 
 using Geoms.Candlestick;
-using Elements;
 using Exceptions;
-using Scales;
-
-using static Anchor;
 using static LineType;
 
 public static partial class BuilderExtensions
 {
+	/// <summary>
+	/// Adds a candlestick layer: open/close body with high/low wicks per x.
+	/// </summary>
+	/// <param name="source">Items to plot; one candle per item.</param>
+	/// <param name="x">Candle position, in x-axis data units. Defaults to the plot’s x selector.</param>
+	/// <param name="open">Opening value, in y-axis data units.</param>
+	/// <param name="high">High value, in y-axis data units.</param>
+	/// <param name="low">Low value, in y-axis data units.</param>
+	/// <param name="close">Closing value, in y-axis data units.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and body color for the layer.</param>
+	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IReadOnlyList<T2> source,
@@ -72,6 +84,22 @@ public static partial class BuilderExtensions
 		return panel;
 	}
 
+	/// <summary>
+	/// Adds a candlestick layer: open/close body with high/low wicks per x.
+	/// </summary>
+	/// <param name="source">Items to plot; one candle per item.</param>
+	/// <param name="x">Candle position, in x-axis data units. Defaults to the plot’s x selector.</param>
+	/// <param name="open">Opening value, in y-axis data units.</param>
+	/// <param name="high">High value, in y-axis data units.</param>
+	/// <param name="low">Low value, in y-axis data units.</param>
+	/// <param name="close">Closing value, in y-axis data units.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and body color for the layer.</param>
+	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Candlestick<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  Source<T2> source,
@@ -92,6 +120,21 @@ public static partial class BuilderExtensions
 		return context;
 	}
 
+	/// <summary>
+	/// Adds a candlestick layer: open/close body with high/low wicks per x.
+	/// </summary>
+	/// <param name="x">Candle position, in x-axis data units. Defaults to the plot’s x selector.</param>
+	/// <param name="open">Opening value, in y-axis data units.</param>
+	/// <param name="high">High value, in y-axis data units.</param>
+	/// <param name="low">Low value, in y-axis data units.</param>
+	/// <param name="close">Closing value, in y-axis data units.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and body color for the layer.</param>
+	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
 	public static PanelFactory<T, TX, TY> Geom_Candlestick<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
@@ -109,6 +152,21 @@ public static partial class BuilderExtensions
 		return Geom_Candlestick(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, open, high, low, close, onclick, onmouseover, onmouseout, strokeWidth, color, opacity, lineType);
 	}
 
+	/// <summary>
+	/// Adds a candlestick layer: open/close body with high/low wicks per x.
+	/// </summary>
+	/// <param name="x">Candle position, in x-axis data units. Defaults to the plot’s x selector.</param>
+	/// <param name="open">Opening value, in y-axis data units.</param>
+	/// <param name="high">High value, in y-axis data units.</param>
+	/// <param name="low">Low value, in y-axis data units.</param>
+	/// <param name="close">Closing value, in y-axis data units.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and body color for the layer.</param>
+	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
 	public static PlotContext<T, TX, TY> Geom_Candlestick<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,

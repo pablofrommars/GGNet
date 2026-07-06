@@ -1,14 +1,30 @@
 ﻿namespace GGNet;
 
 using Geoms.Tile;
-using Elements;
 using Scales;
-
-using static Anchor;
-using static LineType;
 
 public static partial class BuilderExtensions
 {
+	/// <summary>
+	/// Adds a tile layer: one rectangle per item, sized in data units (heatmaps).
+	/// </summary>
+	/// <param name="source">Items to plot; one tile per item.</param>
+	/// <param name="x">Tile origin x, in x-axis data units.</param>
+	/// <param name="y">Tile origin y, in y-axis data units.</param>
+	/// <param name="width">Tile width per item, in x-axis data units — not pixels.</param>
+	/// <param name="height">Tile height per item, in y-axis data units — not pixels.</param>
+	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the tile’s top-center when no explicit hover handlers are set.</param>
+	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
+	/// <param name="strokeColor">Outline color; <c>"inherit"</c> takes the theme’s.</param>
+	/// <param name="strokeOpacity">Outline opacity, 0–1.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IReadOnlyList<T2> source,
@@ -50,6 +66,26 @@ public static partial class BuilderExtensions
 		return panel;
 	}
 
+	/// <summary>
+	/// Adds a tile layer: one rectangle per item, sized in data units (heatmaps).
+	/// </summary>
+	/// <param name="source">Items to plot; one tile per item.</param>
+	/// <param name="x">Tile origin x, in x-axis data units.</param>
+	/// <param name="y">Tile origin y, in y-axis data units.</param>
+	/// <param name="width">Tile width per item, in x-axis data units — not pixels.</param>
+	/// <param name="height">Tile height per item, in y-axis data units — not pixels.</param>
+	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the tile’s top-center when no explicit hover handlers are set.</param>
+	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
+	/// <param name="strokeColor">Outline color; <c>"inherit"</c> takes the theme’s.</param>
+	/// <param name="strokeOpacity">Outline opacity, 0–1.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  Source<T2> source,
@@ -73,6 +109,26 @@ public static partial class BuilderExtensions
 		return context;
 	}
 
+	/// <summary>
+	/// Adds a tile layer: one rectangle per item, sized in data units (heatmaps).
+	/// </summary>
+	/// <param name="source">Items to plot; one tile per item.</param>
+	/// <param name="x">Tile origin x, in x-axis data units.</param>
+	/// <param name="y">Tile origin y, in y-axis data units.</param>
+	/// <param name="width">Tile width per item, in x-axis data units — not pixels.</param>
+	/// <param name="height">Tile height per item, in y-axis data units — not pixels.</param>
+	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the tile’s top-center when no explicit hover handlers are set.</param>
+	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
+	/// <param name="strokeColor">Outline color; <c>"inherit"</c> takes the theme’s.</param>
+	/// <param name="strokeOpacity">Outline opacity, 0–1.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IEnumerable<T2> source,
@@ -92,6 +148,25 @@ public static partial class BuilderExtensions
 	  where TY1 : struct
 	  => context.Geom_Tile(new Source<T2>(source), x, y, width, height, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
 
+	/// <summary>
+	/// Adds a tile layer: one rectangle per item, sized in data units (heatmaps).
+	/// </summary>
+	/// <param name="x">Tile origin x, in x-axis data units.</param>
+	/// <param name="y">Tile origin y, in y-axis data units.</param>
+	/// <param name="width">Tile width per item, in x-axis data units — not pixels.</param>
+	/// <param name="height">Tile height per item, in y-axis data units — not pixels.</param>
+	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the tile’s top-center when no explicit hover handlers are set.</param>
+	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
+	/// <param name="strokeColor">Outline color; <c>"inherit"</c> takes the theme’s.</param>
+	/// <param name="strokeOpacity">Outline opacity, 0–1.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
 	public static PanelFactory<T, TX, TY> Geom_Tile<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX> x,
@@ -112,6 +187,25 @@ public static partial class BuilderExtensions
 		return Geom_Tile(panel, panel.Context.RequireSource(), (x ?? panel.Context.Selectors.X)!, (y ?? panel.Context.Selectors.Y)!, width, height, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
 	}
 
+	/// <summary>
+	/// Adds a tile layer: one rectangle per item, sized in data units (heatmaps).
+	/// </summary>
+	/// <param name="x">Tile origin x, in x-axis data units.</param>
+	/// <param name="y">Tile origin y, in y-axis data units.</param>
+	/// <param name="width">Tile width per item, in x-axis data units — not pixels.</param>
+	/// <param name="height">Tile height per item, in y-axis data units — not pixels.</param>
+	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the tile’s top-center when no explicit hover handlers are set.</param>
+	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
+	/// <param name="strokeColor">Outline color; <c>"inherit"</c> takes the theme’s.</param>
+	/// <param name="strokeOpacity">Outline opacity, 0–1.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
 	public static PlotContext<T, TX, TY> Geom_Tile<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX> x,
