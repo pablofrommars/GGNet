@@ -1,0 +1,87 @@
+name: CI
+
+# Manual trigger only for now; flip to push/pull_request when ready.
+on:
+  workflow_dispatch:
+
+jobs:
+  build-test:
+    name: Build & test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', '**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Restore
+        run: dotnet restore GGNet.slnx
+
+      - name: Build (warnings are errors)
+        run: dotnet build GGNet.slnx --no-restore --configuration Release -warnaserror
+
+      - name: Test
+        run: dotnet test GGNet.slnx --no-build --configuration Release
+
+      # Failed Verify snapshots produce *.received.* files — surface them.
+      - name: Upload received snapshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: received-snapshots
+          path: tests/**/*.received.*
+          if-no-files-found: ignore
+
+  test-culture:
+    name: Test under sv-SE
+    runs-on: ubuntu-latest
+    # The gallery snapshots are culture-unpinned on purpose: SVG numerics
+    # serialize invariantly at the component boundary. Running the whole
+    # suite under a comma-decimal ambient culture keeps that guarantee honest.
+    env:
+      LANG: sv_SE.UTF-8
+      LC_ALL: sv_SE.UTF-8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', '**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Test
+        run: dotnet test GGNet.slnx --configuration Release
+
+  format:
+    name: Style gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', '**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Whitespace
+        run: dotnet format whitespace GGNet.slnx --verify-no-changes
+
+      - name: Style
+        run: dotnet format style GGNet.slnx --verify-no-changes
