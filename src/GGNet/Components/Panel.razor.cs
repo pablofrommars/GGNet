@@ -131,7 +131,6 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 			var width = Data.Strip.x.Width(Data.Data.Style!.Strip.Text.X.FontSize);
 			var height = Data.Strip.x.Height(Data.Data.Style!.Strip.Text.X.FontSize);
 
-			//xStrip.X = X + Data.Data.Theme.Strip.Text.X.Margin.Left;
 			xStrip.Y = Y + Data.Data.Style!.Strip.Text.X.Margin.Top + height;
 			xStrip.Width = Data.Data.Style!.Strip.Text.X.Margin.Left + width + Data.Data.Style!.Strip.Text.X.Margin.Right;
 			xStrip.Height = Data.Data.Style!.Strip.Text.X.Margin.Top + height + Data.Data.Style!.Strip.Text.X.Margin.Bottom;

@@ -2,7 +2,7 @@
 
 namespace GGNet.Scales;
 
-public class DiscretDates(
+public class DiscreteDates(
 	ITransformation<LocalDate>? transformation = null,
 	(LocalDate? min, LocalDate? max)? limits = null,
 	(double minMult, double minAdd, double maxMult, double maxAdd)? expand = null

@@ -244,7 +244,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		N = (Faceting.NRows, Faceting.NColumns);
 
 		var width = 1.0 / Faceting.NColumns;
-		var height = 1.0 / Faceting.NRows; ;
+		var height = 1.0 / Faceting.NRows;
 
 		if (Faceting.Strip)
 		{

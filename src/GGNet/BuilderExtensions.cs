@@ -22,7 +22,7 @@ public static partial class BuilderExtensions
 	  (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null)
 	  where TY : struct
 	{
-		context.Positions.X.Factory = () => new DiscretDates(null, limits, expand);
+		context.Positions.X.Factory = () => new DiscreteDates(null, limits, expand);
 
 		return context;
 	}

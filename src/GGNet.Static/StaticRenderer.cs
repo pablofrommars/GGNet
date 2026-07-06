@@ -20,9 +20,7 @@ internal sealed class StaticRenderer(IServiceProvider serviceProvider, ILoggerFa
 	}
 
 	protected override Task UpdateDisplayAsync(in RenderBatch renderBatch)
-	{
-		return Task.CompletedTask;
-	}
+		=> Task.CompletedTask;
 
 	public async Task Dispatch(Action callback)
 	{

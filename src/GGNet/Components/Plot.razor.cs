@@ -156,7 +156,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 				else if (Context.Style!.Legend.Position == Left)
 				{
 					Legend.X = Context.Style!.Legend.Margin.Left;
-					Legend.Y = wrapper.Y + (wrapper.Height - height) / 2.0; ;
+					Legend.Y = wrapper.Y + (wrapper.Height - height) / 2.0;
 					Legend.Width = Context.Style!.Legend.Margin.Left + width + Context.Style!.Legend.Margin.Right;
 					Legend.Height = wrapper.Height;
 
