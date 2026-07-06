@@ -258,9 +258,9 @@ height=@Num(Area.Height) />
 
             <line
             class="x-break"
-            x1=@Num(centerX)
+            x1=@Num(polarCoord!.CenterX)
             x2=@Num(px)
-            y1=@Num(centerY)
+            y1=@Num(polarCoord!.CenterY)
             y2=@Num(py)
             clip-path="url(#@(clip)-area)" />
         }
@@ -287,9 +287,9 @@ height=@Num(Area.Height) />
                 <circle
                 class="y-break"
                 fill="none"
-                cx=@Num(centerX)
-                cy=@Num(centerY)
-                r=@Num(f * radius)
+                cx=@Num(polarCoord!.CenterX)
+                cy=@Num(polarCoord!.CenterY)
+                r=@Num(f * polarCoord!.Radius)
                 clip-path="url(#@(clip)-area)" />
             }
         }
@@ -316,15 +316,15 @@ height=@Num(Area.Height) />
                 <circle
                 class="y-minor-break"
                 fill="none"
-                cx=@Num(centerX)
-                cy=@Num(centerY)
-                r=@Num(f * radius)
+                cx=@Num(polarCoord!.CenterX)
+                cy=@Num(polarCoord!.CenterY)
+                r=@Num(f * polarCoord!.Radius)
                 clip-path="url(#@(clip)-area)" />
             }
         }
 
         var fontHeight = Plot.Style.Axis.Text.X.FontSize.Height();
-        var labelRadius = radius + Plot.Style.Polar.LabelMargin;
+        var labelRadius = polarCoord!.Radius + Plot.Style.Polar.LabelMargin;
 
         @foreach (var (value, label) in xscale.Labels)
         {
@@ -333,8 +333,8 @@ height=@Num(Area.Height) />
             var cos = Math.Cos(theta);
             var sin = Math.Sin(theta);
 
-            var x = centerX + labelRadius * cos;
-            var y = centerY + labelRadius * sin + (sin + 1.0) / 2.0 * fontHeight * 0.8;
+            var x = polarCoord!.CenterX + labelRadius * cos;
+            var y = polarCoord!.CenterY + labelRadius * sin + (sin + 1.0) / 2.0 * fontHeight * 0.8;
 
             var anchor = cos < -0.1 ? "end" : cos > 0.1 ? "start" : "middle";
 

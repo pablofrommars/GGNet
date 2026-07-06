@@ -44,9 +44,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 	private Position<TY> yscale = default!;
 
 	private bool polar;
-	private double centerX;
-	private double centerY;
-	private double radius;
+	private Coords.ICoordinateSystem coord = default!;
+	private Coords.PolarCoordinateSystem? polarCoord;
 
 	private Zone xStrip;
 	private Zone yStrip;
@@ -98,6 +97,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 		yscale = Data.Y;
 
 		polar = Data.Data.CoordSystem == CoordSystem.Polar;
+
+		coord = MakeCoord();
 	}
 
 	protected override void OnParametersSet()
@@ -116,7 +117,16 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 		polar = Data.Data.CoordSystem == CoordSystem.Polar;
 
+		coord = MakeCoord();
+
 		Refresh(RenderTarget.All);
+	}
+
+	private Coords.ICoordinateSystem MakeCoord()
+	{
+		polarCoord = polar ? new Coords.PolarCoordinateSystem(Data.Data.PolarOptions, Data.Data.Style!) : null;
+
+		return polarCoord ?? (Coords.ICoordinateSystem)new Coords.CartesianCoordinateSystem();
 	}
 
 	protected void Render(bool firstRender)
@@ -235,14 +245,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 			yAxisText.Height = Area.Height;
 		}
 
-		if (polar)
-		{
-			var gutter = Data.Data.Style!.Axis.Text.X.FontSize.Height() + Data.Data.Style!.Polar.LabelMargin;
-
-			centerX = Area.X + Area.Width / 2.0;
-			centerY = Area.Y + Area.Height / 2.0;
-			radius = Max(0.0, Min(Area.Width, Area.Height) / 2.0 - gutter);
-		}
+		coord.Measure(Area);
 
 		if (!firstRender)
 		{
@@ -267,13 +270,11 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 	public ITransformation<double> YTransformation => yscale.RangeTransformation;
 
 	public (double x, double y) Project(double x, double y)
-	  => polar
-		? ProjectFraction(xscale.Coord(x), yscale.Coord(y))
-		: (ToX(x), ToY(y));
+	  => coord.Project(xscale.Coord(x), yscale.Coord(y));
 
 	// cx, cy are normalized [0,1] fractions on the angular and radial scales.
 	private (double x, double y) ProjectFraction(double cx, double cy)
-	  => Coords.Polar.Project(cx, cy, centerX, centerY, radius, Data.Data.PolarOptions.StartAngle, Data.Data.PolarOptions.Clockwise);
+	  => coord.Project(cx, cy);
 
 	private string PolarRingPath(double[] spokes, double f)
 	{
