@@ -162,6 +162,16 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 				var p75 = Percentile(points, 0.75);
 				var p90 = Percentile(points, 0.9);
 
+				if (scale.x)
+				{
+					Positions.X.Position.Shape(p10, p90);
+				}
+
+				if (scale.y)
+				{
+					Positions.Y.Position.Shape(coord - delta / 2.0, coord + delta / 2.0);
+				}
+
 				Layer.Add(new Shapes.Line
 				{
 					X1 = p10,
