@@ -21,6 +21,7 @@ public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
 			return;
 		}
 
+		// Two-phase: indices are handed out on Train; values land on Commit.
 		map[key] = (i++, default!);
 	}
 

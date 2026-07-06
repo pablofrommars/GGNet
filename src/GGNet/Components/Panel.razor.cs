@@ -36,6 +36,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 	private IChildRenderModeHandler? renderModeHandler;
 	private IChildRenderModeHandler? areaRenderModeHandler;
 
+	// default!: assigned in OnInitialized/OnParametersSet before first render;
+	// tooltipComponent and clip follow the same Blazor lifecycle guarantee.
 	private Position<TX> xscale = default!;
 	private Position<TY> yscale = default!;
 

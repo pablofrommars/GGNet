@@ -39,7 +39,7 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 
 	public Positions<T> Positions { get; } = new();
 
-	public Elements.Text Aesthetic { get; set; } = default!;
+	public required Elements.Text Aesthetic { get; set; }
 
 	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{

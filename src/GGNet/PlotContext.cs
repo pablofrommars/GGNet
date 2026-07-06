@@ -53,6 +53,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	// The plot-level strategy instance answers plot-level policy (axis bands,
 	// expansion hints); panels materialize their own measured instances.
+	// default!: assigned by Init, which Render runs first when needed.
 	internal Coords.ICoordinateSystem Coord { get; private set; } = default!;
 
 	internal Coords.ICoordinateSystem MakeCoordinateSystem()
@@ -80,6 +81,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	internal List<Panel<T, TX, TY>> Panels { get; } = [];
 
+	// default!: assigned by Init, which Render runs first when needed.
 	internal Legends Legends { get; set; } = default!;
 
 	internal (int rows, int cols) N { get; set; }

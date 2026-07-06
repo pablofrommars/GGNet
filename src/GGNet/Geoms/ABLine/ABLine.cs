@@ -26,9 +26,9 @@ internal sealed class ABLine<T, TX, TY> : Geom<T, TX, TY>
 
 	public Selectors<T> Selectors { get; }
 
-	public Elements.Line Line { get; set; } = default!;
+	public required Elements.Line Line { get; set; }
 
-	public Elements.Text Text { get; set; } = default!;
+	public required Elements.Text Text { get; set; }
 
 	public override void Train(T item) { }
 

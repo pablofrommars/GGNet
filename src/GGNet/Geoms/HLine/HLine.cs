@@ -25,9 +25,9 @@ internal sealed class HLine<T, TX, TY> : Geom<T, TX, TY>
 
 	public Positions<T> Positions { get; } = new();
 
-	public Elements.Line Line { get; set; } = default!;
+	public required Elements.Line Line { get; set; }
 
-	public Elements.Text Text { get; set; } = default!;
+	public required Elements.Text Text { get; set; }
 
 	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{

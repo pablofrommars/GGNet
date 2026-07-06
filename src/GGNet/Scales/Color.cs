@@ -8,6 +8,8 @@ internal sealed class ColorDiscrete<TKey> : Discrete<TKey, string>
 	public ColorDiscrete(
 	   Palettes.Discrete<TKey, string> palette,
 		ITransformation<TKey>? transformation = null)
+	   // na: deliberately null — unmapped keys yield no color and the geom
+	   // skips the shape (string.IsNullOrEmpty checks at every fill/color site).
 	   : base(palette, default!, transformation)
 	{
 	}

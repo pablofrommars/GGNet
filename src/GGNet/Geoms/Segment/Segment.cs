@@ -42,7 +42,7 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 
 	public Positions<T> Positions { get; } = new();
 
-	public Elements.Line Aesthetic { get; set; } = default!;
+	public required Elements.Line Aesthetic { get; set; }
 
 	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{

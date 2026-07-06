@@ -44,7 +44,7 @@ internal sealed class Map<T> : Geom<T, double, double>
 
 	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
 
-	public Elements.Rectangle Aesthetic { get; set; } = default!;
+	public required Elements.Rectangle Aesthetic { get; set; }
 
 	public override void Init<T1>(Panel<T1, double, double> panel, Facet<T1>? facet)
 	{

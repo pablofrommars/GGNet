@@ -2,13 +2,13 @@ namespace GGNet.Geoms.Segment;
 
 internal sealed class Selectors<T, TX, TY>
 {
-	public Func<T, TX> X { get; set; } = default!;
+	public required Func<T, TX> X { get; set; }
 
-	public Func<T, TX> XEnd { get; set; } = default!;
+	public required Func<T, TX> XEnd { get; set; }
 
-	public Func<T, TY> Y { get; set; } = default!;
+	public required Func<T, TY> Y { get; set; }
 
-	public Func<T, TY> YEnd { get; set; } = default!;
+	public required Func<T, TY> YEnd { get; set; }
 
 	public Func<T, RenderFragment>? Tooltip { get; set; }
 }

@@ -39,8 +39,8 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 
 	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
 
-	public Elements.Line Line { get; set; } = default!;
-	public Elements.Rectangle Rectangle { get; set; } = default!;
+	public required Elements.Line Line { get; set; }
+	public required Elements.Rectangle Rectangle { get; set; }
 
 	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{

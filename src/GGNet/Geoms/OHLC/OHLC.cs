@@ -136,7 +136,7 @@ internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 
 	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
 
-	public Elements.Line Aesthetic { get; set; } = default!;
+	public required Elements.Line Aesthetic { get; set; }
 
 	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{

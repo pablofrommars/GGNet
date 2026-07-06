@@ -69,9 +69,9 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 
 	private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
 
-	public Elements.Line Line { get; set; } = default!;
+	public required Elements.Line Line { get; set; }
 
-	public Elements.Circle Circle { get; set; } = default!;
+	public required Elements.Circle Circle { get; set; }
 
 	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{

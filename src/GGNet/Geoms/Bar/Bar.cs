@@ -69,7 +69,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 
 	private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
 
-	public Elements.Rectangle Aesthetic { get; set; } = default!;
+	public required Elements.Rectangle Aesthetic { get; set; }
 
 	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{

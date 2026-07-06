@@ -53,7 +53,7 @@ internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>
 
 	private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
 
-	public Elements.Circle Aesthetic { get; init; } = default!;
+	public required Elements.Circle Aesthetic { get; init; }
 
 	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{

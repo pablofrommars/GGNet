@@ -18,6 +18,8 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 	private IChildRenderModeHandler? definitionsRenderModeHandler;
 
 	private Zone Area;
+
+	// default!: assigned in OnInitialized before first render (Blazor lifecycle).
 	private Data.Panel<T, TX, TY> Panel = default!;
 	private Scales.Position<TX> xscale = default!;
 	private Scales.Position<TY> yscale = default!;

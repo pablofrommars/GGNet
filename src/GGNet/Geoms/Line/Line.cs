@@ -55,7 +55,7 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
 
 	private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
 
-	public Elements.Line Aesthetic { get; set; } = default!;
+	public required Elements.Line Aesthetic { get; set; }
 
 	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{
