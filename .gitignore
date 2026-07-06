@@ -343,3 +343,4 @@ healthchecksdb
 
 **/*.lscache
 
+tmp
