@@ -12,7 +12,7 @@ public static partial class Stat
 	/// </summary>
 	/// <param name="source">Items to bin; recomputed every render pass.</param>
 	/// <param name="selector">Value per item, in x-axis data units.</param>
-	/// <param name="bins">Number of equal-width bins over the data range.</param>
+	/// <param name="bins">Number of equal-width bins over the data range (per group when grouped).</param>
 	public static StatSource<Bin> Bin<T>(IReadOnlyList<T> source, Func<T, double> selector, int bins = 30)
 		=> new(() => ComputeBins(source, selector, bins));
 
@@ -24,7 +24,7 @@ public static partial class Stat
 	/// <param name="source">Items to bin; recomputed every render pass.</param>
 	/// <param name="selector">Value per item, in x-axis data units.</param>
 	/// <param name="groupBy">Group key per item; binning runs independently within each group.</param>
-	/// <param name="bins">Number of equal-width bins per group.</param>
+	/// <param name="bins">Number of equal-width bins over the data range (per group when grouped).</param>
 	public static StatSource<Bin<TKey>> Bin<T, TKey>(IReadOnlyList<T> source, Func<T, double> selector, Func<T, TKey> groupBy, int bins = 30)
 		where TKey : notnull
 		=> new(() =>

@@ -7,9 +7,9 @@ public static partial class Stat
 	/// for <c>Geom_Area</c>/<c>Geom_Line</c> (x: at, y: density).
 	/// </summary>
 	/// <param name="source">Items to estimate over; recomputed every render pass.</param>
-	/// <param name="selector">Value per item, in x-axis data units.</param>
-	/// <param name="bandwidth">Kernel bandwidth in data units; null uses Silverman's rule of thumb (<c>Nrd0</c>).</param>
-	/// <param name="n">Grid points.</param>
+	/// <param name="selector">Value per item, in the value axis's data units.</param>
+	/// <param name="bandwidth">Kernel bandwidth in data units; null uses Silverman's rule of thumb (<c>Nrd0</c>, per group when grouped).</param>
+	/// <param name="n">Grid points (per group when grouped).</param>
 	/// <param name="from">Grid start; null extends three bandwidths below the minimum.</param>
 	/// <param name="to">Grid end; null extends three bandwidths above the maximum.</param>
 	public static StatSource<DensityPoint> Density<T>(IReadOnlyList<T> source, Func<T, double> selector, double? bandwidth = null, int n = 512, double? from = null, double? to = null)
@@ -35,8 +35,8 @@ public static partial class Stat
 	/// <param name="source">Items to estimate over; recomputed every render pass.</param>
 	/// <param name="selector">Value per item, in the value axis's data units.</param>
 	/// <param name="groupBy">Group key per item; estimation runs independently within each group.</param>
-	/// <param name="bandwidth">Kernel bandwidth in data units; null uses Silverman's rule per group.</param>
-	/// <param name="n">Grid points per group.</param>
+	/// <param name="bandwidth">Kernel bandwidth in data units; null uses Silverman's rule of thumb (<c>Nrd0</c>, per group when grouped).</param>
+	/// <param name="n">Grid points (per group when grouped).</param>
 	public static StatSource<DensityPoint<TKey>> Density<T, TKey>(IReadOnlyList<T> source, Func<T, double> selector, Func<T, TKey> groupBy, double? bandwidth = null, int n = 512)
 		where TKey : notnull
 		=> new(() =>
