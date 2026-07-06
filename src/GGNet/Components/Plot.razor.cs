@@ -65,7 +65,7 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
 		definitionsRenderModeHandler = RenderModeHandler?.Child();
 
-		Render(true, RenderTarget.All);
+		Compose(RenderTarget.All);
 	}
 
 	protected override async Task OnParametersSetAsync()
@@ -75,23 +75,26 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 		if (!Context.Initialized)
 		{
 			Context.Init();
-			Context.Render(true);
+			Context.Render();
 
 			await RefreshAsync(RenderTarget.All, CancellationToken.None);
 		}
 	}
 
-	protected void Render(bool firstRender, RenderTarget target)
+	// Runs the context pipeline and carves the plot-level zones. Child refresh
+	// is the caller's concern: OnInitialized composes before children exist,
+	// Render(target) composes and then refreshes them.
+	private bool Compose(RenderTarget target)
 	{
 		if (target == RenderTarget.Loading)
 		{
 			loading = true;
-			return;
+			return false;
 		}
 
 		loading = false;
 
-		Context.Render(firstRender);
+		Context.Render();
 
 		wrapper.X = 0;
 		wrapper.Y = 0;
@@ -190,16 +193,21 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 			Caption.X = wrapper.X + wrapper.Width - Context.Style!.Plot.Caption.Margin.Right;
 		}
 
-		if (!firstRender)
-		{
-			definitionsRenderModeHandler?.Refresh(target);
-
-			for (var i = 0; i < Context.Panels.Count; i++)
-			{
-				Context.Panels[i].Component?.Refresh(target);
-			}
-		}
+		return true;
 	}
 
-	public override void Render(RenderTarget target) => Render(false, target);
+	public override void Render(RenderTarget target)
+	{
+		if (!Compose(target))
+		{
+			return;
+		}
+
+		definitionsRenderModeHandler?.Refresh(target);
+
+		for (var i = 0; i < Context.Panels.Count; i++)
+		{
+			Context.Panels[i].Component?.Refresh(target);
+		}
+	}
 }

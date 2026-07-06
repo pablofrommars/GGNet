@@ -91,6 +91,17 @@ internal class DiscretePosition<T> : Position<T>
 		}
 	}
 
+	// No persistent trained state: values rebuild every pass. Reintroduce
+	// persistence only if a streaming case proves hot, as a documented
+	// optimization — the append-across-passes invariant hid a SortedBuffer
+	// corruption bug once already.
+	public override void Clear()
+	{
+		base.Clear();
+
+		values.Clear();
+	}
+
 	public override double Map(T key)
 	{
 		var index = values.IndexOf(key);

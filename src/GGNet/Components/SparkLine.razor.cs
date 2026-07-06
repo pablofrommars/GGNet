@@ -37,7 +37,7 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 
 		Context.Init(false);
 
-		Context.Render(true);
+		Context.Render();
 
 		Panel = Context.Panels[0];
 		xscale = Panel.X;
@@ -48,7 +48,7 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 
 	public override void Render(RenderTarget target)
 	{
-		Context.Render(false);
+		Context.Render();
 		definitionsRenderModeHandler?.Refresh(target);
 		renderModeHandler?.Refresh(target);
 	}

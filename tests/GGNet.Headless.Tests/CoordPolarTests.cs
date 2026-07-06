@@ -65,7 +65,7 @@ public class CoordPolarTests
 
 		// Act
 
-		Action act = () => plot.Render(true);
+		Action act = () => plot.Render();
 
 		// Assert
 
@@ -85,7 +85,7 @@ public class CoordPolarTests
 
 		// Act
 
-		Action act = () => plot.Render(true);
+		Action act = () => plot.Render();
 
 		// Assert
 
