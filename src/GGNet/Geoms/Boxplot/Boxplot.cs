@@ -83,7 +83,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 		Aesthetics.Fill?.Train(item);
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var fill = Aesthetic.Fill;
 
@@ -130,7 +130,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 		}
 	}
 
-	protected override void Set(bool flip)
+	protected override void Set()
 	{
 		var delta = size;
 

@@ -41,7 +41,7 @@ internal sealed class HLine<T, TX, TY> : Geom<T, TX, TY>
 		Positions.Y.Train(item);
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		if (Selectors.Label is null)
 		{

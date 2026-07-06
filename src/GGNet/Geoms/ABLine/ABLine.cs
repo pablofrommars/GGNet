@@ -32,7 +32,7 @@ internal sealed class ABLine<T, TX, TY> : Geom<T, TX, TY>
 
 	public override void Train(T item) { }
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var a = Selectors.A(item);
 		var b = Selectors.B(item);

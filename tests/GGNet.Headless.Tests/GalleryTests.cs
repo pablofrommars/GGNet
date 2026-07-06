@@ -95,6 +95,25 @@ public class GalleryTests
 		// Pins Flip() output ahead of the coord-strategy absorption (session D).
 		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Bar().Flip().Style());
 
+	private sealed record Grouped2(double Pos, double Value, double Series);
+
+	private static readonly Grouped2[] dodged =
+	[
+		new(1, 2.0, 1), new(1, 3.0, 2),
+		new(2, 4.0, 1), new(2, 1.0, 2),
+		new(3, 3.0, 1), new(3, 2.0, 2)
+	];
+
+	[Fact]
+	public Task BarFlippedDodged()
+		// Flipped Dodge threw NotImplementedException before the flip absorption;
+		// this pins the capability that fell out of the unified emission path.
+		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+			.Scale_Fill_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
+			.Geom_Bar(position: PositionAdjustment.Dodge)
+			.Flip()
+			.Style());
+
 	[Fact]
 	public Task Area()
 		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Area().Style());

@@ -100,7 +100,7 @@ internal sealed class Map<T> : Geom<T, double, double>
 		});
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var fill = Aesthetic.Fill;
 

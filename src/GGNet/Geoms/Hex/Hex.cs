@@ -126,7 +126,7 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
 		});
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var fill = Aesthetic.Fill;
 

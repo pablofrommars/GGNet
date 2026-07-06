@@ -126,7 +126,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 		});
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var fill = Aesthetic.Fill;
 		if (Aesthetics.Fill is not null)
@@ -396,7 +396,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 		Layer.AddRange(circles);
 	}
 
-	protected override void Set(bool flip)
+	protected override void Set()
 	{
 		if (position == PositionAdjustment.Stack)
 		{

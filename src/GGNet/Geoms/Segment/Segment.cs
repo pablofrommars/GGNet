@@ -89,7 +89,7 @@ internal sealed class Segment<T, TX, TY> : Geom<T, TX, TY>
 		Positions.YEnd.Train(item);
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var x = Positions.X.Map(item);
 		var xend = Positions.XEnd.Map(item);

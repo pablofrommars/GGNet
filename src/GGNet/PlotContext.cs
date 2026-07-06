@@ -483,7 +483,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 			for (var g = 0; g < panel.Geoms.Count; g++)
 			{
-				panel.Geoms[g].Shape(Flip);
+				panel.Geoms[g].Shape();
 			}
 		}
 	}

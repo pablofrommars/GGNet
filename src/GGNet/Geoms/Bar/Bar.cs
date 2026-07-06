@@ -25,6 +25,8 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 
 	private readonly bool animation;
 
+	private bool flip;
+
 	public Bar(
 	  IReadOnlyList<T> source,
 	  Func<T, TX>? x,
@@ -80,14 +82,26 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 			throw new GGNetUserException("X selector is required");
 		}
 
-		Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
-
 		if (Selectors.Y is null)
 		{
 			throw new GGNetUserException("Y selector is required");
 		}
 
-		Positions.Y = new PositionMapping<T, TY>(Selectors.Y, panel.Y);
+		// Flip is Bar's statistical-axis choice, captured at wiring time: the
+		// grouping key and the stacking axis swap roles (selector/scale pairs
+		// stay intact) and AddRect transposes the emitted rectangles to match.
+		flip = panel.Data.Flip;
+
+		if (flip)
+		{
+			Positions.X = new PositionMapping<T, TY>(Selectors.Y, panel.Y);
+			Positions.Y = new PositionMapping<T, TX>(Selectors.X, panel.X);
+		}
+		else
+		{
+			Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
+			Positions.Y = new PositionMapping<T, TY>(Selectors.Y, panel.Y);
+		}
 
 		if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
 		{
@@ -136,7 +150,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 		});
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var fill = Aesthetic.Fill;
 
@@ -154,49 +168,63 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 
 		var exist = false;
 
-		if (flip)
+		for (var i = 0; i < bars.Count; i++)
 		{
-			for (var i = 0; i < bars.Count; i++)
+			var bar = bars[i];
+			if (bar.x == x)
 			{
-				var bar = bars[i];
-				if (bar.x == y)
-				{
-					bar.y.Add((item, fill, x));
-					exist = true;
-					break;
-				}
-			}
-
-			if (!exist)
-			{
-				var bar = new List<(T item, string fill, double value)>();
-				bar.Add((item, fill, x));
-				bars.Add((y, bar));
+				bar.y.Add((item, fill, y));
+				exist = true;
+				break;
 			}
 		}
-		else
-		{
-			for (var i = 0; i < bars.Count; i++)
-			{
-				var bar = bars[i];
-				if (bar.x == x)
-				{
-					bar.y.Add((item, fill, y));
-					exist = true;
-					break;
-				}
-			}
 
-			if (!exist)
-			{
-				var bar = new List<(T item, string fill, double value)>();
-				bar.Add((item, fill, y));
-				bars.Add((x, bar));
-			}
+		if (!exist)
+		{
+			var bar = new List<(T item, string fill, double value)>();
+			bar.Add((item, fill, y));
+			bars.Add((x, bar));
 		}
 	}
 
-	private void Stack(bool flip)
+	private void AddRect(T item, string fill, double x, double y, double w, double h, double anchorX, double anchorY)
+	{
+		var aesthetic = new Elements.Rectangle
+		{
+			Fill = fill,
+			FillOpacity = Aesthetic.FillOpacity,
+			Stroke = Aesthetic.Stroke,
+			StrokeWidth = Aesthetic.StrokeWidth,
+		};
+
+		Layer.Add(flip
+			? new Rectangle
+			{
+				Classes = animation ? "animate-bar" : string.Empty,
+				X = y,
+				Y = x,
+				Width = h,
+				Height = w,
+				Aesthetic = aesthetic,
+				OnClick = OnClick is not null ? e => OnClick(item, e) : null,
+				OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, anchorY, anchorX, e) : null,
+				OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
+			}
+			: new Rectangle
+			{
+				Classes = animation ? "animate-bar" : string.Empty,
+				X = x,
+				Y = y,
+				Width = w,
+				Height = h,
+				Aesthetic = aesthetic,
+				OnClick = OnClick is not null ? e => OnClick(item, e) : null,
+				OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, anchorX, anchorY, e) : null,
+				OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
+			});
+	}
+
+	private double Delta()
 	{
 		var delta = width;
 
@@ -212,187 +240,88 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 			delta *= d;
 		}
 
-		if (flip)
-		{
-			for (var i = 0; i < bars.Count; i++)
-			{
-				var (x, y) = bars[i];
-				var sum = 0.0;
-
-				for (var j = y.Count - 1; j >= 0; j--)
-				{
-					var (item, fill, value) = y[j];
-
-					var rect = new Rectangle
-					{
-						Classes = animation ? "animate-bar" : string.Empty,
-						X = sum,
-						Y = x - delta / 2.0,
-						Width = value,
-						Height = delta,
-						Aesthetic = new()
-						{
-							Fill = fill,
-							FillOpacity = Aesthetic.FillOpacity,
-							Stroke = Aesthetic.Stroke,
-							StrokeWidth = Aesthetic.StrokeWidth,
-						},
-						OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-						OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, sum + value, x, e) : null,
-						OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
-					};
-
-					Layer.Add(rect);
-
-					sum += value;
-				}
-
-				if (scale.x)
-				{
-					Positions.X.Position.Shape(0, sum);
-				}
-
-				if (scale.y)
-				{
-					Positions.Y.Position.Shape(x - delta, x + delta);
-				}
-			}
-		}
-		else
-		{
-			for (var i = 0; i < bars.Count; i++)
-			{
-				var (x, y) = bars[i];
-				var sum = 0.0;
-
-				for (var j = y.Count - 1; j >= 0; j--)
-				{
-					var (item, fill, value) = y[j];
-
-					var rect = new Rectangle
-					{
-						Classes = animation ? "animate-bar" : string.Empty,
-						X = x - delta / 2.0,
-						Y = sum,
-						Width = delta,
-						Height = value,
-						Aesthetic = new()
-						{
-							Fill = fill,
-							FillOpacity = Aesthetic.FillOpacity,
-							Stroke = Aesthetic.Stroke,
-							StrokeWidth = Aesthetic.StrokeWidth
-						},
-						OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-						OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x, sum + value, e) : null,
-						OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
-					};
-
-					Layer.Add(rect);
-
-					sum += value;
-				}
-
-				if (scale.x)
-				{
-					Positions.X.Position.Shape(x - delta, x + delta);
-				}
-
-				if (scale.y)
-				{
-					Positions.Y.Position.Shape(0, sum);
-				}
-			}
-		}
+		return delta;
 	}
 
-	private void Dodge(bool flip)
+	private void Stack()
 	{
-		if (flip)
-		{
-			throw new NotImplementedException();
-		}
-		else
-		{
-			var delta = width;
+		var delta = Delta();
 
-			if (bars.Count > 1)
+		for (var i = 0; i < bars.Count; i++)
+		{
+			var (x, y) = bars[i];
+			var sum = 0.0;
+
+			for (var j = y.Count - 1; j >= 0; j--)
 			{
-				var d = double.MaxValue;
+				var (item, fill, value) = y[j];
 
-				for (var i = 1; i < bars.Count; i++)
-				{
-					d = Math.Min(d, bars[i].x - bars[i - 1].x);
-				}
+				AddRect(item, fill, x - delta / 2.0, sum, delta, value, x, sum + value);
 
-				delta *= d;
+				sum += value;
 			}
 
-			for (var i = 0; i < bars.Count; i++)
+			if (scale.x)
 			{
-				var bar = bars[i];
-				var n = bar.y.Count;
+				Positions.X.Position.Shape(x - delta, x + delta);
+			}
 
-				var w = delta / n;
-				var x = bar.x - delta / 2.0;
-
-				for (var j = 0; j < n; j++)
-				{
-					var (item, fill, value) = bar.y[j];
-
-					var rect = new Rectangle
-					{
-						Classes = animation ? "animate-bar" : string.Empty,
-						X = x,
-						Y = value >= 0 ? 0 : value,
-						Width = w,
-						Height = Math.Abs(value),
-						Aesthetic = new()
-						{
-							Fill = fill,
-							FillOpacity = Aesthetic.FillOpacity,
-							Stroke = Aesthetic.Stroke,
-							StrokeWidth = Aesthetic.StrokeWidth,
-						},
-						OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-						OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x + w / 2.0, value, e) : null,
-						OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
-					};
-
-					Layer.Add(rect);
-
-					if (scale.x)
-					{
-						Positions.X.Position.Shape(x, x + w);
-					}
-
-					if (scale.y)
-					{
-						if (value >= 0)
-						{
-							Positions.Y.Position.Shape(0, value);
-						}
-						else
-						{
-							Positions.Y.Position.Shape(value, 0);
-						}
-					}
-
-					x += w;
-				}
+			if (scale.y)
+			{
+				Positions.Y.Position.Shape(0, sum);
 			}
 		}
 	}
 
-	protected override void Set(bool flip)
+	private void Dodge()
+	{
+		var delta = Delta();
+
+		for (var i = 0; i < bars.Count; i++)
+		{
+			var bar = bars[i];
+			var n = bar.y.Count;
+
+			var w = delta / n;
+			var x = bar.x - delta / 2.0;
+
+			for (var j = 0; j < n; j++)
+			{
+				var (item, fill, value) = bar.y[j];
+
+				AddRect(item, fill, x, value >= 0 ? 0 : value, w, Math.Abs(value), x + w / 2.0, value);
+
+				if (scale.x)
+				{
+					Positions.X.Position.Shape(x, x + w);
+				}
+
+				if (scale.y)
+				{
+					if (value >= 0)
+					{
+						Positions.Y.Position.Shape(0, value);
+					}
+					else
+					{
+						Positions.Y.Position.Shape(value, 0);
+					}
+				}
+
+				x += w;
+			}
+		}
+	}
+
+	protected override void Set()
 	{
 		if (position == PositionAdjustment.Stack)
 		{
-			Stack(flip);
+			Stack();
 		}
 		else if (position == PositionAdjustment.Dodge)
 		{
-			Dodge(flip);
+			Dodge();
 		}
 		else
 		{

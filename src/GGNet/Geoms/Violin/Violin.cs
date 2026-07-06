@@ -93,7 +93,7 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 		});
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var fill = Aesthetic.Fill;
 
@@ -302,7 +302,7 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 		}
 	}
 
-	protected override void Set(bool flip)
+	protected override void Set()
 	{
 		if (position == PositionAdjustment.Identity)
 		{

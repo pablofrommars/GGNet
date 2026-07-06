@@ -66,7 +66,7 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 		Positions.Y.Train(item);
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		if (Selectors.Text is null)
 		{

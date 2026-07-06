@@ -125,7 +125,7 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 
 	private Shapes.Area? _area;
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		Shapes.Area? area = null;
 

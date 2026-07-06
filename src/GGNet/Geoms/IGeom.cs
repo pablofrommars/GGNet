@@ -12,7 +12,7 @@ internal interface IGeom
 
 	void Legend();
 
-	void Shape(bool flip);
+	void Shape();
 
 	void Clear();
 }

@@ -87,7 +87,7 @@ internal sealed class Volume<T, TX, TY> : Geom<T, TX, TY>
 		Positions.Volume.Train(item);
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var x = Positions.X.Map(item);
 		var volume = Positions.Volume.Map(item);

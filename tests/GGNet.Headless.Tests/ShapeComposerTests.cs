@@ -37,7 +37,7 @@ public class ShapeComposerTests
 		{
 		}
 
-		public void Shape(bool flip)
+		public void Shape()
 		{
 		}
 

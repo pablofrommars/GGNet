@@ -98,13 +98,13 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 	{
 	}
 
-	protected abstract void Shape(T item, bool flip);
+	protected abstract void Shape(T item);
 
-	protected virtual void Set(bool flip)
+	protected virtual void Set()
 	{
 	}
 
-	public void Shape(bool flip)
+	public void Shape()
 	{
 		for (var i = 0; i < source.Count; i++)
 		{
@@ -115,10 +115,10 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 				continue;
 			}
 
-			Shape(item, flip);
+			Shape(item);
 		}
 
-		Set(flip);
+		Set();
 	}
 
 	public virtual void Clear() => Layer?.Clear();

@@ -138,7 +138,7 @@ internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>
 		});
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var color = Aesthetic.Fill;
 

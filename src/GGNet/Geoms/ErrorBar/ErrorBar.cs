@@ -172,7 +172,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 		]);
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var color = Line.Stroke;
 
@@ -347,7 +347,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 		}
 	}
 
-	protected override void Set(bool flip)
+	protected override void Set()
 	{
 		if (position == PositionAdjustment.Identity)
 		{
