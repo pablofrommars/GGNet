@@ -110,7 +110,6 @@ public static class Selector
 		var escapes = new JsonArray();
 		var excluded = new JsonArray();
 		var functions = q["functions"]!.AsArray().Select(n => n!.GetValue<string>()).ToList();
-		var shape = q["distribution_shape"]?.GetValue<string>();
 
 		foreach (var leaf in cfg["leaves"]!.AsArray().Select(n => n!.AsObject()))
 		{
@@ -163,11 +162,16 @@ public static class Selector
 				caveats.InsertRange(0, declared.Select(n => n!.GetValue<string>()));
 			}
 
-			var transforms = new List<string>();
-			foreach (var rule in cfg["shape_caveat_rules"]!.AsArray().Select(n => n!.AsObject()))
+			if (statBridge is not null && leaf["ggnet"]?["stat_bridge"]?["caveat"] is JsonNode bridgeCaveat)
 			{
-				if (rule["shape"]!.GetValue<string>() == shape
-					&& rule["applies_to"]!.AsArray().Any(n => n!.GetValue<string>() == id))
+				caveats.Add(bridgeCaveat.GetValue<string>());
+			}
+
+			var transforms = new List<string>();
+			foreach (var rule in cfg["caveat_rules"]!.AsArray().Select(n => n!.AsObject()))
+			{
+				if (rule["applies_to"]!.AsArray().Any(n => n!.GetValue<string>() == id)
+					&& RuleFires(rule["when"]!.AsObject(), q))
 				{
 					caveats.Add(rule["caveat"]!.GetValue<string>());
 					if (rule["transform"] is JsonNode transform)
@@ -259,6 +263,37 @@ public static class Selector
 		}
 
 		return (true, caveats, null);
+	}
+
+	// Conditions AND together. Three forms: "field": value (equality — a null
+	// value matches an UNKNOWN query field, expressing "unverified" rules),
+	// "field": [v1, v2] (in-list), and "field_gt": n (numeric threshold; an
+	// unknown field never exceeds a threshold).
+	private static bool RuleFires(JsonObject when, JsonObject q)
+	{
+		foreach (var (key, expected) in when)
+		{
+			if (key.EndsWith("_gt", StringComparison.Ordinal))
+			{
+				if (q[key[..^3]] is not JsonNode value || value.GetValue<double>() <= expected!.GetValue<double>())
+				{
+					return false;
+				}
+			}
+			else if (expected is JsonArray options)
+			{
+				if (q[key] is not JsonNode value || !Contains(options, value))
+				{
+					return false;
+				}
+			}
+			else if (!JsonNode.DeepEquals(q[key], expected))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	// A stat bridge admits the leaf when it covers the ENTIRE axis mismatch:
@@ -441,6 +476,28 @@ public static class Selector
 					{
 						throw new InvalidOperationException($"{id}: stat_bridge on unknown axis {bf}.");
 					}
+				}
+			}
+		}
+
+		string[] ruleFields = [.. axisFields, "distribution_shape", "sample_size", "num_series", "completeness"];
+
+		foreach (var rule in cfg["caveat_rules"]!.AsArray().Select(n => n!.AsObject()))
+		{
+			foreach (var (key, _) in rule["when"]!.AsObject())
+			{
+				var field = key.EndsWith("_gt", StringComparison.Ordinal) ? key[..^3] : key;
+				if (!ruleFields.Contains(field))
+				{
+					throw new InvalidOperationException($"caveat_rule on unknown field '{key}'.");
+				}
+			}
+
+			foreach (var target in rule["applies_to"]!.AsArray().Select(n => n!.GetValue<string>()))
+			{
+				if (!ids.Contains(target))
+				{
+					throw new InvalidOperationException($"caveat_rule applies_to unknown leaf '{target}'.");
 				}
 			}
 		}

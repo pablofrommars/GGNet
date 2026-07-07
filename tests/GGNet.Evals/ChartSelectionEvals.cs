@@ -14,6 +14,7 @@ public class ChartSelectionEvals
 		string[]? Forbid = null,
 		string? ExpectError = null,
 		(string Chart, string Fragment)? CaveatOn = null,
+		(string Chart, string Fragment)? CaveatNotOn = null,
 		string? AlternativesOn = null,
 		string? EscapeOn = null,
 		(string Chart, string Fragment)? BridgeOn = null,
@@ -111,6 +112,30 @@ public class ChartSelectionEvals
 		["skewed response-time histogram — concrete log-scale call attached"] = new(
 			"""{"functions": ["distribution"], "num_vars": "1", "cat_vars": "0", "cat_structure": "none", "obs_per_group": "many", "ordered_num": false, "distribution_shape": "skewed"}""",
 			ExpectAny: ["histogram", "density"], TransformOn: ("histogram", "Log10")),
+
+		["scatter with UNKNOWN subgroups — Simpson warning fires"] = new(
+			"""{"functions": ["correlation"], "num_vars": "2", "obs_per_group": "many", "ordered_num": false}""",
+			ExpectAny: ["scatter"], CaveatOn: ("scatter", "Simpson")),
+
+		["scatter with KNOWN absence of subgroups — no Simpson noise"] = new(
+			"""{"functions": ["correlation"], "num_vars": "2", "cat_vars": "0", "cat_structure": "none", "obs_per_group": "many", "ordered_num": false}""",
+			ExpectAny: ["scatter"], CaveatNotOn: ("scatter", "Simpson")),
+
+		["50k-point scatter — overplotting remedies attached"] = new(
+			"""{"functions": ["correlation"], "num_vars": "2", "cat_vars": "0", "cat_structure": "none", "obs_per_group": "many", "ordered_num": false, "sample_size": 50000}""",
+			ExpectAny: ["scatter"], CaveatOn: ("scatter", "hexbin")),
+
+		["six-series trend — spaghetti warning with highlight/facet escape"] = new(
+			"""{"functions": ["trend_over_time"], "num_vars": "many", "cat_vars": "0", "cat_structure": "none", "obs_per_group": "one", "ordered_num": true, "num_series": 6}""",
+			ExpectAny: ["line"], CaveatOn: ("line", "spaghetti")),
+
+		["four-group distribution — ridgeline flagged as below its group floor"] = new(
+			"""{"functions": ["distribution"], "num_vars": "1", "cat_vars": "1", "cat_structure": "flat", "obs_per_group": "many", "ordered_num": false, "cardinality": "low_2_7"}""",
+			ExpectAny: ["boxplot", "violin"], CaveatOn: ("ridgeline", "violin or boxplot")),
+
+		["stat bridge carries the error-bar honesty caveat"] = new(
+			"""{"functions": ["comparison"], "num_vars": "1", "cat_vars": "1", "cat_structure": "flat", "obs_per_group": "many", "ordered_num": false}""",
+			BridgeOn: ("barplot", "Stat.Count"), CaveatOn: ("barplot", "disclose")),
 	};
 
 	public static TheoryData<string> CaseNames => [.. cases.Keys];
@@ -156,6 +181,15 @@ public class ChartSelectionEvals
 			hit.Should().NotBeNull();
 			hit!["caveats"]!.AsArray().Select(n => n!.GetValue<string>())
 				.Should().Contain(caveat => caveat.Contains(caveatFragment));
+		}
+
+		if (c.CaveatNotOn is (var quietChart, var quietFragment))
+		{
+			var hit = Hit(c.Query, quietChart);
+
+			hit.Should().NotBeNull();
+			hit!["caveats"]!.AsArray().Select(n => n!.GetValue<string>())
+				.Should().NotContain(caveat => caveat.Contains(quietFragment));
 		}
 
 		if (c.AlternativesOn is not null)

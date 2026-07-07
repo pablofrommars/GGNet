@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "axes": {
     "function": [
       "comparison",
@@ -84,6 +84,81 @@
     "relationship": "correlation",
     "trend": "trend_over_time"
   },
+  "caveat_rules": [
+    {
+      "when": {
+        "distribution_shape": "skewed"
+      },
+      "applies_to": [
+        "histogram",
+        "density",
+        "scatter",
+        "bubble"
+      ],
+      "caveat": "Consider log scale",
+      "transform": "Scale_Y_Log10() — or Scale_X_Log10(), per the skewed axis"
+    },
+    {
+      "when": {
+        "distribution_shape": "power_law"
+      },
+      "applies_to": [
+        "scatter",
+        "connected_scatter"
+      ],
+      "caveat": "Consider log-log scale",
+      "transform": "Scale_X_Log10() + Scale_Y_Log10()"
+    },
+    {
+      "when": {
+        "distribution_shape": "bimodal"
+      },
+      "applies_to": [
+        "boxplot",
+        "barplot"
+      ],
+      "caveat": "Summaries hide bimodality; prefer violin/ridgeline"
+    },
+    {
+      "when": {
+        "cat_vars": null
+      },
+      "applies_to": [
+        "scatter"
+      ],
+      "caveat": "subgroups unverified: if any exist, map them (grouped-scatter recipe) — aggregate trends can reverse under stratification (Simpson's paradox)"
+    },
+    {
+      "when": {
+        "sample_size_gt": 1000
+      },
+      "applies_to": [
+        "scatter",
+        "grouped_scatter",
+        "bubble"
+      ],
+      "caveat": "overplotting at this sample size: lower opacity per point, switch to hexbin (density_2d recipe), facet, or sample"
+    },
+    {
+      "when": {
+        "num_series_gt": 4
+      },
+      "applies_to": [
+        "line",
+        "connected_scatter"
+      ],
+      "caveat": "spaghetti risk: highlight the one series the point is about (accent color, rest gray) or facet (small-multiples recipe)"
+    },
+    {
+      "when": {
+        "cardinality": "low_2_7"
+      },
+      "applies_to": [
+        "ridgeline"
+      ],
+      "caveat": "ridgeline pays off from ~6 groups with a cross-group pattern; below that prefer violin or boxplot"
+    }
+  ],
   "leaves": [
     {
       "id": "barplot",
@@ -96,6 +171,9 @@
       "cat_structure": "flat",
       "obs_per_group": "one",
       "ordered_num": false,
+      "caveats": [
+        "No natural category order? Sort by value - never alphabetical (temporal data stays chronological)"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "barplot",
@@ -106,7 +184,8 @@
           "via": [
             "Stat.Count",
             "Stat.Summary"
-          ]
+          ],
+          "caveat": "error bars hide distribution shape, n, and multimodality - raw rows exist, so boxplot/violin show more; if used, disclose what the interval encodes (SD/SE/CI)"
         }
       }
     },
@@ -120,6 +199,10 @@
       "cat_structure": "flat",
       "obs_per_group": "one",
       "ordered_num": false,
+      "caveats": [
+        "No natural category order? Sort by value",
+        "Preferred over bars when many values are similar (less ink, less moire); horizontal for long labels"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "lollipop",
@@ -130,7 +213,8 @@
           "via": [
             "Stat.Count",
             "Stat.Summary"
-          ]
+          ],
+          "caveat": "error bars hide distribution shape, n, and multimodality - raw rows exist, so boxplot/violin show more; if used, disclose what the interval encodes (SD/SE/CI)"
         }
       }
     },
@@ -156,7 +240,8 @@
           },
           "via": [
             "Stat.Summary"
-          ]
+          ],
+          "caveat": "error bars hide distribution shape, n, and multimodality - raw rows exist, so boxplot/violin show more; if used, disclose what the interval encodes (SD/SE/CI)"
         }
       }
     },
@@ -231,6 +316,9 @@
       "cat_structure": "subgroup",
       "obs_per_group": "one",
       "ordered_num": false,
+      "caveats": [
+        "Only the baseline series reads accurately; keep layer order constant; most important series at the bottom"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "stacked-barplot",
@@ -270,7 +358,8 @@
         ]
       },
       "caveats": [
-        "Weak beyond ~8 axes; consider parallel_plot"
+        "Weak beyond ~8 axes; consider parallel_plot",
+        "Normalize all dimensions to a common scale first; radial axis starts at zero; at most ~3 overlaid series - facet beyond"
       ],
       "ggnet": {
         "supported": true,
@@ -308,6 +397,9 @@
       "cat_structure": "subgroup",
       "obs_per_group": "one",
       "ordered_num": false,
+      "caveats": [
+        "Normalize per column when scales differ; reorder rows/columns (clustering) or the pattern hides"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "heatmap"
@@ -415,6 +507,9 @@
       "cat_structure": "none",
       "obs_per_group": "many",
       "ordered_num": false,
+      "caveats": [
+        "Beyond ~10 variables it stops reading; exploratory tool, not a presentation chart"
+      ],
       "ggnet": {
         "supported": true,
         "caveat": "correlation matrix computed by the caller (no Stat.Cor)",
@@ -449,6 +544,9 @@
       "cat_structure": "none",
       "obs_per_group": "many",
       "ordered_num": false,
+      "caveats": [
+        "Bin count changes the story - try several (there is no single correct bin size)"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "histogram"
@@ -464,6 +562,9 @@
       "cat_structure": "none",
       "obs_per_group": "many",
       "ordered_num": false,
+      "caveats": [
+        "Bandwidth changes the story - try several"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "density"
@@ -724,7 +825,8 @@
         "max_num_series": 3
       },
       "caveats": [
-        "Overlap illegible beyond 3 series; use line or small multiples"
+        "Overlap illegible beyond 3 series; use line or small multiples",
+        "Layer order changes the story: keep it constant, most important/stable series at the bottom"
       ],
       "ggnet": {
         "supported": true,
@@ -762,6 +864,9 @@
       "cat_structure": "none",
       "obs_per_group": "one",
       "ordered_num": true,
+      "caveats": [
+        "Time not flowing left-to-right? Add arrows/date labels or the trajectory misreads"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "connected-scatter"
@@ -945,36 +1050,6 @@
         ],
         "note": "no 3D projection"
       }
-    }
-  ],
-  "shape_caveat_rules": [
-    {
-      "shape": "skewed",
-      "applies_to": [
-        "histogram",
-        "density",
-        "scatter",
-        "bubble"
-      ],
-      "caveat": "Consider log scale",
-      "transform": "Scale_Y_Log10() — or Scale_X_Log10(), per the skewed axis"
-    },
-    {
-      "shape": "power_law",
-      "applies_to": [
-        "scatter",
-        "connected_scatter"
-      ],
-      "caveat": "Consider log-log scale",
-      "transform": "Scale_X_Log10() + Scale_Y_Log10()"
-    },
-    {
-      "shape": "bimodal",
-      "applies_to": [
-        "boxplot",
-        "barplot"
-      ],
-      "caveat": "Summaries hide bimodality; prefer violin/ridgeline"
     }
   ],
   "preconditions": {
