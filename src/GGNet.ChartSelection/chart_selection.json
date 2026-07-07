@@ -317,7 +317,8 @@
       "obs_per_group": "one",
       "ordered_num": false,
       "caveats": [
-        "Only the baseline series reads accurately; keep layer order constant; most important series at the bottom"
+        "Only the baseline series reads accurately; keep layer order constant; most important series at the bottom",
+        "Parts must sum to the whole - verify totals and mutually exclusive categories before plotting"
       ],
       "ggnet": {
         "supported": true,
@@ -398,7 +399,8 @@
       "obs_per_group": "one",
       "ordered_num": false,
       "caveats": [
-        "Normalize per column when scales differ; reorder rows/columns (clustering) or the pattern hides"
+        "Normalize per column when scales differ; reorder rows/columns (clustering) or the pattern hides",
+        "Precision matters? Print values in cells (Geom_Text over Geom_Tile)"
       ],
       "ggnet": {
         "supported": true,
@@ -473,7 +475,8 @@
       "obs_per_group": "many",
       "ordered_num": false,
       "caveats": [
-        "Encode third variable by AREA, never radius"
+        "Encode third variable by AREA, never radius",
+        "Put the two most important variables on x/y - size is the weakest channel"
       ],
       "ggnet": {
         "supported": true,
@@ -581,6 +584,9 @@
       "cat_structure": "flat",
       "obs_per_group": "many",
       "ordered_num": false,
+      "caveats": [
+        "Hides n and multimodality: overlay raw/jittered points and annotate n per group - riskier as n shrinks"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "boxplot"
@@ -597,6 +603,10 @@
       "cat_structure": "flat",
       "obs_per_group": "many",
       "ordered_num": false,
+      "caveats": [
+        "Order groups by a summary stat (e.g. median)",
+        "Display n per group when sample sizes differ"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "violin"
@@ -613,6 +623,9 @@
       "cat_structure": "flat",
       "obs_per_group": "many",
       "ordered_num": false,
+      "caveats": [
+        "Order groups deliberately (by a summary stat) - ordering is essential for clarity"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "ridgeline"
@@ -703,6 +716,9 @@
           "low_2_7"
         ]
       },
+      "caveats": [
+        "Parts must sum to the whole - verify totals before plotting"
+      ],
       "ggnet": {
         "supported": true,
         "caveat": "unit grid computed by the caller; draw with Geom_Tile"
@@ -790,6 +806,9 @@
       "cat_structure": "none",
       "obs_per_group": "one",
       "ordered_num": true,
+      "caveats": [
+        "Sparse observations? Add point markers (connected-scatter recipe)"
+      ],
       "ggnet": {
         "supported": true,
         "recipe": "line"
@@ -826,7 +845,8 @@
       },
       "caveats": [
         "Overlap illegible beyond 3 series; use line or small multiples",
-        "Layer order changes the story: keep it constant, most important/stable series at the bottom"
+        "Layer order changes the story: keep it constant, most important/stable series at the bottom",
+        "Parts must sum to the whole - verify totals before plotting"
       ],
       "ggnet": {
         "supported": true,

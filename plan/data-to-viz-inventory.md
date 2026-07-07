@@ -14,6 +14,7 @@ Classification = bake target. Every rule lands in exactly one bucket.
 | Never connect unordered points | `line`/`area` leaves require `ordered_num: true` — structurally unreachable otherwise |
 | Bubble size must encode **area**, not radius | `Scales/Size.cs` interpolates on `Sqrt(value)` — area-proportional by construction |
 | Multiple values per group → boxplot/violin over bar+error-bar | ranking already places boxplot/violin above the bridged barplot (observed in evals) |
+| Always show a size legend on bubbles | `Scale_Size_Continuous(guide: true)` is the default |
 | 3D charts → never | GGNet has no 3D surface; nothing to refuse |
 
 ## B. Bake now — conditional `caveat_rules` (engine v6: generalize `shape_caveat_rules` to arbitrary `when` conditions)
@@ -60,6 +61,10 @@ All baked 2026-07-07 (schema v6, `caveat_rules` generalization); each has an eva
 ## F. Not applicable — unsupported leaves (rules recorded only as alternative-notes)
 
 Venn >3 sets → UpSet; treemap ≤2–3 annotated levels; sunburst outer-ring distortion; network hairball/layout-algorithm rules; sankey/chord/arc node-ordering rules; circular barplot inner-radius > ½ total and ~40+-levels-only rule; wordcloud "a pitfall on its own" (already ❌ → barplot). If any of these geoms ever ship, this section is their day-one caveat set.
+
+## Post-bake audit (2026-07-07)
+
+A re-walk of all seven extraction batches against the baked state found six rules the synthesis dropped — all closed same day as additional leaf caveats: boxplot/violin honesty (annotate n, overlay raw points — the leaves we rank *first* for raw data had no caveats at all), order-by-summary-stat extended to violin/ridgeline, sparse-line point markers, heatmap print-values-when-precise, parts-sum-to-whole on the part-to-whole leaves, bubble most-important-vars-on-axes. Plus one bucket-A addition (size legend by default). Remaining consciously unbaked: declutter/attention-span prose (consensus), per-page composition tips for composable recipes (example-note material, marginal), the error-bar n<30 threshold (folded conceptually into the boxplot caveat).
 
 ## Waves (on go)
 
