@@ -102,3 +102,10 @@ constant → `colorBy`/`fillBy` + discrete scale → `position: Dodge|Stack` →
 Transforms change tick spacing, not tick values — pair with an honest `formatter:`.
 
 **Histograms of multi-decade data** (e.g. latencies spanning ms→s): bin in log space instead of transforming the axis — pass `Math.Log10(value)` as the `Stat.Bin` selector so every decade gets equal resolution and equal-width bars. Keep the axis honest: say log₁₀ in the axis label, drop `Geom_VLine` marks at real values (100 ms, 1 s, …), inverse-transform in tooltips, and guard `Log10` against zero/negative inputs.
+
+## 7. Presentation rules (data-to-viz grounded)
+
+- **Zero baselines**: bars always start at zero — bar *length* encodes the value, truncation lies (`Geom_Bar` grows from zero by construction). Lines and areas may start above zero when the pattern matters more than absolute magnitude — but a cut axis is a deliberate, labeled choice (`YLim`/`limits:` + say so in the subtitle), never a way to exaggerate a difference.
+- **Precompute the comparison**: never make readers do mental arithmetic — if the point is a difference, ratio, or share, compute it in data prep and plot *that* (the shares prep in the `stacked-area` example is the pattern). Add `Geom_HLine` reference lines at decision thresholds so nobody estimates.
+- **Sort deliberately**: categorical axes with no natural order sort by value (descending for rankings); temporal order is never re-sorted by magnitude; keep the same order and item→color assignment across every chart in a report.
+- **Dual y-axes: never.** The perceived relationship is an artifact of the two axis ranges chosen. Plot one variable against the other (`connected-scatter`), index both to 100, or facet.

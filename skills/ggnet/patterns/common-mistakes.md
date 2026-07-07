@@ -139,6 +139,20 @@ plot = PlotContext.Build(items, i => i.X, i => i.Y)....Style();
 
 - GGNet 2.0 **does** have `Coord_Polar()` — it's the arc *geoms* (pie/rose wedges) that don't exist. Don't claim polar coordinates are missing; do refuse pies.
 
+```csharp
+// WRONG — dual y-axes to compare two series (the perceived relationship is an
+// artifact of the two axis ranges; GGNet deliberately has no second y-axis)
+// RIGHT — plot one against the other, index both to 100, or facet
+PlotContext.Build(pairs, p => p.SeriesA, p => p.SeriesB).Geom_Point()   // connected-scatter for trajectories
+```
+
+```csharp
+// WRONG — faking grouped bars with adjacent categories (grouping needs proximity cues)
+// RIGHT — dodge does the within-group/between-group spacing correctly
+.Scale_Fill_Discrete(i => i.Series, palette)
+.Geom_Bar(position: PositionAdjustment.Dodge)
+```
+
 ## Sharp edges (cont.)
 
 - `Geom_Boxplot` is **horizontal by data design**: x carries the measurements, y the category — `Build(grouped, i => i.Value, i => i.Group)`.

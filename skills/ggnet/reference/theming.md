@@ -26,6 +26,10 @@ Notes:
 - Geom parameters accept CSS custom properties — `color: "var(--color-temperature)"` wires a layer to app design tokens.
 - `--ggnet-font` affects rendering only: server-side text measurement assumes Inter.
 
+## Color discipline (data-to-viz grounded)
+
+Color must communicate one of exactly three things: **groups** (a discrete scale + legend), **a highlight** (one accent series, the rest muted/gray), or **a gradient** (a continuous scale). If none applies — a single series — use one color and no legend; per-category rainbow bars make readers hunt for a meaning that isn't there. And keep the item→color mapping **constant across every chart in a report**: `Palettes.Discrete<TKey, string>` pins entity→color explicitly, and CSS custom properties (`var(--color-<entity>)`) carry the same assignment across plots and into the app's design tokens — both exist precisely so "Product A is purple here and red there" cannot happen.
+
 ## Hosting & export
 
 Blazor: `<Plot Context="plot" RenderMode="..." Width="720" Height="576" Theme="default" />`; `SparkLine` for inline 150×50 plots.

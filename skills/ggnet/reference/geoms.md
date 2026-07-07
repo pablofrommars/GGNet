@@ -84,6 +84,8 @@ Annotations usually draw from their own small source:
 .Geom_HLine(new[] { 3.0 }, v => v, v => "level")
 ```
 
+Annotation doctrine (explanatory charts, not exploratory): highlight the one series the point is about — accent color on it, constant gray on the rest — and print the key values with `Geom_Text` so the reader never computes. Long category labels: `.Flip()` to horizontal bars/lollipops instead of rotating labels; rotated axis text is a last resort.
+
 ## Multi-layer recipes
 
 Layers stack in call order (first call = bottom). One source can feed several layers (`connected-scatter` = `Geom_Line` + `Geom_Point`); a layer can bring its own source (annotations, `bubble-map`'s polygons).
