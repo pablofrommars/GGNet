@@ -283,4 +283,120 @@ public class GalleryTests
 	public Task Map()
 		=> VerifyPlot(PlotContext.Build(regions)
 			.Geom_Map(r => r.Shapes).Style());
+
+	[Fact]
+	public Task BarStacked()
+		// Stack is Geom_Bar's default position; the fill scale supplies the series.
+		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+			.Scale_Fill_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
+			.Geom_Bar()
+			.Style());
+
+	[Fact]
+	public Task AreaStacked()
+		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+			.Scale_Fill_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
+			.Geom_Area(position: PositionAdjustment.Stack)
+			.Style());
+
+	[Fact]
+	public Task GroupedScatter()
+		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+			.Scale_Color_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
+			.Geom_Point()
+			.Style());
+
+	[Fact]
+	public Task Bubble()
+		// range is the radius in pixels; the default (0, 1) renders sub-pixel bubbles.
+		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Scale_Size_Continuous(i => i.Y, range: (3, 9))
+			.Geom_Point()
+			.Style());
+
+	[Fact]
+	public Task Lollipop()
+		// A lollipop is a stem segment plus a point tip — two layers, one source.
+		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Geom_Segment(i => i.X, i => i.X, i => 0.0, i => i.Y)
+			.Geom_Point()
+			.Style());
+
+	[Fact]
+	public Task ConnectedScatter()
+		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Geom_Line()
+			.Geom_Point()
+			.Style());
+
+	private sealed record Change(string Name, double Before, double After);
+
+	private static readonly Change[] changes =
+	[
+		new("A", 2.0, 3.5),
+		new("B", 4.0, 2.5),
+		new("C", 3.0, 3.2)
+	];
+
+	[Fact]
+	public Task Slope()
+		=> VerifyPlot(PlotContext.Build(changes, c => 0.0, c => c.Before)
+			.Geom_Segment(c => 0.0, c => 1.0, c => c.Before, c => c.After)
+			.Geom_Point()
+			.Geom_Point(x: c => 1.0, y: c => c.After)
+			.Geom_Text(x: c => 1.1, y: c => c.After, text: c => c.Name, anchor: Anchor.Start)
+			.Style());
+
+	private sealed record Day(double Week, double Weekday, double Value);
+
+	private static readonly Day[] days =
+	[
+		.. from w in Enumerable.Range(0, 8)
+		   from d in Enumerable.Range(0, 7)
+		   select new Day(w, d, Math.Sin(w * 1.7 + d) * Math.Cos(d * 0.9))
+	];
+
+	[Fact]
+	public Task CalendarHeatmap()
+		// Composable recipe: the caller computes the week/weekday grid; GGNet draws tiles.
+		=> VerifyPlot(PlotContext.Build(days, d => d.Week, d => d.Weekday)
+			.Scale_Fill_Continuous(d => d.Value, ["#132b43", "#56b1f7"])
+			.Geom_Tile(d => d.Week, d => d.Weekday, d => 0.95, d => 0.95)
+			.Style());
+
+	private sealed record Cell(double Row, double Column, double R);
+
+	private static readonly Cell[] correlations =
+	[
+		.. from r in Enumerable.Range(0, 3)
+		   from c in Enumerable.Range(0, 3)
+		   select new Cell(r, c, r == c ? 1.0 : Math.Round(Math.Cos((r + 1) * (c + 1)), 2))
+	];
+
+	[Fact]
+	public Task Correlogram()
+		// Composable recipe: the caller computes the pairwise matrix; GGNet draws tiles.
+		=> VerifyPlot(PlotContext.Build(correlations, c => c.Column, c => c.Row)
+			.Scale_Fill_Continuous(c => c.R, ["#b2182b", "#f7f7f7", "#2166ac"])
+			.Geom_Tile(c => c.Column, c => c.Row, c => 0.95, c => 0.95)
+			.Style());
+
+	private sealed record Site(double Longitude, double Latitude, double Value);
+
+	private static readonly Site[] sites =
+	[
+		new(0.8, 0.6, 2.0),
+		new(4.0, 2.0, 5.0),
+		new(4.6, 1.4, 3.0)
+	];
+
+	[Fact]
+	public Task BubbleMap()
+		// Sites are the primary source so the size scale can train on them;
+		// the map polygons come in as a secondary layer source.
+		=> VerifyPlot(PlotContext.Build(sites, s => s.Longitude, s => s.Latitude)
+			.Scale_Size_Continuous(s => s.Value, range: (4, 12))
+			.Geom_Map(regions, r => r.Shapes)
+			.Geom_Point()
+			.Style());
 }

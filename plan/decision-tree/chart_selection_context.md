@@ -1,4 +1,4 @@
-# Chart Selection System — LLM Context (v4)
+# Chart Selection System — LLM Context (v5)
 
 **Purpose:** Deterministic chart recommendation from data shape + editorial intent.
 **Architecture change in v4:** the protocol is now **code** (`engine.py`); the JSON (`chart_selection.json`) is pure config. The LLM's only jobs: (a) build the query object from data + user intent, (b) present results. It never executes matching logic itself.
@@ -7,9 +7,20 @@
 
 | File | Role |
 |---|---|
-| `chart_selection.json` | Config: axes, 47 leaves, constraints, caveat rules. Single source of truth. |
-| `engine.py` | Protocol: normalize → gate → filter → constrain → relax → rank. `select(cfg, query)` → results or error. |
-| `eval.py` | 20 realistic queries + leaf-reachability check. Run after every config change. |
+| `src/GGNet.ChartSelection/chart_selection.json` | Config: axes, 47 leaves, constraints, caveat rules, ggnet blocks. Single source of truth (embedded resource). |
+| `src/GGNet.ChartSelection/Selector.cs` | Protocol: normalize → gate → filter → constrain → relax → rank. `Selector.Select(cfg, query)` → results or error. |
+| `tests/GGNet.Evals/ChartSelectionEvals.cs` | 22 realistic queries + leaf-reachability + ggnet-annotation integrity, under `dotnet test`. |
+
+*(v1–v5 were prototyped in Python in this folder; the prototype was retired 2026-07-07 — no Python in this repo. The C# port is behavior-pinned by the same eval corpus.)*
+
+## v5 changes (GGNet grounding — see ../PLAN.md 1.4)
+
+1. **Per-leaf `ggnet` block** (all 47 leaves): `supported` + `recipe` (skill example id) for the 28 renderable leaves (4 with a `caveat` — caller computes layout/stat); `supported: false` + `alternatives` (pointing only at supported leaves) + `note` for the 19 others. Config-load validation enforces block presence, alternative validity, and bridge axes.
+2. **Stat bridges**: `obs_per_group: "one"` leaves GGNet can feed from raw rows (`barplot`, `lollipop`, `dot_plot`) declare `stat_bridge: {when, via}`. The engine admits such a leaf when the bridgeable field is the *entire* axis mismatch, tagging the result `stat_bridge: "pre-process with Stat.Count or Stat.Summary"` instead of relaxing.
+3. **Structural escapes**: constraint overflow on a leaf with a `grouping` hint (e.g. stacked_area > 3 series) is reported in `structural_escapes` — same recipe + `Facet_Wrap` — rather than silently dropped.
+4. **Executable transforms**: `shape_caveat_rules` gained `transform` (skewed → `Scale_Y_Log10()`, power_law → log-log); matching results carry it in `transforms` next to the prose caveat.
+5. Eval grown to 22 cases; every `recipe` must resolve to a file in `skills/ggnet/examples/`.
+6. **Explained exclusions** (backstop hardening, 2026-07-07): a leaf that matches intent and shape but breaks a constraint is returned in `excluded` as `{chart_id, reason}` (e.g. pie at 25 categories: `cardinality "high_gt_20" outside allowed ["low_2_7"]`) — never silently dropped. Silence invites the presenting model to fill the gap with its own persuadable judgment; a reasoned refusal gives it something to hold.
 
 ## v4 changes (from v3 review)
 

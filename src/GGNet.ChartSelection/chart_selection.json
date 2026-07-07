@@ -1,0 +1,994 @@
+{
+  "schema_version": 5,
+  "axes": {
+    "function": [
+      "comparison",
+      "correlation",
+      "distribution",
+      "part_to_whole",
+      "trend_over_time"
+    ],
+    "num_vars": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "many"
+    ],
+    "cat_vars": [
+      "0",
+      "1",
+      "2",
+      "many"
+    ],
+    "cat_structure": [
+      "none",
+      "flat",
+      "subgroup",
+      "nested"
+    ],
+    "obs_per_group": [
+      "one",
+      "many"
+    ],
+    "ordered_num": [
+      true,
+      false
+    ],
+    "is_relational": [
+      true,
+      false
+    ],
+    "is_spatial": [
+      true,
+      false
+    ],
+    "physical_subject": [
+      true,
+      false
+    ],
+    "cardinality": [
+      "low_2_7",
+      "medium_8_20",
+      "high_gt_20"
+    ],
+    "metric_type": [
+      "count",
+      "rate",
+      "amount",
+      "score"
+    ],
+    "spatial_grain": [
+      "region",
+      "point",
+      "flow"
+    ],
+    "distribution_shape": [
+      "normal",
+      "skewed",
+      "bimodal",
+      "power_law",
+      "uniform",
+      "unknown"
+    ]
+  },
+  "story_need_aliases": {
+    "sequence_causality": "trend_over_time",
+    "change_over_time": "trend_over_time",
+    "geography_impact": "comparison",
+    "distribution_inequality": "distribution",
+    "network_system": "correlation",
+    "comparison_ranking": "comparison",
+    "physical_how_things_work": "part_to_whole",
+    "part_of_whole": "part_to_whole",
+    "relationship": "correlation"
+  },
+  "leaves": [
+    {
+      "id": "barplot",
+      "functions": [
+        "comparison",
+        "part_to_whole"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "barplot",
+        "stat_bridge": {
+          "when": {
+            "obs_per_group": "many"
+          },
+          "via": [
+            "Stat.Count",
+            "Stat.Summary"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lollipop",
+      "functions": [
+        "comparison"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "lollipop",
+        "stat_bridge": {
+          "when": {
+            "obs_per_group": "many"
+          },
+          "via": [
+            "Stat.Count",
+            "Stat.Summary"
+          ]
+        }
+      }
+    },
+    {
+      "id": "dot_plot",
+      "functions": [
+        "comparison"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "caveats": [
+        "Preferred over bars when axis does not start at zero"
+      ],
+      "ggnet": {
+        "supported": true,
+        "note": "Geom_Point on a discrete axis (flipped); variant of the barplot/lollipop recipes",
+        "stat_bridge": {
+          "when": {
+            "obs_per_group": "many"
+          },
+          "via": [
+            "Stat.Summary"
+          ]
+        }
+      }
+    },
+    {
+      "id": "dumbbell",
+      "functions": [
+        "comparison",
+        "trend_over_time"
+      ],
+      "num_vars": "2",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "caveats": [
+        "Two values per category (before/after, A/B)"
+      ],
+      "ggnet": {
+        "supported": true,
+        "note": "Geom_Segment + two Geom_Point layers; variant of the lollipop/slope recipes"
+      }
+    },
+    {
+      "id": "table",
+      "functions": [
+        "comparison"
+      ],
+      "num_vars": "many",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "constraints": {
+        "cardinality": [
+          "low_2_7",
+          "medium_8_20"
+        ]
+      },
+      "caveats": [
+        "Often the correct answer when exact values matter more than pattern"
+      ],
+      "ggnet": {
+        "supported": false,
+        "alternatives": [],
+        "note": "not a chart; out of rendering scope"
+      }
+    },
+    {
+      "id": "grouped_barplot",
+      "functions": [
+        "comparison"
+      ],
+      "num_vars": "1",
+      "cat_vars": "2",
+      "cat_structure": "subgroup",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "grouped-barplot",
+        "grouping": "many subgroups: Facet_Wrap beats dodging past a handful of series"
+      }
+    },
+    {
+      "id": "stacked_barplot",
+      "functions": [
+        "comparison",
+        "part_to_whole"
+      ],
+      "num_vars": "1",
+      "cat_vars": "2",
+      "cat_structure": "subgroup",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "stacked-barplot",
+        "grouping": "crowded categories: Facet_Wrap on the series key instead of taller stacks"
+      }
+    },
+    {
+      "id": "small_multiples",
+      "functions": [
+        "comparison",
+        "trend_over_time",
+        "distribution"
+      ],
+      "cat_vars": "2",
+      "cat_structure": "subgroup",
+      "caveats": [
+        "Escape hatch when a single chart is overloaded: one panel per category"
+      ],
+      "ggnet": {
+        "supported": true,
+        "recipe": "small-multiples"
+      }
+    },
+    {
+      "id": "radar",
+      "functions": [
+        "comparison"
+      ],
+      "num_vars": "many",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "constraints": {
+        "cardinality": [
+          "low_2_7"
+        ]
+      },
+      "caveats": [
+        "Weak beyond ~8 axes; consider parallel_plot"
+      ],
+      "ggnet": {
+        "supported": true,
+        "recipe": "radar"
+      }
+    },
+    {
+      "id": "parallel_plot",
+      "functions": [
+        "comparison",
+        "correlation"
+      ],
+      "num_vars": "many",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "slope",
+          "small_multiples"
+        ],
+        "note": "multi-axis layout not modeled"
+      }
+    },
+    {
+      "id": "heatmap",
+      "functions": [
+        "comparison",
+        "correlation"
+      ],
+      "num_vars": "1",
+      "cat_vars": "2",
+      "cat_structure": "subgroup",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "heatmap"
+      }
+    },
+    {
+      "id": "wordcloud",
+      "functions": [
+        "comparison"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "constraints": {
+        "cardinality": [
+          "medium_8_20",
+          "high_gt_20"
+        ]
+      },
+      "caveats": [
+        "Imprecise encoding; decorative use only"
+      ],
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "barplot"
+        ],
+        "note": "text layout algorithm out of scope"
+      }
+    },
+    {
+      "id": "scatter",
+      "functions": [
+        "correlation"
+      ],
+      "num_vars": "2",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "scatter"
+      }
+    },
+    {
+      "id": "grouped_scatter",
+      "functions": [
+        "correlation"
+      ],
+      "num_vars": "2",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "grouped-scatter"
+      }
+    },
+    {
+      "id": "bubble",
+      "functions": [
+        "correlation"
+      ],
+      "num_vars": "3",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "caveats": [
+        "Encode third variable by AREA, never radius"
+      ],
+      "ggnet": {
+        "supported": true,
+        "recipe": "bubble"
+      }
+    },
+    {
+      "id": "density_2d",
+      "functions": [
+        "correlation",
+        "distribution"
+      ],
+      "num_vars": "2",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "caveat": "hex binning computed by the caller; true density contours unavailable",
+        "recipe": "hexbin"
+      }
+    },
+    {
+      "id": "correlogram",
+      "functions": [
+        "correlation"
+      ],
+      "num_vars": "many",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "caveat": "correlation matrix computed by the caller (no Stat.Cor)",
+        "recipe": "correlogram"
+      }
+    },
+    {
+      "id": "pca",
+      "functions": [
+        "correlation"
+      ],
+      "num_vars": "many",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "scatter"
+        ],
+        "note": "analysis technique, not a chart; render components as scatter after external PCA"
+      }
+    },
+    {
+      "id": "histogram",
+      "functions": [
+        "distribution"
+      ],
+      "num_vars": "1",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "histogram"
+      }
+    },
+    {
+      "id": "density",
+      "functions": [
+        "distribution"
+      ],
+      "num_vars": "1",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "density"
+      }
+    },
+    {
+      "id": "boxplot",
+      "functions": [
+        "distribution",
+        "comparison"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "boxplot"
+      }
+    },
+    {
+      "id": "violin",
+      "functions": [
+        "distribution",
+        "comparison"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "violin"
+      }
+    },
+    {
+      "id": "ridgeline",
+      "functions": [
+        "distribution",
+        "comparison"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": true,
+        "recipe": "ridgeline"
+      }
+    },
+    {
+      "id": "beeswarm",
+      "functions": [
+        "distribution"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "many",
+      "ordered_num": false,
+      "caveats": [
+        "Degrades above ~500 points per group"
+      ],
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "violin",
+          "boxplot"
+        ],
+        "note": "no swarm layout / jitter position"
+      }
+    },
+    {
+      "id": "pie",
+      "functions": [
+        "part_to_whole"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "constraints": {
+        "cardinality": [
+          "low_2_7"
+        ]
+      },
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "barplot",
+          "waffle"
+        ],
+        "note": "not planned, by design: angle/area comparison is perceptually inferior to aligned position (Cleveland-McGill); use barplot, or waffle for part-to-whole reading"
+      }
+    },
+    {
+      "id": "doughnut",
+      "functions": [
+        "part_to_whole"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "constraints": {
+        "cardinality": [
+          "low_2_7"
+        ]
+      },
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "barplot",
+          "waffle"
+        ],
+        "note": "not planned, by design: angle/area comparison is perceptually inferior to aligned position (Cleveland-McGill); use barplot, or waffle for part-to-whole reading"
+      }
+    },
+    {
+      "id": "waffle",
+      "functions": [
+        "part_to_whole"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "constraints": {
+        "cardinality": [
+          "low_2_7"
+        ]
+      },
+      "ggnet": {
+        "supported": true,
+        "caveat": "unit grid computed by the caller; draw with Geom_Tile"
+      }
+    },
+    {
+      "id": "treemap",
+      "functions": [
+        "part_to_whole"
+      ],
+      "num_vars": "1",
+      "cat_vars": "many",
+      "cat_structure": "nested",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "barplot",
+          "heatmap"
+        ],
+        "note": "hierarchy layout algorithms out of scope"
+      }
+    },
+    {
+      "id": "sunburst",
+      "functions": [
+        "part_to_whole"
+      ],
+      "num_vars": "1",
+      "cat_vars": "many",
+      "cat_structure": "nested",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "stacked_barplot",
+          "small_multiples"
+        ],
+        "note": "arc + hierarchy layout unavailable"
+      }
+    },
+    {
+      "id": "circular_packing",
+      "functions": [
+        "part_to_whole"
+      ],
+      "num_vars": "1",
+      "cat_vars": "many",
+      "cat_structure": "nested",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "bubble"
+        ],
+        "note": "packing layout out of scope"
+      }
+    },
+    {
+      "id": "dendrogram",
+      "functions": [
+        "part_to_whole"
+      ],
+      "num_vars": "1",
+      "cat_vars": "many",
+      "cat_structure": "nested",
+      "obs_per_group": "one",
+      "ordered_num": false,
+      "ggnet": {
+        "supported": false,
+        "alternatives": [],
+        "note": "hierarchy layout out of scope"
+      }
+    },
+    {
+      "id": "line",
+      "functions": [
+        "trend_over_time"
+      ],
+      "num_vars": "many",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "one",
+      "ordered_num": true,
+      "ggnet": {
+        "supported": true,
+        "recipe": "line"
+      }
+    },
+    {
+      "id": "area",
+      "functions": [
+        "trend_over_time"
+      ],
+      "num_vars": "1",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "one",
+      "ordered_num": true,
+      "ggnet": {
+        "supported": true,
+        "recipe": "area"
+      }
+    },
+    {
+      "id": "stacked_area",
+      "functions": [
+        "part_to_whole",
+        "trend_over_time"
+      ],
+      "num_vars": "many",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": true,
+      "constraints": {
+        "max_num_series": 3
+      },
+      "caveats": [
+        "Overlap illegible beyond 3 series; use line or small multiples"
+      ],
+      "ggnet": {
+        "supported": true,
+        "recipe": "stacked-area",
+        "grouping": "more than 3 series: keep the recipe, add Facet_Wrap on the series key (small multiples)"
+      }
+    },
+    {
+      "id": "stream_graph",
+      "functions": [
+        "trend_over_time",
+        "part_to_whole"
+      ],
+      "num_vars": "many",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": true,
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "stacked_area"
+        ],
+        "note": "no wiggle/symmetric baseline"
+      }
+    },
+    {
+      "id": "connected_scatter",
+      "functions": [
+        "trend_over_time",
+        "correlation"
+      ],
+      "num_vars": "2",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "one",
+      "ordered_num": true,
+      "ggnet": {
+        "supported": true,
+        "recipe": "connected-scatter"
+      }
+    },
+    {
+      "id": "slope",
+      "functions": [
+        "trend_over_time",
+        "comparison"
+      ],
+      "num_vars": "1",
+      "cat_vars": "1",
+      "cat_structure": "flat",
+      "obs_per_group": "one",
+      "ordered_num": true,
+      "caveats": [
+        "Best with exactly 2 time points"
+      ],
+      "ggnet": {
+        "supported": true,
+        "recipe": "slope"
+      }
+    },
+    {
+      "id": "calendar_heatmap",
+      "functions": [
+        "trend_over_time"
+      ],
+      "num_vars": "1",
+      "cat_vars": "0",
+      "cat_structure": "none",
+      "obs_per_group": "one",
+      "ordered_num": true,
+      "caveats": [
+        "Best for daily granularity over months/years; surfaces weekly seasonality"
+      ],
+      "ggnet": {
+        "supported": true,
+        "caveat": "calendar (week/weekday) layout computed by the caller",
+        "recipe": "calendar-heatmap"
+      }
+    },
+    {
+      "id": "network",
+      "functions": [
+        "correlation"
+      ],
+      "is_relational": true,
+      "ggnet": {
+        "supported": false,
+        "alternatives": [],
+        "note": "no force layout; precomputed Segment+Point possible but not a recipe"
+      }
+    },
+    {
+      "id": "chord",
+      "functions": [
+        "correlation",
+        "part_to_whole"
+      ],
+      "is_relational": true,
+      "constraints": {
+        "cardinality": [
+          "low_2_7",
+          "medium_8_20"
+        ]
+      },
+      "ggnet": {
+        "supported": false,
+        "alternatives": [],
+        "note": "arc + ribbon geometry unavailable"
+      }
+    },
+    {
+      "id": "arc",
+      "functions": [
+        "correlation"
+      ],
+      "is_relational": true,
+      "caveats": [
+        "Prefer when node order is meaningful (sequence, rank)"
+      ],
+      "ggnet": {
+        "supported": false,
+        "alternatives": [],
+        "note": "curved links unavailable"
+      }
+    },
+    {
+      "id": "sankey",
+      "functions": [
+        "part_to_whole",
+        "trend_over_time"
+      ],
+      "is_relational": true,
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "stacked_barplot"
+        ],
+        "note": "flow ribbons unavailable"
+      }
+    },
+    {
+      "id": "choropleth",
+      "functions": [
+        "comparison"
+      ],
+      "is_spatial": true,
+      "spatial_grain": "region",
+      "constraints": {
+        "metric_type": [
+          "rate",
+          "score"
+        ]
+      },
+      "caveats": [
+        "Raw counts mislead; use rates or proportional symbols"
+      ],
+      "ggnet": {
+        "supported": true,
+        "recipe": "choropleth"
+      }
+    },
+    {
+      "id": "proportional_symbol_map",
+      "functions": [
+        "comparison"
+      ],
+      "is_spatial": true,
+      "spatial_grain": "point",
+      "ggnet": {
+        "supported": true,
+        "recipe": "bubble-map"
+      }
+    },
+    {
+      "id": "flow_map",
+      "functions": [
+        "trend_over_time",
+        "comparison"
+      ],
+      "is_spatial": true,
+      "spatial_grain": "flow",
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "proportional_symbol_map"
+        ],
+        "note": "flow lines on maps unavailable"
+      }
+    },
+    {
+      "id": "isometric_cutaway",
+      "functions": [
+        "part_to_whole"
+      ],
+      "physical_subject": true,
+      "ggnet": {
+        "supported": false,
+        "alternatives": [],
+        "note": "illustration, not data graphics"
+      }
+    },
+    {
+      "id": "3d_globe",
+      "functions": [
+        "comparison"
+      ],
+      "is_spatial": true,
+      "spatial_grain": "point",
+      "caveats": [
+        "Only when global extent is itself the story; otherwise flat map"
+      ],
+      "ggnet": {
+        "supported": false,
+        "alternatives": [
+          "choropleth",
+          "proportional_symbol_map"
+        ],
+        "note": "no 3D projection"
+      }
+    }
+  ],
+  "shape_caveat_rules": [
+    {
+      "shape": "skewed",
+      "applies_to": [
+        "histogram",
+        "density",
+        "scatter",
+        "bubble"
+      ],
+      "caveat": "Consider log scale",
+      "transform": "Scale_Y_Log10() — or Scale_X_Log10(), per the skewed axis"
+    },
+    {
+      "shape": "power_law",
+      "applies_to": [
+        "scatter",
+        "connected_scatter"
+      ],
+      "caveat": "Consider log-log scale",
+      "transform": "Scale_X_Log10() + Scale_Y_Log10()"
+    },
+    {
+      "shape": "bimodal",
+      "applies_to": [
+        "boxplot",
+        "barplot"
+      ],
+      "caveat": "Summaries hide bimodality; prefer violin/ridgeline"
+    }
+  ],
+  "preconditions": {
+    "min_completeness": 0.8,
+    "min_sample_size": 5
+  },
+  "relax_order": [
+    "distribution_shape",
+    "spatial_grain",
+    "cardinality",
+    "metric_type",
+    "ordered_num",
+    "obs_per_group",
+    "cat_structure",
+    "cat_vars",
+    "num_vars"
+  ]
+}
