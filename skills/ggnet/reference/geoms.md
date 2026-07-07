@@ -86,8 +86,33 @@ Annotations usually draw from their own small source:
 
 ## Multi-layer recipes
 
-Layers stack in call order (first call = bottom). One source can feed several layers (`connected-scatter` = `Geom_Line` + `Geom_Point`); a layer can bring its own source (annotations, `bubble-map`'s polygons). Tier-C compositions:
+Layers stack in call order (first call = bottom). One source can feed several layers (`connected-scatter` = `Geom_Line` + `Geom_Point`); a layer can bring its own source (annotations, `bubble-map`'s polygons).
 
-- **Dot plot**: `Geom_Point` on a discrete category axis, usually `.Flip()`-ed.
-- **Dumbbell**: `Geom_Segment(x: i => i.Before, xend: i => i.After, y: i => i.Cat, yend: i => i.Cat)` + one `Geom_Point` per endpoint.
-- **Waffle**: caller computes a unit grid `(col, row)` per category share; `Geom_Tile(c => c.Col, c => c.Row, c => 0.95, c => 0.95, fillBy: …)`.
+Tier-C compositions — compile- and render-verified in `TierCCompositionTests` (categorical axes need a struct type: enums or numeric slots, **not** `string`):
+
+**Dot plot** — value on x, category on y (`Kpi(Team Team, double Value)`, `Team` an enum):
+
+```csharp
+PlotContext.Build(kpis, k => k.Value, k => k.Team)
+	.Geom_Point()
+	.Style()
+```
+
+**Dumbbell** — one segment per entity between before/after, a point layer per endpoint (`Change(Team Team, double Before, double After)`):
+
+```csharp
+PlotContext.Build(changes, c => c.Before, c => c.Team)
+	.Geom_Segment(c => c.Before, c => c.After, c => c.Team, c => c.Team)
+	.Geom_Point()
+	.Geom_Point(x: c => c.After)
+	.Style()
+```
+
+**Waffle** — caller computes the unit grid (`Unit(double Column, double Row, string Part)`, one row per cell, parts assigned by share):
+
+```csharp
+PlotContext.Build(units, u => u.Column, u => u.Row)
+	.Scale_Fill_Discrete(u => u.Part, ["#23d0fc", "#fc9d23", "#8b5cf6"])
+	.Geom_Tile(u => u.Column, u => u.Row, u => 0.95, u => 0.95)
+	.Style()
+```

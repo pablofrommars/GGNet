@@ -1,6 +1,6 @@
 # Chart selection — data shape → GGNet recipe
 
-Distilled from `src/GGNet.ChartSelection/chart_selection.json` (schema v5, the single source of truth — engine: `GGNet.ChartSelection.Selector`, behavior-pinned by `tests/GGNet.Evals`; an MCP server will later serve this deterministically — until then, follow this file by hand). Recipe names refer to files in [../examples/](../examples/).
+Distilled from `src/GGNet.ChartSelection/chart_selection.json` (schema v5, the single source of truth — engine: `GGNet.ChartSelection.Selector`, behavior-pinned by `tests/GGNet.Evals`). **Prefer the `ggnet` MCP server's `select_chart` when registered** — it serves this deterministically, with measured profiling; this file is the equivalent manual fallback. Recipe names refer to files in [../examples/](../examples/).
 
 ## 1. Resolve intent → functions
 
@@ -34,7 +34,7 @@ Unknown = leave unset, never guess. Key extraction rules:
 | `table` | comparison | ❌ not a chart; out of rendering scope |
 | `grouped_barplot` | comparison | `grouped-barplot` |
 | `stacked_barplot` | comparison, part_to_whole | `stacked-barplot` |
-| `small_multiples` | comparison, trend, distribution | `small-multiples` |
+| `small_multiples` | comparison, trend_over_time, distribution | `small-multiples` |
 | `radar` | comparison | `radar` |
 | `parallel_plot` | comparison, correlation | ❌ → `slope`, `small_multiples` (multi-axis layout not modeled) |
 | `heatmap` | comparison, correlation | `heatmap` |
@@ -60,18 +60,18 @@ Unknown = leave unset, never guess. Key extraction rules:
 | `dendrogram` | part_to_whole | ❌ (hierarchy layout out of scope) |
 | `line` | trend_over_time | `line` |
 | `area` | trend_over_time | `area` |
-| `stacked_area` | part_to_whole, trend (≤3 series) | `stacked-area` |
-| `stream_graph` | trend, part_to_whole | ❌ → `stacked-area` (no wiggle baseline) |
-| `connected_scatter` | trend, correlation | `connected-scatter` |
-| `slope` | trend, comparison | `slope` |
+| `stacked_area` | part_to_whole, trend_over_time (≤3 series) | `stacked-area` |
+| `stream_graph` | trend_over_time, part_to_whole | ❌ → `stacked-area` (no wiggle baseline) |
+| `connected_scatter` | trend_over_time, correlation | `connected-scatter` |
+| `slope` | trend_over_time, comparison | `slope` |
 | `calendar_heatmap` | trend_over_time | `calendar-heatmap` — calendar layout computed by the caller |
 | `network` | correlation | ❌ (no force layout) |
 | `chord` | correlation, part_to_whole | ❌ (arc + ribbon unavailable) |
 | `arc` | correlation | ❌ (curved links unavailable) |
-| `sankey` | part_to_whole, trend | ❌ → `stacked-barplot` (flow ribbons unavailable) |
+| `sankey` | part_to_whole, trend_over_time | ❌ → `stacked-barplot` (flow ribbons unavailable) |
 | `choropleth` | comparison (rates, not counts) | `choropleth` |
 | `proportional_symbol_map` | comparison | `bubble-map` |
-| `flow_map` | trend, comparison | ❌ → `bubble-map` (flow lines unavailable) |
+| `flow_map` | trend_over_time, comparison | ❌ → `bubble-map` (flow lines unavailable) |
 | `isometric_cutaway` | part_to_whole | ❌ (illustration, not data graphics) |
 | `3d_globe` | comparison | ❌ → `choropleth`, `bubble-map` (no 3D projection) |
 

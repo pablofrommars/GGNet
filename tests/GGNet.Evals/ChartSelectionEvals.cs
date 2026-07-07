@@ -279,6 +279,26 @@ public class ChartSelectionEvals
 		}
 	}
 
+	// Every supported leaf must carry executable guidance: a pinned recipe, a
+	// composition note, or a composable caveat — "supported" with nothing to
+	// copy would break the skill's copy-the-example workflow.
+	[Fact]
+	public void SupportedLeavesCarryGuidance()
+	{
+		using var _ = new AssertionScope();
+
+		foreach (var leaf in cfg["leaves"]!.AsArray().Select(n => n!.AsObject()))
+		{
+			var ggnet = leaf["ggnet"]!.AsObject();
+
+			if (ggnet["supported"]!.GetValue<bool>())
+			{
+				(ggnet.ContainsKey("recipe") || ggnet.ContainsKey("note") || ggnet.ContainsKey("caveat"))
+					.Should().BeTrue($"supported leaf '{leaf["id"]}' needs a recipe, note, or caveat");
+			}
+		}
+	}
+
 	// Config-load validation (block presence, alternatives→supported, bridge
 	// axes) runs inside LoadConfig; this pins that the embedded config passes.
 	[Fact]

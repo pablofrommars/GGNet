@@ -81,7 +81,8 @@
     "comparison_ranking": "comparison",
     "physical_how_things_work": "part_to_whole",
     "part_of_whole": "part_to_whole",
-    "relationship": "correlation"
+    "relationship": "correlation",
+    "trend": "trend_over_time"
   },
   "leaves": [
     {
