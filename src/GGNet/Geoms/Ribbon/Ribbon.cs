@@ -123,7 +123,7 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 		});
 	}
 
-	private Shapes.Area? _area;
+	private Shapes.Area? cachedArea;
 
 	protected override void Shape(T item)
 	{
@@ -131,14 +131,14 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 
 		if (Aesthetics.Fill is null)
 		{
-			if (_area is null)
+			if (cachedArea is null)
 			{
-				_area = new Shapes.Area { Aesthetic = Aesthetic };
+				cachedArea = new Shapes.Area { Aesthetic = Aesthetic };
 
-				Layer.Add(_area.Value);
+				Layer.Add(cachedArea.Value);
 			}
 
-			area = _area;
+			area = cachedArea;
 		}
 		else
 		{

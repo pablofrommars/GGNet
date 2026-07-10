@@ -24,7 +24,7 @@ var plot = PlotContext.Build(points, o => o.X, o => o.Y)
 
 - **`xxxBy` means data-driven.** `colorBy`, `fillBy`, `sizeBy`, `lineTypeBy` take an aesthetic *mapping* (built by `Scale_Color_Discrete`, `Scale_Fill_Continuous`, …): the value is computed per item, trains a scale, and feeds the legend. The unsuffixed twin (`color`, `fill`, `size`, `lineType`) is a constant applied to the whole layer. When a mapping is present it wins for its own aesthetic; the constant then still serves as the base for *other* aesthetics' legend swatches (a line-type legend draws its swatches in the constant color), so setting both is meaningful rather than an error.
 - **Positional arguments stop at the selectors.** Source and selector parameters (`x`, `y`, `ymin`, `open`, …) may be passed positionally; every aesthetic, event, or option after them is passed by name. The signatures are wide by design — configuration lives in one call — and named arguments are what keep call sites readable and stable.
-- **The vocabulary is SVG's.** `strokeWidth`, `opacity`, `fillOpacity`, `strokeOpacity`, `strokeColor` mean exactly what they mean in SVG. `width` and `height` are reserved for geometric extent in data units (`Geom_Bar`, `Geom_Tile`, `Geom_Violin`).
+- **The vocabulary is SVG's.** `strokeWidth`, `opacity`, `fillOpacity`, `strokeOpacity`, `strokeColor` mean exactly what they mean in SVG. `width` and `height` are reserved for geometric extent in data units (`Geom_Bar`, `Geom_Tile`, `Geom_Violin`, `Geom_RidgeLine`).
 - **Interactivity is a uniform block.** Every data-mark geom takes `onclick`, `onmouseover`, `onmouseout`, and (where a hover surface makes sense) `tooltip`. When `tooltip` is set and no explicit hover handlers are given, the default hover shows it. Annotation geoms (`Geom_ABLine`, `Geom_HLine`, `Geom_VLine`, `Geom_Text`) and statistical summaries (`Geom_Boxplot`, `Geom_Violin`, `Geom_RidgeLine`) deliberately take no event block.
 
 ### Stats
@@ -70,17 +70,17 @@ Statistics run over the whole source (per group when grouped). Stats that would 
 | `Geom_Tile` | `x`, `y`, `width`, `height` | `fillBy` | `fill`, `fillOpacity`, `strokeColor`, `strokeOpacity`, `strokeWidth` | ✓ | ✓ |
 | `Geom_Hex` | `x`, `y`, `dx`, `dy` | `fillBy` | `fill`, `opacity` | ✓ | ✓ |
 | `Geom_Radar` | `x`, `y` | `fillBy` | `fill`, `fillOpacity`, `strokeWidth` | ✓ | ✓ |
-| `Geom_Map` | `polygons` | `fillBy` | `fill`, `fillOpacity`, `stroke`, `strokeWidth` | ✓ | ✓ |
+| `Geom_Map` | `polygons` | `fillBy` | `fill`, `fillOpacity`, `strokeColor`, `strokeWidth` | ✓ | ✓ |
 | `Geom_Candlestick` | `x`, `open`, `high`, `low`, `close` | — | `strokeWidth`, `color`, `opacity`, `lineType` | ✓ | — |
 | `Geom_OHLC` | `x`, `open`, `high`, `low`, `close` | — | `strokeWidth`, `color`, `opacity`, `lineType` | ✓ | — |
 | `Geom_Volume` | `x`, `volume` | — | `fill`, `opacity` | ✓ | — |
 | `Geom_Boxplot` | `x`, `y` | `fillBy` | `size`, `fill`, `fillOpacity`, `strokeWidth` | — | — |
-| `Geom_Violin` | `x`, `y`, `width` | `fillBy` | `fill`, `fillOpacity`, `stroke`, `position` | — | — |
+| `Geom_Violin` | `x`, `y`, `width` | `fillBy` | `fill`, `fillOpacity`, `strokeColor`, `position` | — | — |
 | `Geom_RidgeLine` | `x`, `y`, `height` | `fillBy` | `fill`, `fillOpacity` | — | — |
-| `Geom_Text` | `x`, `y`, `text`, `angleBy` | `colorBy` | `size`, `anchor`, `weight`, `style`, `color`, `angle` | — | — |
-| `Geom_ABLine` | `a`, `b`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor` | — | — |
-| `Geom_HLine` | `y`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor` | — | — |
-| `Geom_VLine` | `x`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor` | — | — |
+| `Geom_Text` | `x`, `y`, `angleBy`, `text` | `colorBy` | `size`, `anchor`, `weight`, `style`, `color`, `angle` | — | — |
+| `Geom_ABLine` | `a`, `b`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor`, `weight`, `style` | — | — |
+| `Geom_HLine` | `y`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor`, `weight`, `style` | — | — |
+| `Geom_VLine` | `x`, `label` | — | `strokeWidth`, `color`, `opacity`, `lineType`, `size`, `anchor`, `weight`, `style` | — | — |
 
 ### Theming
 

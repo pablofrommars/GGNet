@@ -62,23 +62,23 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
 
 	protected bool firstRender = true;
 
-	private readonly RenderFragment _renderTitle;
-	private readonly RenderFragment _renderSubTitle;
-	private readonly RenderFragment _renderStrip;
-	private readonly RenderFragment _renderGrid;
-	private readonly RenderFragment _renderCaption;
-	private readonly RenderFragment _renderXLab;
-	private readonly RenderFragment _renderYLab;
+	private readonly RenderFragment renderTitle;
+	private readonly RenderFragment renderSubTitle;
+	private readonly RenderFragment renderStrip;
+	private readonly RenderFragment renderGrid;
+	private readonly RenderFragment renderCaption;
+	private readonly RenderFragment renderXLab;
+	private readonly RenderFragment renderYLab;
 
 	public Panel()
 	{
-		_renderTitle = RenderTitle;
-		_renderSubTitle = RenderSubTitle;
-		_renderStrip = RenderStrip;
-		_renderGrid = RenderGrid;
-		_renderCaption = RenderCaption;
-		_renderXLab = RenderXLab;
-		_renderYLab = RenderYLab;
+		renderTitle = RenderTitle;
+		renderSubTitle = RenderSubTitle;
+		renderStrip = RenderStrip;
+		renderGrid = RenderGrid;
+		renderCaption = RenderCaption;
+		renderXLab = RenderXLab;
+		renderYLab = RenderYLab;
 	}
 
 	protected override void OnInitialized()

@@ -1,5 +1,4 @@
 using GGNet.Components;
-using GGNet.Coords;
 
 namespace GGNet.Headless.Tests;
 

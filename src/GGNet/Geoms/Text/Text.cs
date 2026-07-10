@@ -73,7 +73,7 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 			return;
 		}
 
-		var value = Selectors.Text(item)?.ToString();
+		var value = Formats.InvariantText.Of(Selectors.Text(item));
 		if (string.IsNullOrEmpty(value))
 		{
 			return;

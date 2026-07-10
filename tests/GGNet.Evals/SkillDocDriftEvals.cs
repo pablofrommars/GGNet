@@ -11,6 +11,8 @@ public class SkillDocDriftEvals
 	[Fact]
 	public void ChartTableAgreesWithConfig()
 	{
+		// Arrange
+
 		var reference = File.ReadAllText(Path.Combine(RepoRoot(), "skills", "ggnet", "reference", "chart-selection.md"));
 
 		var leaves = cfg["leaves"]!.AsArray()
@@ -25,9 +27,13 @@ public class SkillDocDriftEvals
 			.Select(kv => kv.Key)
 			.ToHashSet();
 
+		// Act
+
 		var rows = Regex.Matches(reference, @"^\| `([a-z0-9_]+)` \| ([^|]+) \| (.+) \|$", RegexOptions.Multiline)
 			.Where(m => leaves.ContainsKey(m.Groups[1].Value))
 			.ToList();
+
+		// Assert
 
 		rows.Should().HaveCount(leaves.Count, "every leaf must appear in the table exactly once");
 

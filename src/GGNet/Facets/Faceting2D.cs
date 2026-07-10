@@ -51,11 +51,11 @@ internal sealed class Faceting2D<T, TRow, TColumn>(Func<T, TRow> row, Func<T, TC
 			for (var c = 0; c < NColumns; c++)
 			{
 				var xStrip = r == 0
-					? columns[c]?.ToString()
+					? Formats.InvariantText.Of(columns[c])
 					: string.Empty;
 
 				var yStrip = c == (NColumns - 1)
-					? rows[r]?.ToString()
+					? Formats.InvariantText.Of(rows[r])
 					: string.Empty;
 
 				var showY = style.Axis.Y == Position.Left

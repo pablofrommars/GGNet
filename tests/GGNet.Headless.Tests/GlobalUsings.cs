@@ -9,10 +9,7 @@ global using AwesomeAssertions.Execution;
 
 global using VerifyTests;
 global using VerifyXunit;
-
-global using GGNet;
 global using GGNet.Buffers;
 global using GGNet.Coords;
 global using GGNet.Exceptions;
-global using GGNet.Headless;
 global using GGNet.Scales.Common;

@@ -32,13 +32,13 @@ public abstract class TooltipBase : ComponentBase, ITooltip
 		  Opacity: alpha ?? 1.0
 		);
 
-		StateHasChanged();
+		_ = InvokeAsync(StateHasChanged);
 	}
 
 	public void Hide()
 	{
 		context = null;
 
-		StateHasChanged();
+		_ = InvokeAsync(StateHasChanged);
 	}
 }

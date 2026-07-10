@@ -31,15 +31,15 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 
 	private bool loading;
 
-	private readonly RenderFragment _renderLegendGradients;
-	private readonly RenderFragment _renderLegend;
-	private readonly RenderFragment _renderPanels;
+	private readonly RenderFragment renderLegendGradients;
+	private readonly RenderFragment renderLegend;
+	private readonly RenderFragment renderPanels;
 
 	public Plot()
 	{
-		_renderLegendGradients = RenderLegendGradients;
-		_renderLegend = RenderLegend;
-		_renderPanels = RenderPanels;
+		renderLegendGradients = RenderLegendGradients;
+		renderLegend = RenderLegend;
+		renderPanels = RenderPanels;
 	}
 
 	private string? CssClass()

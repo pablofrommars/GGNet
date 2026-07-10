@@ -8,12 +8,18 @@ public class ProfilerEvals
 	[Fact]
 	public void SkewedSampleIsDetected()
 	{
+		// Arrange
+
 		var rng = new Random(7);
 		var lognormal = Enumerable.Range(0, 500)
 			.Select(_ => (double?)Math.Exp(rng.NextDouble() * 3))
 			.ToArray();
 
+		// Act
+
 		var profile = Profiler.Profile(lognormal, null);
+
+		// Assert
 
 		using var _ = new AssertionScope();
 
@@ -25,11 +31,17 @@ public class ProfilerEvals
 	[Fact]
 	public void SymmetricSampleClaimsNoShape()
 	{
+		// Arrange
+
 		var symmetric = Enumerable.Range(0, 100)
 			.Select(i => (double?)Math.Sin(i * 0.7))
 			.ToArray();
 
+		// Act
+
 		var profile = Profiler.Profile(symmetric, null);
+
+		// Assert
 
 		profile.ContainsKey("distribution_shape").Should().BeFalse();
 	}
@@ -37,9 +49,15 @@ public class ProfilerEvals
 	[Fact]
 	public void MissingValuesLowerCompleteness()
 	{
+		// Arrange
+
 		double?[] values = [1.0, null, 2.0, null, 3.0, 4.0, null, 5.0, 6.0, 7.0];
 
+		// Act
+
 		var profile = Profiler.Profile(values, null);
+
+		// Assert
 
 		using var _ = new AssertionScope();
 
@@ -53,11 +71,17 @@ public class ProfilerEvals
 	[InlineData(25, "high_gt_20")]
 	public void CardinalityBuckets(int distinct, string expected)
 	{
+		// Arrange
+
 		var categories = Enumerable.Range(0, distinct * 4)
 			.Select(i => (string?)$"cat-{i % distinct}")
 			.ToArray();
 
+		// Act
+
 		var profile = Profiler.Profile(null, categories);
+
+		// Assert
 
 		using var _ = new AssertionScope();
 
@@ -68,9 +92,15 @@ public class ProfilerEvals
 	[Fact]
 	public void OneRowPerCategoryIsAggregated()
 	{
+		// Arrange
+
 		string?[] categories = ["a", "b", "c", "d"];
 
+		// Act
+
 		var profile = Profiler.Profile(null, categories);
+
+		// Assert
 
 		profile["obs_per_group"]!.GetValue<string>().Should().Be("one");
 	}
@@ -78,12 +108,18 @@ public class ProfilerEvals
 	[Fact]
 	public void MeasuredFieldsOverrideSuppliedOnes()
 	{
+		// Arrange
+
 		// The gaming scenario: the caller claims a pie-friendly cardinality,
 		// the raw column says otherwise — measurement wins.
 		var query = JsonNode.Parse("""{"functions": ["part_to_whole"], "cardinality": "low_2_7"}""")!.AsObject();
 		var categories = Enumerable.Range(0, 50).Select(i => (string?)$"c{i % 25}").ToArray();
 
+		// Act
+
 		var merged = Profiler.Apply(query, Profiler.Profile(null, categories));
+
+		// Assert
 
 		merged["cardinality"]!.GetValue<string>().Should().Be("high_gt_20");
 	}

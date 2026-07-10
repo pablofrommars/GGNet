@@ -20,7 +20,7 @@ The breaking window is open until the tag. Steps, in order:
 2. Merge to `master`, tag `2.0.0`.
 3. Flip the CI trigger to push/PR (completes hygiene A).
 
-Breaking changes accumulated for the tag message: `Set`→`Commit`; builder type parameters (typed geom binding); `IWaiver`→`NoData`; Map generic constraints; `GGNet.Static`→`GGNet.Headless`; pure-SVG export (svg element only); `width`→`strokeWidth` on the ten stroke geoms; `alpha`→`opacity`; public surface cut 176→74 exported types (pinned manifest; the additions back are deliberate — stats, formatters); flag-free geom protocol (`Shape()`/`Set()`); `RenderTarget` collapsed to `Render | Loading`; `_color`→`colorBy` mapping family; `format:`/`timezone:` string parameters retired for `formatter:` (`IFormatter<T>` everywhere); `IAestheticMapping<T,TValue>.Map` returns `TValue?`.
+Breaking changes accumulated for the tag message: `Set`→`Commit`; builder type parameters (typed geom binding); `IWaiver`→`NoData`; Map generic constraints; `GGNet.Static`→`GGNet.Headless`; pure-SVG export (svg element only); `width`→`strokeWidth` on the ten stroke geoms; `alpha`→`opacity`; public surface cut 176→74 exported types (pinned manifest; the additions back are deliberate — stats, formatters); flag-free geom protocol (`Shape()`/`Set()`); `RenderTarget` collapsed to `Render | Loading`; `_color`→`colorBy` mapping family; `format:`/`timezone:` string parameters retired for `formatter:` (`IFormatter<T>` everywhere); `IAestheticMapping<T,TValue>.Map` returns `TValue?`; `stroke`→`strokeColor` on `Geom_Map`/`Geom_Violin`.
 
 Out of scope by decision: NuGet packaging/publishing.
 

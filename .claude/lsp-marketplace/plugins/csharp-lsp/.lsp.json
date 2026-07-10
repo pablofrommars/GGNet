@@ -1,0 +1,19 @@
+{
+	"csharp": {
+		"command": "ClaudeCodeRoslynLspProxy",
+		"args": [
+			"--server",
+			"roslyn-language-server",
+			"--solution",
+			"/Users/pablo/source/ziggy-brew/source/dependencies/GGNet/GGNet.slnx",
+			"--",
+			"--stdio",
+			"--autoLoadProjects"
+		],
+		"extensionToLanguage": {
+			".cs": "csharp",
+			".razor": "aspnetcorerazor"
+		},
+		"startupTimeout": 120000
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"name": "csharp-lsp",
+	"version": "1.0.0",
+	"description": "C# (Roslyn) language server integration for Claude Code.",
+	"author": {
+		"name": "GGNet"
+	},
+	"keywords": [
+		"csharp",
+		"dotnet",
+		"roslyn",
+		"lsp"
+	],
+	"lspServers": "./.lsp.json"
+}

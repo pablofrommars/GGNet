@@ -44,7 +44,7 @@ internal sealed class Faceting1D<T, TKey>(Func<T, TKey> selector, bool freeX, bo
 
 		for (var i = 0; i < n; i++)
 		{
-			var xStrip = buffer[i]?.ToString();
+			var xStrip = Formats.InvariantText.Of(buffer[i]);
 
 			var showY = style.Axis.Y == Position.Left ? c == 0 : (c == (NColumns - 1) || i == (n - 1));
 

@@ -38,7 +38,7 @@ Geom_Radar(x?, y?, fillBy?, events…, fill, double fillOpacity = 0.25, strokeWi
 
 Geom_Map(source, Func<T2, Geospacial.Polygon[]> polygons, fillBy?, events…,
     Func<T2,(Geospacial.Point point, RenderFragment content)>? tooltip,   // positioned tooltip
-    animation, fill, fillOpacity, string stroke = "#000000", double strokeWidth = 0, …)
+    animation, fill, fillOpacity, string strokeColor = "#000000", double strokeWidth = 0, …)
     // PlotContext<T, double, double> only; all polygons of a layer emit as ONE multi-subpath <path>
 ```
 
@@ -57,7 +57,7 @@ Geom_Boxplot(x?, y?, fillBy?, double size = 0.8, fill, fillOpacity, strokeWidth 
     // HORIZONTAL by data design: x carries the measurements, y the category
 
 Geom_Violin(x?, y?, Func<T,double>? width,   // width = density profile at y — REQUIRED in practice
-    fillBy?, fill, fillOpacity, string? stroke = null, PositionAdjustment position = Identity, …)
+    fillBy?, fill, fillOpacity, string? strokeColor = null, PositionAdjustment position = Identity, …)
     // feed from Stat.Density: Geom_Violin(width: d => d.Density)
 
 Geom_RidgeLine(x?, y?, Func<T,double>? height, fillBy?, fill, fillOpacity, …)

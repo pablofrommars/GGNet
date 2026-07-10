@@ -144,10 +144,16 @@ public class ChartSelectionEvals
 	[MemberData(nameof(CaseNames))]
 	public void Select(string name)
 	{
+		// Arrange
+
 		var c = cases[name];
 		var query = JsonNode.Parse(c.Query)!.AsObject();
 
+		// Act
+
 		var result = Selector.Select(cfg, query);
+
+		// Assert
 
 		using var _ = new AssertionScope();
 
@@ -245,6 +251,8 @@ public class ChartSelectionEvals
 	[Fact]
 	public void EveryLeafReachable()
 	{
+		// Arrange
+
 		string[] reachFields =
 		[
 			"num_vars", "cat_vars", "cat_structure", "obs_per_group", "ordered_num",
@@ -252,6 +260,8 @@ public class ChartSelectionEvals
 		];
 
 		var unreached = new List<string>();
+
+		// Act
 
 		foreach (var leaf in cfg["leaves"]!.AsArray().Select(n => n!.AsObject()))
 		{
@@ -289,6 +299,8 @@ public class ChartSelectionEvals
 			}
 		}
 
+		// Assert
+
 		unreached.Should().BeEmpty();
 	}
 
@@ -297,9 +309,13 @@ public class ChartSelectionEvals
 	[Fact]
 	public void RecipesResolveToExampleFiles()
 	{
+		// Arrange
+
 		var examples = Directory.GetFiles(Path.Combine(RepoRoot(), "skills", "ggnet", "examples"), "*.md")
 			.Select(Path.GetFileNameWithoutExtension)
 			.ToHashSet();
+
+		// Act / Assert
 
 		using var _ = new AssertionScope();
 
@@ -319,6 +335,8 @@ public class ChartSelectionEvals
 	[Fact]
 	public void SupportedLeavesCarryGuidance()
 	{
+		// Act / Assert
+
 		using var _ = new AssertionScope();
 
 		foreach (var leaf in cfg["leaves"]!.AsArray().Select(n => n!.AsObject()))
@@ -338,7 +356,11 @@ public class ChartSelectionEvals
 	[Fact]
 	public void ConfigLoadsAndValidates()
 	{
+		// Arrange / Act
+
 		var loaded = Selector.LoadConfig();
+
+		// Assert
 
 		loaded["leaves"]!.AsArray().Should().HaveCount(47);
 	}

@@ -35,7 +35,11 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 	[Fact]
 	public async Task ListsExpectedTools()
 	{
+		// Arrange / Act
+
 		var tools = await fixture.Client.ListToolsAsync();
+
+		// Assert
 
 		var names = tools.Select(t => t.Name).ToArray();
 
@@ -45,10 +49,14 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 	[Fact]
 	public async Task MeasuredCardinalityBeatsSuppliedOne()
 	{
+		// Arrange
+
 		// The caller claims a pie-friendly cardinality; the raw column says 25
 		// distinct categories (one row each, so the aggregated shape holds) —
 		// measurement wins and pie lands in excluded with the cardinality reason.
 		var categories = Enumerable.Range(0, 25).Select(i => $"c{i}").ToArray();
+
+		// Act
 
 		var result = await CallAsJson("select_chart", new Dictionary<string, object?>
 		{
@@ -56,6 +64,8 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 			["categories"] = categories,
 			["topN"] = 99,
 		});
+
+		// Assert
 
 		var excluded = result["excluded"]!.AsArray()
 			.Select(n => n!.AsObject())
@@ -70,11 +80,15 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 	[Fact]
 	public async Task StatBridgeSurfacesOverTheWire()
 	{
+		// Arrange / Act
+
 		var result = await CallAsJson("select_chart", new Dictionary<string, object?>
 		{
 			["query"] = """{"functions": ["comparison"], "num_vars": "1", "cat_vars": "1", "cat_structure": "flat", "obs_per_group": "many", "ordered_num": false}""",
 			["topN"] = 99,
 		});
+
+		// Assert
 
 		var barplot = result["top_charts"]!.AsArray()
 			.Select(n => n!.AsObject())
@@ -86,8 +100,12 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 	[Fact]
 	public async Task IntrospectionIsLive()
 	{
+		// Arrange / Act
+
 		var geoms = await CallAsJson("list_geoms", []);
 		var scales = await CallAsJson("list_scales", []);
+
+		// Assert
 
 		using var _ = new AssertionScope();
 
@@ -100,6 +118,8 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 	[Fact]
 	public async Task ValidatePlotCompilesAndRenders()
 	{
+		// Arrange / Act
+
 		var result = await CallAsJson("validate_plot", new Dictionary<string, object?>
 		{
 			["snippet"] =
@@ -109,6 +129,8 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 				Console.WriteLine((await plot.AsStringAsync()).Length);
 				""",
 		});
+
+		// Assert
 
 		result["ok"]!.GetValue<bool>().Should().BeTrue(result["errors"]?.GetValue<string>());
 	}

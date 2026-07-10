@@ -18,7 +18,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-map</c> css class.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Border color.</param>
+	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -32,7 +32,7 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
 		panel.AddTyped(() =>
@@ -46,7 +46,7 @@ public static partial class BuilderExtensions
 				{
 					Fill = fill,
 					FillOpacity = fillOpacity,
-					Stroke = stroke,
+					Stroke = strokeColor,
 					StrokeWidth = strokeWidth
 				}
 			};
@@ -70,7 +70,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-map</c> css class.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Border color.</param>
+	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -84,10 +84,10 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(panel, new Source<T2>(source), polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
+		return Geom_Map(panel, new Source<T2>(source), polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
 	}
 
 	/// <summary>
@@ -102,7 +102,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-map</c> css class.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Border color.</param>
+	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -115,10 +115,10 @@ public static partial class BuilderExtensions
 	  Func<Geospacial.Polygon[], MouseEventArgs, Task>? onmouseout = null,
 	  Func<Geospacial.Polygon[], (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(panel, [.. new[] { polygons }], o => o, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
+		return Geom_Map(panel, [.. new[] { polygons }], o => o, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
 	}
 
 	/// <summary>
@@ -134,7 +134,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-map</c> css class.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Border color.</param>
+	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -148,10 +148,10 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		context.Default_Panel().Geom_Map(source, polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
+		context.Default_Panel().Geom_Map(source, polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
 
 		return context;
 	}
@@ -169,7 +169,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-map</c> css class.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Border color.</param>
+	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -183,10 +183,10 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(context, new Source<T2>(source), polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
+		return Geom_Map(context, new Source<T2>(source), polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
 	}
 
 	/// <summary>
@@ -201,7 +201,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-map</c> css class.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Border color.</param>
+	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -214,10 +214,10 @@ public static partial class BuilderExtensions
 	  Func<Geospacial.Polygon[], MouseEventArgs, Task>? onmouseout = null,
 	  Func<Geospacial.Polygon[], (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(context, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
+		return Geom_Map(context, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
 	}
 
 	/// <summary>
@@ -232,7 +232,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-map</c> css class.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Border color.</param>
+	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -245,10 +245,10 @@ public static partial class BuilderExtensions
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(panel, panel.Context.RequireSource(), polygons, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
+		return Geom_Map(panel, panel.Context.RequireSource(), polygons, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
 	}
 
 	/// <summary>
@@ -263,7 +263,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-map</c> css class.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Border color.</param>
+	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -276,10 +276,10 @@ public static partial class BuilderExtensions
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T, (Geospacial.Point point, RenderFragment content)>? tooltip = null,
 	  bool animation = false,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string stroke = "#000000", double strokeWidth = 0,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		context.Default_Panel().Geom_Map(polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, stroke, strokeWidth, scale);
+		context.Default_Panel().Geom_Map(polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
 
 		return context;
 	}

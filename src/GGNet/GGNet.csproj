@@ -25,6 +25,8 @@
     <ItemGroup>
         <InternalsVisibleTo Include="GGNet.Headless" />
         <InternalsVisibleTo Include="GGNet.Headless.Tests" />
+        <!-- Lets Moq/Castle DynamicProxy mock internal interfaces (e.g. IPlotRendering) in tests. -->
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
     </ItemGroup>
 
     <ItemGroup>

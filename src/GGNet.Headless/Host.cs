@@ -3,13 +3,13 @@
 [SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Headless")]
 public sealed class Host
 {
-	private readonly ServiceCollection _serviceCollection = new();
+	private readonly ServiceCollection serviceCollection = new();
 
 	private readonly Lazy<IServiceProvider> provider;
 
 	private Host()
 	{
-		provider = new(() => _serviceCollection.BuildServiceProvider());
+		provider = new(() => serviceCollection.BuildServiceProvider());
 	}
 
 	internal async Task RenderAsync(Type type, TextWriter writer, IDictionary<string, object?>? parameters = null)

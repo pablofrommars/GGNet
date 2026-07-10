@@ -16,7 +16,7 @@ public static partial class BuilderExtensions
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Outline color; null draws no outline.</param>
+	/// <param name="strokeColor">Outline color; null draws no outline.</param>
 	/// <param name="position"><c>Dodge</c> separates violins sharing a center; <c>Identity</c> overlays them.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -27,7 +27,7 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? y = null,
 	  Func<T2, double>? width = null,
 	  IAestheticMapping<T2, string>? fillBy = null,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string? strokeColor = null,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
@@ -46,8 +46,8 @@ public static partial class BuilderExtensions
 				{
 					Fill = fill,
 					FillOpacity = fillOpacity,
-					Stroke = string.IsNullOrEmpty(stroke) ? "inherit" : stroke,
-					StrokeWidth = string.IsNullOrEmpty(stroke) ? 0.0 : 0.3
+					Stroke = string.IsNullOrEmpty(strokeColor) ? "inherit" : strokeColor,
+					StrokeWidth = string.IsNullOrEmpty(strokeColor) ? 0.0 : 0.3
 				}
 			};
 
@@ -67,7 +67,7 @@ public static partial class BuilderExtensions
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Outline color; null draws no outline.</param>
+	/// <param name="strokeColor">Outline color; null draws no outline.</param>
 	/// <param name="position"><c>Dodge</c> separates violins sharing a center; <c>Identity</c> overlays them.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -78,13 +78,13 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? y = null,
 	  Func<T2, double>? width = null,
 	  IAestheticMapping<T2, string>? fillBy = null,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string? strokeColor = null,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return panel.Geom_Violin(new Source<T2>(source), x, y, width, fillBy, fill, fillOpacity, stroke, position, scale);
+		return panel.Geom_Violin(new Source<T2>(source), x, y, width, fillBy, fill, fillOpacity, strokeColor, position, scale);
 	}
 
 	/// <summary>
@@ -97,7 +97,7 @@ public static partial class BuilderExtensions
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Outline color; null draws no outline.</param>
+	/// <param name="strokeColor">Outline color; null draws no outline.</param>
 	/// <param name="position"><c>Dodge</c> separates violins sharing a center; <c>Identity</c> overlays them.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -108,13 +108,13 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? y = null,
 	  Func<T2, double>? width = null,
 	  IAestheticMapping<T2, string>? fillBy = null,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string? strokeColor = null,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Violin(source, x, y, width, fillBy, fill, fillOpacity, stroke, position, scale);
+		context.Default_Panel().Geom_Violin(source, x, y, width, fillBy, fill, fillOpacity, strokeColor, position, scale);
 
 		return context;
 	}
@@ -129,7 +129,7 @@ public static partial class BuilderExtensions
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Outline color; null draws no outline.</param>
+	/// <param name="strokeColor">Outline color; null draws no outline.</param>
 	/// <param name="position"><c>Dodge</c> separates violins sharing a center; <c>Identity</c> overlays them.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -140,13 +140,13 @@ public static partial class BuilderExtensions
 	  Func<T2, TY1>? y = null,
 	  Func<T2, double>? width = null,
 	  IAestheticMapping<T2, string>? fillBy = null,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string? strokeColor = null,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return context.Geom_Violin(new Source<T2>(source), x, y, width, fillBy, fill, fillOpacity, stroke, position, scale);
+		return context.Geom_Violin(new Source<T2>(source), x, y, width, fillBy, fill, fillOpacity, strokeColor, position, scale);
 	}
 
 	/// <summary>
@@ -158,7 +158,7 @@ public static partial class BuilderExtensions
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Outline color; null draws no outline.</param>
+	/// <param name="strokeColor">Outline color; null draws no outline.</param>
 	/// <param name="position"><c>Dodge</c> separates violins sharing a center; <c>Identity</c> overlays them.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -168,13 +168,13 @@ public static partial class BuilderExtensions
 	  Func<T, TY>? y = null,
 	  Func<T, double>? width = null,
 	  IAestheticMapping<T, string>? fillBy = null,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string? strokeColor = null,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Violin(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, width, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, stroke, position, scale);
+		return Geom_Violin(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, width, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), fill, fillOpacity, strokeColor, position, scale);
 	}
 
 	/// <summary>
@@ -186,7 +186,7 @@ public static partial class BuilderExtensions
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
 	/// <param name="fill">Constant fill for the whole layer; with <paramref name="fillBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
-	/// <param name="stroke">Outline color; null draws no outline.</param>
+	/// <param name="strokeColor">Outline color; null draws no outline.</param>
 	/// <param name="position"><c>Dodge</c> separates violins sharing a center; <c>Identity</c> overlays them.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
@@ -196,13 +196,13 @@ public static partial class BuilderExtensions
 	  Func<T, TY>? y = null,
 	  Func<T, double>? width = null,
 	  IAestheticMapping<T, string>? fillBy = null,
-	  string fill = "#23d0fc", double fillOpacity = 1.0, string? stroke = null,
+	  string fill = "#23d0fc", double fillOpacity = 1.0, string? strokeColor = null,
 	  PositionAdjustment position = PositionAdjustment.Identity,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Violin(x, y, width, fillBy, fill, fillOpacity, stroke, position, scale);
+		context.Default_Panel().Geom_Violin(x, y, width, fillBy, fill, fillOpacity, strokeColor, position, scale);
 
 		return context;
 	}

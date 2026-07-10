@@ -61,7 +61,7 @@ internal abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 		for (int i = 0; i < values.Length; i++)
 		{
 			breaks[i] = values[i].value;
-			labels[i] = (values[i].value, values[i].key.ToString()!);
+			labels[i] = (values[i].value, Formats.InvariantText.Of(values[i].key)!);
 		}
 
 		Breaks = breaks;

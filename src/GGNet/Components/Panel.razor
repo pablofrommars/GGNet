@@ -11,8 +11,8 @@
 
 @if (First)
 {
-    @_renderTitle
-    @_renderSubTitle
+    @renderTitle
+    @renderSubTitle
 }
 
 <defs>
@@ -33,18 +33,18 @@ y=@Num(Area.Y)
 width=@Num(Area.Width)
 height=@Num(Area.Height) />
 
-@_renderStrip
+@renderStrip
 
-@_renderGrid
+@renderGrid
 
 <Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderModeHandler=@areaRenderModeHandler />
 
-@_renderXLab
-@_renderYLab
+@renderXLab
+@renderYLab
 
 @if (Last)
 {
-    @_renderCaption
+    @renderCaption
 }
 
 <Tooltip Coord=@this Zone=@Area @ref=@tooltipComponent />

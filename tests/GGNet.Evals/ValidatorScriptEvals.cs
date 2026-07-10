@@ -9,6 +9,8 @@ public class ValidatorScriptEvals
 	[Fact]
 	public async Task ScriptValidatesAMinimalSnippet()
 	{
+		// Arrange
+
 		var root = RepoRoot();
 		var snippet = Path.Combine(Path.GetTempPath(), $"ggnet-script-smoke-{Guid.NewGuid():N}.cs");
 
@@ -21,6 +23,8 @@ public class ValidatorScriptEvals
 
 		try
 		{
+			// Act
+
 			var run = new Process
 			{
 				StartInfo = new ProcessStartInfo("dotnet",
@@ -36,6 +40,8 @@ public class ValidatorScriptEvals
 			var stdout = await run.StandardOutput.ReadToEndAsync();
 			var stderr = await run.StandardError.ReadToEndAsync();
 			await run.WaitForExitAsync();
+
+			// Assert
 
 			run.ExitCode.Should().Be(0, $"stdout: {stdout}; stderr: {stderr}");
 		}

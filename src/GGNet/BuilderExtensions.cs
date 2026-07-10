@@ -228,6 +228,12 @@ public static partial class BuilderExtensions
 	  where TY : struct
 	  => context.Scale_X_Continuous(Sqrt.Instance, limits, expand, formatter, hide, includeMinorBreaks);
 
+	/// <summary>
+	/// Configures a base-10 logarithmic continuous x scale.
+	/// </summary>
+	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	public static PlotContext<T, double, TY> Scale_X_Log10<T, TY>(
 	  this PlotContext<T, double, TY> context,
 	  (double? min, double? max)? limits = null,
@@ -272,6 +278,12 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  => context.Scale_Y_Continuous(Sqrt.Instance, limits, expand, formatter, hide);
 
+	/// <summary>
+	/// Configures a base-10 logarithmic continuous y scale.
+	/// </summary>
+	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	public static PanelFactory<T, TX, double> Scale_Y_Log10<T, TX>(
 	  this PanelFactory<T, TX, double> panel,
 	  (double? min, double? max)? limits = null,
@@ -284,6 +296,12 @@ public static partial class BuilderExtensions
 		return panel;
 	}
 
+	/// <summary>
+	/// Configures a base-10 logarithmic continuous y scale.
+	/// </summary>
+	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	public static PlotContext<T, TX, double> Scale_Y_Log10<T, TX>(
 	  this PlotContext<T, TX, double> context,
 	  (double? min, double? max)? limits = null,

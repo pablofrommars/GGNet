@@ -16,9 +16,13 @@ public class SkillExampleConsistencyTests
 	[Fact]
 	public void ExamplesMatchGallerySource()
 	{
+		// Arrange / Act
+
 		var root = RepoRoot();
 		var examples = Directory.GetFiles(Path.Combine(root, "skills", "ggnet", "examples"), "*.md");
 		var gallery = Normalize(File.ReadAllText(Path.Combine(root, "tests", "GGNet.Headless.Tests", "GalleryTests.cs")));
+
+		// Assert
 
 		examples.Should().NotBeEmpty();
 
@@ -44,12 +48,18 @@ public class SkillExampleConsistencyTests
 	[Fact]
 	public void TierCRecipesMatchCompositionSource()
 	{
+		// Arrange
+
 		var root = RepoRoot();
 		var geoms = File.ReadAllText(Path.Combine(root, "skills", "ggnet", "reference", "geoms.md"));
 		var section = geoms[geoms.IndexOf("## Multi-layer recipes")..];
 		var source = Normalize(File.ReadAllText(Path.Combine(root, "tests", "GGNet.Headless.Tests", "TierCCompositionTests.cs")));
 
+		// Act
+
 		var blocks = Regex.Matches(section, "```csharp\n(.*?)```", RegexOptions.Singleline);
+
+		// Assert
 
 		blocks.Should().NotBeEmpty();
 
