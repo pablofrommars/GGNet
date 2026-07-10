@@ -36,6 +36,7 @@ GGNet.Geospacial.Polygon
 GGNet.Guide
 GGNet.IPlotContext
 GGNet.IStatSource
+GGNet.InteractivityOptions
 GGNet.LineType
 GGNet.NoData
 GGNet.Palettes.Discrete`2
@@ -71,4 +72,6 @@ GGNet.Summary
 GGNet.Summary`1
 GGNet.Transformations.ITransformation`1
 GGNet.Units
+GGNet.ViewExtensions
+GGNet.ZoomAxis
 GGNet._Imports

@@ -34,6 +34,8 @@ svg {
     --ggnet-spinner-track: #f1f5f9;
     --ggnet-spinner-accent: var(--color-primary, #23d0fc);
     --ggnet-tooltip-bg: #f1f5f9;
+    --ggnet-crosshair: #9ca3af;
+    --ggnet-crosshair-label: #111827;
 
     position: relative;
 }
@@ -102,6 +104,16 @@ svg .plot {
 
 svg .panel {
     fill: var(--ggnet-bg);
+}
+
+svg .crosshair {
+    stroke: var(--ggnet-crosshair);
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+}
+
+svg .crosshair-label {
+    fill: var(--ggnet-crosshair-label);
 }
 
 svg .title {
@@ -216,8 +228,10 @@ svg .legend-label {
 }
 
 [role^="tooltip"] {
-    --tooltip-theme-color: var(--ggnet-tooltip-bg, #f1f5f9);
-    --tooltip-theme-opacity: 1;
+    /* The mark's color/opacity, when the geom passed them (--tooltip-color /
+       --tooltip-opacity on the host element), else the theme background. */
+    --tooltip-theme-color: var(--tooltip-color, var(--ggnet-tooltip-bg, #f1f5f9));
+    --tooltip-theme-opacity: var(--tooltip-opacity, 1);
 
     --tooltip-fadein-duration: 500ms;
 
@@ -228,6 +242,18 @@ svg .legend-label {
 [role^="tooltip"] .container {
     position: fixed;
     /* pointer-events: none; */
+}
+
+/* Cursor-glued mode: the container is a manual top-layer popover positioned
+   by the interactivity module; undo the browser's popover UA styles. */
+[role^="tooltip"] .container[popover] {
+    margin: 0;
+    inset: auto;
+    border: none;
+    padding: 0;
+    background: transparent;
+    overflow: visible;
+    color: inherit;
 }
 
 [role^="tooltip"] .arrow {
@@ -437,19 +463,21 @@ svg .legend-label {
 	<text class="y-break-label" x="10" y="533.7272727272726" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">2</text>
 	<text class="y-break-label" x="10" y="303.9752066115703" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">3</text>
 	<text class="y-break-label" x="10" y="74.22314049586784" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">4</text>
-	<g transform="translate(46.09090909090908, 530.7272727272726)">
-		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
-	</g>
-	<g transform="translate(206.54545454545453, 186.09917355371914)">
-		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
-	</g>
-	<g transform="translate(367, 346.9256198347108)">
-		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
-	</g>
-	<g transform="translate(527.4545454545455, 25.272727272727312)">
-		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
-	</g>
-	<g transform="translate(687.9090909090909, 278.00000000000006)">
-		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	<g clip-path="url(#ggID)">
+		<g transform="translate(46.09090909090908, 530.7272727272726)">
+			<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+		</g>
+		<g transform="translate(206.54545454545453, 186.09917355371914)">
+			<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+		</g>
+		<g transform="translate(367, 346.9256198347108)">
+			<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+		</g>
+		<g transform="translate(527.4545454545455, 25.272727272727312)">
+			<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+		</g>
+		<g transform="translate(687.9090909090909, 278.00000000000006)">
+			<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+		</g>
 	</g>
 </svg>

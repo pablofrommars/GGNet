@@ -1,11 +1,13 @@
-﻿using GGNet.Data;
 using GGNet.Exceptions;
-using GGNet.Facets;
 
 using static System.Math;
 
 namespace GGNet;
 
+// Identity and orchestration: the render pipeline and its per-pass lifecycle.
+// State lives in the bucketed partials — authored spec in PlotContext.Spec,
+// per-pass realization in PlotContext.Realization; durable interaction state
+// (view window, series visibility) gets its own partial when it lands.
 public partial class PlotContext<T, TX, TY> : IPlotContext
 	where TX : struct
 	where TY : struct
@@ -22,39 +24,11 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 	internal IReadOnlyList<T> RequireSource()
 		=> Source ?? throw new GGNetUserException("This plot was built without a source; use the Geom_Xxx overloads that take one");
 
-	internal bool Initialized { get; set; }
+	internal bool Initialized { get; private set; }
 
-	internal string? Title { get; set; }
+	private bool grid = true;
 
-	internal string? SubTitle { get; set; }
-
-	internal string? XLab { get; set; }
-
-	internal string? Caption { get; set; }
-
-	internal Selectors<T, TX, TY> Selectors { get; } = new();
-
-	// Default scale factories, chosen at Build time where overload resolution has
-	// already dispatched on TX/TY. Invoked by Init (with the coordinate system's
-	// expansion hints) only when the user registered no scale.
-	internal Action<Coords.ICoordinateSystem>? XScaleDefault { get; set; }
-
-	internal Action<Coords.ICoordinateSystem>? YScaleDefault { get; set; }
-
-	internal Positions<TX, TY> Positions { get; } = new();
-
-	internal Aesthetics<T> Aesthetics { get; } = new();
-
-	internal Faceting<T>? Faceting { get; set; }
-
-	public bool Flip { get; set; }
-
-	public CoordSystem CoordSystem { get; set; } = CoordSystem.Cartesian;
-
-	// The plot-level strategy instance answers plot-level policy (axis bands,
-	// expansion hints); panels materialize their own measured instances.
-	// default!: assigned by Init, which Render runs first when needed.
-	internal Coords.ICoordinateSystem Coord { get; private set; } = default!;
+	public Type PlotType => typeof(Components.Plot<T, TX, TY>);
 
 	internal Coords.ICoordinateSystem MakeCoordinateSystem()
 	{
@@ -70,35 +44,6 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 		return new Coords.CartesianCoordinateSystem(Style!);
 	}
-
-	public PolarOptions PolarOptions { get; } = new();
-
-	public Style? Style { get; set; }
-
-	public PanelFactory<T, TX, TY>? DefaultFactory { get; set; }
-
-	internal List<PanelFactory<T, TX, TY>> PanelFactories { get; } = [];
-
-	internal List<Panel<T, TX, TY>> Panels { get; } = [];
-
-	// default!: assigned by Init, which Render runs first when needed.
-	internal Legends Legends { get; set; } = default!;
-
-	internal (int rows, int cols) N { get; set; }
-
-	internal double Strip { get; set; }
-
-	internal (double width, double height) Axis { get; set; }
-
-	internal (bool x, bool y) AxisVisibility { get; set; }
-
-	internal (double x, double y) AxisTitles { get; set; }
-
-	internal (bool x, bool y) AxisTitlesVisibility { get; set; }
-
-	private bool grid = true;
-
-	public Type PlotType => typeof(Components.Plot<T, TX, TY>);
 
 	public void Init(bool grid = true)
 	{

@@ -42,9 +42,11 @@
 	<text class="y-break-label" x="10" y="365.2424242424243" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">3</text>
 	<text class="y-break-label" x="10" y="196.75757575757584" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">4</text>
 	<text class="y-break-label" x="10" y="28.272727272727312" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">5</text>
-	<path d="M 46.09090909090908 395.93939393939394 L 46.09090909090908 530.7272727272727 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
-	<path d="M 206.54545454545453 143.21212121212127 L 206.54545454545453 278 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
-	<path d="M 367 261.15151515151524 L 367 395.93939393939394 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
-	<path d="M 527.4545454545455 25.272727272727312 L 527.4545454545455 160.0606060606061 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
-	<path d="M 687.9090909090909 210.6060606060606 L 687.9090909090909 345.3939393939394 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
+	<g clip-path="url(#ggID)">
+		<path d="M 46.09090909090908 395.93939393939394 L 46.09090909090908 530.7272727272727 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
+		<path d="M 206.54545454545453 143.21212121212127 L 206.54545454545453 278 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
+		<path d="M 367 261.15151515151524 L 367 395.93939393939394 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
+		<path d="M 527.4545454545455 25.272727272727312 L 527.4545454545455 160.0606060606061 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
+		<path d="M 687.9090909090909 210.6060606060606 L 687.9090909090909 345.3939393939394 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
+	</g>
 </svg>

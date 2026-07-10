@@ -1,0 +1,21 @@
+@inherits LayoutComponentBase
+
+<div class="min-h-screen">
+    <header class="border-b border-gray-200 bg-white">
+        <nav class="mx-auto flex max-w-5xl items-center gap-6 px-6 py-3">
+            <span class="font-semibold">GGNet Demo</span>
+            <NavLink href="/" Match=NavLinkMatch.All class="text-sm text-gray-600 hover:text-gray-900">Home</NavLink>
+            <NavLink href="/external-controls" class="text-sm text-gray-600 hover:text-gray-900">External controls</NavLink>
+            <NavLink href="/wheel-zoom" class="text-sm text-gray-600 hover:text-gray-900">Wheel zoom</NavLink>
+            <NavLink href="/crosshair" class="text-sm text-gray-600 hover:text-gray-900">Crosshair</NavLink>
+            <NavLink href="/drag-pan" class="text-sm text-gray-600 hover:text-gray-900">Drag pan</NavLink>
+            <NavLink href="/tooltips" class="text-sm text-gray-600 hover:text-gray-900">Tooltips</NavLink>
+            <NavLink href="/combined" class="text-sm text-gray-600 hover:text-gray-900">Combined</NavLink>
+            @* Feature pages register here as interactivity blocks land. *@
+        </nav>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-6 py-8">
+        @Body
+    </main>
+</div>

@@ -29,7 +29,10 @@ internal sealed class Extended : Position<double>
 
 	public override void Commit(bool grid)
 	{
-		SetRange(Limits.min ?? _min ?? 0.0, Limits.max ?? _max ?? 0.0);
+		if (!CommitViewRange())
+		{
+			SetRange(Limits.min ?? _min ?? 0.0, Limits.max ?? _max ?? 0.0);
+		}
 
 		if (!grid)
 		{
@@ -72,6 +75,10 @@ internal sealed class Extended : Position<double>
 	}
 
 	public override double Map(double key) => transformation.Apply(key);
+
+	public override double? Unmap(double value) => transformation.Inverse(value);
+
+	public override string? Label(double value) => formatter.Format(value);
 
 	public override ITransformation<double> RangeTransformation => transformation;
 }

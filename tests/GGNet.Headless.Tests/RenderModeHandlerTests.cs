@@ -37,6 +37,45 @@ public class RenderModeHandlerTests
 	}
 
 	[Fact]
+	public async Task RenderFailureIsLoggedAndTheLoopSurvives()
+	{
+		// Arrange
+
+		var gate = new SemaphoreSlim(0);
+
+		var plot = new Mock<IPlotRendering>();
+		plot.Setup(p => p.Render(It.IsAny<RenderTarget>())).Throws(new InvalidOperationException("boom"));
+
+		var logger = new Mock<Microsoft.Extensions.Logging.ILogger>();
+		logger.Setup(l => l.IsEnabled(It.IsAny<Microsoft.Extensions.Logging.LogLevel>())).Returns(true);
+		logger.Setup(l => l.Log(
+				Microsoft.Extensions.Logging.LogLevel.Error,
+				It.IsAny<Microsoft.Extensions.Logging.EventId>(),
+				It.IsAny<It.IsAnyType>(),
+				It.IsAny<Exception>(),
+				It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+			.Callback(() => gate.Release());
+
+		await using var sut = RenderModeHandler.Factory(RenderMode.Interactive, plot.Object, logger.Object);
+
+		// Act
+
+		await sut.RefreshAsync(RenderTarget.Render, CancellationToken.None);
+		var logged = await gate.WaitAsync(TimeSpan.FromSeconds(5));
+
+		// A second refresh proves the loop survived the failed frame.
+		await sut.RefreshAsync(RenderTarget.Render, CancellationToken.None);
+		var loggedAgain = await gate.WaitAsync(TimeSpan.FromSeconds(5));
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		logged.Should().BeTrue();
+		loggedAgain.Should().BeTrue();
+	}
+
+	[Fact]
 	public void FactoryRejectsUnknownMode()
 	{
 		// Arrange

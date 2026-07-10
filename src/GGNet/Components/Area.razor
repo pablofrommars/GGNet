@@ -13,6 +13,17 @@
     {
         var scene = ShapeComposer.Compose(Panel.Geoms, Coord, Zone);
 
+        @* One scene-level clip: circles position via a wrapper transform, so a
+           per-circle clip-path would shift with each mark — the group clips
+           them in panel space. A no-op for the other primitives, which already
+           clip to the same region individually. *@
+        <g clip-path="url(#@(Clip))">
+            @{ RenderScene(__builder, scene); }
+        </g>
+    }
+
+    private void RenderScene(RenderTreeBuilder __builder, List<ScreenPrimitive> scene)
+    {
         for (var i = 0; i < scene.Count; i++)
         {
             // Exhaustive over the ScreenPrimitive union (CS8509 is an error):

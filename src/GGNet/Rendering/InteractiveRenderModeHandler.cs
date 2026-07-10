@@ -1,10 +1,14 @@
+using Microsoft.Extensions.Logging;
+
 namespace GGNet.Rendering;
 
-internal sealed class InteractiveRenderModeHandler : RenderModeHandler
+internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 {
 	private readonly CancellationTokenSource cancellationTokenSource = new();
 
 	private readonly SemaphoreSlim semaphore = new(0, 1);
+
+	private readonly ILogger? logger;
 
 	private volatile int render;
 
@@ -16,9 +20,11 @@ internal sealed class InteractiveRenderModeHandler : RenderModeHandler
 
 	private readonly Task background;
 
-	public InteractiveRenderModeHandler(IPlotRendering plot)
+	public InteractiveRenderModeHandler(IPlotRendering plot, ILogger? logger = null)
 	  : base(plot)
 	{
+		this.logger = logger;
+
 		background = RunBackground();
 	}
 
@@ -88,8 +94,18 @@ internal sealed class InteractiveRenderModeHandler : RenderModeHandler
 
 					await semaphore.WaitAsync(cancellationTokenSource.Token);
 				}
-				catch (Exception)
+				catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException)
 				{
+				}
+				catch (Exception exception)
+				{
+					// The loop must survive a failed frame, but never silently:
+					// every interactive commit (wheel, pan, host commands)
+					// renders through here.
+					if (logger is not null)
+					{
+						Log.RenderFrameFailed(logger, exception);
+					}
 				}
 			}
 		}
@@ -99,6 +115,12 @@ internal sealed class InteractiveRenderModeHandler : RenderModeHandler
 		catch (Exception)
 		{
 		}
+	}
+
+	private static partial class Log
+	{
+		[LoggerMessage(Level = LogLevel.Error, Message = "Render frame failed.")]
+		public static partial void RenderFrameFailed(ILogger logger, Exception exception);
 	}
 
 	private volatile int disposing;

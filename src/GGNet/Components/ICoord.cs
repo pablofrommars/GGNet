@@ -17,4 +17,6 @@ public interface ICoord
 	ITransformation<double> YTransformation { get; }
 
 	(double x, double y) Project(double x, double y) => (ToX(x), ToY(y));
+
+	(double x, double y) Unproject(double px, double py);
 }

@@ -39,9 +39,11 @@
 	<text class="y-break-label" x="10" y="533.7272727272726" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">2</text>
 	<text class="y-break-label" x="10" y="303.9752066115703" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">3</text>
 	<text class="y-break-label" x="10" y="74.22314049586784" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">4</text>
-	<text class="pointer-events-none" transform="translate(46.09090909090908, 530.7272727272726) rotate(0deg)" fill="#23d0fc" text-anchor="middle" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">p1</text>
-	<text class="pointer-events-none" transform="translate(206.54545454545453, 186.09917355371914) rotate(0deg)" fill="#23d0fc" text-anchor="middle" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">p2</text>
-	<text class="pointer-events-none" transform="translate(367, 346.9256198347108) rotate(0deg)" fill="#23d0fc" text-anchor="middle" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">p3</text>
-	<text class="pointer-events-none" transform="translate(527.4545454545455, 25.272727272727312) rotate(0deg)" fill="#23d0fc" text-anchor="middle" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">p4</text>
-	<text class="pointer-events-none" transform="translate(687.9090909090909, 278.00000000000006) rotate(0deg)" fill="#23d0fc" text-anchor="middle" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">p5</text>
+	<g clip-path="url(#ggID)">
+		<text class="pointer-events-none" transform="translate(46.09090909090908, 530.7272727272726) rotate(0deg)" fill="#23d0fc" text-anchor="middle" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">p1</text>
+		<text class="pointer-events-none" transform="translate(206.54545454545453, 186.09917355371914) rotate(0deg)" fill="#23d0fc" text-anchor="middle" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">p2</text>
+		<text class="pointer-events-none" transform="translate(367, 346.9256198347108) rotate(0deg)" fill="#23d0fc" text-anchor="middle" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">p3</text>
+		<text class="pointer-events-none" transform="translate(527.4545454545455, 25.272727272727312) rotate(0deg)" fill="#23d0fc" text-anchor="middle" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">p4</text>
+		<text class="pointer-events-none" transform="translate(687.9090909090909, 278.00000000000006) rotate(0deg)" fill="#23d0fc" text-anchor="middle" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">p5</text>
+	</g>
 </svg>

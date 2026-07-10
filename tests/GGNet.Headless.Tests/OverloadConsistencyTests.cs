@@ -206,6 +206,13 @@ public class OverloadConsistencyTests
 		violations.Should().BeEmpty();
 	}
 
+	// Doc-comment ids carry generic arity both on the type (Plot`2.ZoomToXAsync)
+	// and on the method (Geom_Point``2); strip the markers everywhere so the
+	// family is the plain dotted method name. Truncating at the first backtick
+	// would collapse every method of a generic type into one family.
+	private static string DocFamily(string id)
+		=> Regex.Replace(id[2..(id.IndexOf('(') is var i && i > 0 ? i : id.Length)], "`+\\d+", "");
+
 	[Fact]
 	public void DocumentationAgreesAcrossEachFamily()
 	{
@@ -224,7 +231,7 @@ public class OverloadConsistencyTests
 
 		var families = members
 			.Select(m => (name: m.Attribute("name")!.Value, element: m))
-			.Select(m => (family: m.name[2..(m.name.IndexOf('(') is var i && i > 0 ? i : m.name.Length)].Split('`')[0], m.element))
+			.Select(m => (family: DocFamily(m.name), m.element))
 			.GroupBy(m => m.family);
 
 		foreach (var family in families)

@@ -48,19 +48,21 @@
 	<text class="y-break-label" x="16" y="252.91919191919192" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">12</text>
 	<text class="y-break-label" x="16" y="140.59595959595956" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">13</text>
 	<text class="y-break-label" x="16" y="28.272727272727252" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">14</text>
-	<line x1="51.81818181818182" y1="474.5656565656566" x2="115.45454545454545" y2="474.5656565656566" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="115.45454545454545" y1="530.7272727272727" x2="115.45454545454545" y2="249.91919191919192" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="115.45454545454545" y1="306.0808080808081" x2="179.0909090909091" y2="306.0808080808081" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="179.0909090909091" y1="306.0808080808081" x2="242.72727272727272" y2="306.0808080808081" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="242.72727272727272" y1="362.2424242424243" x2="242.72727272727272" y2="137.59595959595956" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="242.72727272727272" y1="193.75757575757578" x2="306.3636363636364" y2="193.75757575757578" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="306.3636363636364" y1="193.75757575757578" x2="370" y2="193.75757575757578" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="370" y1="418.4040404040404" x2="370" y2="160.06060606060598" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="370" y1="384.70707070707067" x2="433.6363636363637" y2="384.70707070707067" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="433.6363636363637" y1="384.70707070707067" x2="497.27272727272725" y2="384.70707070707067" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="497.27272727272725" y1="452.1010101010102" x2="497.27272727272725" y2="306.0808080808081" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="497.27272727272725" y1="339.7777777777779" x2="560.9090909090909" y2="339.7777777777779" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="560.9090909090909" y1="339.7777777777779" x2="624.5454545454545" y2="339.7777777777779" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="624.5454545454545" y1="362.2424242424243" x2="624.5454545454545" y2="25.272727272727252" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<line x1="624.5454545454545" y1="47.737373737373616" x2="688.1818181818182" y2="47.737373737373616" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+	<g clip-path="url(#ggID)">
+		<line x1="51.81818181818182" y1="474.5656565656566" x2="115.45454545454545" y2="474.5656565656566" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="115.45454545454545" y1="530.7272727272727" x2="115.45454545454545" y2="249.91919191919192" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="115.45454545454545" y1="306.0808080808081" x2="179.0909090909091" y2="306.0808080808081" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="179.0909090909091" y1="306.0808080808081" x2="242.72727272727272" y2="306.0808080808081" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="242.72727272727272" y1="362.2424242424243" x2="242.72727272727272" y2="137.59595959595956" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="242.72727272727272" y1="193.75757575757578" x2="306.3636363636364" y2="193.75757575757578" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="306.3636363636364" y1="193.75757575757578" x2="370" y2="193.75757575757578" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="370" y1="418.4040404040404" x2="370" y2="160.06060606060598" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="370" y1="384.70707070707067" x2="433.6363636363637" y2="384.70707070707067" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="433.6363636363637" y1="384.70707070707067" x2="497.27272727272725" y2="384.70707070707067" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="497.27272727272725" y1="452.1010101010102" x2="497.27272727272725" y2="306.0808080808081" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="497.27272727272725" y1="339.7777777777779" x2="560.9090909090909" y2="339.7777777777779" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="560.9090909090909" y1="339.7777777777779" x2="624.5454545454545" y2="339.7777777777779" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="624.5454545454545" y1="362.2424242424243" x2="624.5454545454545" y2="25.272727272727252" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<line x1="624.5454545454545" y1="47.737373737373616" x2="688.1818181818182" y2="47.737373737373616" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+	</g>
 </svg>

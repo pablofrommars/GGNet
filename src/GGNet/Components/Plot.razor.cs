@@ -15,6 +15,11 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 	[Parameter]
 	public string Theme { get; init; } = "default";
 
+	// The opt-in gate: unset means today's output, byte for byte. Headless
+	// never sets it, so Static/export purity is structural, not conditional.
+	[Parameter]
+	public InteractivityOptions? Interactivity { get; init; }
+
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -126,5 +131,41 @@ public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
 		{
 			Context.Panels[i].Component?.Refresh();
 		}
+	}
+
+	/// <summary>Zooms the x axis to an explicit data-unit window and re-renders. Last writer wins; the render is coalesced by the interactive channel.</summary>
+	/// <param name="min">Window start, in x data units.</param>
+	/// <param name="max">Window end, in x data units.</param>
+	/// <param name="token">Cancels the refresh hand-off.</param>
+	public Task ZoomToXAsync(TX min, TX max, CancellationToken token = default)
+	{
+		Context.SetXView(min, max);
+
+		if (Interactivity is { AutoFitY: true })
+		{
+			Context.FitYToXView();
+		}
+
+		return RefreshAsync(RenderTarget.Render, token);
+	}
+
+	/// <summary>Zooms the y axis to an explicit data-unit window and re-renders. Last writer wins; the render is coalesced by the interactive channel.</summary>
+	/// <param name="min">Window start, in y data units.</param>
+	/// <param name="max">Window end, in y data units.</param>
+	/// <param name="token">Cancels the refresh hand-off.</param>
+	public Task ZoomToYAsync(TY min, TY max, CancellationToken token = default)
+	{
+		Context.SetYView(min, max);
+
+		return RefreshAsync(RenderTarget.Render, token);
+	}
+
+	/// <summary>Clears the view windows on both axes and re-renders at the authored limits or the data extent.</summary>
+	/// <param name="token">Cancels the refresh hand-off.</param>
+	public Task ResetViewAsync(CancellationToken token = default)
+	{
+		Context.ResetView();
+
+		return RefreshAsync(RenderTarget.Render, token);
 	}
 }

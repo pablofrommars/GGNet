@@ -1,4 +1,6 @@
-﻿namespace GGNet.Components;
+﻿using Microsoft.Extensions.Logging;
+
+namespace GGNet.Components;
 
 using Rendering;
 
@@ -12,13 +14,20 @@ public abstract class PlotBase<T, TX, TY> : ComponentBase, IPlot, IPlotRendering
 	[Parameter]
 	public required RenderMode RenderMode { get; init; }
 
+	// IServiceProvider, not ILoggerFactory: the headless renderer builds an
+	// empty container, so a hard logging dependency would break static renders.
+	[Inject]
+	private IServiceProvider Services { get; init; } = default!;
+
 	public string Id => Context.Id;
 
 	public Style Style => Context.Style!;
 
 	protected override void OnInitialized()
 	{
-		RenderModeHandler = Rendering.RenderModeHandler.Factory(RenderMode, this);
+		var logger = (Services.GetService(typeof(ILoggerFactory)) as ILoggerFactory)?.CreateLogger("GGNet.Plot");
+
+		RenderModeHandler = Rendering.RenderModeHandler.Factory(RenderMode, this, logger);
 	}
 
 	public IRenderModeHandler? RenderModeHandler { get; set; }

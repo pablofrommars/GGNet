@@ -66,4 +66,7 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 	public (double min, double max) YRange => yscale.Range;
 
 	public ITransformation<double> YTransformation => yscale.RangeTransformation;
+
+	public (double x, double y) Unproject(double px, double py)
+	  => (xscale.Invert((px - Area.X) / Area.Width), yscale.Invert(1 - (py - Area.Y) / Area.Height));
 }

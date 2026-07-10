@@ -25,19 +25,21 @@
     </clipPath>
 </defs>
 
-<rect
-class="panel"
-@onclick=OnClick
-x=@Num(Area.X)
-y=@Num(Area.Y)
-width=@Num(Area.Width)
-height=@Num(Area.Height) />
-
-@renderStrip
-
-@renderGrid
-
-<Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderModeHandler=@areaRenderModeHandler />
+@if (Plot.Interactivity is null)
+{
+    @renderContent
+}
+else
+{
+    @* Gesture capture: bubbling catches wheel/dblclick over any child (marks
+       included) without suppressing the per-mark handlers. Emitted only under
+       the opt-in — non-interactive plots keep today's flat structure. *@
+    @* Wheel is captured by the JS module (fresh client-rect per event, so the
+       responsive svg's scale is always exact); discrete events stay Blazor's. *@
+    <g @ref=captureRef @ondblclick=OnResetViewAsync @onmouseleave=OnCrosshairLeave>
+        @renderContent
+    </g>
+}
 
 @renderXLab
 @renderYLab
@@ -47,9 +49,88 @@ height=@Num(Area.Height) />
     @renderCaption
 }
 
-<Tooltip Coord=@this Zone=@Area @ref=@tooltipComponent />
+<Tooltip Coord=@this Zone=@Area Glued=@(Plot.Interactivity is { CursorTooltip: true }) GlueAsync=@GlueTooltipAsync @ref=@tooltipComponent />
 
 @code {
+
+    // The panel's gesture-capturable content: background, strips, grid, marks.
+    // One fragment so the opt-in wrapper and the flat default emit the same bytes.
+    private void RenderContent(RenderTreeBuilder __builder)
+    {
+        <rect
+        class="panel"
+        @onclick=OnClick
+        x=@Num(Area.X)
+        y=@Num(Area.Y)
+        width=@Num(Area.Width)
+        height=@Num(Area.Height) />
+
+        @renderStrip
+
+        @renderGrid
+
+        @if (Plot.Interactivity is { Crosshair: true } && coord.CarvesAxisBands)
+        {
+            @* Invisible hover strips under the marks: the Tier-0 crosshair
+               samples the pointer without continuous mousemove tracking.
+               Cartesian only — polar has no invertible x band. *@
+            var count = (int)(Area.Width / 8.0);
+
+            if (count > 0)
+            {
+                var stride = Area.Width / count;
+
+                for (var i = 0; i < count; i++)
+                {
+                    var center = Area.X + (i + 0.5) * stride;
+
+                    <rect x=@Num(Area.X + i * stride)
+                          y=@Num(Area.Y)
+                          width=@Num(stride)
+                          height=@Num(Area.Height)
+                          fill="none"
+                          pointer-events="all"
+                          @onmouseover=@(() => OnCrosshairOver(center)) />
+                }
+            }
+        }
+
+        @if (Plot.Interactivity is null)
+        {
+            <Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderModeHandler=@areaRenderModeHandler />
+        }
+        else
+        {
+            @* The marks-only transform target: the drag preview translates this
+               group client-side; the capture group above stays the event surface. *@
+            <g @ref=panRef>
+                <Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderModeHandler=@areaRenderModeHandler />
+            </g>
+        }
+
+        @if (crosshair is { } cross)
+        {
+            <line class="crosshair pointer-events-none"
+                  x1=@Num(cross.x)
+                  x2=@Num(cross.x)
+                  y1=@Num(Area.Y)
+                  y2=@Num(Area.Y + Area.Height)
+                  clip-path="url(#@(clip)-area)" />
+
+            @if (cross.label is not null)
+            {
+                <text><text
+                          class="crosshair-label pointer-events-none"
+                          x=@Num(cross.x)
+                          y=@Num(Area.Y + 14.0)
+                          text-anchor="middle"
+                          font-size=@(Plot.Style.Axis.Text.X.FontSize)
+                          clip-path="url(#@(clip)-area)">
+                        @cross.label
+                    </text></text>
+            }
+        }
+    }
 
     private void RenderTitle(RenderTreeBuilder __builder)
     {

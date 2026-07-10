@@ -110,7 +110,16 @@ internal class DateTimePosition : Position<LocalDateTime>
 			}
 		}
 
-		SetRange(min, max);
+		if (CommitViewRange())
+		{
+			// Snap the break window to the samples inside the view.
+			start = Math.Max(0, (int)Math.Ceiling(Range.min));
+			end = Math.Min(values.Count, (int)Math.Floor(Range.max) + 1);
+		}
+		else
+		{
+			SetRange(min, max);
+		}
 
 		if (!grid)
 		{
@@ -179,6 +188,23 @@ internal class DateTimePosition : Position<LocalDateTime>
 
 		return index;
 	}
+
+	public override LocalDateTime? Unmap(double value)
+	{
+		var index = (int)Math.Round(value);
+
+		if (index < 0 || index >= values.Count)
+		{
+			return null;
+		}
+
+		return values[index];
+	}
+
+	public override string? Label(LocalDateTime value) => readoutPattern.Format(value);
+
+	// Readout formatting only; break labels keep their own day/hour logic.
+	private static readonly LocalDateTimePattern readoutPattern = LocalDateTimePattern.CreateWithInvariantCulture("MMM d HH:mm");
 
 	public override void Clear()
 	{

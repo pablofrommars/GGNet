@@ -1,0 +1,34 @@
+@page "/drag-pan"
+@rendermode InteractiveServer
+
+<PageTitle>Drag pan — GGNet Demo</PageTitle>
+
+<h1 class="text-2xl font-semibold">Drag pan</h1>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    The first continuous gesture: drag to pan the x axis. The drag previews as
+    a client-side transform at frame rate (no server round-trips), then commits
+    a window shift on release — the authoritative frame recomputes ticks and
+    grid. Wheel zoom and double-click reset stay active on the same window.
+</p>
+
+<h2 class="mt-6 text-xl font-semibold">With auto-fit y</h2>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    <code class="rounded bg-gray-100 px-1">AutoFitY</code>: on every commit the
+    y axis refits to the points visible in the new x window.
+</p>
+
+<div class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@fittedContext RenderMode=@renderMode Interactivity=@fitted />
+</div>
+
+<h2 class="mt-8 text-xl font-semibold">Without</h2>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    Default behavior: the y axis keeps its full data range while x pans.
+</p>
+
+<div class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@plainContext RenderMode=@renderMode Interactivity=@plain />
+</div>

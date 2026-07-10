@@ -1,5 +1,7 @@
 using GGNet.Exceptions;
 
+using Microsoft.Extensions.Logging;
+
 namespace GGNet.Rendering;
 
 internal abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHandler
@@ -22,10 +24,10 @@ internal abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHand
 		return ValueTask.CompletedTask;
 	}
 
-	public static IRenderModeHandler Factory(RenderMode mode, IPlotRendering component)
+	public static IRenderModeHandler Factory(RenderMode mode, IPlotRendering component, ILogger? logger = null)
 		=> mode switch
 		{
-			RenderMode.Interactive => new InteractiveRenderModeHandler(component),
+			RenderMode.Interactive => new InteractiveRenderModeHandler(component, logger),
 			RenderMode.InteractiveAuto => new InteractiveAutoRenderModeHandler(component),
 			RenderMode.Static => new StaticRenderModeHandler(component),
 			_ => throw new GGNetInternalException("Not Implemented")

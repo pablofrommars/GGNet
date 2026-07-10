@@ -40,6 +40,8 @@
 	<text class="y-break-label" x="10" y="365.2424242424243" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">2</text>
 	<text class="y-break-label" x="10" y="196.75757575757584" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">3</text>
 	<text class="y-break-label" x="10" y="28.272727272727312" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">4</text>
-	<path d=" M 44.72727272727272 362.2424242424243 L 352 25.272727272727312 L 659.2727272727273 193.75757575757584" fill="none" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
-	<path d=" M 44.72727272727272 193.75757575757584 L 352 530.7272727272727 L 659.2727272727273 362.2424242424243" fill="none" stroke-width="1.07" stroke="#fc9d23" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+	<g clip-path="url(#ggID)">
+		<path d=" M 44.72727272727272 362.2424242424243 L 352 25.272727272727312 L 659.2727272727273 193.75757575757584" fill="none" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+		<path d=" M 44.72727272727272 193.75757575757584 L 352 530.7272727272727 L 659.2727272727273 362.2424242424243" fill="none" stroke-width="1.07" stroke="#fc9d23" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+	</g>
 </svg>
