@@ -1,16 +1,54 @@
-line,
-polyline,
-polygon,
-path,
-rect,
-circle {
+/*
+ * GGNet theme contract: paint lives in CSS, layout lives in C# Style.
+ *
+ * The base rules below are theme-independent and read from --ggnet-*
+ * variables; a theme is a block that overrides variables, not a fork of
+ * this file:
+ *
+ *     .ggnet[theme=mytheme] {
+ *         --ggnet-bg: #1e1e1e;
+ *         --ggnet-grid: #333;
+ *     }
+ *
+ * Unknown or unstyled theme names degrade to these defaults instead of
+ * rendering unstyled. Changing --ggnet-font affects rendering only; the
+ * server-side text measurement tables assume Inter (see ASSESSMENT #7).
+ */
+
+.ggnet {
+    --ggnet-font: Inter var;
+    --ggnet-bg: #ffffff;
+    --ggnet-title: #111827;
+    --ggnet-sub-title: #374151;
+    --ggnet-caption: #6b7280;
+    --ggnet-strip: #1f2937;
+    --ggnet-grid: #d1d5db;
+    --ggnet-break-label: #374151;
+    --ggnet-break-title: #111827;
+    --ggnet-axis-title: #111827;
+    --ggnet-legend-title: #1f2937;
+    --ggnet-legend-label: #111827;
+    --ggnet-spinner-display: block;
+    --ggnet-spinner-track: #f1f5f9;
+    --ggnet-spinner-accent: var(--color-primary, #23d0fc);
+    --ggnet-tooltip-bg: #f1f5f9;
+
+    position: relative;
+}
+
+.ggnet line,
+.ggnet polyline,
+.ggnet polygon,
+.ggnet path,
+.ggnet rect,
+.ggnet circle {
     stroke-linecap: butt;
     stroke-linejoin: round;
     stroke-miterlimit: 10.00;
 }
 
-text {
-    font-family: Inter var;
+.ggnet text {
+    font-family: var(--ggnet-font);
 }
 
 .cursor-pointer {
@@ -21,25 +59,13 @@ text {
     pointer-events: none;
 }
 
-.ggnet[theme=default] {
-    --tw-color-white: #ffffff;
-    --tw-color-gray-900: #111827;
-    --tw-color-gray-800: #1f2937;
-    --tw-color-gray-700: #374151;
-    --tw-color-gray-500: #6b7280;
-    --tw-color-gray-300: #d1d5db;
-    --tw-color-gray-100: #f1f5f9;
-
-    position: relative;
-}
-
-.ggnet[theme=default].loading > svg {
+.ggnet.loading > svg {
     opacity: 0.25;
     transition: opacity linear 100ms;
     transition-delay: 25ms;
 }
 
-.ggnet[theme=default] .spinner {
+.ggnet .spinner {
     display: none;
     position: absolute;
     top: 50%;
@@ -47,15 +73,15 @@ text {
     transform: translate(-50%, -50%)
 }
 
-.ggnet[theme=default] .spinner svg {
+.ggnet .spinner svg {
     width: 2rem;
     height: 2rem;
-    color: var(--tw-color-gray-100);
-    fill: var(--color-primary);
+    color: var(--ggnet-spinner-track);
+    fill: var(--ggnet-spinner-accent);
 }
 
-.ggnet[theme=default].loading .spinner {
-    display: block;
+.ggnet.loading .spinner {
+    display: var(--ggnet-spinner-display);
 }
 
 @keyframes spin {
@@ -64,90 +90,90 @@ text {
     }
 }
 
-.ggnet[theme=default].loading .spinner svg {
+.ggnet.loading .spinner svg {
     animation: spin 1s linear infinite;
 }
 
-.ggnet[theme=default] .plot {
-    fill: var(--tw-color-white);
+.ggnet .plot {
+    fill: var(--ggnet-bg);
 }
 
-.ggnet[theme=default] .panel {
-    fill: var(--tw-color-white);
+.ggnet .panel {
+    fill: var(--ggnet-bg);
 }
 
-.ggnet[theme=default] .title {
+.ggnet .title {
     font-weight: bold;
-    fill: var(--tw-color-gray-900);
+    fill: var(--ggnet-title);
 }
 
-.ggnet[theme=default] .sub-title {
-    fill: var(--tw-color-gray-700);
+.ggnet .sub-title {
+    fill: var(--ggnet-sub-title);
 }
 
-.ggnet[theme=default] .caption {
+.ggnet .caption {
     text-anchor: end;
     font-style: italic;
-    fill: var(--tw-color-gray-500);
+    fill: var(--ggnet-caption);
 }
 
-.ggnet[theme=default] .x-strip {
+.ggnet .x-strip {
     font-weight: bold;
-    fill: var(--tw-color-gray-800);
+    fill: var(--ggnet-strip);
 }
 
-.ggnet[theme=default] .y-strip {
+.ggnet .y-strip {
     font-weight: bold;
-    fill: var(--tw-color-gray-800);
+    fill: var(--ggnet-strip);
 }
 
-.ggnet[theme=default] .x-break {
-    stroke: var(--tw-color-gray-300);
+.ggnet .x-break {
+    stroke: var(--ggnet-grid);
     stroke-width: 0.43;
 }
 
-.ggnet[theme=default] .x-minor-break {
-    stroke: var(--tw-color-gray-300);
+.ggnet .x-minor-break {
+    stroke: var(--ggnet-grid);
     stroke-width: 0.32;
 }
 
-.ggnet[theme=default] .x-break-label {
-    fill: var(--tw-color-gray-700);
+.ggnet .x-break-label {
+    fill: var(--ggnet-break-label);
 }
 
-.ggnet[theme=default] .x-break-title {
-    fill: var(--tw-color-gray-900);
+.ggnet .x-break-title {
+    fill: var(--ggnet-break-title);
 }
 
-.ggnet[theme=default] .x-title {
-    fill: var(--tw-color-gray-900);
+.ggnet .x-title {
+    fill: var(--ggnet-axis-title);
 }
 
-.ggnet[theme=default] .y-break {
-    stroke: var(--tw-color-gray-300);
+.ggnet .y-break {
+    stroke: var(--ggnet-grid);
     stroke-width: 0.43;
 }
 
-.ggnet[theme=default] .y-minor-break {
-    stroke: var(--tw-color-gray-300);
+.ggnet .y-minor-break {
+    stroke: var(--ggnet-grid);
     stroke-width: 0.32;
 }
 
-.ggnet[theme=default] .y-break-label {
-    fill: var(--tw-color-gray-700);
+.ggnet .y-break-label {
+    fill: var(--ggnet-break-label);
 }
 
-.ggnet[theme=default] .y-title {
-    fill: var(--tw-color-gray-900);
+.ggnet .y-title {
+    fill: var(--ggnet-axis-title);
 }
 
-.ggnet[theme=default] .legend-title {
+.ggnet .legend-title {
     font-weight: bold;
-    fill: var(--tw-color-gray-800);
+    fill: var(--ggnet-legend-title);
 }
 
-.ggnet[theme=default] .legend-label {
-    fill: var(--tw-color-gray-900);
+.ggnet .legend-label {
+    fill: var(--ggnet-legend-label);
 }
 
 .animate-point {
@@ -188,7 +214,7 @@ text {
 }
 
 [role^="tooltip"] {
-    --tooltip-theme-color: var(--tw-color-gray-100);
+    --tooltip-theme-color: var(--ggnet-tooltip-bg, #f1f5f9);
     --tooltip-theme-opacity: 1;
 
     --tooltip-fadein-duration: 500ms;

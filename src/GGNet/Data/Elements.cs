@@ -1,21 +1,20 @@
-using GGNet.Buffers;
 using GGNet.Elements;
 
 using static System.Math;
 
 namespace GGNet.Data;
 
-internal sealed class Elements(double size) : Buffer<Dimension<IElement>>(4, 1)
+internal sealed class Elements(double size) : List<Dimension<Element>>
 {
 	private readonly double size = size;
 
-    public double Width { get; set; }
+	public double Width { get; set; }
 
 	public double Height { get; set; }
 
-	public Dimension<IElement> Add(IElement element)
+	public Dimension<Element> Add(Element element)
 	{
-		var dim = new Dimension<IElement>
+		var dim = new Dimension<Element>
 		{
 			Value = element,
 			Width = size,

@@ -1,211 +1,128 @@
-﻿using GGNet.Buffers;
-using GGNet.Data;
-using GGNet.Exceptions;
+﻿using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms;
 
-internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y)? scale, bool inherit) : IGeom
+internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y)? scale) : IGeom
   where TX : struct
   where TY : struct
 {
-  protected readonly IReadOnlyList<T> source = source;
-  protected readonly (bool x, bool y) scale = scale ?? (true, true);
-  protected readonly bool inherit = inherit;
+	protected readonly IReadOnlyList<T> source = source;
+	protected readonly (bool x, bool y) scale = scale ?? (true, true);
 
-  private Facet<T>? facet;
-  private Legends? legends;
+	private Facet<T>? facet;
+	private Legends? legends;
 
-  public Buffer<IShape> Layer { get; } = new();
+	public List<Shape> Layer { get; } = [];
 
-  protected static IPositionMapping<T> XMapping<T1, TX1>(Func<T1, TX1> selector, Scales.Position<TX1> position)
-  where TX1 : struct
-  {
-    if (typeof(T) != typeof(T1))
-    {
-      throw new GGNetUserException("Type mismatch");
-    }
+	// Capability check, captured once: a stat-backed source participates in
+	// the pipeline's per-pass Reset.
+	public IStatSource? StatSource { get; } = source as IStatSource;
 
-    if (typeof(TX1) == typeof(TX))
-    {
-      return new PositionMapping<T, TX1>((selector as Func<T, TX1>)!, position);
-    }
-    else if (typeof(TX1).IsNumeric() && typeof(TX).IsNumeric())
-    {
-      return new NumericalPositionMapping<T, TX1>((selector as Func<T, TX1>)!, (position as Scales.Position<double>)!);
-    }
-    else
-    {
-      throw new GGNetUserException("Type could not be infered");
-    }
-  }
+	public virtual CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 
-  protected static IPositionMapping<T> XMapping<TX1>(Func<T, TX> selector, Scales.Position<TX1> position)
-    where TX1 : struct
-  {
-    if (typeof(TX1) == typeof(TX))
-    {
-      return new PositionMapping<T, TX>(selector, (position as Scales.Position<TX>)!);
-    }
-    else if (typeof(TX1).IsNumeric() && typeof(TX).IsNumeric())
-    {
-      return new NumericalPositionMapping<T, TX>(selector, (position as Scales.Position<double>)!);
-    }
-    else
-    {
-      throw new GGNetUserException("Type could not be infered");
-    }
-  }
+	// Geoms share the panel's axis types by construction, so position mappings are
+	// direct — no runtime type tests.
+	public virtual void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
+	{
+		if (facet is not null && panel.Data.Source is not null && panel.Data.Source.Equals(source))
+		{
+			this.facet = (facet as Facet<T>)!;
+		}
 
-  protected static IPositionMapping<T> YMapping<T1, TY1>(Func<T1, TY1> selector, Scales.Position<TY1> position)
-    where TY1 : struct
-  {
-    if (typeof(T) != typeof(T1))
-    {
-      throw new GGNetUserException("Type mismatch");
-    }
+		legends = panel.Data.Legends;
+	}
 
-    if (typeof(TY1) == typeof(TY))
-    {
-      return new PositionMapping<T, TY1>((selector as Func<T, TY1>)!, position);
-    }
-    else if (typeof(TY1).IsNumeric() && typeof(TX).IsNumeric())
-    {
-      return new NumericalPositionMapping<T, TY1>((selector as Func<T, TY1>)!, (position as Scales.Position<double>)!);
-    }
-    else
-    {
-      throw new GGNetUserException("Type could not be infered");
-    }
-  }
+	public abstract void Train(T item);
 
-  protected static IPositionMapping<T> YMapping<TY1>(Func<T, TY> selector, Scales.Position<TY1> position)
-    where TY1 : struct
-  {
-    if (typeof(TY1) == typeof(TY))
-    {
-      return new PositionMapping<T, TY>(selector, (position as Scales.Position<TY>)!);
-    }
-    else if (typeof(TY1).IsNumeric() && typeof(TY).IsNumeric())
-    {
-      return new NumericalPositionMapping<T, TY>(selector, (position as Scales.Position<double>)!);
-    }
-    else
-    {
-      throw new GGNetUserException("Type could not be infered");
-    }
-  }
+	public void Train()
+	{
+		for (var i = 0; i < source.Count; i++)
+		{
+			var item = source[i];
 
-  public virtual void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
-    where TX1 : struct
-    where TY1 : struct
-  {
-    if (facet is not null && panel.Data.Source is not null && panel.Data.Source.Equals(source))
-    {
-      this.facet = (facet as Facet<T>)!;
-    }
+			if (facet is not null && !facet.Include(item))
+			{
+				continue;
+			}
 
-    legends = panel.Data.Legends;
-  }
+			Train(item);
+		}
+	}
 
-  public abstract void Train(T item);
+	protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.Element> element)
+	{
+		if (legends is null)
+		{
+			return;
+		}
 
-  public void Train()
-  {
-    for (var i = 0; i < source.Count; i++)
-    {
-      var item = source[i];
+		if (aes is null || !aes.Guide)
+		{
+			return;
+		}
 
-      if (facet is not null && !facet.Include(item))
-      {
-        continue;
-      }
+		var legend = legends.GetOrAdd(aes);
 
-      Train(item);
-    }
-  }
+		foreach (var (value, label) in aes.Labels)
+		{
+			legend.Add(label, element(value));
+		}
+	}
 
-  protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.IElement> element)
-  {
-    if (legends is null)
-    {
-      return;
-    }
+	protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.Element[]> elements)
+	{
+		if (legends is null)
+		{
+			return;
+		}
 
-    if (aes is null || !aes.Guide)
-    {
-      return;
-    }
+		if (aes is null || !aes.Guide)
+		{
+			return;
+		}
 
-    var legend = legends.GetOrAdd(aes);
+		var legend = legends.GetOrAdd(aes);
 
-    var n = aes.Labels.Count();
+		foreach (var (value, label) in aes.Labels)
+		{
+			var array = elements(value);
 
-    for (int i = 0; i < n; i++)
-    {
-      var (value, label) = aes.Labels.ElementAt(i);
+			for (var j = 0; j < array.Length; j++)
+			{
+				legend.Add(label, array[j]);
+			}
+		}
+	}
 
-      legend.Add(label, element(value));
-    }
-  }
+	public virtual void Legend()
+	{
+	}
 
-  protected void Legend<TV>(IAestheticMapping<T, TV>? aes, Func<TV, Elements.IElement[]> elements)
-  {
-    if (legends is null)
-    {
-      return;
-    }
+	protected abstract void Shape(T item);
 
-    if (aes is null || !aes.Guide)
-    {
-      return;
-    }
+	protected virtual void Set()
+	{
+	}
 
-    var legend = legends.GetOrAdd(aes);
+	public void Shape()
+	{
+		for (var i = 0; i < source.Count; i++)
+		{
+			var item = source[i];
 
-    var n = aes.Labels.Count();
+			if (facet is not null && !facet.Include(item))
+			{
+				continue;
+			}
 
-    for (var i = 0; i < n; i++)
-    {
-      var (value, label) = aes.Labels.ElementAt(i);
+			Shape(item);
+		}
 
-      var array = elements(value);
+		Set();
+	}
 
-      for (var j = 0; j < array.Length; j++)
-      {
-        legend.Add(label, array[j]);
-      }
-    }
-  }
-
-  public virtual void Legend()
-  {
-  }
-
-  protected abstract void Shape(T item, bool flip);
-
-  protected virtual void Set(bool flip)
-  {
-  }
-
-  public void Shape(bool flip)
-  {
-    for (var i = 0; i < source.Count; i++)
-    {
-      var item = source[i];
-
-      if (facet is not null && !facet.Include(item))
-      {
-        continue;
-      }
-
-      Shape(item, flip);
-    }
-
-    Set(flip);
-  }
-
-  public virtual void Clear() => Layer?.Clear();
+	public virtual void Clear() => Layer?.Clear();
 }

@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Palettes;
 
-public static class Utils
+internal static class Utils
 {
 	public static T[]? Sample<T>(T[] palette, int n, int direction = 1)
 	{

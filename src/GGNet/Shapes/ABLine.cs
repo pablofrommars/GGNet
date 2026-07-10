@@ -1,16 +1,16 @@
 namespace GGNet.Shapes;
 
-public readonly record struct ABLine : IShape
+internal readonly record struct ABLine : IShape
 {
-  public string? Classes { get; init; }
+	public string? Classes { get; init; }
 
-  public Func<MouseEventArgs, Task>? OnClick { get; init; }
+	public Func<MouseEventArgs, Task>? OnClick { get; init; }
 
-  public Func<MouseEventArgs, Task>? OnMouseOver { get; init; }
+	public Func<MouseEventArgs, Task>? OnMouseOver { get; init; }
 
-  public Func<MouseEventArgs, Task>? OnMouseOut { get; init; }
+	public Func<MouseEventArgs, Task>? OnMouseOut { get; init; }
 
-  public double A { get; init; }
+	public double A { get; init; }
 
 	public double B { get; init; }
 

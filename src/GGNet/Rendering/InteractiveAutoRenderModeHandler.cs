@@ -1,24 +1,24 @@
 namespace GGNet.Rendering;
 
-public sealed class InteractiveAutoRenderModeHandler(IPlotRendering plot) : RenderModeHandler(plot)
+internal sealed class InteractiveAutoRenderModeHandler(IPlotRendering plot) : RenderModeHandler(plot)
 {
-  public override Task RefreshAsync(RenderTarget target, CancellationToken token)
-  {
-    plot.Render(RenderTarget.All);
+	public override Task RefreshAsync(RenderTarget target, CancellationToken token)
+	{
+		plot.Render(RenderTarget.Render);
 
-    return Task.CompletedTask;
-  }
+		return Task.CompletedTask;
+	}
 
-  public override bool ShouldRender() => true;
+	public override bool ShouldRender() => true;
 
-  public sealed class ChildRenderHandler : IChildRenderModeHandler
-  {
-    public void Refresh(RenderTarget target = RenderTarget.All)
-    {
-    }
+	public sealed class ChildRenderHandler : IChildRenderModeHandler
+	{
+		public void Refresh()
+		{
+		}
 
-    public bool ShouldRender(RenderTarget target) => true;
-  }
+		public bool ShouldRender() => true;
+	}
 
-  public override IChildRenderModeHandler Child() => new ChildRenderHandler();
+	public override IChildRenderModeHandler Child() => new ChildRenderHandler();
 }

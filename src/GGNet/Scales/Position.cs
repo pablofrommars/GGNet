@@ -4,19 +4,19 @@ using static System.Math;
 
 namespace GGNet.Scales;
 
-public interface IPosition : IScale
+internal interface IPosition : IScale
 {
 	void Shape(double min, double max);
 
 	double Coord(double value);
 }
 
-public abstract class Position<TKey>(ITransformation<TKey>? transformation, (double minMult, double minAdd, double maxMult, double maxAdd) expand) : Continuous<TKey>(transformation), IPosition
+internal abstract class Position<TKey>(ITransformation<TKey>? transformation, (double minMult, double minAdd, double maxMult, double maxAdd) expand) : Continuous<TKey>(transformation), IPosition
 	where TKey : struct
 {
 	protected readonly (double minMult, double minAdd, double maxMult, double maxAdd) expand = expand;
 
-    public override void Train(TKey key) { }
+	public override void Train(TKey key) { }
 
 	public (double min, double max) Range { get; protected set; }
 
@@ -47,8 +47,8 @@ public abstract class Position<TKey>(ITransformation<TKey>? transformation, (dou
 		}
 	}
 
-	protected double? _min = null;
-	protected double? _max = null;
+	protected double? _min;
+	protected double? _max;
 
 	public virtual void Shape(double min, double max)
 	{
@@ -76,7 +76,7 @@ public abstract class Position<TKey>(ITransformation<TKey>? transformation, (dou
 	}
 }
 
-public interface IPositionMapping<T>
+internal interface IPositionMapping<T>
 {
 	IPosition Position { get; }
 
@@ -85,27 +85,16 @@ public interface IPositionMapping<T>
 	double Map(T item);
 }
 
-public class PositionMapping<T, TKey>(Func<T, TKey> selector, Position<TKey> position) : IPositionMapping<T>
+internal class PositionMapping<T, TKey>(Func<T, TKey> selector, Position<TKey> position) : IPositionMapping<T>
 	where TKey : struct
 {
 	private readonly Func<T, TKey> selector = selector;
 	private readonly Position<TKey> position = position;
 
-    public IPosition Position => position;
+	public IPosition Position => position;
 
 	public void Train(T item) => position.Train(selector(item));
 
 	public double Map(T item) => position.Map(selector(item));
 }
 
-public class NumericalPositionMapping<T, TKey>(Func<T, TKey> selector, Position<double> scale) : IPositionMapping<T>
-{
-	private readonly Func<T, TKey> selector = selector;
-	private readonly Position<double> scale = scale;
-
-    public IPosition Position => scale;
-
-	public void Train(T item) => scale.Train(Convert<TKey>.ToDouble(selector(item)));
-
-	public double Map(T item) => scale.Map(Convert<TKey>.ToDouble(selector(item)));
-}

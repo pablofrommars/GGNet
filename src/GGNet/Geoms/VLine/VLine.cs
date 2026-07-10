@@ -1,5 +1,6 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
 
 namespace GGNet.Geoms.VLine;
 
@@ -11,7 +12,7 @@ internal sealed class VLine<T, TX, TY> : Geom<T, TX, TY>
 		IReadOnlyList<T> source,
 		Func<T, TX> x,
 		Func<T, string> label)
-		: base(source, null, false)
+		: base(source, null)
 	{
 		Selectors = new()
 		{
@@ -24,15 +25,15 @@ internal sealed class VLine<T, TX, TY> : Geom<T, TX, TY>
 
 	public Positions<T> Positions { get; } = new();
 
-	public Elements.Line Line { get; set; } = default!;
+	public required Elements.Line Line { get; set; }
 
-	public Elements.Text Text { get; set; } = default!;
+	public required Elements.Text Text { get; set; }
 
-	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
-		Positions.X = XMapping(Selectors.X, panel.X);
+		Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
 	}
 
 	public override void Train(T item)
@@ -40,7 +41,7 @@ internal sealed class VLine<T, TX, TY> : Geom<T, TX, TY>
 		Positions.X.Train(item);
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var x = Positions.X.Map(item);
 

@@ -2,7 +2,7 @@
 
 namespace GGNet.Facets;
 
-public static class FacetingUtils
+internal static class FacetingUtils
 {
 	public static (int nrows, int ncolumns) DimWrap(int n, int? nrows = null, int? ncolumns = null)
 	{

@@ -1,6 +1,7 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
+using GGNet.Exceptions;
 
 namespace GGNet.Geoms.Text;
 
@@ -15,9 +16,8 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 		Func<T, double>? angle,
 		Func<T, TT>? text,
 		IAestheticMapping<T, string>? color = null,
-		(bool x, bool y)? scale = null,
-		bool inherit = true)
-		: base(source, scale, inherit)
+		(bool x, bool y)? scale = null)
+		: base(source, scale)
 	{
 		Selectors = new()
 		{
@@ -39,36 +39,25 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 
 	public Positions<T> Positions { get; } = new();
 
-	public Elements.Text Aesthetic { get; set; } = default!;
+	public required Elements.Text Aesthetic { get; set; }
 
-	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
 		if (Selectors.X is null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
+			throw new GGNetUserException("X selector is required");
 		}
-		else
-		{
-			Positions.X = XMapping(Selectors.X, panel.X);
-		}
+
+		Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
 
 		if (Selectors.Y is null)
 		{
-			Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
-		}
-		else
-		{
-			Positions.Y = YMapping(Selectors.Y, panel.Y);
+			throw new GGNetUserException("Y selector is required");
 		}
 
-		if (!inherit)
-		{
-			return;
-		}
-
-		Aesthetics.Color ??= panel.Data.Aesthetics.Color as IAestheticMapping<T, string>;
+		Positions.Y = new PositionMapping<T, TY>(Selectors.Y, panel.Y);
 	}
 
 	public override void Train(T item)
@@ -77,14 +66,14 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 		Positions.Y.Train(item);
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		if (Selectors.Text is null)
 		{
 			return;
 		}
 
-		var value = Selectors.Text(item)?.ToString();
+		var value = Formats.InvariantText.Of(Selectors.Text(item));
 		if (string.IsNullOrEmpty(value))
 		{
 			return;

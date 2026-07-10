@@ -1,10 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net11.0</TargetFramework>
+        <LangVersion>preview</LangVersion>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <AnalysisMode>Recommended</AnalysisMode>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <IsPackable>true</IsPackable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
 
         <Authors>Pablo Belin</Authors>
         <Title>GG.Net Data Visualization</Title>
@@ -19,6 +23,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <InternalsVisibleTo Include="GGNet.Headless" />
+        <InternalsVisibleTo Include="GGNet.Headless.Tests" />
+        <!-- Lets Moq/Castle DynamicProxy mock internal interfaces (e.g. IPlotRendering) in tests. -->
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Themes\*.css" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ThemeCssFiles Include="Themes\*.css" />
         <_CurrentProjectDiscoveredScopedCssFiles Include="@(ThemeCssFiles)" RelativePath="%(Identity)" BasePath="_content/$(AssemblyName)" />
     </ItemGroup>
@@ -28,10 +43,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="System.Threading.Channels" Version="9.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.0" />
-        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="9.0.0" />
-        <PackageReference Include="NodaTime" Version="3.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="10.0.9" />
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="10.0.9" />
+        <PackageReference Include="NodaTime" Version="3.3.2" />
     </ItemGroup>
 
 </Project>

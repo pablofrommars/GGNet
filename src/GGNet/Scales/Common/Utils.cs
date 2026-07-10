@@ -2,7 +2,7 @@
 
 using static System.Math;
 
-public static class Utils
+internal static class Utils
 {
 	public static double[]? MinorBreaks(double[] b, double min, double max, int n = 2)
 	{
@@ -20,7 +20,8 @@ public static class Utils
 
 		var m = (int)Ceiling((end - start) / by);
 
-		var minor = new double[m - b.Length + 1];
+		// One minor break per step except every n-th, which lands on a major break.
+		var minor = new double[m - (m + n - 1) / n];
 
 		var j = 0;
 		for (var i = 0; i < m; i++)

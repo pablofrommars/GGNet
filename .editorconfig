@@ -1,0 +1,95 @@
+root = true
+
+[*.cs]
+indent_style = tab
+tab_width = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# --- Deliberate API idiom: the fluent ggplot2-style surface (Geom_Point, Scale_X_Continuous, Coord_Polar)
+dotnet_diagnostic.CA1707.severity = none
+
+# --- Deliberate hot-path idiom: visible instance fields on components and shapes
+dotnet_diagnostic.CA1051.severity = none
+
+# --- Static members on generic types: acceptable for the internal helpers that use them
+dotnet_diagnostic.CA1000.severity = none
+
+# --- Culture-sensitive formatting produces broken SVG on comma-decimal locales
+dotnet_diagnostic.CA1305.severity = error
+
+# --- XML docs are additive: the public builder surface is documented (the
+# DSL's manual lives in IntelliSense), everything else keeps the repo's
+# no-XML-docs convention without warnings.
+dotnet_diagnostic.CS1591.severity = none
+
+# --- Extension receivers (this PlotContext/PanelFactory) are not part of the
+# call-site surface and stay undocumented by design.
+dotnet_diagnostic.CS1573.severity = none
+
+# --- Union exhaustiveness is a gate, not a suggestion: a missing switch-
+# expression arm over a closed union must fail the build.
+dotnet_diagnostic.CS8509.severity = error
+
+# --- Real correctness rules
+dotnet_diagnostic.CA2215.severity = warning
+dotnet_diagnostic.CA2263.severity = warning
+
+# --- Hygiene rules kept visible
+dotnet_diagnostic.CA1805.severity = warning
+dotnet_diagnostic.CA1708.severity = warning
+dotnet_diagnostic.CA1716.severity = warning
+dotnet_diagnostic.CA1725.severity = warning
+
+# --- SDK parity: the net11 preview SDK surfaces hundreds of new style
+# suggestions as build warnings, several contradicting repo style (IDE0008
+# vs var, IDE0160 vs file-scoped namespaces). Style analyzers are silent by
+# default; the enforced style gate is exactly the rules listed explicitly
+# in this file — rule-level severities override the category default.
+dotnet_analyzer_diagnostic.category-Style.severity = silent
+
+# GenerateDocumentationFile re-triggers style reporting on the preview SDK
+# despite the category default; the offenders are disabled by id. The
+# enforced style gate remains the explicitly-elevated rules below.
+dotnet_diagnostic.IDE0008.severity = none
+dotnet_diagnostic.IDE0011.severity = none
+dotnet_diagnostic.IDE0022.severity = none
+dotnet_diagnostic.IDE0023.severity = none
+dotnet_diagnostic.IDE0024.severity = none
+dotnet_diagnostic.IDE0026.severity = none
+dotnet_diagnostic.IDE0040.severity = none
+dotnet_diagnostic.IDE0045.severity = none
+dotnet_diagnostic.IDE0046.severity = none
+dotnet_diagnostic.IDE0047.severity = none
+dotnet_diagnostic.IDE0059.severity = none
+dotnet_diagnostic.IDE0060.severity = none
+dotnet_diagnostic.IDE0065.severity = none
+dotnet_diagnostic.IDE0078.severity = none
+dotnet_diagnostic.IDE0160.severity = none
+dotnet_diagnostic.IDE0200.severity = none
+dotnet_diagnostic.IDE0306.severity = none
+
+# --- Unused usings are debris: visible and auto-fixable (needs
+# GenerateDocumentationFile in every project to report — roslyn#41640).
+dotnet_diagnostic.IDE0005.severity = warning
+
+# --- Style: namespace must match folder
+dotnet_diagnostic.IDE0130.severity = warning
+dotnet_style_namespace_match_folder = true
+
+# --- Style: collection initialization, unnecessary suppressions
+dotnet_diagnostic.IDE0028.severity = suggestion
+dotnet_diagnostic.IDE0300.severity = suggestion
+dotnet_diagnostic.IDE0305.severity = suggestion
+dotnet_diagnostic.IDE0079.severity = warning
+dotnet_remove_unnecessary_suppression_exclusions = none
+
+
+[*.razor]
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Stats are DSL-surface types (Stat.Bin next to PlotContext.Build): they live
+# in the root namespace deliberately, foldered only for navigation.
+[src/GGNet/Stats/*.cs]
+dotnet_diagnostic.IDE0130.severity = none

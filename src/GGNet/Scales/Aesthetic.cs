@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Scales;
 
-public sealed class Aesthetic<T, TKey, TValue>(
+internal sealed class Aesthetic<T, TKey, TValue>(
 	Func<T, TKey> selector,
 	Scale<TKey, TValue> scale,
 	bool guide,
@@ -18,7 +18,7 @@ public sealed class Aesthetic<T, TKey, TValue>(
 
 	public void Train(T item) => scale.Train(selector(item));
 
-	public TValue Map(T item) => scale.Map(selector(item));
+	public TValue? Map(T item) => scale.Map(selector(item));
 
 	public IEnumerable<(TValue value, string label)> Labels => scale.Labels;
 }

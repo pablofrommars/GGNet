@@ -1,15 +1,15 @@
 ﻿namespace GGNet.Palettes;
 
 public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
-    where TKey : notnull
+	where TKey : notnull
 {
 	private readonly TValue[] palette = palette;
 	private readonly int direction = direction;
 
-	private int i = 0;
+	private int i;
 	private readonly Dictionary<TKey, (int i, TValue value)> map = [];
 
-    public TValue this[TKey key]
+	public TValue this[TKey key]
 	{
 		get => map[key].value;
 	}
@@ -21,6 +21,7 @@ public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
 			return;
 		}
 
+		// Two-phase: indices are handed out on Train; values land on Commit.
 		map[key] = (i++, default!);
 	}
 
@@ -32,9 +33,10 @@ public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
 			return;
 		}
 
-		foreach (var (key, i) in map.Select(o => (o.Key, o.Value.i)).ToList())
+		foreach (var key in map.Keys.ToArray())
 		{
-			map[key] = (i, sub[i]);
+			var entry = map[key];
+			map[key] = (entry.i, sub[entry.i]);
 		}
 	}
 

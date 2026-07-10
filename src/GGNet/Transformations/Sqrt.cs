@@ -1,6 +1,6 @@
 ﻿namespace GGNet.Transformations;
 
-public sealed class Sqrt : ITransformation<double>
+internal sealed class Sqrt : ITransformation<double>
 {
 	public static readonly Sqrt Instance = new();
 

@@ -1,17 +1,20 @@
-using GGNet.Buffers;
 using GGNet.Shapes;
 
 namespace GGNet.Geoms;
 
-public interface IGeom
+internal interface IGeom
 {
-	Buffer<IShape> Layer { get; }
+	List<Shape> Layer { get; }
+
+	IStatSource? StatSource => null;
+
+	CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 
 	void Train();
 
 	void Legend();
 
-	void Shape(bool flip);
+	void Shape();
 
 	void Clear();
 }

@@ -4,7 +4,7 @@ using GGNet.Scales.Common;
 
 namespace GGNet.Scales;
 
-public sealed class Log10 : Position<double>
+internal sealed class Log10 : Position<double>
 {
 	private readonly IFormatter<double> formatter;
 
@@ -22,7 +22,7 @@ public sealed class Log10 : Position<double>
 
 	public override Guide Guide => Guide.None;
 
-	public override void Set(bool grid)
+	public override void Commit(bool grid)
 	{
 		SetRange(Limits.min ?? _min ?? 0.0, Limits.max ?? _max ?? 0.0);
 
@@ -42,15 +42,7 @@ public sealed class Log10 : Position<double>
 			Breaks = Log10Utils.MinorBreaks(Range.max);
 		}
 
-		var labels = new (double, string)[Breaks.Count()];
-
-		for (var i = 0; i < labels.Length; i++)
-		{
-			var b = Breaks.ElementAt(i);
-			labels[i] = (b, formatter.Format(transformation!.Inverse(b)));
-		}
-
-		Labels = labels;
+		Labels = [.. Breaks.Select(b => (b, formatter.Format(transformation!.Inverse(b))))];
 	}
 
 	public override double Map(double key) => transformation!.Apply(key);
@@ -58,7 +50,7 @@ public sealed class Log10 : Position<double>
 	public override ITransformation<double> RangeTransformation => transformation!;
 }
 
-public static class Log10Utils
+internal static class Log10Utils
 {
 	public static double[] MinorBreaks(double max)
 	{

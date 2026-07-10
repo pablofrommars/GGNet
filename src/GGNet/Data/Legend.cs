@@ -1,5 +1,4 @@
-﻿using GGNet.Buffers;
-using GGNet.Elements;
+﻿using GGNet.Elements;
 using GGNet.Scales;
 
 using static System.Math;
@@ -35,7 +34,7 @@ internal sealed class Legend
 
 	public double Height { get; set; }
 
-	public void Add(string label, IElement element)
+	public void Add(string label, Element element)
 	{
 		var dim = Items.GetOrAdd(label).elements.Add(element);
 

@@ -1,0 +1,455 @@
+﻿<svg id="ggID" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720 576">
+<style>
+/*
+ * GGNet theme contract: paint lives in CSS, layout lives in C# Style.
+ *
+ * The base rules below are theme-independent and read from --ggnet-*
+ * variables; a theme is a block that overrides variables, not a fork of
+ * this file:
+ *
+ *     svg[theme=mytheme] {
+ *         --ggnet-bg: #1e1e1e;
+ *         --ggnet-grid: #333;
+ *     }
+ *
+ * Unknown or unstyled theme names degrade to these defaults instead of
+ * rendering unstyled. Changing --ggnet-font affects rendering only; the
+ * server-side text measurement tables assume Inter (see ASSESSMENT #7).
+ */
+
+svg {
+    --ggnet-font: Inter var;
+    --ggnet-bg: #ffffff;
+    --ggnet-title: #111827;
+    --ggnet-sub-title: #374151;
+    --ggnet-caption: #6b7280;
+    --ggnet-strip: #1f2937;
+    --ggnet-grid: #d1d5db;
+    --ggnet-break-label: #374151;
+    --ggnet-break-title: #111827;
+    --ggnet-axis-title: #111827;
+    --ggnet-legend-title: #1f2937;
+    --ggnet-legend-label: #111827;
+    --ggnet-spinner-display: block;
+    --ggnet-spinner-track: #f1f5f9;
+    --ggnet-spinner-accent: var(--color-primary, #23d0fc);
+    --ggnet-tooltip-bg: #f1f5f9;
+
+    position: relative;
+}
+
+svg line,
+svg polyline,
+svg polygon,
+svg path,
+svg rect,
+svg circle {
+    stroke-linecap: butt;
+    stroke-linejoin: round;
+    stroke-miterlimit: 10.00;
+}
+
+svg text {
+    font-family: var(--ggnet-font);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.pointer-events-none {
+    pointer-events: none;
+}
+
+svg.loading > svg {
+    opacity: 0.25;
+    transition: opacity linear 100ms;
+    transition-delay: 25ms;
+}
+
+svg .spinner {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
+svg .spinner svg {
+    width: 2rem;
+    height: 2rem;
+    color: var(--ggnet-spinner-track);
+    fill: var(--ggnet-spinner-accent);
+}
+
+svg.loading .spinner {
+    display: var(--ggnet-spinner-display);
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+svg.loading .spinner svg {
+    animation: spin 1s linear infinite;
+}
+
+svg .plot {
+    fill: var(--ggnet-bg);
+}
+
+svg .panel {
+    fill: var(--ggnet-bg);
+}
+
+svg .title {
+    font-weight: bold;
+    fill: var(--ggnet-title);
+}
+
+svg .sub-title {
+    fill: var(--ggnet-sub-title);
+}
+
+svg .caption {
+    text-anchor: end;
+    font-style: italic;
+    fill: var(--ggnet-caption);
+}
+
+svg .x-strip {
+    font-weight: bold;
+    fill: var(--ggnet-strip);
+}
+
+svg .y-strip {
+    font-weight: bold;
+    fill: var(--ggnet-strip);
+}
+
+svg .x-break {
+    stroke: var(--ggnet-grid);
+    stroke-width: 0.43;
+}
+
+svg .x-minor-break {
+    stroke: var(--ggnet-grid);
+    stroke-width: 0.32;
+}
+
+svg .x-break-label {
+    fill: var(--ggnet-break-label);
+}
+
+svg .x-break-title {
+    fill: var(--ggnet-break-title);
+}
+
+svg .x-title {
+    fill: var(--ggnet-axis-title);
+}
+
+svg .y-break {
+    stroke: var(--ggnet-grid);
+    stroke-width: 0.43;
+}
+
+svg .y-minor-break {
+    stroke: var(--ggnet-grid);
+    stroke-width: 0.32;
+}
+
+svg .y-break-label {
+    fill: var(--ggnet-break-label);
+}
+
+svg .y-title {
+    fill: var(--ggnet-axis-title);
+}
+
+svg .legend-title {
+    font-weight: bold;
+    fill: var(--ggnet-legend-title);
+}
+
+svg .legend-label {
+    fill: var(--ggnet-legend-label);
+}
+
+.animate-point {
+    transition: transform 0.2s ease-in-out;
+}
+
+.animate-point:hover {
+    transform: scale(1.5);
+}
+
+.animate-bar {
+    transition: transform 0.2s ease-in-out;
+    fill-opacity: 0.6 !important;
+}
+
+.animate-bar:hover {
+    fill-opacity: 0.8 !important;
+}
+
+.animate-map {
+    transition: transform 0.2s ease-in-out;
+    fill-opacity: 0.6 !important;
+    stroke-width: 0.2 !important;
+}
+
+.animate-map:hover {
+    fill-opacity: 1 !important;
+    stroke-width: 0.5 !important;
+}
+
+.animate-hex {
+    transition: transform 0.2s ease-in-out;
+    fill-opacity: 0.7 !important;
+}
+
+.animate-hex:hover {
+    fill-opacity: 1 !important;
+}
+
+[role^="tooltip"] {
+    --tooltip-theme-color: var(--ggnet-tooltip-bg, #f1f5f9);
+    --tooltip-theme-opacity: 1;
+
+    --tooltip-fadein-duration: 500ms;
+
+    position: fixed;
+    overflow: visible;
+}
+
+[role^="tooltip"] .container {
+    position: fixed;
+    /* pointer-events: none; */
+}
+
+[role^="tooltip"] .arrow {
+    position: absolute;
+}
+
+[role^="tooltip"] .arrow::before {
+    position: absolute;
+    content: '';
+    border: 5px solid transparent;
+    pointer-events: none;
+}
+
+[role^="tooltip"] .bubble {
+    position: absolute;
+    border-radius: 4px;
+    padding: 5px 10px 5px 10px;
+    background: var(--tooltip-theme-color);
+    white-space: nowrap;
+    pointer-events: none;
+    font-size: 0.75em;
+}
+
+[role^="tooltip"] .arrow::before,
+[role^="tooltip"] .bubble {
+    animation: fadein var(--tooltip-fadein-duration) linear forwards;
+}
+
+[role^="tooltip-top"] .arrow::before {
+    border-bottom-width: 0;
+    border-top-color: var(--tooltip-theme-color);
+    bottom: 100%;
+    transform: translate(-50%, -.5em);
+}
+
+[role^="tooltip-top"] .bubble {
+    bottom: calc(100% + 5px);
+}
+
+[role^="tooltip-top"][role$="start"] .bubble {
+    transform: translate(-75%, -0.48em);
+}
+
+[role^="tooltip-top"][role$="center"] .bubble {
+    transform: translate(-50%, -0.48em);
+}
+
+[role^="tooltip-top"][role$="end"] .bubble {
+    transform: translate(-25%, -0.48em);
+}
+
+[role^="tooltip-bottom"] .arrow::before {
+    border-top-width: 0;
+    border-bottom-color: var(--tooltip-theme-color);
+    top: 100%;
+    transform: translate(-50%, .5em);
+}
+
+[role^="tooltip-bottom"] .bubble {
+    top: calc(100% + 5px);
+}
+
+[role^="tooltip-bottom"][role$="start"] .bubble {
+    transform: translate(-75%, 0.48em);
+}
+
+[role^="tooltip-bottom"][role$="center"] .bubble {
+    transform: translate(-50%, 0.48em);
+}
+
+[role^="tooltip-bottom"][role$="end"] .bubble {
+    transform: translate(-25%, 0.48em);
+}
+
+[role^="tooltip-left"] .arrow::before {
+    border-right-width: 0;
+    border-left-color: var(--tooltip-theme-color);
+    top: 50%;
+    left: calc(0em - 5px);
+    transform: translate(-.5em, -50%);
+}
+
+[role^="tooltip-left"] .bubble {
+    top: 50%;
+    right: calc(100% + 5px);
+}
+
+[role^="tooltip-left"][role$="start"] .bubble {
+    transform: translate(-0.48em, -75%);
+}
+
+[role^="tooltip-left"][role$="center"] .bubble {
+    transform: translate(-0.48em, -50%);
+}
+
+[role^="tooltip-left"][role$="end"] .bubble {
+    transform: translate(-0.48em, -25%);
+}
+
+[role^="tooltip-right"] .arrow::before {
+    border-left-width: 0;
+    border-right-color: var(--tooltip-theme-color);
+    top: 50%;
+    right: calc(0em - 5px);
+    transform: translate(.5em, -50%);
+}
+
+[role^="tooltip-right"] .bubble {
+    top: 50%;
+    left: calc(100% + 5px);
+}
+
+[role^="tooltip-right"][role$="start"] .bubble {
+    transform: translate(0.48em, -75%);
+}
+
+[role^="tooltip-right"][role$="center"] .bubble {
+    transform: translate(0.48em, -50%);
+}
+
+[role^="tooltip-right"][role$="end"] .bubble {
+    transform: translate(0.48em, -25%);
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: var(--tooltip-theme-opacity);
+    }
+}
+
+[role^="sparkline-tooltip"] {
+    --tooltip-fadein-duration: 500ms;
+
+    overflow: visible;
+}
+
+[role^="sparkline-tooltip"]+div {
+    position: relative;
+    pointer-events: none;
+}
+
+[role^="sparkline-tooltip"] .bubble {
+    position: absolute;
+    border-radius: 4px;
+    padding: 2px 4px;
+    background: var(--tooltip-theme-color);
+    white-space: nowrap;
+    pointer-events: none;
+    font-size: 0.75em;
+}
+
+[role^="sparkline-tooltip"] .bubble {
+    top: 50%;
+    transform: translateY(-50%);
+    animation: fadein var(--tooltip-fadein-duration) linear forwards;
+}
+
+[role^="sparkline-tooltip-left"] .bubble {
+    right: calc(100% + 2px);
+}
+
+[role^="sparkline-tooltip-right"] .bubble {
+    left: calc(100% + 2px);
+}
+</style>
+	<defs></defs>
+	<clipPath id="ggID">
+		<rect x="0" y="0" width="720" height="576" />
+	</clipPath>
+	<rect class="plot" width="100%" height="100%"></rect>
+	<defs>
+		<clipPath id="ggID">
+			<rect x="0" y="0" width="720" height="576" />
+		</clipPath>
+		<clipPath id="ggID">
+			<rect x="14" y="0" width="706" height="556" />
+		</clipPath>
+	</defs>
+	<rect class="panel" x="14" y="0" width="706" height="556" />
+	<line class="x-break" x1="46.09090909090908" x2="46.09090909090908" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-break" x1="206.54545454545453" x2="206.54545454545453" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-break" x1="367" x2="367" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-break" x1="527.4545454545455" x2="527.4545454545455" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-break" x1="687.9090909090909" x2="687.9090909090909" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="-34.13636363636364" x2="-34.13636363636364" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="126.3181818181818" x2="126.3181818181818" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="286.77272727272725" x2="286.77272727272725" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="447.22727272727275" x2="447.22727272727275" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="607.6818181818181" x2="607.6818181818181" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="768.1363636363636" x2="768.1363636363636" y1="0" y2="556" clip-path="url(#ggID)" />
+	<text class="x-break-label" x="46.09090909090908" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">1</text>
+	<text class="x-break-label" x="206.54545454545453" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">2</text>
+	<text class="x-break-label" x="367" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">3</text>
+	<text class="x-break-label" x="527.4545454545455" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">4</text>
+	<text class="x-break-label" x="687.9090909090909" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">5</text>
+	<line class="y-break" x1="14" x2="720" y1="530.7272727272726" y2="530.7272727272726" clip-path="url(#ggID)" />
+	<line class="y-break" x1="14" x2="720" y1="300.9752066115703" y2="300.9752066115703" clip-path="url(#ggID)" />
+	<line class="y-break" x1="14" x2="720" y1="71.22314049586784" y2="71.22314049586784" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="645.603305785124" y2="645.603305785124" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="415.85123966942155" y2="415.85123966942155" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="186.09917355371914" y2="186.09917355371914" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="-43.652892561983386" y2="-43.652892561983386" clip-path="url(#ggID)" />
+	<text class="y-break-label" x="10" y="533.7272727272726" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">2</text>
+	<text class="y-break-label" x="10" y="303.9752066115703" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">3</text>
+	<text class="y-break-label" x="10" y="74.22314049586784" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">4</text>
+	<g transform="translate(46.09090909090908, 530.7272727272726)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+	<g transform="translate(206.54545454545453, 186.09917355371914)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+	<g transform="translate(367, 346.9256198347108)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+	<g transform="translate(527.4545454545455, 25.272727272727312)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+	<g transform="translate(687.9090909090909, 278.00000000000006)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+</svg>

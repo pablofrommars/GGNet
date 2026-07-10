@@ -1,0 +1,303 @@
+﻿namespace GGNet;
+
+using Geoms.ErrorBar;
+using Scales;
+using static LineType;
+
+public static partial class BuilderExtensions
+{
+	/// <summary>
+	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
+	/// </summary>
+	/// <param name="source">Items to plot; one bar per item.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
+	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
+	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the center marker when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and marker color for the whole layer; with <paramref name="colorBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="radius">Center marker radius in pixels.</param>
+	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
+	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	public static PanelFactory<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
+	  this PanelFactory<T1, TX1, TY1> panel,
+	  Source<T2> source,
+	  Func<T2, TX1>? x = null,
+	  Func<T2, TY1>? y = null,
+	  Func<T2, TY1>? ymin = null,
+	  Func<T2, TY1>? ymax = null,
+	  IAestheticMapping<T2, string>? colorBy = null,
+	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T2, RenderFragment>? tooltip = null,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double radius = 5,
+	  PositionAdjustment position = PositionAdjustment.Identity,
+	  bool animation = false,
+	  (bool x, bool y)? scale = null, bool inherit = true)
+	  where TX1 : struct
+	  where TY1 : struct
+	{
+		panel.AddTyped(() =>
+		{
+			var geom = new ErrorBar<T2, TX1, TY1>(source, x, y, ymin, ymax, colorBy, tooltip, position, animation, scale)
+			{
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout,
+				Line = new()
+				{
+					StrokeWidth = strokeWidth,
+					Stroke = color,
+					StrokeOpacity = opacity,
+					LineType = lineType
+				},
+				Circle = new()
+				{
+					Fill = color,
+					FillOpacity = opacity,
+					Radius = radius
+				}
+			};
+
+			return geom;
+		});
+
+		return panel;
+	}
+
+	/// <summary>
+	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
+	/// </summary>
+	/// <param name="source">Items to plot; one bar per item.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
+	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
+	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the center marker when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and marker color for the whole layer; with <paramref name="colorBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="radius">Center marker radius in pixels.</param>
+	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
+	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	public static PanelFactory<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
+	  this PanelFactory<T1, TX1, TY1> panel,
+	  IEnumerable<T2> source,
+	  Func<T2, TX1>? x = null,
+	  Func<T2, TY1>? y = null,
+	  Func<T2, TY1>? ymin = null,
+	  Func<T2, TY1>? ymax = null,
+	  IAestheticMapping<T2, string>? colorBy = null,
+	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T2, RenderFragment>? tooltip = null,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double radius = 5,
+	  PositionAdjustment position = PositionAdjustment.Identity,
+	  bool animation = false,
+	  (bool x, bool y)? scale = null, bool inherit = true)
+	  where TX1 : struct
+	  where TY1 : struct
+	{
+		return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
+	}
+
+	/// <summary>
+	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
+	/// </summary>
+	/// <param name="source">Items to plot; one bar per item.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
+	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
+	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the center marker when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and marker color for the whole layer; with <paramref name="colorBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="radius">Center marker radius in pixels.</param>
+	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
+	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
+	  this PlotContext<T1, TX1, TY1> context,
+	  Source<T2> source,
+	  Func<T2, TX1>? x = null,
+	  Func<T2, TY1>? y = null,
+	  Func<T2, TY1>? ymin = null,
+	  Func<T2, TY1>? ymax = null,
+	  IAestheticMapping<T2, string>? colorBy = null,
+	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T2, RenderFragment>? tooltip = null,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double radius = 5,
+	  PositionAdjustment position = PositionAdjustment.Identity,
+	  bool animation = false,
+	  (bool x, bool y)? scale = null, bool inherit = true)
+	  where TX1 : struct
+	  where TY1 : struct
+	{
+		context.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
+
+		return context;
+	}
+
+	/// <summary>
+	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
+	/// </summary>
+	/// <param name="source">Items to plot; one bar per item.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
+	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
+	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the center marker when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and marker color for the whole layer; with <paramref name="colorBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="radius">Center marker radius in pixels.</param>
+	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
+	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
+	  this PlotContext<T1, TX1, TY1> context,
+	  IEnumerable<T2> source,
+	  Func<T2, TX1>? x = null,
+	  Func<T2, TY1>? y = null,
+	  Func<T2, TY1>? ymin = null,
+	  Func<T2, TY1>? ymax = null,
+	  IAestheticMapping<T2, string>? colorBy = null,
+	  Func<T2, MouseEventArgs, Task>? onclick = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T2, RenderFragment>? tooltip = null,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double radius = 5,
+	  PositionAdjustment position = PositionAdjustment.Identity,
+	  bool animation = false,
+	  (bool x, bool y)? scale = null, bool inherit = true)
+	  where TX1 : struct
+	  where TY1 : struct
+	{
+		return context.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
+	}
+
+	/// <summary>
+	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
+	/// </summary>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
+	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
+	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the center marker when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and marker color for the whole layer; with <paramref name="colorBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="radius">Center marker radius in pixels.</param>
+	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
+	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	public static PanelFactory<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
+	  this PanelFactory<T, TX, TY> panel,
+	  Func<T, TX>? x = null,
+	  Func<T, TY>? y = null,
+	  Func<T, TY>? ymin = null,
+	  Func<T, TY>? ymax = null,
+	  IAestheticMapping<T, string>? colorBy = null,
+	  Func<T, MouseEventArgs, Task>? onclick = null,
+	  Func<T, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T, RenderFragment>? tooltip = null,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double radius = 5,
+	  PositionAdjustment position = PositionAdjustment.Identity,
+	  bool animation = false,
+	  (bool x, bool y)? scale = null, bool inherit = true)
+	  where TX : struct
+	  where TY : struct
+	{
+		return Geom_ErrorBar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, colorBy ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
+	}
+
+	/// <summary>
+	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
+	/// </summary>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
+	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
+	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
+	/// <param name="onclick">Per-item click handler.</param>
+	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
+	/// <param name="onmouseout">Per-item hover-end handler.</param>
+	/// <param name="tooltip">Tooltip content per item, shown on hover at the center marker when no explicit hover handlers are set.</param>
+	/// <param name="strokeWidth">Stroke width in pixels.</param>
+	/// <param name="color">Constant stroke and marker color for the whole layer; with <paramref name="colorBy"/> set it still colors other aesthetics’ legend swatches.</param>
+	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
+	/// <param name="lineType">Dash pattern.</param>
+	/// <param name="radius">Center marker radius in pixels.</param>
+	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
+	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
+	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
+	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	public static PlotContext<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
+	  this PlotContext<T, TX, TY> context,
+	  Func<T, TX>? x = null,
+	  Func<T, TY>? y = null,
+	  Func<T, TY>? ymin = null,
+	  Func<T, TY>? ymax = null,
+	  IAestheticMapping<T, string>? colorBy = null,
+	  Func<T, MouseEventArgs, Task>? onclick = null,
+	  Func<T, MouseEventArgs, Task>? onmouseover = null,
+	  Func<T, MouseEventArgs, Task>? onmouseout = null,
+	  Func<T, RenderFragment>? tooltip = null,
+	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
+	  double radius = 5,
+	  PositionAdjustment position = PositionAdjustment.Identity,
+	  bool animation = false,
+	  (bool x, bool y)? scale = null, bool inherit = true)
+	  where TX : struct
+	  where TY : struct
+	{
+		context.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
+
+		return context;
+	}
+}

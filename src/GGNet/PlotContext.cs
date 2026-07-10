@@ -1,5 +1,4 @@
-﻿using GGNet.Buffers;
-using GGNet.Data;
+﻿using GGNet.Data;
 using GGNet.Exceptions;
 using GGNet.Facets;
 
@@ -20,6 +19,9 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	public IReadOnlyList<T>? Source { get; init; }
 
+	internal IReadOnlyList<T> RequireSource()
+		=> Source ?? throw new GGNetUserException("This plot was built without a source; use the Geom_Xxx overloads that take one");
+
 	internal bool Initialized { get; set; }
 
 	internal string? Title { get; set; }
@@ -32,22 +34,54 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	internal Selectors<T, TX, TY> Selectors { get; } = new();
 
+	// Default scale factories, chosen at Build time where overload resolution has
+	// already dispatched on TX/TY. Invoked by Init (with the coordinate system's
+	// expansion hints) only when the user registered no scale.
+	internal Action<Coords.ICoordinateSystem>? XScaleDefault { get; set; }
+
+	internal Action<Coords.ICoordinateSystem>? YScaleDefault { get; set; }
+
 	internal Positions<TX, TY> Positions { get; } = new();
 
 	internal Aesthetics<T> Aesthetics { get; } = new();
 
-	public Faceting<T>? Faceting { get; set; }
+	internal Faceting<T>? Faceting { get; set; }
 
 	public bool Flip { get; set; }
+
+	public CoordSystem CoordSystem { get; set; } = CoordSystem.Cartesian;
+
+	// The plot-level strategy instance answers plot-level policy (axis bands,
+	// expansion hints); panels materialize their own measured instances.
+	// default!: assigned by Init, which Render runs first when needed.
+	internal Coords.ICoordinateSystem Coord { get; private set; } = default!;
+
+	internal Coords.ICoordinateSystem MakeCoordinateSystem()
+	{
+		if (CoordSystem == CoordSystem.Polar)
+		{
+			if (Flip)
+			{
+				throw new GGNetUserException("Flip is not supported with polar coordinates");
+			}
+
+			return new Coords.PolarCoordinateSystem(PolarOptions, Style!);
+		}
+
+		return new Coords.CartesianCoordinateSystem(Style!);
+	}
+
+	public PolarOptions PolarOptions { get; } = new();
 
 	public Style? Style { get; set; }
 
 	public PanelFactory<T, TX, TY>? DefaultFactory { get; set; }
 
-	public Buffer<PanelFactory<T, TX, TY>> PanelFactories { get; } = new(4, 1);
+	internal List<PanelFactory<T, TX, TY>> PanelFactories { get; } = [];
 
-	internal Buffer<Panel<T, TX, TY>> Panels { get; } = new(16, 1);
+	internal List<Panel<T, TX, TY>> Panels { get; } = [];
 
+	// default!: assigned by Init, which Render runs first when needed.
 	internal Legends Legends { get; set; } = default!;
 
 	internal (int rows, int cols) N { get; set; }
@@ -68,67 +102,44 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	public void Init(bool grid = true)
 	{
-    try
-    {
-      this.grid = grid;
+		if (Initialized)
+		{
+			return;
+		}
 
-      if (Positions.X.Factory is null)
-      {
-        if (typeof(TX) == typeof(LocalDate))
-        {
-          (this as PlotContext<T, LocalDate, TY>)!.Scale_X_Discrete_Date();
-        }
-        else if (typeof(TX) == typeof(LocalDateTime))
-        {
-          (this as PlotContext<T, LocalDateTime, TY>)!.Scale_X_Discrete_DateTime();
-        }
-        else if (typeof(TX) == typeof(Instant))
-        {
-          throw new GGNetUserException("Scale_X_Instant required");
-        }
-        else if (typeof(TX) == typeof(double))
-        {
-          (this as PlotContext<T, double, TY>)!.Scale_X_Continuous();
-        }
-        else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
-        {
-          this.Scale_X_Discrete();
-        }
-        else
-        {
-          throw new GGNetUserException("Type could not be infered");
-        }
-      }
+		this.grid = grid;
 
-      if (Positions.Y.Factory is null)
-      {
-        if (typeof(TY) == typeof(double))
-        {
-          (this as PlotContext<T, TX, double>)!.Scale_Y_Continuous();
-        }
-        else if (typeof(TX) == typeof(string) || typeof(TX).IsEnum)
-        {
-          this.Scale_Y_Discrete();
-        }
-        else
-        {
-          throw new GGNetUserException("Type could not be infered");
-        }
-      }
+		Style ??= Style.Default();
 
-      Style ??= Style.Default();
+		Coord = MakeCoordinateSystem();
 
-      Legends = new(Style);
-    }
-    finally
-    {
-      Initialized = true;
-    }
+		if (Positions.X.Factory is null)
+		{
+			if (XScaleDefault is null)
+			{
+				throw new GGNetUserException("Type could not be inferred");
+			}
+
+			XScaleDefault(Coord);
+		}
+
+		if (Positions.Y.Factory is null)
+		{
+			if (YScaleDefault is null)
+			{
+				throw new GGNetUserException("Type could not be inferred");
+			}
+
+			YScaleDefault(Coord);
+		}
+
+		Legends = new(Style);
+
+		Initialized = true;
 	}
 
-	protected void RunDefaultPanel(bool first)
+	private void BuildDefaultPanels()
 	{
-		if (first)
 		{
 			var n = PanelFactories.Count;
 
@@ -209,45 +220,23 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 				Panels.Add(panel);
 			}
 		}
-		else
-		{
-			for (var i = 0; i < Positions.X.Scales.Count; i++)
-			{
-				Positions.X.Scales[i].Clear();
-			}
-
-			for (var i = 0; i < Positions.Y.Scales.Count; i++)
-			{
-				Positions.Y.Scales[i].Clear();
-			}
-		}
 	}
 
-	protected void RunFaceting(bool first)
+	private void BuildFacetPanels()
 	{
-		if (!first)
-		{
-			Faceting!.Clear();
-
-			Panels.Clear();
-
-			Positions.X.Scales.Clear();
-			Positions.Y.Scales.Clear();
-		}
-
 		for (var i = 0; i < Source?.Count; i++)
 		{
 			Faceting!.Train(Source[i]);
 		}
 
-		Faceting!.Set();
+		Faceting!.Commit();
 
 		var facets = Faceting.Facets(Style!);
 
 		N = (Faceting.NRows, Faceting.NColumns);
 
 		var width = 1.0 / Faceting.NColumns;
-		var height = 1.0 / Faceting.NRows; ;
+		var height = 1.0 / Faceting.NRows;
 
 		if (Faceting.Strip)
 		{
@@ -340,20 +329,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		}
 	}
 
-	protected void ClearAesthetics(bool first)
-	{
-		if (first)
-		{
-			return;
-		}
-
-		for (var i = 0; i < Aesthetics.Scales.Count; i++)
-		{
-			Aesthetics.Scales[i].Clear();
-		}
-	}
-
-	protected void RunLegend()
+	private void BuildLegends()
 	{
 		if (Faceting is null)
 		{
@@ -378,37 +354,50 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		}
 	}
 
-	public void Render(bool first)
+	// The render pipeline. Flagless and idempotent by construction: Reset clears
+	// every stateful participant unconditionally (clearing empty state is free),
+	// EnsurePanels builds only what is absent, and no stage depends on whether a
+	// previous pass ran. Rendering twice yields identical output.
+	public void Render()
 	{
-		if (Faceting is null)
+		if (!Initialized)
 		{
-			RunDefaultPanel(first);
-		}
-		else
-		{
-			RunFaceting(first);
+			Init(grid);
 		}
 
-		ClearAesthetics(first);
-
-		for (int p = 0; p < Panels.Count; p++)
-		{
-			var panel = Panels[p];
-
-			for (int g = 0; g < panel.Geoms.Count; g++)
-			{
-				panel.Geoms[g].Train();
-			}
-		}
-
-		for (int i = 0; i < Aesthetics.Scales.Count; i++)
-		{
-			Aesthetics.Scales[i].Set(grid);
-		}
+		Reset();
+		EnsurePanels();
+		Validate();
+		Train();
+		CommitAesthetics();
 
 		if (grid)
 		{
-			RunLegend();
+			BuildLegends();
+		}
+
+		Shape();
+		CommitPositions();
+		MeasureAxes();
+	}
+
+	private void Reset()
+	{
+		RecomputeStats();
+
+		for (var i = 0; i < Positions.X.Scales.Count; i++)
+		{
+			Positions.X.Scales[i].Clear();
+		}
+
+		for (var i = 0; i < Positions.Y.Scales.Count; i++)
+		{
+			Positions.Y.Scales[i].Clear();
+		}
+
+		for (var i = 0; i < Aesthetics.Scales.Count; i++)
+		{
+			Aesthetics.Scales[i].Clear();
 		}
 
 		for (var p = 0; p < Panels.Count; p++)
@@ -417,27 +406,138 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 			for (var g = 0; g < panel.Geoms.Count; g++)
 			{
-				var geom = panel.Geoms[g];
-				if (!first)
-				{
-					geom.Clear();
-				}
-
-				geom.Shape(Flip);
+				panel.Geoms[g].Clear();
 			}
 		}
 
+		Faceting?.Clear();
+
+		// Clear contents, never replace the instance: geoms capture the container
+		// reference at panel-build time, and default-path panels outlive passes.
+		Legends.Clear();
+	}
+
+	private void RecomputeStats()
+	{
+		HashSet<IStatSource>? seen = null;
+
+		if (Source is IStatSource plotStat)
+		{
+			(seen ??= []).Add(plotStat);
+			plotStat.Recompute();
+		}
+
+		for (var p = 0; p < Panels.Count; p++)
+		{
+			var panel = Panels[p];
+
+			for (var g = 0; g < panel.Geoms.Count; g++)
+			{
+				if (panel.Geoms[g].StatSource is { } stat && (seen ??= []).Add(stat))
+				{
+					stat.Recompute();
+				}
+			}
+		}
+	}
+
+	private void EnsurePanels()
+	{
+		if (Faceting is null)
+		{
+			if (Panels.Count == 0)
+			{
+				BuildDefaultPanels();
+			}
+		}
+		else
+		{
+			// The panel set is data-dependent under faceting: re-derive it every pass.
+			Panels.Clear();
+
+			Positions.X.Scales.Clear();
+			Positions.Y.Scales.Clear();
+
+			BuildFacetPanels();
+		}
+	}
+
+	private void Validate()
+	{
+		for (var p = 0; p < Panels.Count; p++)
+		{
+			var panel = Panels[p];
+
+			for (var g = 0; g < panel.Geoms.Count; g++)
+			{
+				var geom = panel.Geoms[g];
+
+				if ((geom.SupportedCoordSystems & CoordSystem) == 0)
+				{
+					throw new GGNetUserException($"{geom.GetType().Name.Split('`')[0]} does not support {CoordSystem} coordinates");
+				}
+			}
+		}
+	}
+
+	private void Train()
+	{
+		for (var p = 0; p < Panels.Count; p++)
+		{
+			var panel = Panels[p];
+
+			for (var g = 0; g < panel.Geoms.Count; g++)
+			{
+				panel.Geoms[g].Train();
+			}
+		}
+	}
+
+	private void CommitAesthetics()
+	{
+		for (var i = 0; i < Aesthetics.Scales.Count; i++)
+		{
+			Aesthetics.Scales[i].Commit(grid);
+		}
+	}
+
+	private void Shape()
+	{
+		for (var p = 0; p < Panels.Count; p++)
+		{
+			var panel = Panels[p];
+
+			for (var g = 0; g < panel.Geoms.Count; g++)
+			{
+				panel.Geoms[g].Shape();
+			}
+		}
+	}
+
+	private void CommitPositions()
+	{
+		for (var i = 0; i < Positions.X.Scales.Count; i++)
+		{
+			Positions.X.Scales[i].Commit(grid);
+		}
+
+		for (var i = 0; i < Positions.Y.Scales.Count; i++)
+		{
+			Positions.Y.Scales[i].Commit(grid);
+		}
+	}
+
+	private void MeasureAxes()
+	{
 		var height = 0.0;
 		var xtitles = 0.0;
 
-		for (var i = 0; i < Positions.X.Scales.Count; i++)
+		if (grid)
 		{
-			var scale = Positions.X.Scales[i];
-
-			scale.Set(grid);
-
-			if (grid)
+			for (var i = 0; i < Positions.X.Scales.Count; i++)
 			{
+				var scale = Positions.X.Scales[i];
+
 				foreach (var (_, label) in scale.Labels)
 				{
 					height = Max(height, label.Height(Style!.Axis.Text.X.FontSize));
@@ -457,30 +557,41 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		var width = 0.0;
 		var ytitles = 0.0;
 
-		for (var i = 0; i < Positions.Y.Scales.Count; i++)
+		if (grid)
 		{
-			var scale = Positions.Y.Scales[i];
-
-			scale.Set(grid);
-
-			if (grid)
+			for (var i = 0; i < Positions.Y.Scales.Count; i++)
 			{
+				var scale = Positions.Y.Scales[i];
+
 				foreach (var (_, label) in scale.Labels)
 				{
-					width = Max(width, label.Width(Style.Axis.Text.Y.FontSize));
+					width = Max(width, label.Width(Style!.Axis.Text.Y.FontSize));
 				}
 
 				foreach (var (_, title) in scale.Titles)
 				{
-					ytitles = Max(ytitles, title.Height(Style.Axis.Title.Y.FontSize));
+					ytitles = Max(ytitles, title.Height(Style!.Axis.Title.Y.FontSize));
 				}
 			}
 		}
 
-		Axis = (width, height);
+		if (!Coord.CarvesAxisBands)
+		{
+			// Breaks and labels live inside the plotting area;
+			// no axis bands are reserved around it.
+			Axis = (0.0, 0.0);
 
-		AxisTitles = (xtitles, ytitles);
+			AxisTitles = (0.0, 0.0);
 
-		AxisTitlesVisibility = (xtitlesVisibility, false);
+			AxisTitlesVisibility = (false, false);
+		}
+		else
+		{
+			Axis = (width, height);
+
+			AxisTitles = (xtitles, ytitles);
+
+			AxisTitlesVisibility = (xtitlesVisibility, false);
+		}
 	}
 }

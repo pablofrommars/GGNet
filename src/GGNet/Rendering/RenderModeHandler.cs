@@ -2,11 +2,11 @@ using GGNet.Exceptions;
 
 namespace GGNet.Rendering;
 
-public abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHandler
+internal abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHandler
 {
 	protected readonly IPlotRendering plot = plot;
 
-    public virtual Task RefreshAsync(RenderTarget target, CancellationToken token)
+	public virtual Task RefreshAsync(RenderTarget target, CancellationToken token)
 		=> Task.CompletedTask;
 
 	public virtual bool ShouldRender() => false;
@@ -16,7 +16,11 @@ public abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHandle
 	public abstract IChildRenderModeHandler Child();
 
 	public virtual ValueTask DisposeAsync()
-		=> ValueTask.CompletedTask;
+	{
+		GC.SuppressFinalize(this);
+
+		return ValueTask.CompletedTask;
+	}
 
 	public static IRenderModeHandler Factory(RenderMode mode, IPlotRendering component)
 		=> mode switch

@@ -3,6 +3,7 @@ using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;
+using GGNet.Exceptions;
 
 namespace GGNet.Geoms.Bar;
 
@@ -10,409 +11,328 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
   where TX : struct
   where TY : struct
 {
-  private sealed class Comparer : IComparer<(double x, Buffer<(T item, string fill, double value)> y)>
-  {
-    public int Compare((double x, Buffer<(T item, string fill, double value)> y) x, (double x, Buffer<(T item, string fill, double value)> y) y) => x.x.CompareTo(y.x);
-
-    public static readonly Comparer Instance = new();
-  }
-
-  private readonly SortedBuffer<(double x, Buffer<(T item, string fill, double value)> y)> bars = new(32, 1, Comparer.Instance);
-
-  private readonly PositionAdjustment position;
-  private readonly double width;
-
-  private readonly bool animation;
-
-  public Bar(
-    IReadOnlyList<T> source,
-    Func<T, TX>? x,
-    Func<T, TY>? y,
-    IAestheticMapping<T, string>? fill = null,
-    Func<T, RenderFragment>? tooltip = null,
-    PositionAdjustment position = PositionAdjustment.Stack,
-    double width = 0.9,
-    bool animation = false,
-    (bool x, bool y)? scale = null,
-    bool inherit = true)
-    : base(source, scale, inherit)
-  {
-    Selectors = new()
-    {
-      X = x,
-      Y = y,
-      Tooltip = tooltip
-    };
-
-    Aesthetics = new()
-    {
-      Fill = fill
-    };
-
-    this.position = position;
-    this.width = width;
-
-    this.animation = animation;
-  }
-
-  public Selectors<T, TX, TY> Selectors { get; }
-
-  public Aesthetics<T> Aesthetics { get; }
-
-  public Positions<T> Positions { get; } = new();
-
-  public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
-
-  public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
-
-  public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
-
-  private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
-
-  public Elements.Rectangle Aesthetic { get; set; } = default!;
-
-  public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
-  {
-    base.Init(panel, facet);
-
-    if (Selectors.X is null)
-    {
-      Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
-    }
-    else
-    {
-      Positions.X = XMapping(Selectors.X, panel.X);
-    }
-
-    if (Selectors.Y is null)
-    {
-      Positions.Y = YMapping(panel.Data.Selectors.Y!, panel.Y);
-    }
-    else
-    {
-      Positions.Y = YMapping(Selectors.Y, panel.Y);
-    }
-
-    if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
-    {
-      onMouseOver = (item, x, y, _) =>
-      {
-        panel.Component?.Tooltip?.Show(
-          x,
-          y,
-          0,
-          Selectors.Tooltip(item),
-          Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
-          Aesthetic.FillOpacity);
-
-        return Task.CompletedTask;
-      };
-
-      OnMouseOut = (_, __) =>
-      {
-        panel.Component?.Tooltip?.Hide();
-
-        return Task.CompletedTask;
-      };
-    }
-    else if (OnMouseOver is not null)
-    {
-      onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
-    }
-
-    if (!inherit)
-    {
-      return;
-    }
-
-    Aesthetics.Fill ??= panel.Data.Aesthetics.Fill as IAestheticMapping<T, string>;
-  }
-
-  public override void Train(T item)
-  {
-    Positions.X.Train(item);
-    Positions.Y.Train(item);
-
-    Aesthetics.Fill?.Train(item);
-  }
-
-  public override void Legend()
-  {
-    Legend(Aesthetics.Fill, value => new Elements.Rectangle
-    {
-      Fill = value,
-      FillOpacity = Aesthetic.FillOpacity
-    });
-  }
-
-  protected override void Shape(T item, bool flip)
-  {
-    var fill = Aesthetic.Fill;
-
-    if (Aesthetics.Fill is not null)
-    {
-      fill = Aesthetics.Fill.Map(item);
-      if (string.IsNullOrEmpty(fill))
-      {
-        return;
-      }
-    }
-
-    var x = Positions.X.Map(item);
-    var y = Positions.Y.Map(item);
-
-    var exist = false;
-
-    if (flip)
-    {
-      for (var i = 0; i < bars.Count; i++)
-      {
-        var bar = bars[i];
-        if (bar.x == y)
-        {
-          bar.y.Add((item, fill, x));
-          exist = true;
-          break;
-        }
-      }
-
-      if (!exist)
-      {
-        var bar = new Buffer<(T item, string fill, double value)>(8, 1);
-        bar.Add((item, fill, x));
-        bars.Add((y, bar));
-      }
-    }
-    else
-    {
-      for (var i = 0; i < bars.Count; i++)
-      {
-        var bar = bars[i];
-        if (bar.x == x)
-        {
-          bar.y.Add((item, fill, y));
-          exist = true;
-          break;
-        }
-      }
-
-      if (!exist)
-      {
-        var bar = new Buffer<(T item, string fill, double value)>(8, 1);
-        bar.Add((item, fill, y));
-        bars.Add((x, bar));
-      }
-    }
-  }
-
-  private void Stack(bool flip)
-  {
-    var delta = width;
-
-    if (bars.Count > 1)
-    {
-      var d = double.MaxValue;
-
-      for (var i = 1; i < bars.Count; i++)
-      {
-        d = Math.Min(d, bars[i].x - bars[i - 1].x);
-      }
-
-      delta *= d;
-    }
-
-    if (flip)
-    {
-      for (var i = 0; i < bars.Count; i++)
-      {
-        var (x, y) = bars[i];
-        var sum = 0.0;
-
-        for (var j = y.Count - 1; j >= 0; j--)
-        {
-          var (item, fill, value) = y[j];
-
-          var rect = new Rectangle
-          {
-            Classes = animation ? "animate-bar" : string.Empty,
-            X = sum,
-            Y = x - delta / 2.0,
-            Width = value,
-            Height = delta,
-            Aesthetic = new()
-            {
-              Fill = fill,
-              FillOpacity = Aesthetic.FillOpacity,
-              Stroke = Aesthetic.Stroke,
-              StrokeWidth = Aesthetic.StrokeWidth,
-            },
-            OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-            OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, sum + value, x, e) : null,
-            OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
-          };
-
-          Layer.Add(rect);
-
-          sum += value;
-        }
-
-        if (scale.x)
-        {
-          Positions.X.Position.Shape(0, sum);
-        }
-
-        if (scale.y)
-        {
-          Positions.Y.Position.Shape(x - delta, x + delta);
-        }
-      }
-    }
-    else
-    {
-      for (var i = 0; i < bars.Count; i++)
-      {
-        var (x, y) = bars[i];
-        var sum = 0.0;
-
-        for (var j = y.Count - 1; j >= 0; j--)
-        {
-          var (item, fill, value) = y[j];
-
-          var rect = new Rectangle
-          {
-            Classes = animation ? "animate-bar" : string.Empty,
-            X = x - delta / 2.0,
-            Y = sum,
-            Width = delta,
-            Height = value,
-            Aesthetic = new()
-            {
-              Fill = fill,
-              FillOpacity = Aesthetic.FillOpacity,
-              Stroke = Aesthetic.Stroke,
-              StrokeWidth = Aesthetic.StrokeWidth
-            },
-            OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-            OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x, sum + value, e) : null,
-            OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
-          };
-
-          Layer.Add(rect);
-
-          sum += value;
-        }
-
-        if (scale.x)
-        {
-          Positions.X.Position.Shape(x - delta, x + delta);
-        }
-
-        if (scale.y)
-        {
-          Positions.Y.Position.Shape(0, sum);
-        }
-      }
-    }
-  }
-
-  private void Dodge(bool flip)
-  {
-    if (flip)
-    {
-      throw new NotImplementedException();
-    }
-    else
-    {
-      var delta = width;
-
-      if (bars.Count > 1)
-      {
-        var d = double.MaxValue;
-
-        for (var i = 1; i < bars.Count; i++)
-        {
-          d = Math.Min(d, bars[i].x - bars[i - 1].x);
-        }
-
-        delta *= d;
-      }
-
-      for (var i = 0; i < bars.Count; i++)
-      {
-        var bar = bars[i];
-        var n = bar.y.Count;
-
-        var w = delta / n;
-        var x = bar.x - delta / 2.0;
-
-        for (var j = 0; j < n; j++)
-        {
-          var (item, fill, value) = bar.y[j];
-
-          var rect = new Rectangle
-          {
-            Classes = animation ? "animate-bar" : string.Empty,
-            X = x,
-            Y = value >= 0 ? 0 : value,
-            Width = w,
-            Height = Math.Abs(value),
-            Aesthetic = new()
-            {
-              Fill = fill,
-              FillOpacity = Aesthetic.FillOpacity,
-              Stroke = Aesthetic.Stroke,
-              StrokeWidth = Aesthetic.StrokeWidth,
-            },
-            OnClick = OnClick is not null ? e => OnClick(item, e) : null,
-            OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, x + w / 2.0, value, e) : null,
-            OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
-          };
-
-          Layer.Add(rect);
-
-          if (scale.x)
-          {
-            Positions.X.Position.Shape(x, x + w);
-          }
-
-          if (scale.y)
-          {
-            if (value >= 0)
-            {
-              Positions.Y.Position.Shape(0, value);
-            }
-            else
-            {
-              Positions.Y.Position.Shape(value, 0);
-            }
-          }
-
-          x += w;
-        }
-      }
-    }
-  }
-
-  protected override void Set(bool flip)
-  {
-    if (position == PositionAdjustment.Stack)
-    {
-      Stack(flip);
-    }
-    else if (position == PositionAdjustment.Dodge)
-    {
-      Dodge(flip);
-    }
-    else
-    {
-      throw new NotImplementedException();
-    }
-  }
-
-  public override void Clear()
-  {
-    base.Clear();
-
-    bars.Clear();
-  }
+	private sealed class Comparer : IComparer<(double x, List<(T item, string fill, double value)> y)>
+	{
+		public int Compare((double x, List<(T item, string fill, double value)> y) x, (double x, List<(T item, string fill, double value)> y) y) => x.x.CompareTo(y.x);
+
+		public static readonly Comparer Instance = new();
+	}
+
+	private readonly SortedBuffer<(double x, List<(T item, string fill, double value)> y)> bars = new(Comparer.Instance);
+
+	private readonly PositionAdjustment position;
+	private readonly double width;
+
+	private readonly bool animation;
+
+	private bool flip;
+
+	public Bar(
+	  IReadOnlyList<T> source,
+	  Func<T, TX>? x,
+	  Func<T, TY>? y,
+	  IAestheticMapping<T, string>? fill = null,
+	  Func<T, RenderFragment>? tooltip = null,
+	  PositionAdjustment position = PositionAdjustment.Stack,
+	  double width = 0.9,
+	  bool animation = false,
+	  (bool x, bool y)? scale = null)
+	  : base(source, scale)
+	{
+		Selectors = new()
+		{
+			X = x,
+			Y = y,
+			Tooltip = tooltip
+		};
+
+		Aesthetics = new()
+		{
+			Fill = fill
+		};
+
+		this.position = position;
+		this.width = width;
+
+		this.animation = animation;
+	}
+
+	public Selectors<T, TX, TY> Selectors { get; }
+
+	public Aesthetics<T> Aesthetics { get; }
+
+	public Positions<T> Positions { get; } = new();
+
+	public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
+
+	public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
+
+	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
+
+	private Func<T, double, double, MouseEventArgs, Task>? onMouseOver;
+
+	public required Elements.Rectangle Aesthetic { get; set; }
+
+	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
+	{
+		base.Init(panel, facet);
+
+		if (Selectors.X is null)
+		{
+			throw new GGNetUserException("X selector is required");
+		}
+
+		if (Selectors.Y is null)
+		{
+			throw new GGNetUserException("Y selector is required");
+		}
+
+		// Flip is Bar's statistical-axis choice, captured at wiring time: the
+		// grouping key and the stacking axis swap roles (selector/scale pairs
+		// stay intact) and AddRect transposes the emitted rectangles to match.
+		flip = panel.Data.Flip;
+
+		if (flip)
+		{
+			Positions.X = new PositionMapping<T, TY>(Selectors.Y, panel.Y);
+			Positions.Y = new PositionMapping<T, TX>(Selectors.X, panel.X);
+		}
+		else
+		{
+			Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
+			Positions.Y = new PositionMapping<T, TY>(Selectors.Y, panel.Y);
+		}
+
+		if (OnMouseOver is null && OnMouseOut is null && Selectors.Tooltip is not null)
+		{
+			onMouseOver = (item, x, y, _) =>
+			{
+				panel.Component?.Tooltip?.Show(
+			x,
+			y,
+			0,
+			Selectors.Tooltip(item),
+			Aesthetics.Fill?.Map(item) ?? Aesthetic.Fill,
+			Aesthetic.FillOpacity);
+
+				return Task.CompletedTask;
+			};
+
+			OnMouseOut = (_, __) =>
+			{
+				panel.Component?.Tooltip?.Hide();
+
+				return Task.CompletedTask;
+			};
+		}
+		else if (OnMouseOver is not null)
+		{
+			onMouseOver = (item, _, __, e) => OnMouseOver(item, e);
+		}
+	}
+
+	public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;
+
+	public override void Train(T item)
+	{
+		Positions.X.Train(item);
+		Positions.Y.Train(item);
+
+		Aesthetics.Fill?.Train(item);
+	}
+
+	public override void Legend()
+	{
+		Legend(Aesthetics.Fill, value => new Elements.Rectangle
+		{
+			Fill = value,
+			FillOpacity = Aesthetic.FillOpacity
+		});
+	}
+
+	protected override void Shape(T item)
+	{
+		var fill = Aesthetic.Fill;
+
+		if (Aesthetics.Fill is not null)
+		{
+			fill = Aesthetics.Fill.Map(item);
+			if (string.IsNullOrEmpty(fill))
+			{
+				return;
+			}
+		}
+
+		var x = Positions.X.Map(item);
+		var y = Positions.Y.Map(item);
+
+		var exist = false;
+
+		for (var i = 0; i < bars.Count; i++)
+		{
+			var bar = bars[i];
+			if (bar.x == x)
+			{
+				bar.y.Add((item, fill, y));
+				exist = true;
+				break;
+			}
+		}
+
+		if (!exist)
+		{
+			var bar = new List<(T item, string fill, double value)>();
+			bar.Add((item, fill, y));
+			bars.Add((x, bar));
+		}
+	}
+
+	private void AddRect(T item, string fill, double x, double y, double w, double h, double anchorX, double anchorY)
+	{
+		var aesthetic = new Elements.Rectangle
+		{
+			Fill = fill,
+			FillOpacity = Aesthetic.FillOpacity,
+			Stroke = Aesthetic.Stroke,
+			StrokeWidth = Aesthetic.StrokeWidth,
+		};
+
+		Layer.Add(flip
+			? new Rectangle
+			{
+				Classes = animation ? "animate-bar" : string.Empty,
+				X = y,
+				Y = x,
+				Width = h,
+				Height = w,
+				Aesthetic = aesthetic,
+				OnClick = OnClick is not null ? e => OnClick(item, e) : null,
+				OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, anchorY, anchorX, e) : null,
+				OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
+			}
+			: new Rectangle
+			{
+				Classes = animation ? "animate-bar" : string.Empty,
+				X = x,
+				Y = y,
+				Width = w,
+				Height = h,
+				Aesthetic = aesthetic,
+				OnClick = OnClick is not null ? e => OnClick(item, e) : null,
+				OnMouseOver = onMouseOver is not null ? e => onMouseOver(item, anchorX, anchorY, e) : null,
+				OnMouseOut = OnMouseOut is not null ? e => OnMouseOut(item, e) : null
+			});
+	}
+
+	private double Delta()
+	{
+		var delta = width;
+
+		if (bars.Count > 1)
+		{
+			var d = double.MaxValue;
+
+			for (var i = 1; i < bars.Count; i++)
+			{
+				d = Math.Min(d, bars[i].x - bars[i - 1].x);
+			}
+
+			delta *= d;
+		}
+
+		return delta;
+	}
+
+	private void Stack()
+	{
+		var delta = Delta();
+
+		for (var i = 0; i < bars.Count; i++)
+		{
+			var (x, y) = bars[i];
+			var sum = 0.0;
+
+			for (var j = y.Count - 1; j >= 0; j--)
+			{
+				var (item, fill, value) = y[j];
+
+				AddRect(item, fill, x - delta / 2.0, sum, delta, value, x, sum + value);
+
+				sum += value;
+			}
+
+			if (scale.x)
+			{
+				Positions.X.Position.Shape(x - delta, x + delta);
+			}
+
+			if (scale.y)
+			{
+				Positions.Y.Position.Shape(0, sum);
+			}
+		}
+	}
+
+	private void Dodge()
+	{
+		var delta = Delta();
+
+		for (var i = 0; i < bars.Count; i++)
+		{
+			var bar = bars[i];
+			var n = bar.y.Count;
+
+			var w = delta / n;
+			var x = bar.x - delta / 2.0;
+
+			for (var j = 0; j < n; j++)
+			{
+				var (item, fill, value) = bar.y[j];
+
+				AddRect(item, fill, x, value >= 0 ? 0 : value, w, Math.Abs(value), x + w / 2.0, value);
+
+				if (scale.x)
+				{
+					Positions.X.Position.Shape(x, x + w);
+				}
+
+				if (scale.y)
+				{
+					if (value >= 0)
+					{
+						Positions.Y.Position.Shape(0, value);
+					}
+					else
+					{
+						Positions.Y.Position.Shape(value, 0);
+					}
+				}
+
+				x += w;
+			}
+		}
+	}
+
+	protected override void Set()
+	{
+		if (position == PositionAdjustment.Stack)
+		{
+			Stack();
+		}
+		else if (position == PositionAdjustment.Dodge)
+		{
+			Dodge();
+		}
+		else
+		{
+			throw new NotImplementedException();
+		}
+	}
+
+	public override void Clear()
+	{
+		base.Clear();
+
+		bars.Clear();
+	}
 }

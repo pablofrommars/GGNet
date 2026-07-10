@@ -2,204 +2,129 @@
 
 using Rendering;
 
-using static Position;
-
 public partial class Plot<T, TX, TY> : PlotBase<T, TX, TY>
   where TX : struct
   where TY : struct
 {
-  [Parameter]
-  public double Width { get; init; } = 720;
+	[Parameter]
+	public double Width { get; init; } = 720;
 
-  [Parameter]
-  public double Height { get; init; } = 576;
+	[Parameter]
+	public double Height { get; init; } = 576;
 
-  [Parameter]
-  public string Theme { get; init; } = "default";
+	[Parameter]
+	public string Theme { get; init; } = "default";
 
-  [Parameter(CaptureUnmatchedValues = true)]
-  public IDictionary<string, object>? AdditionalAttributes { get; set; }
+	[Parameter(CaptureUnmatchedValues = true)]
+	public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-  public Zone Title;
-  public Zone SubTitle;
+	internal Zone Title;
+	internal Zone SubTitle;
 
-  public Zone Legend;
+	internal Zone Legend;
 
-  public Zone Caption;
+	internal Zone Caption;
 
-  private Zone wrapper;
+	private Zone wrapper;
 
-  private IChildRenderModeHandler? definitionsRenderModeHandler;
+	private IChildRenderModeHandler? definitionsRenderModeHandler;
 
-  private bool loading;
+	private bool loading;
 
-  private readonly RenderFragment _renderLegendGradients;
-  private readonly RenderFragment _renderLegend;
-  private readonly RenderFragment _renderPanels;
+	private readonly RenderFragment renderLegendGradients;
+	private readonly RenderFragment renderLegend;
+	private readonly RenderFragment renderPanels;
 
-  public Plot()
-  {
-    _renderLegendGradients = RenderLegendGradients;
-    _renderLegend = RenderLegend;
-    _renderPanels = RenderPanels;
-  }
+	public Plot()
+	{
+		renderLegendGradients = RenderLegendGradients;
+		renderLegend = RenderLegend;
+		renderPanels = RenderPanels;
+	}
 
-  private string? CssClass()
-  {
-    var @class = (string)(AdditionalAttributes?.GetValueOr("class", string.Empty) ?? string.Empty);
+	private string? CssClass()
+	{
+		var @class = (string)(AdditionalAttributes?.GetValueOrDefault("class", string.Empty) ?? string.Empty);
 
-    return (@class, loading) switch
-    {
-      ("", true) => "ggnet loading",
-      (_, true) => $"ggnet {@class} loading",
-      ("", false) => "ggnet",
-      (_, false) => $"ggnet {@class}",
-    };
-  }
+		return (@class, loading) switch
+		{
+			("", true) => "ggnet loading",
+			(_, true) => $"ggnet {@class} loading",
+			("", false) => "ggnet",
+			(_, false) => $"ggnet {@class}",
+		};
+	}
 
-  protected override void OnInitialized()
-  {
-    base.OnInitialized();
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
 
-    Context.Init();
+		Context.Init();
 
-    definitionsRenderModeHandler = RenderModeHandler?.Child();
+		definitionsRenderModeHandler = RenderModeHandler?.Child();
 
-    Render(true, RenderTarget.All);
-  }
+		Compose(RenderTarget.Render);
+	}
 
-  protected override async Task OnParametersSetAsync()
-  {
-    base.OnParametersSet();
+	protected override async Task OnParametersSetAsync()
+	{
+		base.OnParametersSet();
 
-    if (!Context.Initialized)
-    {
-      Context.Init();
-      Context.Render(true);
+		if (!Context.Initialized)
+		{
+			Context.Init();
+			Context.Render();
 
-      await RefreshAsync(RenderTarget.All, CancellationToken.None);
-    }
-  }
+			await RefreshAsync(RenderTarget.Render, CancellationToken.None);
+		}
+	}
 
-  protected void Render(bool firstRender, RenderTarget target)
-  {
-    if (target == RenderTarget.Loading)
-    {
-      loading = true;
-      return;
-    }
+	// Runs the context pipeline and carves the plot-level zones. Child refresh
+	// is the caller's concern: OnInitialized composes before children exist,
+	// Render(target) composes and then refreshes them.
+	private bool Compose(RenderTarget target)
+	{
+		if (target == RenderTarget.Loading)
+		{
+			loading = true;
+			return false;
+		}
 
-    loading = false;
+		loading = false;
 
-    Context.Render(firstRender);
+		Context.Render();
 
-    wrapper.X = 0;
-    wrapper.Y = 0;
-    wrapper.Width = Width;
-    wrapper.Height = Height;
+		var zones = Layout.PlotLayout.Compute(new(
+			Width: Width,
+			Height: Height,
+			Title: Context.Title,
+			SubTitle: Context.SubTitle,
+			Caption: Context.Caption,
+			HasLegends: Context.Legends.Count > 0,
+			LegendsDimension: Context.Legends.Count > 0 ? Context.Legends.Dimension() : default,
+			Style: Context.Style!));
 
-    if (!string.IsNullOrEmpty(Context.Title))
-    {
-      var width = Context.Title.Height(Context.Style!.Plot.Title.FontSize);
-      var height = Context.Title.Height(Context.Style!.Plot.Title.FontSize);
+		wrapper = zones.Wrapper;
+		Title = zones.Title;
+		SubTitle = zones.SubTitle;
+		Legend = zones.Legend;
+		Caption = zones.Caption;
 
-      Title.X = Context.Style!.Plot.Title.Margin.Left;
-      Title.Y = Context.Style!.Plot.Title.Margin.Top + height;
-      Title.Width = Context.Style!.Plot.Title.Margin.Left + width + Context.Style.Plot.Title.Margin.Right;
-      Title.Height = Context.Style!.Plot.Title.Margin.Top + height + Context.Style.Plot.Title.Margin.Bottom;
+		return true;
+	}
 
-      wrapper.Y += Title.Height;
-      wrapper.Height -= Title.Height;
-    }
+	public override void Render(RenderTarget target)
+	{
+		if (!Compose(target))
+		{
+			return;
+		}
 
-    if (!string.IsNullOrEmpty(Context.SubTitle))
-    {
-      var width = Context.SubTitle.Height(Context.Style!.Plot.SubTitle.FontSize);
-      var height = Context.SubTitle.Height(Context.Style!.Plot.SubTitle.FontSize);
+		definitionsRenderModeHandler?.Refresh();
 
-      SubTitle.X = Context.Style!.Plot.SubTitle.Margin.Left;
-      SubTitle.Y = Title.Height + Context.Style!.Plot.SubTitle.Margin.Top + height;
-      SubTitle.Width = Context.Style!.Plot.SubTitle.Margin.Left + width + Context.Style!.Plot.SubTitle.Margin.Right;
-      SubTitle.Height = Context.Style!.Plot.SubTitle.Margin.Top + height + Context.Style!.Plot.SubTitle.Margin.Bottom;
-
-      wrapper.Y += SubTitle.Height;
-      wrapper.Height -= SubTitle.Height;
-    }
-
-    if (!string.IsNullOrEmpty(Context.Caption))
-    {
-      var width = Context.Caption.Height(Context.Style!.Plot.Caption.FontSize);
-      var height = Context.Caption.Height(Context.Style!.Plot.Caption.FontSize);
-
-      Caption.Y = Height - Context.Style!.Plot.Caption.Margin.Bottom;
-      Caption.Width = Context.Style!.Plot.Caption.Margin.Left + width + Context.Style!.Plot.Caption.Margin.Right;
-      Caption.Height = Context.Style!.Plot.Caption.Margin.Top + height + Context.Style!.Plot.Caption.Margin.Bottom;
-
-      wrapper.Height -= Caption.Height;
-    }
-
-    if (Context.Legends.Count > 0)
-    {
-      var (width, height) = Context.Legends.Dimension();
-
-      if (width > 0 && height > 0)
-      {
-        if (Context.Style!.Legend.Position == Right)
-        {
-          Legend.X = Width - width - Context.Style!.Legend.Margin.Right;
-          Legend.Y = wrapper.Y + (wrapper.Height - height) / 2.0;
-          Legend.Width = Context.Style!.Legend.Margin.Left + width + Context.Style!.Legend.Margin.Right;
-          Legend.Height = wrapper.Height;
-
-          wrapper.Width -= Legend.Width;
-        }
-        else if (Context.Style!.Legend.Position == Left)
-        {
-          Legend.X = Context.Style!.Legend.Margin.Left;
-          Legend.Y = wrapper.Y + (wrapper.Height - height) / 2.0; ;
-          Legend.Width = Context.Style!.Legend.Margin.Left + width + Context.Style!.Legend.Margin.Right;
-          Legend.Height = wrapper.Height;
-
-          wrapper.X += Legend.Width;
-          wrapper.Width -= Legend.Width;
-        }
-        else if (Context.Style!.Legend.Position == Top)
-        {
-          Legend.X = wrapper.X + (wrapper.Width - width) / 2.0;
-          Legend.Y = wrapper.Y + Context.Style!.Legend.Margin.Top;
-          Legend.Width = wrapper.Width;
-          Legend.Height = Context.Style!.Legend.Margin.Top + height + Context.Style!.Legend.Margin.Bottom;
-
-          wrapper.Y += Legend.Height;
-          wrapper.Height -= Legend.Height;
-        }
-        else if (Context.Style!.Legend.Position == Bottom)
-        {
-          Legend.X = wrapper.X + (wrapper.Width - width) / 2.0;
-          Legend.Y = wrapper.Y + wrapper.Height - height - Context.Style!.Legend.Margin.Bottom;
-          Legend.Width = wrapper.Width;
-          Legend.Height = Context.Style!.Legend.Margin.Top + height + Context.Style!.Legend.Margin.Bottom;
-
-          wrapper.Height -= Legend.Height;
-        }
-      }
-    }
-
-    if (Caption.Width > 0)
-    {
-      Caption.X = wrapper.X + wrapper.Width - Context.Style!.Plot.Caption.Margin.Right;
-    }
-
-    if (!firstRender)
-    {
-      definitionsRenderModeHandler?.Refresh(target);
-
-      for (var i = 0; i < Context.Panels.Count; i++)
-      {
-        Context.Panels[i].Component?.Refresh(target);
-      }
-    }
-  }
-
-  public override void Render(RenderTarget target) => Render(false, target);
+		for (var i = 0; i < Context.Panels.Count; i++)
+		{
+			Context.Panels[i].Component?.Refresh();
+		}
+	}
 }

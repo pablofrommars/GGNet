@@ -1,5 +1,7 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Scales;
+using GGNet.Exceptions;
 
 namespace GGNet.Geoms.Candlestick;
 
@@ -15,7 +17,7 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 		Func<T, TY> low,
 		Func<T, TY> close,
 		(bool x, bool y)? scale = null)
-		: base(source, scale, false)
+		: base(source, scale)
 	{
 		Selectors = new()
 		{
@@ -31,27 +33,33 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 
 	public Positions<T> Positions { get; } = new();
 
-	public Elements.Line Line { get; set; } = default!;
-	public Elements.Rectangle Rectangle { get; set; } = default!;
+	public Func<T, MouseEventArgs, Task>? OnClick { get; set; }
 
-	public override void Init<T1, TX1, TY1>(Panel<T1, TX1, TY1> panel, Facet<T1>? facet)
+	public Func<T, MouseEventArgs, Task>? OnMouseOver { get; set; }
+
+	public Func<T, MouseEventArgs, Task>? OnMouseOut { get; set; }
+
+	public required Elements.Line Line { get; set; }
+	public required Elements.Rectangle Rectangle { get; set; }
+
+	public override void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{
 		base.Init(panel, facet);
 
-		if (Selectors.X == null)
+		if (Selectors.X is null)
 		{
-			Positions.X = XMapping(panel.Data.Selectors.X!, panel.X);
-		}
-		else
-		{
-			Positions.X = XMapping(Selectors.X, panel.X);
+			throw new GGNetUserException("X selector is required");
 		}
 
-		Positions.Open = YMapping(Selectors.Open, panel.Y);
-		Positions.High = YMapping(Selectors.High, panel.Y);
-		Positions.Low = YMapping(Selectors.Low, panel.Y);
-		Positions.Close = YMapping(Selectors.Close, panel.Y);
+		Positions.X = new PositionMapping<T, TX>(Selectors.X, panel.X);
+
+		Positions.Open = new PositionMapping<T, TY>(Selectors.Open, panel.Y);
+		Positions.High = new PositionMapping<T, TY>(Selectors.High, panel.Y);
+		Positions.Low = new PositionMapping<T, TY>(Selectors.Low, panel.Y);
+		Positions.Close = new PositionMapping<T, TY>(Selectors.Close, panel.Y);
 	}
+
+	public override CoordSystem SupportedCoordSystems => CoordSystem.Cartesian;
 
 	public override void Train(T item)
 	{
@@ -62,7 +70,7 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 		Positions.Close.Train(item);
 	}
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var x = Positions.X.Map(item);
 
@@ -70,6 +78,24 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 		var high = Positions.High.Map(item);
 		var low = Positions.Low.Map(item);
 		var close = Positions.Close.Map(item);
+
+		Func<MouseEventArgs, Task>? onclick = null;
+		if (OnClick is not null)
+		{
+			onclick = e => OnClick(item, e);
+		}
+
+		Func<MouseEventArgs, Task>? onmouseover = null;
+		if (OnMouseOver is not null)
+		{
+			onmouseover = e => OnMouseOver(item, e);
+		}
+
+		Func<MouseEventArgs, Task>? onmouseout = null;
+		if (OnMouseOut is not null)
+		{
+			onmouseout = e => OnMouseOut(item, e);
+		}
 
 		if (close >= open)
 		{
@@ -79,7 +105,10 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				X2 = x + 0.45,
 				Y1 = close,
 				Y2 = close,
-				Aesthetic = Line
+				Aesthetic = Line,
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout
 			});
 
 			Layer.Add(new Shapes.Line()
@@ -88,7 +117,10 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				X2 = x + 0.45,
 				Y1 = close,
 				Y2 = open,
-				Aesthetic = Line
+				Aesthetic = Line,
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout
 			});
 
 			Layer.Add(new Shapes.Line()
@@ -97,7 +129,10 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				X2 = x - 0.45,
 				Y1 = open,
 				Y2 = open,
-				Aesthetic = Line
+				Aesthetic = Line,
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout
 			});
 
 			Layer.Add(new Shapes.Line()
@@ -106,7 +141,10 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				X2 = x - 0.45,
 				Y1 = open,
 				Y2 = close,
-				Aesthetic = Line
+				Aesthetic = Line,
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout
 			});
 
 			Layer.Add(new Shapes.Line()
@@ -115,7 +153,10 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				X2 = x,
 				Y1 = close,
 				Y2 = high,
-				Aesthetic = Line
+				Aesthetic = Line,
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout
 			});
 
 			Layer.Add(new Shapes.Line()
@@ -124,7 +165,10 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				X2 = x,
 				Y1 = open,
 				Y2 = low,
-				Aesthetic = Line
+				Aesthetic = Line,
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout
 			});
 		}
 		else
@@ -135,7 +179,10 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				X2 = x,
 				Y1 = open,
 				Y2 = high,
-				Aesthetic = Line
+				Aesthetic = Line,
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout
 			});
 
 			Layer.Add(new Shapes.Line()
@@ -144,7 +191,10 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				X2 = x,
 				Y1 = close,
 				Y2 = low,
-				Aesthetic = Line
+				Aesthetic = Line,
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout
 			});
 
 			Layer.Add(new Shapes.Rectangle()
@@ -153,7 +203,10 @@ internal sealed class Candlestick<T, TX, TY> : Geom<T, TX, TY>
 				Y = close,
 				Width = 0.9,
 				Height = open - close,
-				Aesthetic = Rectangle
+				Aesthetic = Rectangle,
+				OnClick = onclick,
+				OnMouseOver = onmouseover,
+				OnMouseOut = onmouseout
 			});
 		}
 

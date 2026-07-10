@@ -1,9 +1,10 @@
+@using static GGNet.Components.SvgFormat
 <svg width="0" height="0">
     <defs>
         <linearGradient id=@Id x1="0" x2="0" y1="1" y2="0">
             @foreach (var (offset, opacity) in Stops)
             {
-                <stop offset="@offset" stop-color=@Color stop-opacity="@opacity" />
+                <stop offset=@Num(offset) stop-color=@Color stop-opacity=@Num(opacity) />
 
             }
         </linearGradient>

@@ -1,4 +1,5 @@
 ﻿@inherits TooltipBase
+@using static GGNet.Components.SvgFormat
 
 @_renderForeignObject
 
@@ -21,8 +22,8 @@
                 var (_, _py) when _py < 0.25 => ("tooltip-top-center", context.X, context.Y - context.Offset),
                 _ => ("tooltip-right-center", context.X + context.Offset, context.Y)
             };
-            <foreignObject role=@role x=@tx y=@ty width="1" height="1">
-            <div class="container" style="--tootip-color: @(context.Color); --tooltip-opacity: @(context.Opacity);">
+            <foreignObject role=@role x=@Num(tx) y=@Num(ty) width="1" height="1">
+            <div class="container" style=@Attr($"--tootip-color: {context.Color}; --tooltip-opacity: {context.Opacity};")>
                 <div class="arrow"></div>
                 <div class="bubble">@(context.Content)</div>
             </div>

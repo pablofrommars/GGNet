@@ -14,16 +14,18 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 	[Parameter]
 	public double Height { get; set; } = 50;
 
-  private IChildRenderModeHandler? renderModeHandler;
-  private IChildRenderModeHandler? definitionsRenderModeHandler;
+	private IChildRenderModeHandler? renderModeHandler;
+	private IChildRenderModeHandler? definitionsRenderModeHandler;
 
 	private Zone Area;
+
+	// default!: assigned in OnInitialized before first render (Blazor lifecycle).
 	private Data.Panel<T, TX, TY> Panel = default!;
 	private Scales.Position<TX> xscale = default!;
 	private Scales.Position<TY> yscale = default!;
 
-	protected SparkLineTooltip tooltip = default!;
-	public ITooltip? Tooltip => tooltip;
+	protected SparkLineTooltip tooltipComponent = default!;
+	public ITooltip? Tooltip => tooltipComponent;
 
 	protected override void OnInitialized()
 	{
@@ -37,7 +39,7 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 
 		Context.Init(false);
 
-		Context.Render(true);
+		Context.Render();
 
 		Panel = Context.Panels[0];
 		xscale = Panel.X;
@@ -48,9 +50,9 @@ public partial class SparkLine<T, TX, TY> : PlotBase<T, TX, TY>, IPanel, ICoord
 
 	public override void Render(RenderTarget target)
 	{
-		Context.Render(false);
-		definitionsRenderModeHandler?.Refresh(target);
-		renderModeHandler?.Refresh(target);
+		Context.Render();
+		definitionsRenderModeHandler?.Refresh();
+		renderModeHandler?.Refresh();
 	}
 
 	public double ToX(double value) => Area.X + xscale.Coord(value) * Area.Width;

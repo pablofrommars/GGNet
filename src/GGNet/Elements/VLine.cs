@@ -1,12 +1,12 @@
 namespace GGNet.Elements;
 
-public readonly record struct VLine : IElement
+internal readonly record struct VLine
 {
-  public required string Stroke { get; init; }
+	public required string Stroke { get; init; }
 
-  public double StrokeOpacity { get; init; }
+	public double StrokeOpacity { get; init; }
 
-  public double StrokeWidth { get; init; }
+	public double StrokeWidth { get; init; }
 
-  public LineType LineType { get; init; }
+	public LineType LineType { get; init; }
 }

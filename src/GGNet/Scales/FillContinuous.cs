@@ -1,21 +1,22 @@
-﻿using GGNet.Scales.Common;
+﻿using GGNet.Formats;
+using GGNet.Scales.Common;
 
 using static System.Math;
 
 namespace GGNet.Scales;
 
-public class FillContinuous(
-    string[] colors,
-    int m = 5,
-    string format = "0.##") : Scale<double, string>()
+internal class FillContinuous(
+	string[] colors,
+	int m = 5,
+	IFormatter<double>? formatter = null) : Scale<double, string>()
 {
 	private readonly string[] colors = colors;
 	private readonly int m = m;
-	private readonly string format = format;
+	private readonly IFormatter<double> formatter = formatter ?? new DoubleFormatter("0.##");
 
 	protected (double min, double max) limits = (0.0, 0.0);
 
-    public override Guide Guide => Guide.ColorBar;
+	public override Guide Guide => Guide.ColorBar;
 
 	public override void Train(double key)
 	{
@@ -29,7 +30,7 @@ public class FillContinuous(
 		}
 	}
 
-	public override void Set(bool grid)
+	public override void Commit(bool grid)
 	{
 		if (!grid)
 		{
@@ -51,7 +52,7 @@ public class FillContinuous(
 			var mapped = Map(value);
 
 			breaks[i] = mapped;
-			labels[i] = (mapped, value.ToString(format));
+			labels[i] = (mapped, formatter.Format(value));
 		}
 
 		Breaks = breaks;

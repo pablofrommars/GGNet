@@ -1,0 +1,57 @@
+﻿<svg id="ggID" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720 576">
+	<defs></defs>
+	<clipPath id="ggID">
+		<rect x="0" y="0" width="720" height="576" />
+	</clipPath>
+	<rect class="plot" width="100%" height="100%"></rect>
+	<defs>
+		<clipPath id="ggID">
+			<rect x="0" y="0" width="720" height="576" />
+		</clipPath>
+		<clipPath id="ggID">
+			<rect x="14" y="0" width="706" height="556" />
+		</clipPath>
+	</defs>
+	<rect class="panel" x="14" y="0" width="706" height="556" />
+	<line class="x-break" x1="46.09090909090909" x2="46.09090909090909" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-break" x1="629.5619834710743" x2="629.5619834710743" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="-245.64462809917353" x2="-245.64462809917353" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="337.8264462809918" x2="337.8264462809918" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="921.297520661157" x2="921.297520661157" y1="0" y2="556" clip-path="url(#ggID)" />
+	<text class="x-break-label" x="46.09090909090909" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">0</text>
+	<text class="x-break-label" x="629.5619834710743" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">1</text>
+	<line class="y-break" x1="14" x2="720" y1="530.7272727272726" y2="530.7272727272726" clip-path="url(#ggID)" />
+	<line class="y-break" x1="14" x2="720" y1="277.99999999999994" y2="277.99999999999994" clip-path="url(#ggID)" />
+	<line class="y-break" x1="14" x2="720" y1="25.272727272727188" y2="25.272727272727188" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="657.0909090909091" y2="657.0909090909091" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="404.3636363636363" y2="404.3636363636363" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="151.63636363636357" y2="151.63636363636357" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="-101.09090909090925" y2="-101.09090909090925" clip-path="url(#ggID)" />
+	<text class="y-break-label" x="10" y="533.7272727272726" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">2</text>
+	<text class="y-break-label" x="10" y="280.99999999999994" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">3</text>
+	<text class="y-break-label" x="10" y="28.272727272727188" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">4</text>
+	<line x1="46.09090909090909" y1="530.7272727272726" x2="629.5619834710743" y2="151.63636363636357" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+	<line x1="46.09090909090909" y1="25.272727272727188" x2="629.5619834710743" y2="404.3636363636363" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+	<line x1="46.09090909090909" y1="277.99999999999994" x2="629.5619834710743" y2="227.45454545454538" class="" stroke-width="1.07" stroke="#23d0fc" stroke-opacity="1" stroke-dasharray="1 0" clip-path="url(#ggID)" />
+	<g transform="translate(46.09090909090909, 530.7272727272726)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+	<g transform="translate(46.09090909090909, 25.272727272727188)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+	<g transform="translate(46.09090909090909, 277.99999999999994)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+	<g transform="translate(629.5619834710743, 151.63636363636357)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+	<g transform="translate(629.5619834710743, 404.3636363636363)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+	<g transform="translate(629.5619834710743, 227.45454545454538)">
+		<circle cx="0" cy="0" r="5" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
+	</g>
+	<text class="pointer-events-none" transform="translate(687.909090909091, 151.63636363636357) rotate(0deg)" fill="#23d0fc" text-anchor="start" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">A</text>
+	<text class="pointer-events-none" transform="translate(687.909090909091, 404.3636363636363) rotate(0deg)" fill="#23d0fc" text-anchor="start" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">B</text>
+	<text class="pointer-events-none" transform="translate(687.909090909091, 227.45454545454538) rotate(0deg)" fill="#23d0fc" text-anchor="start" font-size="1em" font-weight="normal" font-style="normal" clip-path="url(#ggID)">C</text>
+</svg>

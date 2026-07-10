@@ -2,13 +2,13 @@
 
 public readonly record struct Text
 {
-  public Text() { }
+	public Text() { }
 
 	public Anchor Anchor { get; init; } = Anchor.Start;
 
-  public string FontFamily { get; init; } = "Inter var";
+	public string FontFamily { get; init; } = "Inter var";
 
-  public Size FontSize { get; init; } = 1.0;
+	public Size FontSize { get; init; } = 1.0;
 
 	public string FontWeight { get; init; } = "normal";
 

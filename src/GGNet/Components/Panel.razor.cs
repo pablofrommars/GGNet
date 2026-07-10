@@ -1,10 +1,6 @@
 ﻿using GGNet.Scales;
 using GGNet.Transformations;
 
-using static System.Math;
-
-using static GGNet.Position;
-
 namespace GGNet.Components;
 
 using Rendering;
@@ -13,250 +9,206 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel
   where TX : struct
   where TY : struct
 {
-  [CascadingParameter]
-  public required Plot<T, TX, TY> Plot { get; init; }
+	[CascadingParameter]
+	public required Plot<T, TX, TY> Plot { get; init; }
 
-  [Parameter]
-  public required Data.Panel<T, TX, TY> Data { get; init; }
+	[Parameter]
+	public required Data.Panel<T, TX, TY> Data { get; init; }
 
-  [Parameter]
-  public double X { get; set; }
+	[Parameter]
+	public double X { get; set; }
 
-  [Parameter]
-  public double Y { get; set; }
+	[Parameter]
+	public double Y { get; set; }
 
-  [Parameter]
-  public double Width { get; set; }
+	[Parameter]
+	public double Width { get; set; }
 
-  [Parameter]
-  public double Height { get; set; }
+	[Parameter]
+	public double Height { get; set; }
 
-  [Parameter]
-  public bool First { get; set; }
+	[Parameter]
+	public bool First { get; set; }
 
-  [Parameter]
-  public bool Last { get; set; }
+	[Parameter]
+	public bool Last { get; set; }
 
-  private IChildRenderModeHandler? renderModeHandler;
-  private IChildRenderModeHandler? areaRenderModeHandler;
+	private IChildRenderModeHandler? renderModeHandler;
+	private IChildRenderModeHandler? areaRenderModeHandler;
 
-  private Position<TX> xscale = default!;
-  private Position<TY> yscale = default!;
+	// default!: assigned in OnInitialized/OnParametersSet before first render;
+	// tooltipComponent and clip follow the same Blazor lifecycle guarantee.
+	private Position<TX> xscale = default!;
+	private Position<TY> yscale = default!;
 
-  private Zone xStrip;
-  private Zone yStrip;
+	private Coords.ICoordinateSystem coord = default!;
+	private Coords.GridComposition grid = new();
 
-  public Zone yAxisText;
-  private Zone yAxisTitle;
+	private Zone xStrip;
+	private Zone yStrip;
 
-  private Zone xAxisText;
-  private Zone xAxisTitle;
+	internal Zone yAxisText;
+	private Zone yAxisTitle;
 
-  public Zone Area;
+	private Zone xAxisText;
+	private Zone xAxisTitle;
 
-  protected Tooltip tooltip = default!;
-  public ITooltip? Tooltip => tooltip;
+	internal Zone Area;
 
-  protected string clip = default!;
+	protected Tooltip tooltipComponent = default!;
+	public ITooltip? Tooltip => tooltipComponent;
 
-  protected bool firstRender = true;
+	protected string clip = default!;
 
-  private readonly RenderFragment _renderTitle;
-  private readonly RenderFragment _renderSubTitle;
-  private readonly RenderFragment _renderStrip;
-  private readonly RenderFragment _renderGrid;
-  private readonly RenderFragment _renderCaption;
-  private readonly RenderFragment _renderXLab;
-  private readonly RenderFragment _renderYLab;
+	protected bool firstRender = true;
 
-  public Panel()
-  {
-    _renderTitle = RenderTitle;
-    _renderSubTitle = RenderSubTitle;
-    _renderStrip = RenderStrip;
-    _renderGrid = RenderGrid;
-    _renderCaption = RenderCaption;
-    _renderXLab = RenderXLab;
-    _renderYLab = RenderYLab;
-  }
+	private readonly RenderFragment renderTitle;
+	private readonly RenderFragment renderSubTitle;
+	private readonly RenderFragment renderStrip;
+	private readonly RenderFragment renderGrid;
+	private readonly RenderFragment renderCaption;
+	private readonly RenderFragment renderXLab;
+	private readonly RenderFragment renderYLab;
 
-  protected override void OnInitialized()
-  {
-    renderModeHandler = Plot.RenderModeHandler?.Child();
-    areaRenderModeHandler = Plot.RenderModeHandler?.Child();
+	public Panel()
+	{
+		renderTitle = RenderTitle;
+		renderSubTitle = RenderSubTitle;
+		renderStrip = RenderStrip;
+		renderGrid = RenderGrid;
+		renderCaption = RenderCaption;
+		renderXLab = RenderXLab;
+		renderYLab = RenderYLab;
+	}
 
-    Data.Register(this);
+	protected override void OnInitialized()
+	{
+		renderModeHandler = Plot.RenderModeHandler?.Child();
+		areaRenderModeHandler = Plot.RenderModeHandler?.Child();
 
-    clip = Plot.Id + "-" + Data.Id;
+		Data.Register(this);
 
-    xscale = Data.X;
-    yscale = Data.Y;
-  }
+		clip = Plot.Id + "-" + Data.Id;
 
-  protected override void OnParametersSet()
-  {
-    if (Data.Registered)
-    {
-      return;
-    }
+		xscale = Data.X;
+		yscale = Data.Y;
 
-    Data.Register(this);
+		coord = Data.Data.MakeCoordinateSystem();
+	}
 
-    clip = Plot.Id + "-" + Data.Id;
+	protected override void OnParametersSet()
+	{
+		if (Data.Registered)
+		{
+			return;
+		}
 
-    xscale = Data.X;
-    yscale = Data.Y;
+		Data.Register(this);
 
-    Refresh(RenderTarget.All);
-  }
+		clip = Plot.Id + "-" + Data.Id;
 
-  protected void Render(bool firstRender)
-  {
-    Area.X = X;
-    Area.Y = Y;
-    Area.Width = Width;
-    Area.Height = Height;
+		xscale = Data.X;
+		yscale = Data.Y;
 
-    if (!string.IsNullOrEmpty(Data.Strip.x))
-    {
-      var width = Data.Strip.x.Width(Data.Data.Style!.Strip.Text.X.FontSize);
-      var height = Data.Strip.x.Height(Data.Data.Style!.Strip.Text.X.FontSize);
+		coord = Data.Data.MakeCoordinateSystem();
 
-      //xStrip.X = X + Data.Data.Theme.Strip.Text.X.Margin.Left;
-      xStrip.Y = Y + Data.Data.Style!.Strip.Text.X.Margin.Top + height;
-      xStrip.Width = Data.Data.Style!.Strip.Text.X.Margin.Left + width + Data.Data.Style!.Strip.Text.X.Margin.Right;
-      xStrip.Height = Data.Data.Style!.Strip.Text.X.Margin.Top + height + Data.Data.Style!.Strip.Text.X.Margin.Bottom;
+		Refresh();
+	}
 
-      Area.Y += xStrip.Height;
-      Area.Height -= xStrip.Height;
-    }
+	protected void Render(bool firstRender)
+	{
+		var zones = Layout.PanelLayout.Compute(new(
+			Outer: new Zone { X = X, Y = Y, Width = Width, Height = Height },
+			XStripText: Data.Strip.x,
+			YStripText: Data.Strip.y,
+			XAxis: Data.Axis.x,
+			YAxis: Data.Axis.y,
+			CarveAxes: coord.CarvesAxisBands,
+			AxisWidth: Data.Data.Axis.width,
+			AxisHeight: Data.Data.Axis.height,
+			YLabWidth: Data.YLab.width,
+			XLabHeight: Data.XLab.height,
+			HasXTitles: Data.X.Titles.Any(),
+			HasYTitles: Data.Y.Titles.Any(),
+			Style: Data.Data.Style!));
 
-    if (!string.IsNullOrEmpty(Data.Strip.y))
-    {
-      var width = Data.Strip.y.Height(Data.Data.Style!.Strip.Text.Y.FontSize);
-      var height = Data.Strip.y.Width(Data.Data.Style!.Strip.Text.Y.FontSize);
+		Area = zones.Area;
+		xStrip = zones.XStrip;
+		yStrip = zones.YStrip;
+		yAxisText = zones.YAxisText;
+		yAxisTitle = zones.YAxisTitle;
+		xAxisText = zones.XAxisText;
+		xAxisTitle = zones.XAxisTitle;
 
-      yStrip.X = Area.X + Area.Width - Data.Data.Style!.Strip.Text.X.Margin.Right - width;
-      yStrip.Y = Area.Y + Data.Data.Style!.Strip.Text.Y.Margin.Top;
-      yStrip.Width = Data.Data.Style!.Strip.Text.Y.Margin.Left + width + Data.Data.Style!.Strip.Text.Y.Margin.Right;
-      yStrip.Height = Data.Data.Style!.Strip.Text.Y.Margin.Top + height + Data.Data.Style!.Strip.Text.Y.Margin.Bottom;
+		coord.Measure(Area);
 
-      Area.Width -= yStrip.Width;
-    }
+		grid = coord.ComposeGrid(new(
+			XAxis: Data.Axis.x,
+			YAxis: Data.Axis.y,
+			XBreaks: [.. xscale.Breaks.Select(xscale.Coord)],
+			XMinorBreaks: [.. xscale.MinorBreaks.Select(xscale.Coord)],
+			XLabels: [.. xscale.Labels.Select(l => (xscale.Coord(l.value), l.label))],
+			XTitles: [.. xscale.Titles.Select(t => (xscale.Coord(t.value), t.title))],
+			YBreaks: [.. yscale.Breaks.Select(yscale.Coord)],
+			YMinorBreaks: [.. yscale.MinorBreaks.Select(yscale.Coord)],
+			YLabels: [.. yscale.Labels.Select(l => (yscale.Coord(l.value), l.label))],
+			XLabelY: xAxisText.Y,
+			XTitleY: xAxisTitle.Y,
+			YLabelX: yAxisText.X));
 
-    if (Data.Axis.y)
-    {
-      var axisWidth = Data.Data.Axis.width;
+		if (!firstRender)
+		{
+			areaRenderModeHandler?.Refresh();
+		}
+	}
 
-      if (Data.Data.Style!.Axis.Y == Left)
-      {
-        if (Data.YLab.width > 0.0 || Data.Y.Titles.Any())
-        {
-          yAxisTitle.X = Area.X + Data.Data.Style.Axis.Title.Y.Margin.Left + Data.YLab.width;
-          yAxisTitle.Y = Area.Y + Data.Data.Style.Axis.Title.Y.Margin.Bottom;
-          yAxisTitle.Width = Data.Data.Style.Axis.Title.Y.Margin.Left + Data.YLab.width + Data.Data.Style.Axis.Title.Y.Margin.Right;
-          yAxisTitle.Height = Area.Height;
+	public void Refresh() => renderModeHandler?.Refresh();
 
-          Area.X += yAxisTitle.Width;
-          Area.Width -= yAxisTitle.Width;
-        }
+	protected override bool ShouldRender() => renderModeHandler?.ShouldRender() ?? true;
 
-        yAxisText.X = Area.X + Data.Data.Style.Axis.Text.Y.Margin.Left + axisWidth;
-        yAxisText.Y = Area.Y;
-        yAxisText.Width = Data.Data.Style.Axis.Text.Y.Margin.Left + axisWidth + Data.Data.Style.Axis.Text.Y.Margin.Right;
+	public double ToX(double value) => Area.X + xscale.Coord(value) * Area.Width;
 
-        Area.X += yAxisText.Width;
-        Area.Width -= yAxisText.Width;
-      }
-      else if (Data.Data.Style.Axis.Y == Right)
-      {
-        if (Data.YLab.width > 0.0 || Data.Y.Titles.Any())
-        {
-          yAxisTitle.X = Area.X + Area.Width - Data.YLab.width - Data.Data.Style.Axis.Title.Y.Margin.Right;
-          yAxisTitle.Y = Area.Y + Data.Data.Style.Axis.Title.Y.Margin.Bottom;
-          yAxisTitle.Width = Data.Data.Style.Axis.Title.Y.Margin.Left + Data.YLab.width + Data.Data.Style.Axis.Title.Y.Margin.Right;
-          yAxisTitle.Height = Area.Height;
+	public (double min, double max) XRange => xscale.Range;
 
-          Area.Width -= yAxisTitle.Width;
-        }
+	public ITransformation<double> XTransformation => xscale.RangeTransformation;
 
-        yAxisText.X = Area.X + Area.Width - axisWidth;
-        yAxisText.Y = Area.Y;
-        yAxisText.Width = Data.Data.Style.Axis.Text.Y.Margin.Left + axisWidth + Data.Data.Style.Axis.Text.Y.Margin.Right;
+	public double ToY(double value) => Area.Y + (1 - yscale.Coord(value)) * Area.Height;
 
-        Area.Width -= yAxisText.Width;
-      }
-    }
+	public (double min, double max) YRange => yscale.Range;
 
-    if (Data.Axis.x)
-    {
-      var xTitlesHeight = Data.XLab.height;
+	public ITransformation<double> YTransformation => yscale.RangeTransformation;
 
-      if (Data.X.Titles.Any())
-      {
-        xTitlesHeight = Max(xTitlesHeight, Data.Data.Style!.Axis.Title.X.FontSize.Height());
-      }
+	public (double x, double y) Project(double x, double y)
+	  => coord.Project(xscale.Coord(x), yscale.Coord(y));
 
-      if (xTitlesHeight > 0.0)
-      {
-        xAxisTitle.X = Area.X + Area.Width - Data.Data.Style!.Axis.Title.X.Margin.Right;
-        xAxisTitle.Y = Area.Y + Area.Height - Data.Data.Style!.Axis.Title.X.Margin.Bottom;
-        xAxisTitle.Width = Data.Data.Style.Axis.Title.X.Margin.Left + Area.Width + Data.Data.Style!.Axis.Title.X.Margin.Right;
-        xAxisTitle.Height = Data.Data.Style.Axis.Title.X.Margin.Top + xTitlesHeight + Data.Data.Style!.Axis.Title.X.Margin.Bottom;
+	private static string RingPath(IReadOnlyList<(double x, double y)> points)
+	{
+		var sb = new StringBuilder();
 
-        Area.Height -= xAxisTitle.Height;
-      }
+		for (var i = 0; i < points.Count; i++)
+		{
+			sb.Append(CultureInfo.InvariantCulture, $"{(i == 0 ? "M " : " L ")}{points[i].x} {points[i].y}");
+		}
 
-      var axisHeight = Data.Data.Axis.height;
+		sb.Append(" Z");
 
-      xAxisText.X = Area.X;
-      xAxisText.Y = Area.Y + Area.Height - Data.Data.Style!.Axis.Text.X.Margin.Bottom;
-      xAxisText.Width = Area.Width;
-      xAxisText.Height = Data.Data.Style.Axis.Text.X.Margin.Top + axisHeight + Data.Data.Style.Axis.Text.X.Margin.Bottom;
+		return sb.ToString();
+	}
 
-      Area.Height -= xAxisText.Height;
-    }
+	private string GridClipId(Coords.GridClip clipKind) => clipKind switch
+	{
+		Coords.GridClip.Plot => Plot.Id + "-plot",
+		_ => clip,
+	};
 
-    if (xStrip.Width > 0)
-    {
-      xStrip.X = Area.X + Data.Data.Style!.Strip.Text.X.Margin.Left;
-    }
+	private Task OnClick(MouseEventArgs e)
+	{
+		if (Data.OnClick is null)
+		{
 
-    if (yAxisText.Width > 0)
-    {
-      yAxisText.Height = Area.Height;
-    }
+			return Task.CompletedTask;
+		}
 
-    if (!firstRender)
-    {
-      areaRenderModeHandler?.Refresh(RenderTarget.Data);
-    }
-  }
-
-  public void Refresh(RenderTarget target) => renderModeHandler?.Refresh(target);
-
-  protected override bool ShouldRender() => renderModeHandler?.ShouldRender() ?? true;
-
-  public double ToX(double value) => Area.X + xscale.Coord(value) * Area.Width;
-
-  public (double min, double max) XRange => xscale.Range;
-
-  public ITransformation<double> XTransformation => xscale.RangeTransformation;
-
-  public double ToY(double value) => Area.Y + (1 - yscale.Coord(value)) * Area.Height;
-
-  public (double min, double max) YRange => yscale.Range;
-
-  public ITransformation<double> YTransformation => yscale.RangeTransformation;
-
-  private Task OnClick(MouseEventArgs e)
-  {
-    if (Data.OnClick is null)
-    {
-
-      return Task.CompletedTask;
-    }
-
-    return Data.OnClick(e);
-  }
+		return Data.OnClick(e);
+	}
 }

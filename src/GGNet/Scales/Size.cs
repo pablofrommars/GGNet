@@ -1,23 +1,24 @@
-﻿using GGNet.Scales.Common;
+﻿using GGNet.Formats;
+using GGNet.Scales.Common;
 using GGNet.Transformations;
 
 using static System.Math;
 
 namespace GGNet.Scales;
 
-public class SizeContinuous : Continuous<double>
+internal class SizeContinuous : Continuous<double>
 {
 	protected readonly bool defined;
 	protected (double min, double max) limits;
 	protected readonly (double min, double max) range;
 	protected readonly bool oob;
-	private readonly string format;
+	private readonly IFormatter<double> formatter;
 
 	public SizeContinuous(
 		(double min, double max)? limits = null,
 		(double min, double max)? range = null,
 		bool oob = false,
-		string format = "0.##",
+		IFormatter<double>? formatter = null,
 		ITransformation<double>? transformation = null)
 		: base(transformation)
 	{
@@ -34,7 +35,7 @@ public class SizeContinuous : Continuous<double>
 		this.range = range ?? (0.0, 1.0);
 		this.oob = oob;
 
-		this.format = format;
+		this.formatter = formatter ?? new DoubleFormatter("0.##");
 	}
 
 	public override Guide Guide => Guide.Items;
@@ -56,7 +57,7 @@ public class SizeContinuous : Continuous<double>
 		}
 	}
 
-	public override void Set(bool grid)
+	public override void Commit(bool grid)
 	{
 		if (!grid)
 		{
@@ -75,7 +76,7 @@ public class SizeContinuous : Continuous<double>
 		{
 			var value = breaks[i];
 
-			labels[i] = (Map(value), value.ToString(format));
+			labels[i] = (Map(value), formatter.Format(value));
 		}
 
 		Breaks = breaks;

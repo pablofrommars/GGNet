@@ -1,0 +1,20 @@
+{
+	"$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+	"name": "local-lsp",
+	"description": "Local LSP plugins committed to this repository.",
+	"owner": {
+		"name": "GGNet"
+	},
+	"plugins": [
+		{
+			"name": "csharp-lsp",
+			"description": "C# (Roslyn) language server integration for code intelligence.",
+			"version": "1.0.0",
+			"author": {
+				"name": "GGNet"
+			},
+			"source": "./plugins/csharp-lsp",
+			"category": "development"
+		}
+	]
+}

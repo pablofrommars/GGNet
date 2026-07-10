@@ -1,0 +1,44 @@
+﻿<svg id="ggID" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720 576">
+	<defs></defs>
+	<clipPath id="ggID">
+		<rect x="0" y="0" width="720" height="576" />
+	</clipPath>
+	<rect class="plot" width="100%" height="100%"></rect>
+	<defs>
+		<clipPath id="ggID">
+			<rect x="0" y="0" width="720" height="576" />
+		</clipPath>
+		<clipPath id="ggID">
+			<rect x="0" y="0" width="720" height="576" />
+		</clipPath>
+	</defs>
+	<rect class="panel" x="0" y="0" width="720" height="576" />
+	<line class="x-break" x1="360" x2="360" y1="288" y2="20" clip-path="url(#ggID)" />
+	<line class="x-break" x1="360" x2="614.8831463671012" y1="288" y2="205.18344550751408" clip-path="url(#ggID)" />
+	<line class="x-break" x1="360" x2="517.5264476143827" y1="288" y2="504.8165544924859" clip-path="url(#ggID)" />
+	<line class="x-break" x1="360" x2="202.47355238561724" y1="288" y2="504.8165544924859" clip-path="url(#ggID)" />
+	<line class="x-break" x1="360" x2="105.11685363289882" y1="288" y2="205.18344550751414" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 288 L 360 288 L 360 288 L 360 288 L 360 288 Z" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 236.95238095238096 L 408.54917073659067 272.22541819190747 L 390.0050376408348 329.29839133190205 L 329.9949623591652 329.29839133190205 L 311.45082926340933 272.22541819190747 Z" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 185.90476190476193 L 457.0983414731814 256.4508363838149 L 420.01007528166963 370.59678266380416 L 299.98992471833037 370.59678266380416 L 262.9016585268186 256.45083638381493 Z" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 134.85714285714286 L 505.6475122097721 240.67625457572234 L 450.01511292250444 411.8951739957062 L 269.98488707749556 411.8951739957062 L 214.3524877902279 240.67625457572237 Z" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 83.80952380952382 L 554.1966829463628 224.9016727676298 L 480.02015056333926 453.1935653276083 L 239.97984943666074 453.1935653276083 L 165.80331705363722 224.9016727676298 Z" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 32.76190476190479 L 602.7458536829535 209.12709095953724 L 510.02518820417407 494.4919566595104 L 209.97481179582596 494.4919566595104 L 117.25414631704652 209.12709095953727 Z" clip-path="url(#ggID)" />
+	<path class="y-minor-break" fill="none" d="M 360 262.4761904761905 L 384.27458536829533 280.11270909595373 L 375.00251882041744 308.649195665951 L 344.9974811795826 308.649195665951 L 335.72541463170467 280.11270909595373 Z" clip-path="url(#ggID)" />
+	<path class="y-minor-break" fill="none" d="M 360 211.42857142857144 L 432.82375610488606 264.3381272878612 L 405.00755646125225 349.94758699785314 L 314.9924435387478 349.94758699785314 L 287.17624389511394 264.3381272878612 Z" clip-path="url(#ggID)" />
+	<path class="y-minor-break" fill="none" d="M 360 160.3809523809524 L 481.3729268414767 248.5635454797686 L 435.01259410208706 391.2459783297552 L 284.987405897913 391.2459783297552 L 238.62707315852327 248.56354547976864 Z" clip-path="url(#ggID)" />
+	<path class="y-minor-break" fill="none" d="M 360 109.33333333333334 L 529.9220975780675 232.78896367167607 L 465.0176317429219 432.54436966165724 L 254.98236825707818 432.54436966165724 L 190.07790242193255 232.78896367167607 Z" clip-path="url(#ggID)" />
+	<path class="y-minor-break" fill="none" d="M 360 58.285714285714306 L 578.4712683146581 217.01438186358354 L 495.0226693837567 473.84276099355935 L 224.97733061624336 473.84276099355935 L 141.52873168534188 217.01438186358354 Z" clip-path="url(#ggID)" />
+	<text class="x-break-label" x="360" y="12" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">Speed</text>
+	<text class="x-break-label" x="622.4915984974623" y="206.02802797951477" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">Power</text>
+	<text class="x-break-label" x="522.2287296327225" y="519.9719720204852" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">Range</text>
+	<text class="x-break-label" x="197.77127036727745" y="519.9719720204852" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">Weight</text>
+	<text class="x-break-label" x="97.5084015025376" y="206.02802797951477" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">Cost</text>
+	<text class="y-break-label" x="364" y="286" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">0</text>
+	<text class="y-break-label" x="364" y="234.95238095238096" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">1</text>
+	<text class="y-break-label" x="364" y="183.90476190476193" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">2</text>
+	<text class="y-break-label" x="364" y="132.85714285714286" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">3</text>
+	<text class="y-break-label" x="364" y="81.80952380952382" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">4</text>
+	<text class="y-break-label" x="364" y="30.761904761904788" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">5</text>
+	<path d="M 360 134.85714285714286 L 554.1966829463628 224.9016727676298 L 420.01007528166963 370.59678266380416 L 209.97481179582596 494.4919566595104 L 311.45082926340933 272.22541819190747 Z" class="" fill="#23d0fc" fill-opacity="0.25" stroke="#23d0fc" stroke-width="2" clip-path="url(#ggID)" />
+</svg>

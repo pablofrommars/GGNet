@@ -2,8 +2,8 @@
 
 namespace GGNet.Scales;
 
-public abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
-    where TKey : notnull
+internal abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
+	where TKey : notnull
 {
 	private readonly bool defined;
 	private readonly Palettes.Discrete<TKey, TValue> palette;
@@ -13,7 +13,7 @@ public abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 		Palettes.Discrete<TKey, TValue> palette,
 		TValue na,
 		ITransformation<TKey>? transformation)
-		    : base(transformation)
+			: base(transformation)
 	{
 		defined = true;
 		this.palette = palette;
@@ -25,7 +25,7 @@ public abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 		int direction,
 		TValue na,
 		ITransformation<TKey>? transformation)
-		    : base(transformation)
+			: base(transformation)
 	{
 		this.palette = new Palettes.Discrete<TKey, TValue>(palette, direction);
 		this.na = na;
@@ -41,7 +41,7 @@ public abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 		palette.Add(key);
 	}
 
-	public override void Set(bool grid)
+	public override void Commit(bool grid)
 	{
 		if (!defined)
 		{
@@ -61,7 +61,7 @@ public abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 		for (int i = 0; i < values.Length; i++)
 		{
 			breaks[i] = values[i].value;
-			labels[i] = (values[i].value, values[i].key.ToString()!);
+			labels[i] = (values[i].value, Formats.InvariantText.Of(values[i].key)!);
 		}
 
 		Breaks = breaks;

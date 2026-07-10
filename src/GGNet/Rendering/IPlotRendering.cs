@@ -1,6 +1,6 @@
 namespace GGNet.Rendering;
 
-public interface IPlotRendering
+internal interface IPlotRendering
 {
 	IRenderModeHandler? RenderModeHandler { get; }
 

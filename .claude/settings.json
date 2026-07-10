@@ -1,0 +1,172 @@
+{
+	"permissions": {
+		"allow": [
+			"Bash(dotnet build:*)",
+			"Bash(dotnet test:*)",
+			"Bash(dotnet run:*)",
+			"Bash(dotnet restore:*)",
+			"Bash(dotnet clean:*)",
+			"Bash(dotnet format:*)",
+			"Bash(dotnet add:*)",
+			"Bash(dotnet remove:*)",
+			"Bash(dotnet list:*)",
+			"Bash(dotnet pack:*)",
+			"Bash(dotnet tool:*)",
+			"Bash(dotnet sln:*)",
+			"Bash(dotnet nuget locals:*)",
+			"Bash(dnx:*)",
+			"Bash(git status:*)",
+			"Bash(git diff:*)",
+			"Bash(git log:*)",
+			"Bash(git show:*)",
+			"Bash(git branch:*)",
+			"Bash(git checkout:*)",
+			"Bash(git switch:*)",
+			"Bash(git add:*)",
+			"Bash(git commit:*)",
+			"Bash(git stash:*)",
+			"Bash(git restore:*)",
+			"Bash(git fetch:*)",
+			"Bash(git merge:*)",
+			"Bash(git rebase:*)",
+			"Bash(git cherry-pick:*)",
+			"Bash(git tag:*)",
+			"Bash(git remote:*)",
+			"Bash(gh pr:*)",
+			"Bash(gh issue:*)",
+			"Bash(gh repo view:*)",
+			"Bash(gh run:*)",
+			"Bash(gh workflow:*)",
+			"Bash(gh api:*)",
+			"Bash(ls:*)",
+			"Bash(cat:*)",
+			"Bash(rg:*)",
+			"Bash(grep:*)",
+			"Bash(find:*)",
+			"Bash(tree:*)",
+			"Bash(head:*)",
+			"Bash(tail:*)",
+			"Bash(wc:*)",
+			"Bash(echo:*)",
+			"Bash(pwd)",
+			"Bash(which:*)",
+			"Bash(mkdir:*)",
+			"Bash(touch:*)",
+			"Bash(cp:*)",
+			"Bash(mv:*)",
+			"Bash(diff:*)",
+			"Bash(jq:*)",
+			"WebFetch(domain:learn.microsoft.com)",
+			"WebFetch(domain:devblogs.microsoft.com)",
+			"WebFetch(domain:dotnet.microsoft.com)",
+			"WebFetch(domain:nuget.org)",
+			"WebFetch(domain:www.nuget.org)",
+			"WebFetch(domain:github.com)",
+			"WebFetch(domain:raw.githubusercontent.com)",
+			"WebFetch(domain:www.data-to-viz.com)",
+			"WebSearch"
+		],
+		"ask": [
+			"Bash(dotnet nuget push:*)",
+			"Bash(dotnet nuget delete:*)",
+			"Bash(dotnet publish:*)",
+			"Bash(git push:*)",
+			"Bash(git reset --hard:*)",
+			"Bash(git clean:*)",
+			"Bash(gh pr merge:*)",
+			"Bash(gh release:*)"
+		],
+		"deny": [
+			"Bash(sudo:*)",
+			"Bash(git push --force:*)",
+			"Bash(git push -f:*)",
+			"Read(.env)",
+			"Read(.env.*)",
+			"Read(**/secrets.json)",
+			"Read(**/.aws/credentials)",
+			"Read(**/.azure/**)",
+			"Read(**/id_rsa)",
+			"Read(**/id_ed25519)",
+			"Read(**/*.pfx)",
+			"Read(**/*.pem)",
+			"Read(**/*.key)",
+			"Write(.git/**)"
+		]
+	},
+	"enabledPlugins": {
+		"csharp-lsp@local-lsp": true
+	},
+	"extraKnownMarketplaces": {
+		"local-lsp": {
+			"source": {
+				"source": "directory",
+				"path": "./.claude/lsp-marketplace"
+			}
+		}
+	},
+	"sandbox": {
+		"enabled": true,
+		"failIfUnavailable": false,
+		"autoAllowBashIfSandboxed": true,
+		"allowUnsandboxedCommands": true,
+		"network": {
+			"allowedDomains": [
+				"github.com",
+				"api.github.com",
+				"codeload.github.com",
+				"raw.githubusercontent.com",
+				"objects.githubusercontent.com",
+				"*.nuget.org",
+				"api.nuget.org",
+				"www.nuget.org",
+				"dotnet.microsoft.com",
+				"learn.microsoft.com",
+				"builds.dotnet.microsoft.com",
+				"aka.ms",
+				"*.azureedge.net",
+				"pkgs.dev.azure.com",
+				"www.data-to-viz.com"
+			],
+			"allowLocalBinding": true
+		},
+		"filesystem": {
+			"allowWrite": [
+				"./",
+				"/tmp",
+				"~/.nuget",
+				"~/.dotnet",
+				"~/.local/share/NuGet"
+			],
+			"denyRead": [
+				"~/.ssh",
+				"~/.aws",
+				"~/.azure",
+				"~/.gnupg",
+				"~/.config/gh"
+			]
+		},
+		"excludedCommands": [
+			"docker *",
+			"podman *"
+		]
+	},
+	"hooks": {
+		"SessionStart": [
+			{ "hooks": [ { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/caffeinate-start.sh" } ] }
+		],
+		"SessionEnd": [
+			{ "hooks": [ { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/caffeinate-stop.sh" } ] }
+		],
+		"Stop": [
+			{
+				"matcher": "",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; [ -n \"$(git diff --name-only -- '*.cs'; git diff --cached --name-only -- '*.cs')\" ] || exit 0; dotnet format GGNet.slnx --verify-no-changes >/tmp/ggnet-format.log 2>&1 && echo 'dotnet format: clean' || { echo 'dotnet format --verify-no-changes: drift detected — run: dotnet format GGNet.slnx'; tail -n 20 /tmp/ggnet-format.log; }"
+					}
+				]
+			}
+		]
+	}
+}

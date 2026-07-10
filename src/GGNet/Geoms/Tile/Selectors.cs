@@ -9,4 +9,6 @@ internal sealed class Selectors<T, TX, TY>
 	public required Func<T, double> Width { get; set; }
 
 	public required Func<T, double> Height { get; set; }
+
+	public Func<T, RenderFragment>? Tooltip { get; set; }
 }

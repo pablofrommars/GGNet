@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GGNet.ChartSelection/GGNet.ChartSelection.csproj" />
+    <Project Path="src/GGNet.Headless/GGNet.Headless.csproj" />
+    <Project Path="src/GGNet.Mcp/GGNet.Mcp.csproj" />
+    <Project Path="src/GGNet/GGNet.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GGNet.Components.Tests/GGNet.Components.Tests.csproj" />
+    <Project Path="tests/GGNet.Evals/GGNet.Evals.csproj" />
+    <Project Path="tests/GGNet.Headless.Tests/GGNet.Headless.Tests.csproj" />
+  </Folder>
+</Solution>

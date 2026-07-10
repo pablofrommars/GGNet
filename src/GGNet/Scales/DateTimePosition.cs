@@ -3,13 +3,13 @@ using GGNet.Transformations;
 
 namespace GGNet.Scales;
 
-public class DateTimePosition : Position<LocalDateTime>
+internal class DateTimePosition : Position<LocalDateTime>
 {
 	private static readonly LocalTimePattern timePattern = LocalTimePattern.CreateWithInvariantCulture("HH:mm");
 	private static readonly LocalDatePattern datePattern = LocalDatePattern.CreateWithInvariantCulture("MM/dd");
 	private static readonly Period sampling = Period.FromMinutes(1);
 
-	protected readonly SortedBuffer<LocalDateTime> values = new(512, 1);
+	protected readonly SortedBuffer<LocalDateTime> values = new();
 
 	public DateTimePosition(ITransformation<LocalDateTime>? transformation = null,
 		(LocalDateTime? min, LocalDateTime? max)? limits = null,
@@ -21,11 +21,11 @@ public class DateTimePosition : Position<LocalDateTime>
 
 	public override Guide Guide => Guide.None;
 
-	private LocalDate? first = null;
-	private LocalDate? last = null;
+	private LocalDate? first;
+	private LocalDate? last;
 
-	private LocalDateTime? min = null;
-	private LocalDateTime? max = null;
+	private LocalDateTime? min;
+	private LocalDateTime? max;
 
 	public override void Train(LocalDateTime key)
 	{
@@ -82,7 +82,7 @@ public class DateTimePosition : Position<LocalDateTime>
 		}
 	}
 
-	public override void Set(bool grid)
+	public override void Commit(bool grid)
 	{
 		var min = _min ?? 0.0;
 		var max = _max ?? 0.0;
@@ -118,7 +118,7 @@ public class DateTimePosition : Position<LocalDateTime>
 		}
 
 		var breaks = new List<double>();
-		var minor = new List<double>();
+		var minorBreaks = new List<double>();
 		var labels = new List<(double x, string label)>();
 		var titles = new List<(double x, string title)>();
 
@@ -150,7 +150,7 @@ public class DateTimePosition : Position<LocalDateTime>
 			}
 			else if (date.Minute % 15 == 0)
 			{
-				minor.Add(i);
+				minorBreaks.Add(i);
 			}
 
 			values.Add(date);
@@ -164,7 +164,7 @@ public class DateTimePosition : Position<LocalDateTime>
 		}
 
 		Breaks = breaks;
-		MinorBreaks = minor;
+		MinorBreaks = minorBreaks;
 		Labels = labels;
 		Titles = titles;
 	}

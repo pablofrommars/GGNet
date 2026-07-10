@@ -1,6 +1,8 @@
 ﻿namespace GGNet.Geoms.ABLine;
 
-internal sealed class ABLine<T> : Geom<T, double, double>
+internal sealed class ABLine<T, TX, TY> : Geom<T, TX, TY>
+	where TX : struct
+	where TY : struct
 {
 	private readonly (bool x, bool y) transformation;
 
@@ -10,7 +12,7 @@ internal sealed class ABLine<T> : Geom<T, double, double>
 		Func<T, double> b,
 		Func<T, string>? label,
 		(bool x, bool y)? transformation = null)
-		: base(source, null, false)
+		: base(source, null)
 	{
 		this.transformation = transformation ?? (true, true);
 
@@ -24,13 +26,13 @@ internal sealed class ABLine<T> : Geom<T, double, double>
 
 	public Selectors<T> Selectors { get; }
 
-	public Elements.Line Line { get; set; } = default!; 
+	public required Elements.Line Line { get; set; }
 
-	public Elements.Text Text { get; set; } = default!;
+	public required Elements.Text Text { get; set; }
 
 	public override void Train(T item) { }
 
-	protected override void Shape(T item, bool flip)
+	protected override void Shape(T item)
 	{
 		var a = Selectors.A(item);
 		var b = Selectors.B(item);

@@ -1,11 +1,10 @@
-using GGNet.Buffers;
 using GGNet.Scales;
 
 namespace GGNet.Data;
 
 internal sealed class Aesthetics<T>
 {
-	public Buffer<IScale> Scales { get; } = new(16, 1);
+	public List<IScale> Scales { get; } = [];
 
 	public IAestheticMapping<T, string>? Color { get; set; }
 

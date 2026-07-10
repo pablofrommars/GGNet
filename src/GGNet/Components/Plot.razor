@@ -1,28 +1,29 @@
-﻿@using GGNet.Buffers
 
 @typeparam T
 @typeparam TX
 @typeparam TY
 
+@using GGNet.Elements
 @inherits PlotBase<T, TX, TY>
+@using static GGNet.Components.SvgFormat
 
 <div class=@(CssClass()) theme=@Theme>
-    <svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 @Width @Height">
+    <svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox=@Attr($"0 0 {Width} {Height}")>
 
         <defs>
-            @_renderLegendGradients;
+            @renderLegendGradients
         </defs>
 
         <clipPath id="@(Id)-plot">
-            <rect x="0" y="0" width=@Width height=@Height />
+            <rect x="0" y="0" width=@Num(Width) height=@Num(Height) />
         </clipPath>
 
         <rect class="plot" width="100%" height="100%" />
 
-        @_renderLegend;
+        @renderLegend
 
         <CascadingValue Value=@this IsFixed=true>
-            @_renderPanels;
+            @renderPanels
         </CascadingValue>
 
     </svg>
@@ -61,9 +62,9 @@
                             x1="0%"
                             y1="0%"
                             x2=@(Style.Legend.Direction == Direction.Vertical ? "0%" : "100%")
-                            y2="@(Style.Legend.Direction == Direction.Vertical ? "100%" : "0%")">
+                            y2=@(Style.Legend.Direction == Direction.Vertical ? "100%" : "0%")>
 
-                <stop offset="0%" stop-color=@l.Items[0].elements[0].Value.StopColor stop-opacity=@l.Items[0].elements[0].Value.StopOpacity />
+                <stop offset="0%" stop-color=@l.Items[0].elements[0].Value.StopColor() stop-opacity=@Num(l.Items[0].elements[0].Value.StopOpacity()) />
 
                 @if (n > 2)
                 {
@@ -71,11 +72,11 @@
 
                     for (var j = 0; j < n - 1; j++)
                     {
-                        <stop offset="@(j * delta)%" stop-color=@l.Items[j].elements[0].Value.StopColor stop-opacity=@l.Items[j].elements[0].Value.StopOpacity />
+                        <stop offset=@Attr($"{j * delta}%") stop-color=@l.Items[j].elements[0].Value.StopColor() stop-opacity=@Num(l.Items[j].elements[0].Value.StopOpacity()) />
                     }
                 }
 
-                <stop offset="100%" stop-color=@l.Items[n - 1].elements[0].Value.StopColor stop-opacity=@l.Items[n - 1].elements[0].Value.StopOpacity />
+                <stop offset="100%" stop-color=@l.Items[n - 1].elements[0].Value.StopColor() stop-opacity=@Num(l.Items[n - 1].elements[0].Value.StopOpacity()) />
 
             </linearGradient>
         }
@@ -103,8 +104,8 @@
                     <text>
                         <text
                               class="legend-title"
-                              x=@(Legend.X)
-                              y=@(offset + l.Title.Height)
+                              x=@Num(Legend.X)
+                              y=@Num(offset + l.Title.Height)
                               text-anchor=@(Style.Legend.Title.Anchor.Render())
                               font-size=@(Style.Legend.Title.FontSize)
                               clip-path="url(#@(Id)-plot)">
@@ -127,61 +128,22 @@
                         {
                             var element = elements[k];
 
-                            if (element.Value is Elements.HLine hline)
+                            // Exhaustive over the Element union: an
+                            // unrendered swatch kind is a compile error.
+                            _ = element.Value switch
                             {
-                                <line x1=@Legend.Y
-                                      x2=@(Legend.X + l.Width)
-                                      y1=@(offset + elements.Height / 2.0)
-                                      y2=@(offset + elements.Height / 2.0)
-                                      stroke-width=@hline.StrokeWidth
-                                      stroke=@hline.Stroke
-                                      stroke-opacity=@hline.StrokeOpacity
-                                      clip-path="url(#@(Id)-plot)" />
-
-                            }
-                            else if (element.Value is Elements.VLine vline)
-                            {
-                                <line x1=@(Legend.X + l.Width / 2.0)
-                                      x2=@(Legend.X + l.Width / 2.0)
-                                      y1=@offset
-                                      y2=@(offset + elements.Height)
-                                      stroke-width=@vline.StrokeWidth
-                                      stroke=@vline.Stroke
-                                      stroke-opacity=@vline.StrokeOpacity
-                                      clip-path="url(#@(Id)-plot)" />
-
-                            }
-                            else if (element.Value is Elements.Circle circle)
-                            {
-                                <circle cx=@(Legend.X + l.Width / 2.0)
-                                        cy=@(offset + elements.Height / 2.0)
-                                        r=@circle.Radius
-                                        stroke-width="0.71"
-                                        stroke=@circle.Stroke
-                                        stroke-opacity=@circle.StrokeOpacity
-                                        fill=@circle.Fill
-                                        fill-opacity=@circle.FillOpacity
-                                        clip-path="url(#@(Id)-plot)" />
-                            }
-                            else if (element.Value is Elements.Rectangle rect)
-                            {
-                                <rect x=@Legend.X
-                                      y=@offset
-                                      width=@l.Width
-                                      height=@elements.Height
-                                      fill=@rect.Fill
-                                      fill-opacity=@rect.FillOpacity
-                                      stroke=@rect.Stroke
-                                      stroke-width=@rect.StrokeWidth
-                                      clip-path="url(#@(Id)-plot)" />
-                            }
+                                Elements.HLine hline => LegendVHLine(__builder, hline, l.Width, offset, elements.Height),
+                                Elements.VLine vline => LegendVVLine(__builder, vline, l.Width, offset, elements.Height),
+                                Elements.Circle circle => LegendVCircle(__builder, circle, l.Width, offset, elements.Height),
+                                Elements.Rectangle rect => LegendVRect(__builder, rect, l.Width, offset, elements.Height)
+                            };
                         }
 
                         <text>
                             <text
                                   class="legend-label"
-                                  x=@(Legend.X + l.Width + Style.Legend.Labels.Margin.Left)
-                                  y=@(offset + elements.Height / 2.0 + label.Height / 4.0)
+                                  x=@Num(Legend.X + l.Width + Style.Legend.Labels.Margin.Left)
+                                  y=@Num(offset + elements.Height / 2.0 + label.Height / 4.0)
                                   text-anchor=@(Style.Legend.Labels.Anchor.Render())
                                   font-size=@(Style.Legend.Labels.FontSize)
                                   clip-path="url(#@(Id)-legend)">
@@ -206,8 +168,8 @@
                         <text>
                             <text
                                   class="legend-label"
-                                  x=@xOffset
-                                  y=@(offset + (j + 1.0) * 3.0 * l.Height + label.Height / 4.0)
+                                  x=@Num(xOffset)
+                                  y=@Num(offset + (j + 1.0) * 3.0 * l.Height + label.Height / 4.0)
                                   text-anchor=@(Style.Legend.Labels.Anchor.Render())
                                   font-size=@(Style.Legend.Labels.FontSize)
                                   clip-path="url(#@(Id)-legend)">
@@ -216,10 +178,10 @@
                         </text>
                     }
 
-                    <rect x=@Legend.X
-                          y=@offset
-                          width=@l.Width
-                          height=@(3.0 * n * l.Height)
+                    <rect x=@Num(Legend.X)
+                          y=@Num(offset)
+                          width=@Num(l.Width)
+                          height=@Num(3.0 * n * l.Height)
                           fill="url(#gadient-@(Id)-@i)"
                           stroke=@Style.Legend.Labels.Color
                           stroke-width="0.2"
@@ -243,8 +205,8 @@
                     <text>
                         <text
                               class="legend-title"
-                              x=@offset
-                              y=@(middle + l.Title.Height / 4.0)
+                              x=@Num(offset)
+                              y=@Num(middle + l.Title.Height / 4.0)
                               text-anchor=@(Style.Legend.Title.Anchor.Render())
                               font-size=@(Style.Legend.Title.FontSize)
                               clip-path="url(#@(Id)-plot)">
@@ -265,56 +227,13 @@
                         {
                             var element = elements[k];
 
-                            if (element.Value is Elements.HLine hline)
+                            _ = element.Value switch
                             {
-                                <line x1=@offset
-                                      x2=@(offset + elements.Width)
-                                      y1=@(middle)
-                                      y2=@(middle)
-                                      stroke-width=@hline.StrokeWidth
-                                      stroke=@hline.Stroke
-                                      stroke-opacity=@hline.StrokeOpacity
-                                      stroke-dasharray=@(hline.LineType.Render())
-                                      clip-path="url(#@(Id)-plot)" />
-
-                            }
-                            else if (element.Value is Elements.VLine vline)
-                            {
-                                <line x1=@(offset + elements.Width / 2.0)
-                                      x2=@(offset + elements.Width / 2.0)
-                                      y1=@Legend.Y
-                                      y2=@(Legend.Y + Legend.Height)
-                                      stroke-width=@vline.StrokeWidth
-                                      stroke=@vline.Stroke
-                                      stroke-opacity=@vline.StrokeOpacity
-                                      stroke-dasharray=@(vline.LineType.Render())
-                                      clip-path="url(#@(Id)-plot)" />
-
-                            }
-                            else if (element.Value is Elements.Circle circle)
-                            {
-                                <circle cx=@(offset + elements.Width / 2.0)
-                                        cy=@middle
-                                        r=@circle.Radius
-                                        stroke-width="0.71"
-                                        stroke=@circle.Stroke
-                                        stroke-opacity=@circle.StrokeOpacity
-                                        fill=@circle.Fill
-                                        fill-opacity=@circle.FillOpacity
-                                        clip-path="url(#@(Id)-plot)" />
-                            }
-                            else if (element.Value is Elements.Rectangle rect)
-                            {
-                                <rect x=@offset
-                                      y=@(middle - elements.Height / 2.0)
-                                      width=@elements.Width
-                                      height=@elements.Height
-                                      fill=@rect.Fill
-                                      fill-opacity=@rect.FillOpacity
-                                      stroke=@rect.StrokeOpacity
-                                      stroke-width=@rect.StrokeWidth
-                                      clip-path="url(#@(Id)-plot)" />
-                            }
+                                Elements.HLine hline => LegendHHLine(__builder, hline, offset, elements.Width, middle),
+                                Elements.VLine vline => LegendHVLine(__builder, vline, offset, elements.Width),
+                                Elements.Circle circle => LegendHCircle(__builder, circle, offset, elements.Width, middle),
+                                Elements.Rectangle rect => LegendHRect(__builder, rect, offset, elements.Width, elements.Height, middle)
+                            };
                         }
 
                         offset += elements.Width;
@@ -324,8 +243,8 @@
                         <text>
                             <text
                                   class="legend-label"
-                                  x=@offset
-                                  y=@(middle + label.Height / 4.0)
+                                  x=@Num(offset)
+                                  y=@Num(middle + label.Height / 4.0)
                                   text-anchor=@(Style.Legend.Labels.Anchor.Render())
                                   font-size=@(Style.Legend.Labels.FontSize)
                                   clip-path="url(#@(Id)-legend)">
@@ -349,8 +268,8 @@
                         <text>
                             <text
                                   class="legend-label"
-                                  x=@(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0)
-                                  y=@yOffset
+                                  x=@Num(offset + 3.0 * (j + 1.0) * l.Width - label.Width / 2.0)
+                                  y=@Num(yOffset)
                                   text-anchor=@(Style.Legend.Labels.Anchor.Render())
                                   font-size=@(Style.Legend.Labels.FontSize)
                                   clip-path="url(#@(Id)-legend)">
@@ -361,10 +280,10 @@
 
                     yOffset += Style.Legend.Labels.Margin.Bottom;
 
-                    <rect x=@offset
-                          y=@yOffset
-                          width=@(3.0 * l.Width * l.Items.Count)
-                          height=@l.Height
+                    <rect x=@Num(offset)
+                          y=@Num(yOffset)
+                          width=@Num(3.0 * l.Width * l.Items.Count)
+                          height=@Num(l.Height)
                           fill="url(#gadient-@(Id)-@i)"
                           stroke=@Style.Legend.Labels.Color
                           stroke-width="0.2"
@@ -376,88 +295,156 @@
 
     private void RenderPanels(RenderTreeBuilder __builder)
     {
-        var width = wrapper.Width - Context.Strip - (Context.N.cols - 1.0) * Style.Panel.Spacing.X;
+        var panels = new (int row, int col, double width, double height)[Context.Panels.Count];
 
-        if (!Context.AxisVisibility.y)
+        for (var i = 0; i < Context.Panels.Count; i++)
         {
-            width -= Context.Axis.width;
+            var p = Context.Panels[i];
+
+            panels[i] = (p.Coord.row, p.Coord.col, p.Width, p.Height);
         }
 
-        var height = wrapper.Height - Context.Strip - (Context.N.rows - 1.0) * Style.Panel.Spacing.Y;
-
-        if (!Context.AxisVisibility.x)
-        {
-            height -= Context.Axis.height;
-        }
-
-        if (!Context.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Context.XLab))
-        {
-            height -= Context.AxisTitles.x;
-        }
-
-        var xOffsetReset = wrapper.X;
-
-        var xOffset = xOffsetReset;
-        var yOffset = wrapper.Y;
+        var zones = Layout.PlotLayout.Subdivide(new(
+            Wrapper: wrapper,
+            N: Context.N,
+            Strip: Context.Strip,
+            Axis: Context.Axis,
+            AxisVisibility: Context.AxisVisibility,
+            AxisTitles: Context.AxisTitles,
+            AxisTitlesVisibility: Context.AxisTitlesVisibility,
+            HasXLab: !string.IsNullOrEmpty(Context.XLab),
+            Style: Style), panels);
 
         for (var i = 0; i < Context.Panels.Count; i++)
         {
             var panel = Context.Panels[i];
-
-            var x = xOffset;
-            var y = yOffset;
-
-            var w = panel.Width * width;
-            var h = panel.Height * height;
-
-            if (panel.Coord.row == 0)
-            {
-                h += Context.Strip;
-            }
-
-            if (panel.Coord.col == 0 && !Context.AxisVisibility.y && Style.Axis.Y == Position.Left)
-            {
-                w += Context.Axis.width;
-            }
-
-            if (panel.Coord.row == (Context.N.rows - 1))
-            {
-                if (!Context.AxisVisibility.x)
-                {
-                    h += Context.Axis.height;
-                }
-
-                if (!Context.AxisTitlesVisibility.x && !string.IsNullOrEmpty(Context.XLab))
-                {
-                    h += Context.AxisTitles.x;
-                }
-            }
-
-            if (panel.Coord.col == (Context.N.cols - 1))
-            {
-                w += Context.Strip;
-
-                if (!Context.AxisVisibility.y && Style.Axis.Y == Position.Right)
-                {
-                    w += Context.Axis.width;
-                }
-
-                xOffset = xOffsetReset;
-                yOffset += h + Style.Panel.Spacing.Y;
-            }
-            else
-            {
-                xOffset += w + Style.Panel.Spacing.X;
-            }
+            var zone = zones[i];
 
             <Panel Data=@panel
-                   X=@x
-                   Y=@y
-                   Width=@w
-                   Height=@h
+                   X=@zone.X
+                   Y=@zone.Y
+                   Width=@zone.Width
+                   Height=@zone.Height
                    First=@(i == 0)
                    Last=@(i == (Context.Panels.Count - 1))
                    T=T TX=TX TY=TY />
         }
+    }
+    private bool LegendVHLine(RenderTreeBuilder __builder, Elements.HLine hline, double width, double offset, double height)
+    {
+        <line x1=@Num(Legend.X)
+              x2=@Num(Legend.X + width)
+              y1=@Num(offset + height / 2.0)
+              y2=@Num(offset + height / 2.0)
+              stroke-width=@Num(hline.StrokeWidth)
+              stroke=@hline.Stroke
+              stroke-opacity=@Num(hline.StrokeOpacity)
+              clip-path="url(#@(Id)-plot)" />
+
+        return true;
+    }
+
+    private bool LegendVVLine(RenderTreeBuilder __builder, Elements.VLine vline, double width, double offset, double height)
+    {
+        <line x1=@Num(Legend.X + width / 2.0)
+              x2=@Num(Legend.X + width / 2.0)
+              y1=@Num(offset)
+              y2=@Num(offset + height)
+              stroke-width=@Num(vline.StrokeWidth)
+              stroke=@vline.Stroke
+              stroke-opacity=@Num(vline.StrokeOpacity)
+              clip-path="url(#@(Id)-plot)" />
+
+        return true;
+    }
+
+    private bool LegendVCircle(RenderTreeBuilder __builder, Elements.Circle circle, double width, double offset, double height)
+    {
+        <circle cx=@Num(Legend.X + width / 2.0)
+                cy=@Num(offset + height / 2.0)
+                r=@Num(circle.Radius)
+                stroke-width="0.71"
+                stroke=@circle.Stroke
+                stroke-opacity=@Num(circle.StrokeOpacity)
+                fill=@circle.Fill
+                fill-opacity=@Num(circle.FillOpacity)
+                clip-path="url(#@(Id)-plot)" />
+
+        return true;
+    }
+
+    private bool LegendVRect(RenderTreeBuilder __builder, Elements.Rectangle rect, double width, double offset, double height)
+    {
+        <rect x=@Num(Legend.X)
+              y=@Num(offset)
+              width=@Num(width)
+              height=@Num(height)
+              fill=@rect.Fill
+              fill-opacity=@Num(rect.FillOpacity)
+              stroke=@rect.Stroke
+              stroke-width=@Num(rect.StrokeWidth)
+              clip-path="url(#@(Id)-plot)" />
+
+        return true;
+    }
+
+    private bool LegendHHLine(RenderTreeBuilder __builder, Elements.HLine hline, double offset, double width, double middle)
+    {
+        <line x1=@Num(offset)
+              x2=@Num(offset + width)
+              y1=@Num(middle)
+              y2=@Num(middle)
+              stroke-width=@Num(hline.StrokeWidth)
+              stroke=@hline.Stroke
+              stroke-opacity=@Num(hline.StrokeOpacity)
+              stroke-dasharray=@(hline.LineType.Render())
+              clip-path="url(#@(Id)-plot)" />
+
+        return true;
+    }
+
+    private bool LegendHVLine(RenderTreeBuilder __builder, Elements.VLine vline, double offset, double width)
+    {
+        <line x1=@Num(offset + width / 2.0)
+              x2=@Num(offset + width / 2.0)
+              y1=@Num(Legend.Y)
+              y2=@Num(Legend.Y + Legend.Height)
+              stroke-width=@Num(vline.StrokeWidth)
+              stroke=@vline.Stroke
+              stroke-opacity=@Num(vline.StrokeOpacity)
+              stroke-dasharray=@(vline.LineType.Render())
+              clip-path="url(#@(Id)-plot)" />
+
+        return true;
+    }
+
+    private bool LegendHCircle(RenderTreeBuilder __builder, Elements.Circle circle, double offset, double width, double middle)
+    {
+        <circle cx=@Num(offset + width / 2.0)
+                cy=@Num(middle)
+                r=@Num(circle.Radius)
+                stroke-width="0.71"
+                stroke=@circle.Stroke
+                stroke-opacity=@Num(circle.StrokeOpacity)
+                fill=@circle.Fill
+                fill-opacity=@Num(circle.FillOpacity)
+                clip-path="url(#@(Id)-plot)" />
+
+        return true;
+    }
+
+    private bool LegendHRect(RenderTreeBuilder __builder, Elements.Rectangle rect, double offset, double width, double height, double middle)
+    {
+        <rect x=@Num(offset)
+              y=@Num(middle - height / 2.0)
+              width=@Num(width)
+              height=@Num(height)
+              fill=@rect.Fill
+              fill-opacity=@Num(rect.FillOpacity)
+              stroke=@rect.Stroke
+              stroke-width=@Num(rect.StrokeWidth)
+              clip-path="url(#@(Id)-plot)" />
+
+        return true;
     }
 }
