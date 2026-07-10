@@ -6,9 +6,9 @@
 
 | Dimension | Grade | What separates it from the next grade |
 |---|---|---|
-| Architecture | **A** | A+: the specification/realization split (`PlotContext` still mixes builder state, trained state, and orchestration in one mutable object), and the interactivity seam exists as a design only. |
+| Architecture | **A** | A+: the specification/realization split. The interactivity seam has landed (2026-07-10, `interactivity-draft`), and it made the split cheaper: `PlotContext` is pre-sorted into labeled Spec/Realization/State partials, and the work revealed the split's true shape — three buckets (spec / realization / durable interaction state), not two. |
 | Implementation hygiene | **A−** | A: flip the CI trigger from `workflow_dispatch` to push/PR — the gates (`-warnaserror`, format verify) already exist; enforcement is what's missing. A+: nothing manual left to get wrong (below). |
-| Testing | **B+** | A−: interactive circuit paths (tooltips, mouse events, refresh) are untested, and CI doesn't run automatically. A+: a mutation score. |
+| Testing | **B+** | A−: CI doesn't run automatically. The circuit gap closed with interactivity: bUnit covers tooltips/mouse events/refresh, and a Playwright smoke layer executes the JS module for real (opt-in, `GGNET_E2E=1`). A+: a mutation score. |
 | API design | **A** | A+: the Roslyn analyzer that turns DSL conventions into squiggles. |
 | Maintainability | **B+** | A−: the 21 per-geom overload partials are hand-synced prose — machine-verified (`OverloadConsistencyTests`), not generated (generation retired by decision). The grade rises as the forwarding-bug class stays quiet under the gates. |
 
@@ -16,11 +16,11 @@
 
 The breaking window is open until the tag. Steps, in order:
 
-1. Push the branch; run the CI workflow once via `workflow_dispatch` (it has never executed — first run on a fresh Linux runner is the real test).
+1. Push the branch; run the CI workflow once via `workflow_dispatch` (it has never executed — first run on a fresh Linux runner is the real test; it now carries four jobs incl. the Playwright smoke).
 2. Merge to `master`, tag `2.0.0`.
 3. Flip the CI trigger to push/PR (completes hygiene A).
 
-Breaking changes accumulated for the tag message: `Set`→`Commit`; builder type parameters (typed geom binding); `IWaiver`→`NoData`; Map generic constraints; `GGNet.Static`→`GGNet.Headless`; pure-SVG export (svg element only); `width`→`strokeWidth` on the ten stroke geoms; `alpha`→`opacity`; public surface cut 176→74 exported types (pinned manifest; the additions back are deliberate — stats, formatters); flag-free geom protocol (`Shape()`/`Set()`); `RenderTarget` collapsed to `Render | Loading`; `_color`→`colorBy` mapping family; `format:`/`timezone:` string parameters retired for `formatter:` (`IFormatter<T>` everywhere); `IAestheticMapping<T,TValue>.Map` returns `TValue?`; `stroke`→`strokeColor` on `Geom_Map`/`Geom_Violin`.
+Breaking changes accumulated for the tag message: `Set`→`Commit`; builder type parameters (typed geom binding); `IWaiver`→`NoData`; Map generic constraints; `GGNet.Static`→`GGNet.Headless`; pure-SVG export (svg element only); `width`→`strokeWidth` on the ten stroke geoms; `alpha`→`opacity`; public surface cut 176→74 exported types (pinned manifest; the additions back are deliberate — stats, formatters, and the interactivity surface: `InteractivityOptions`, `ZoomAxis`, `ViewExtensions`); flag-free geom protocol (`Shape()`/`Set()`); `RenderTarget` collapsed to `Render | Loading`; `_color`→`colorBy` mapping family; `format:`/`timezone:` string parameters retired for `formatter:` (`IFormatter<T>` everywhere); `IAestheticMapping<T,TValue>.Map` returns `TValue?`; `stroke`→`strokeColor` on `Geom_Map`/`Geom_Violin`.
 
 Out of scope by decision: NuGet packaging/publishing.
 
@@ -28,8 +28,8 @@ Out of scope by decision: NuGet packaging/publishing.
 
 ### Architecture
 
-- **Spec/realization split.** An immutable plot description built by the fluent API, realized per render. Enables safe re-render/concurrency and spec serialization; dissolves what remains of pipeline state management. The largest refactor on the board — touches everything.
-- **Interactivity seam** (design exists; see backlog for tiers). `Unproject(px, py)` on `ICoordinateSystem`, `Invert` on scales, a view window as dynamic `Limits` exempt from `Reset()` (user state — the first deliberate exemption; document it when it lands).
+- **Spec/realization split.** An immutable plot description built by the fluent API, realized per render. Enables safe re-render/concurrency and spec serialization; dissolves what remains of pipeline state management. The largest refactor on the board — touches everything. Interactivity de-risked it (`interactivity-plan/implementation-blocks.md`): members are pre-sorted into labeled partials, the third bucket (durable interaction state — `ViewRange`, the container view) exists and is documented in place, and **all three coverage preconditions have landed** (multi-pass render equivalence, circuit tests, and `ConcurrencyStressTests` — refresh storms, view-window writes racing renders, dispose racing writers; it also corrected the channel's `SingleWriter` declaration to match the public multi-writer contract). The split now waits only on its trigger.
+- ~~**Interactivity seam**~~ **Landed** (2026-07-10): `Unproject` on `ICoordinateSystem`, `Invert`/`Unmap` on scales, `ViewRange` as the runtime window exempt from `Reset()` — the first deliberate exemption, documented where it lives (`Scales/Position.cs`, `PlotContext.State.cs`). What remains of interactivity is in the backlog below.
 
 ### Implementation hygiene
 
@@ -39,8 +39,8 @@ Out of scope by decision: NuGet packaging/publishing.
 
 ### Testing
 
-- **A−: interactive circuit coverage** — the headless-untestable remainder (tooltips, mouse events, refresh paths). bUnit or a driven circuit; decide when the interactivity seam lands, since that work touches the same surface.
-- **Cheap, any time:** widen the locale identity test from three hardcoded cultures to `CultureInfo.GetCultures(All)` — the NodaTime trick; exotic cultures (non-Latin digits, U+2212 minus) are where invariance bugs hide.
+- ~~**Interactive circuit coverage**~~ **Landed with interactivity**: bUnit covers the circuit surface (tooltips, mouse events, gestures, the opt-in gate), and `tests/GGNet.E2ETests` (Playwright, self-skipping without `GGNET_E2E=1`) executes the JS module against the spawned demo app — the only layer that can. Chromium only; the coordinate math is spec-based, but a manual Firefox/Safari pass on the demo is still owed before merge.
+- ~~**Widen the locale identity test**~~ Done — `GeometryIsCultureInvariantAcrossAllCultures` iterates `CultureInfo.GetCultures(AllCultures)`.
 - **A+: mutation score** (same Stryker run as hygiene).
 
 ### API design
@@ -53,7 +53,7 @@ Out of scope by decision: NuGet packaging/publishing.
 
 ## Backlog — demand-driven, each with its trigger
 
-- **Interactivity, tiered by Blazor Server physics** (discrete events over the circuit are fine; `mousemove` never is — that split *is* the JS boundary). Tier 0, no JS: wheel-zoom, double-click reset, data-snapped crosshair via invisible hit-strips, coordinate readout (~1–2 sessions incl. the seam). Tier 1: +15 lines of measurement JS for responsive sizing. Tier 2: drag-pan/rubber-band/pixel-glued crosshair — the repo's first real JS asset; decide that precedent on its merits. Blast radius is concentrated (strategies, scales, `PlotContext`, `Panel` overlay, builders); zero impact on geoms, composer, Headless, gallery. *Trigger: a dashboard needs it (the fermentation wheel-zoom case is tier 0).*
+- **Interactivity — the remainder** (the tiers landed 2026-07-10: wheel-zoom, reset, crosshair+readout, drag-pan with client-side preview, cursor-glued popover tooltips, auto-fit y, the imperative view API, the opt-in gate; ledger in `interactivity-plan/implementation-blocks.md`). Still open, each with its design note: **legend toggle** (Block 7 — visibility filter placement, retrain-vs-freeze), the **anchor-model tooltip / multi-series shared readout** (Block 9c — wants data-position access; co-design with Block 7), and **rubber-band/brush/lasso selection** riding the existing pan machinery (selection is a new state domain beside the view window). *Trigger: a dashboard needs them.*
 - **Arc geometry** (pie/rose/coxcomb) — the designed slot exists (polar strategy + grid composition pattern). *Trigger: an actual chart need.*
 - **Text measurement fidelity** — device-independent tables are the correct architecture (interop rejected: it reintroduces the two-pass protocol and breaks byte-pinned goldens); the defect is the unclosed chain: bundle Inter woff2 via `@font-face`, regenerate the width tables offline from the font's real advance widths, optional per-weight tables. *Trigger: visible layout misfits on real dashboards.*
 - **PNG export** — rasterize the emitted SVG (resvg or similar); no second renderer. *Trigger: a consumer demands it.*
@@ -65,5 +65,6 @@ Out of scope by decision: NuGet packaging/publishing.
 
 - Every commit lands green locally: `dotnet build GGNet.slnx -warnaserror`, full test suite, `dotnet format whitespace|style --verify-no-changes` (the same three gates CI runs).
 - Render-touching changes byte-compare against the gallery snapshots (`tests/GGNet.Headless.Tests/Gallery/`); a re-pin is a deliberate, eyeballed decision, never a reflex.
+- Changes touching the JS module (`Components/Panel.razor.js`) or its wrapper also run the executed-JS smoke: `GGNET_E2E=1 dotnet test tests/GGNet.E2ETests` (needs a Playwright Chromium; tests self-skip without the flag, so the plain gates stay browser-free).
 - Breaking API changes go in their own commits, separately revertable, and each adds itself to the tag list above.
 - Behavior claims are measured, not asserted — the `RenderTarget` optimization was implemented, measured, and reverted on the numbers; that calculus stands.

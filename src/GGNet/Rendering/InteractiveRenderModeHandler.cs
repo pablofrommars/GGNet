@@ -12,10 +12,13 @@ internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 
 	private volatile int render;
 
+	// SingleWriter is deliberately false: RefreshAsync is public surface —
+	// gestures arrive on the circuit thread, host commands from any thread
+	// (ConcurrencyStressTests pins the multi-writer contract).
 	readonly Channel<RenderTarget> channel = Channel.CreateUnbounded<RenderTarget>(new()
 	{
 		SingleReader = true,
-		SingleWriter = true
+		SingleWriter = false
 	});
 
 	private readonly Task background;
