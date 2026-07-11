@@ -1,6 +1,6 @@
 {
   "name": "ggnet",
-  "version": "0.1.0",
+  "version": "2.0.0-beta",
   "description": "GGNet charting skills: grammar-of-graphics plot composition for .NET/Blazor and chart selection grounded in GGNet's renderable surface.",
   "skills": ["./skills/"]
 }
