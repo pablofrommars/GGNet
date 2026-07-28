@@ -24,6 +24,11 @@ internal abstract class Position<TKey>(ITransformation<TKey>? transformation, (d
 
 	public virtual ITransformation<double> RangeTransformation { get; } = Transformations.Identity<double>.Instance;
 
+	// The one place data space becomes scale space for an endpoint. Explicit Limits are
+	// authored in data units, while _min/_max arrive from the geoms already mapped, so a
+	// limit on a transformed scale has to go through Map before it can meet SetRange.
+	protected double Endpoint(TKey? limit, double? trained) => limit.HasValue ? Map(limit.Value) : trained ?? 0.0;
+
 	protected void SetRange(double min, double max)
 	{
 		if (min == max)

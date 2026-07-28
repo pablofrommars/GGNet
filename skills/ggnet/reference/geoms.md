@@ -15,6 +15,7 @@ Geom_Line(x?, y?, colorBy?, IAestheticMapping<T,LineType>? lineTypeBy, events…
 Geom_Bar(x?, y?, fillBy?, events…, string fill = "#23d0fc", double fillOpacity = 1.0,
     string strokeColor = "inherit", double strokeOpacity = 1.0, double strokeWidth = 0.0,
     PositionAdjustment position = PositionAdjustment.Stack,   // ← Stack by default!
+    // Stack: negative values pile downward from the baseline; the axis covers both directions
     double width = 0.9, bool animation = false, …)
 
 Geom_Area(x?, y?, fillBy?, events…, string fill = "#23d0fc", double fillOpacity = 1.0,
@@ -40,6 +41,7 @@ Geom_Map(source, Func<T2, Geospacial.Polygon[]> polygons, fillBy?, events…,
     Func<T2,(Geospacial.Point point, RenderFragment content)>? tooltip,   // positioned tooltip
     animation, fill, fillOpacity, string strokeColor = "#000000", double strokeWidth = 0, …)
     // PlotContext<T, double, double> only; all polygons of a layer emit as ONE multi-subpath <path>
+    // Geospacial.Polygon { Longitude, Latitude, Hole } — Hole = true rings render as cut-outs, any winding
 ```
 
 ## Finance (events, no tooltip)

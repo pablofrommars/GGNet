@@ -17,22 +17,18 @@
 		</clipPath>
 	</defs>
 	<rect class="panel" x="14" y="0" width="676" height="556" />
-	<line class="x-break" x1="28.55502392344498" x2="28.55502392344498" y1="0" y2="556" clip-path="url(#ggID)" />
-	<line class="x-break" x1="190.2775119617225" x2="190.2775119617225" y1="0" y2="556" clip-path="url(#ggID)" />
-	<line class="x-break" x1="352" x2="352" y1="0" y2="556" clip-path="url(#ggID)" />
-	<line class="x-break" x1="513.7224880382776" x2="513.7224880382776" y1="0" y2="556" clip-path="url(#ggID)" />
-	<line class="x-break" x1="675.444976076555" x2="675.444976076555" y1="0" y2="556" clip-path="url(#ggID)" />
-	<line class="x-minor-break" x1="-52.306220095693774" x2="-52.306220095693774" y1="0" y2="556" clip-path="url(#ggID)" />
-	<line class="x-minor-break" x1="109.41626794258374" x2="109.41626794258374" y1="0" y2="556" clip-path="url(#ggID)" />
-	<line class="x-minor-break" x1="271.1387559808613" x2="271.1387559808613" y1="0" y2="556" clip-path="url(#ggID)" />
-	<line class="x-minor-break" x1="432.8612440191387" x2="432.8612440191387" y1="0" y2="556" clip-path="url(#ggID)" />
-	<line class="x-minor-break" x1="594.5837320574162" x2="594.5837320574162" y1="0" y2="556" clip-path="url(#ggID)" />
-	<line class="x-minor-break" x1="756.3062200956939" x2="756.3062200956939" y1="0" y2="556" clip-path="url(#ggID)" />
-	<text class="x-break-label" x="28.55502392344498" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">0</text>
-	<text class="x-break-label" x="190.2775119617225" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">1</text>
-	<text class="x-break-label" x="352" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">2</text>
-	<text class="x-break-label" x="513.7224880382776" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">3</text>
-	<text class="x-break-label" x="675.444976076555" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">4</text>
+	<line class="x-break" x1="-71.8244514106583" x2="-71.8244514106583" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-break" x1="140.08777429467082" x2="140.08777429467082" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-break" x1="351.99999999999994" x2="351.99999999999994" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-break" x1="563.9122257053291" x2="563.9122257053291" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-break" x1="775.8244514106581" x2="775.8244514106581" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="34.13166144200626" x2="34.13166144200626" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="246.0438871473354" x2="246.0438871473354" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="457.95611285266443" x2="457.95611285266443" y1="0" y2="556" clip-path="url(#ggID)" />
+	<line class="x-minor-break" x1="669.8683385579936" x2="669.8683385579936" y1="0" y2="556" clip-path="url(#ggID)" />
+	<text class="x-break-label" x="140.08777429467082" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">1</text>
+	<text class="x-break-label" x="351.99999999999994" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">2</text>
+	<text class="x-break-label" x="563.9122257053291" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">3</text>
 	<line class="y-break" x1="14" x2="690" y1="530.7272727272727" y2="530.7272727272727" clip-path="url(#ggID)" />
 	<line class="y-break" x1="14" x2="690" y1="429.6363636363636" y2="429.6363636363636" clip-path="url(#ggID)" />
 	<line class="y-break" x1="14" x2="690" y1="328.5454545454545" y2="328.5454545454545" clip-path="url(#ggID)" />
@@ -53,11 +49,11 @@
 	<text class="y-break-label" x="10" y="129.36363636363637" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">4</text>
 	<text class="y-break-label" x="10" y="28.272727272727252" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">5</text>
 	<g clip-path="url(#ggID)">
-		<rect x="117.50239234449764" y="227.45454545454544" width="145.55023923444975" height="303.2727272727273" class="" fill="#fc9d23" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
-		<rect x="117.50239234449764" y="25.272727272727252" width="145.55023923444975" height="202.1818181818182" class="" fill="#23d0fc" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
-		<rect x="279.22488038277515" y="429.6363636363636" width="145.55023923444975" height="101.09090909090912" class="" fill="#fc9d23" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
-		<rect x="279.22488038277515" y="25.272727272727252" width="145.55023923444975" height="404.3636363636364" class="" fill="#23d0fc" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
-		<rect x="440.9473684210526" y="328.5454545454545" width="145.5502392344498" height="202.18181818181824" class="" fill="#fc9d23" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
-		<rect x="440.9473684210526" y="25.272727272727252" width="145.5502392344498" height="303.27272727272725" class="" fill="#23d0fc" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
+		<rect x="44.72727272727273" y="227.45454545454544" width="190.72100313479623" height="303.2727272727273" class="" fill="#fc9d23" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
+		<rect x="44.72727272727273" y="25.272727272727252" width="190.72100313479623" height="202.1818181818182" class="" fill="#23d0fc" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
+		<rect x="256.63949843260184" y="429.6363636363636" width="190.72100313479615" height="101.09090909090912" class="" fill="#fc9d23" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
+		<rect x="256.63949843260184" y="25.272727272727252" width="190.72100313479615" height="404.3636363636364" class="" fill="#23d0fc" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
+		<rect x="468.5517241379309" y="328.5454545454545" width="190.72100313479626" height="202.18181818181824" class="" fill="#fc9d23" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
+		<rect x="468.5517241379309" y="25.272727272727252" width="190.72100313479626" height="303.27272727272725" class="" fill="#23d0fc" fill-opacity="1" stroke="inherit" stroke-opacity="1" stroke-width="0" clip-path="url(#ggID)" />
 	</g>
 </svg>

@@ -123,7 +123,9 @@ internal class DiscreteDates(
 
 			j = 1;
 			i = last + 1;
-			while (i <= end)
+			// end is exclusive, like every other loop here: on a full-range axis values[end] is out
+			// of bounds, and on a windowed one it is a real element outside the requested window.
+			while (i < end)
 			{
 				if (j++ % delta == 0)
 				{

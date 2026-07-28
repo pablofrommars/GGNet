@@ -1,5 +1,6 @@
 ﻿namespace GGNet;
 
+using Exceptions;
 using Facets;
 using Formats;
 
@@ -16,7 +17,7 @@ public static partial class BuilderExtensions
 	/// Configures a discrete date x scale with day/month tick labeling.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	public static PlotContext<T, LocalDate, TY> Scale_X_Discrete_Date<T, TY>(
 	  this PlotContext<T, LocalDate, TY> context,
 	  (LocalDate? min, LocalDate? max)? limits = null,
@@ -32,7 +33,7 @@ public static partial class BuilderExtensions
 	/// Configures a discrete date-time x scale with time-of-day and date-boundary tick labeling.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	public static PlotContext<T, LocalDateTime, TY> Scale_X_Discrete_DateTime<T, TY>(
 	  this PlotContext<T, LocalDateTime, TY> context,
 	  (LocalDateTime? min, LocalDateTime? max)? limits = null,
@@ -66,7 +67,7 @@ public static partial class BuilderExtensions
 	/// </summary>
 	/// <param name="transformation">Value transformation (log10, sqrt) applied before mapping; breaks and labels stay in data units.</param>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
 	/// <param name="includeMinorBreaks">Midpoint gridlines between major breaks.</param>
@@ -89,7 +90,7 @@ public static partial class BuilderExtensions
 	/// Configures the discrete x scale: one slot per distinct trained value, in sort order.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="offset">Break and label offset from the category index, in axis units.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
@@ -167,7 +168,7 @@ public static partial class BuilderExtensions
 	/// </summary>
 	/// <param name="transformation">Value transformation (log10, sqrt) applied before mapping; breaks and labels stay in data units.</param>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
 	/// <param name="includeMinorBreaks">Midpoint gridlines between major breaks.</param>
@@ -191,7 +192,7 @@ public static partial class BuilderExtensions
 	/// </summary>
 	/// <param name="transformation">Value transformation (log10, sqrt) applied before mapping; breaks and labels stay in data units.</param>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
 	/// <param name="includeMinorBreaks">Midpoint gridlines between major breaks.</param>
@@ -214,7 +215,7 @@ public static partial class BuilderExtensions
 	/// Configures a square-root-transformed continuous x scale.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
 	/// <param name="includeMinorBreaks">Midpoint gridlines between major breaks.</param>
@@ -232,7 +233,7 @@ public static partial class BuilderExtensions
 	/// Configures a base-10 logarithmic continuous x scale.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	public static PlotContext<T, double, TY> Scale_X_Log10<T, TY>(
 	  this PlotContext<T, double, TY> context,
@@ -250,7 +251,7 @@ public static partial class BuilderExtensions
 	/// Configures a square-root-transformed continuous y scale.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
 	public static PanelFactory<T, TX, double> Scale_Y_Sqrt<T, TX>(
@@ -266,7 +267,7 @@ public static partial class BuilderExtensions
 	/// Configures a square-root-transformed continuous y scale.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
 	public static PlotContext<T, TX, double> Scale_Y_Sqrt<T, TX>(
@@ -282,7 +283,7 @@ public static partial class BuilderExtensions
 	/// Configures a base-10 logarithmic continuous y scale.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	public static PanelFactory<T, TX, double> Scale_Y_Log10<T, TX>(
 	  this PanelFactory<T, TX, double> panel,
@@ -300,7 +301,7 @@ public static partial class BuilderExtensions
 	/// Configures a base-10 logarithmic continuous y scale.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	public static PlotContext<T, TX, double> Scale_Y_Log10<T, TX>(
 	  this PlotContext<T, TX, double> context,
@@ -318,7 +319,7 @@ public static partial class BuilderExtensions
 	/// Configures the discrete y scale: one slot per distinct trained value, in sort order.
 	/// </summary>
 	/// <param name="limits">Clamp the trained range; null on either side keeps the data-driven bound.</param>
-	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are data units.</param>
+	/// <param name="expand">Padding beyond the data range as (lower multiplier, lower additive, upper multiplier, upper additive) — multipliers scale the range span, additives are in the scale's own space (data units on an untransformed scale, log10 exponents on a log scale, category indices on a discrete one).</param>
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="offset">Break and label offset from the category index, in axis units.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
@@ -875,6 +876,16 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
+		if (nrows is <= 0)
+		{
+			throw new GGNetUserException("nrows must be positive");
+		}
+
+		if (ncolumns is <= 0)
+		{
+			throw new GGNetUserException("ncolumns must be positive");
+		}
+
 		context.Faceting = new Faceting1D<T, TKey>(selector, freeX, freeY, nrows, ncolumns);
 
 		return context;

@@ -107,7 +107,7 @@ Distinct idiom: **enum → SVG-string** render switches (`Anchor`, `LineType`, `
 
 ## 7. Visible Fields Are a Deliberate Idiom (`CA1051` = off)
 
-The visible fields the analyzer would flag are `protected readonly` fields on base classes (`Geom`: `protected readonly IReadOnlyList<T> source; protected readonly (bool x, bool y) scale`; `Scale`: `protected readonly ITransformation<TKey> transformation`) and mutable instance fields on Blazor components (`Panel`, `SparkLine`, `TooltipBase`). This is intentional for the hot render path — keep it. Note this is *not* public fields on the record structs: `Shapes`/`Elements` use `init` properties, not raw fields.
+The visible fields the analyzer would flag are `protected readonly` fields on base classes (`Geom`: `protected readonly IReadOnlyList<T> source; protected readonly (bool x, bool y) scale`; `Scale`: `protected readonly ITransformation<TKey> transformation`) and mutable instance fields on Blazor components (`Panel`, `Plot`, `TooltipBase`). This is intentional for the hot render path — keep it. Note this is *not* public fields on the record structs: `Shapes`/`Elements` use `init` properties, not raw fields.
 
 ---
 

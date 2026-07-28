@@ -98,6 +98,54 @@ public class RenderPipelineTests
 		after.Should().NotBe(before);
 	}
 
+	// An unmapped (constant-fill) ribbon caches its single area shape; the cache must not
+	// outlive Clear(), or the second pass renders no ribbon at all.
+	[Fact]
+	public async Task RenderTwiceUnmappedRibbonIdentical()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Geom_Ribbon(ymin: i => i.Y - 0.5, ymax: i => i.Y + 0.5)
+			.Style();
+
+		// Act
+
+		var one = await plot.AsStringAsync();
+		var two = await plot.AsStringAsync();
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		one.Should().Contain("fill=\"#23d0fc\"");
+		two.Should().Contain("fill=\"#23d0fc\"");
+		two.Should().Be(one);
+	}
+
+	[Fact]
+	public async Task RenderTwiceMappedRibbonIdentical()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Scale_Fill_Discrete(i => i.Group, ["#111111", "#222222"], name: "group")
+			.Geom_Ribbon(ymin: i => i.Y - 0.5, ymax: i => i.Y + 0.5)
+			.Style();
+
+		// Act
+
+		var one = await plot.AsStringAsync();
+		var two = await plot.AsStringAsync();
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		one.Should().Contain("fill=\"#111111\"").And.Contain("fill=\"#222222\"");
+		two.Should().Be(one);
+	}
+
 	[Fact]
 	public async Task RenderTwiceFacetedIdentical()
 	{

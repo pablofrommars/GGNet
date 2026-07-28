@@ -288,8 +288,10 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 				}
 			}
 		}
-		else
+		else if (Panels.Count > 0)
 		{
+			// Faceted legends are built once, off the first panel. A source with no rows
+			// yields no facets and therefore no panels — an empty plot, not a failure.
 			var panel = Panels[0];
 
 			for (int g = 0; g < panel.Geoms.Count; g++)

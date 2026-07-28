@@ -1,9 +1,11 @@
-﻿namespace GGNet.Palettes;
+﻿using GGNet.Exceptions;
+
+namespace GGNet.Palettes;
 
 public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
 	where TKey : notnull
 {
-	private readonly TValue[] palette = palette;
+	private readonly TValue[] palette = Utils.NonEmpty(palette, "A discrete palette");
 	private readonly int direction = direction;
 
 	private int i;
@@ -27,11 +29,10 @@ public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
 
 	public void Set()
 	{
-		var sub = Utils.Sample(palette, map.Count, direction);
-		if (sub is null)
-		{
-			return;
-		}
+		// Exhaustion is only knowable here: the key count comes from the data. Leaving the
+		// mappings at default renders an empty chart with no diagnostic.
+		var sub = Utils.Sample(palette, map.Count, direction)
+			?? throw new GGNetUserException($"Palette exhausted: {map.Count} distinct keys were trained but the palette has only {palette.Length} value(s). Supply a palette with at least {map.Count} values.");
 
 		foreach (var key in map.Keys.ToArray())
 		{

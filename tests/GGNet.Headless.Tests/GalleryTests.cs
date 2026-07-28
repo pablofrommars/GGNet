@@ -68,6 +68,16 @@ public class GalleryTests
 		])
 	];
 
+	// The inner ring is supplied with the same winding as the exterior: only the Hole flag
+	// distinguishes them, which is exactly what composition has to honor.
+	private static readonly Region[] holed =
+	[
+		new([
+			new() { Longitude = [0.0, 10.0, 10.0, 0.0], Latitude = [0.0, 0.0, 10.0, 10.0] },
+			new() { Longitude = [3.0, 7.0, 7.0, 3.0], Latitude = [3.0, 3.0, 7.0, 7.0], Hole = true }
+		])
+	];
+
 	private static async Task VerifyPlot(IPlotContext plot)
 	{
 		var svg = await plot.AsStringAsync();
@@ -280,8 +290,24 @@ public class GalleryTests
 		=> VerifyPlot(PlotContext.Build(rated, i => i.Metric, i => i.Value).Geom_Radar().Style());
 
 	[Fact]
+	public Task DateTimeAxis()
+		// The datetime path renders nothing pinned otherwise: its scale derives a minute grid
+		// that the pipeline reads before Commit, which is where a regression slipped through.
+		=> VerifyPlot(PlotContext.Build(timed, i => i.At, i => i.Value)
+			.Geom_Line()
+			.Geom_Point()
+			.Style());
+
+	[Fact]
 	public Task Map()
 		=> VerifyPlot(PlotContext.Build(regions)
+			.Geom_Map(r => r.Shapes).Style());
+
+	[Fact]
+	public Task MapWithHole()
+		// Hole rings are wound against their exterior at compose time, so the cut-out
+		// renders under SVG's default nonzero fill regardless of the source's winding.
+		=> VerifyPlot(PlotContext.Build(holed)
 			.Geom_Map(r => r.Shapes).Style());
 
 	[Fact]
@@ -380,6 +406,17 @@ public class GalleryTests
 			.Scale_Fill_Continuous(c => c.R, ["#b2182b", "#f7f7f7", "#2166ac"])
 			.Geom_Tile(c => c.Column, c => c.Row, c => 0.95, c => 0.95)
 			.Style());
+
+	private sealed record Timed(LocalDateTime At, double Value);
+
+	// A LocalDateTime axis: samples 30 minutes apart across a midnight boundary, so the
+	// golden pins the minute-sampled index grid, the half-hour breaks and the date titles.
+	private static readonly Timed[] timed =
+	[
+		.. from step in Enumerable.Range(0, 6)
+		   let at = new LocalDateTime(2026, 7, 1, 22, 30).PlusMinutes(30 * step)
+		   select new Timed(at, 2.0 + (step % 3) * 0.6)
+	];
 
 	private sealed record Site(double Longitude, double Latitude, double Value);
 

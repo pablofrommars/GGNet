@@ -8,10 +8,7 @@ GGNet.Components.Area`3
 GGNet.Components.ICoord
 GGNet.Components.ITooltip
 GGNet.Components.Panel`3
-GGNet.Components.PlotBase`3
 GGNet.Components.Plot`3
-GGNet.Components.SparkLineTooltip
-GGNet.Components.SparkLine`3
 GGNet.Components.Tooltip
 GGNet.Components.TooltipBase
 GGNet.Components.VerticalOpacityGradient

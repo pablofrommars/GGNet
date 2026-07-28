@@ -18,16 +18,14 @@ The public surface is small and generic over the data type and the two axis type
 
 ```
 src/GGNet/Components/
-├── PlotBase.cs                 # base: ComponentBase, IPlot, IPlotRendering, IAsyncDisposable
-├── Plot.razor + Plot.razor.cs  # the hostable plot (720×576 default)
-├── SparkLine.razor + .razor.cs # inline 150×50 variant, its own PlotBase subclass
+├── Plot.razor + Plot.razor.cs  # the hostable plot (720×576 default); ComponentBase, IPlot, IPlotRendering, IAsyncDisposable
 ├── Area.razor + Area.razor.cs  # the "dumb walker" over composed ScreenPrimitives
 ├── Panel / Tooltip / ...       # supporting components
 ├── SvgFormat.cs                # the invariant-culture numeric choke point (see rendering guide)
 └── _Imports.razor              # two lines: the Rendering + Web namespaces
 ```
 
-- `Plot<T, TX, TY>` and `SparkLine<T, TX, TY>` both derive from `PlotBase<T, TX, TY>`. `SparkLine` is **not** a parameter of `Plot` — it is a separate component.
+- `Plot<T, TX, TY>` is the only hostable component: it owns the parameters, the render-mode handler and the dispose guard directly. There is deliberately no shared plot base class — the `PlotBase`/`SparkLine` pair was removed once `SparkLine` went.
 - Rendering is delegated to an `IRenderModeHandler` (`src/GGNet/Rendering/`), selected by the `RenderMode` parameter. Components hold no render loop of their own.
 
 ---
@@ -37,16 +35,16 @@ src/GGNet/Components/
 Every non-trivial component: `<Name>.razor` (markup) + `<Name>.razor.cs` (`public partial class`) + rarely a `<Name>.razor.css`.
 
 - **Scoped `.razor.css` is essentially unused by design.** `plot.razor.css` exists but is a near-empty placeholder — **all paint lives in `Themes/Default.css`**, driven by CSS variables (§5). Do not add scoped component CSS to style output; add a `--ggnet-*` variable and paint it in the theme instead.
-- The code-behind is a `public partial class <Name><T, TX, TY> : PlotBase<T, TX, TY>` (or the relevant base).
+- The code-behind is a `public partial class <Name><T, TX, TY>` declaring its own base and interfaces (`Plot` takes `ComponentBase, IPlot, IPlotRendering, IAsyncDisposable`); the `.razor` carries no `@inherits`.
 
 ---
 
 ## 3. Parameters
 
-Grounded in `PlotBase.cs` and `Plot.razor.cs`:
+Grounded in `Plot.razor.cs`:
 
-- **Required, on the base**: `[Parameter] public required PlotContext<T, TX, TY> Context` and `[Parameter] public required RenderMode RenderMode`.
-- **Init-only, with defaults, on `Plot`**: `Width` (720), `Height` (576), `Theme` (`"default"`). Use `{ get; init; }` for parameters that are set once and not two-way bound.
+- **Required**: `[Parameter] public required PlotContext<T, TX, TY> Context` and `[Parameter] public required RenderMode RenderMode`.
+- **Init-only, with defaults**: `Width` (720), `Height` (576), `Theme` (`"default"`). Use `{ get; init; }` for parameters that are set once and not two-way bound.
 - **Unmatched attributes**: `[Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes` — forwarded onto the root element so callers can pass `class`, `data-*`, etc.
 - **`RenderMode`** is the enum in `src/GGNet/RenderMode.cs` — exactly three values: `Interactive`, `InteractiveAuto`, `Static`. It is **not** the framework's `IComponentRenderMode`; do not confuse the two.
 
@@ -56,9 +54,9 @@ Grounded in `PlotBase.cs` and `Plot.razor.cs`:
 
 GGNet does its own render orchestration through the handler; the component is a thin shell.
 
-- **Never call `StateHasChanged` directly.** The only path is `PlotBase.StateHasChangedAsync() => InvokeAsync(StateHasChanged)`, invoked from the handler's background loop. Marshal through `InvokeAsync` because the render loop runs off the UI thread.
+- **Never call `StateHasChanged` directly.** The only path is `Plot.StateHasChangedAsync() => InvokeAsync(StateHasChanged)`, invoked from the handler's background loop. Marshal through `InvokeAsync` because the render loop runs off the UI thread.
 - **`ShouldRender` / `OnAfterRender` delegate to the `IRenderModeHandler`.** Don't add ad-hoc render gating in a component — extend the handler.
-- **Idempotent async dispose.** `PlotBase` implements `IAsyncDisposable` with the interlocked guard, and the handler repeats it:
+- **Idempotent async dispose.** `Plot` implements `IAsyncDisposable` with the interlocked guard, and the handler repeats it:
   ```csharp
   private int disposing = 0;
 

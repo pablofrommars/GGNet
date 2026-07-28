@@ -222,5 +222,9 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 		base.Clear();
 
 		areas.Clear();
+
+		// The cache holds the only reference to a shape that base.Clear() just removed from the layer —
+		// keeping it would re-add nothing on the next pass and keep accumulating into its stale points buffer.
+		cachedArea = null;
 	}
 }

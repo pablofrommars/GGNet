@@ -11,6 +11,7 @@ Scale_X_Continuous(ITransformation<double>? transformation = null,
     (double? min, double? max)? limits = null,
     (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
     IFormatter<double>? formatter = null, bool hide = false, bool includeMinorBreaks = true)
+    // hide: true → no breaks, no labels, and the axis band's space is reclaimed (sparklines)
 Scale_Y_Continuous( /* same shape */ )
 
 Scale_X_Log10(...) / Scale_Y_Log10(...) / Scale_X_Sqrt(...) / Scale_Y_Sqrt(...)
@@ -29,6 +30,8 @@ Scale_Latitude((double? min, double? max)? limits = null)    // default (-90, 90
 
 XLim(min, max) / YLim(min, max)   // shorthand for limits only
 ```
+
+`limits`/`XLim`/`YLim` are always **data units**, including on a transformed scale — `Scale_X_Log10(limits: (1, 1000))` means 1 to 1000, not 10^1 to 10^1000. `expand` additives are the exception: they are in the scale's own space (data units untransformed, log10 exponents on a log scale, category indices on a discrete one).
 
 NodaTime rules the time axes: `Build` has dedicated overloads for `LocalDate`, `LocalDateTime`, `Instant` selectors that pre-select the axis type. Never `DateTime`.
 

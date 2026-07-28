@@ -26,7 +26,7 @@ internal sealed class Log10 : Position<double>
 	{
 		if (!CommitViewRange())
 		{
-			SetRange(Limits.min ?? _min ?? 0.0, Limits.max ?? _max ?? 0.0);
+			SetRange(Endpoint(Limits.min, _min), Endpoint(Limits.max, _max));
 		}
 
 		if (!grid)

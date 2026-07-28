@@ -26,7 +26,7 @@ Minimal working example (verified — it is a pinned gallery test):
 var plot = PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Point().Style();
 ```
 
-Host in Blazor with `<Plot Context="plot" RenderMode="..." />` (`Width=720 Height=576 Theme="default"` defaults; `SparkLine` for inline 150×50), or export headlessly: `await plot.AsStringAsync()` / `SaveAsync(path)` (pure SVG; `selfContained: true` embeds the theme CSS).
+Host in Blazor with `<Plot Context="plot" RenderMode="..." />` (`Width=720 Height=576 Theme="default"` defaults; a sparkline is a small `Width`/`Height` + `hide: true` scales + a theme — see [reference/theming.md](reference/theming.md)), or export headlessly: `await plot.AsStringAsync()` / `SaveAsync(path)` (pure SVG; `selfContained: true` embeds the theme CSS).
 
 ## Decision flow
 

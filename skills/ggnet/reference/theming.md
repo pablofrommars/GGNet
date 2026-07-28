@@ -30,9 +30,31 @@ Notes:
 
 Color must communicate one of exactly three things: **groups** (a discrete scale + legend), **a highlight** (one accent series, the rest muted/gray), or **a gradient** (a continuous scale). If none applies — a single series — use one color and no legend; per-category rainbow bars make readers hunt for a meaning that isn't there. And keep the item→color mapping **constant across every chart in a report**: `Palettes.Discrete<TKey, string>` pins entity→color explicitly, and CSS custom properties (`var(--color-<entity>)`) carry the same assignment across plots and into the app's design tokens — both exist precisely so "Product A is purple here and red there" cannot happen.
 
+## Sparklines — composed, not a component
+
+There is no SparkLine component; an inline mini-chart is the two halves of the split applied together, which is why it needs no special support:
+
+```csharp
+// layout: small frame, and hide: true drops each axis's breaks, labels and the band they occupy
+var plot = PlotContext.Build(series, i => i.At, i => i.Value)
+	.Scale_X_Continuous(hide: true)
+	.Scale_Y_Continuous(hide: true)
+	.Geom_Line()
+	.Style();
+```
+
+```css
+/* paint: a chromeless frame */
+.ggnet[theme=sparkline] {
+	--ggnet-bg: transparent;
+}
+```
+
+Host it at `<Plot ... Width="150" Height="50" Theme="sparkline" />`. With both scales hidden the only classes emitted are `plot` and `panel`, and the panel reclaims the full frame bar the style's margins — hiding an axis frees its space, it does not merely paint it out. Any geom works; `Geom_Line` and `Geom_Area` are the usual ones.
+
 ## Hosting & export
 
-Blazor: `<Plot Context="plot" RenderMode="..." Width="720" Height="576" Theme="default" />`; `SparkLine` for inline 150×50 plots.
+Blazor: `<Plot Context="plot" RenderMode="..." Width="720" Height="576" Theme="default" />`.
 
 Headless (`GGNet.Headless` package):
 

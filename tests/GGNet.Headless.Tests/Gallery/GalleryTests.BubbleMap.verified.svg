@@ -54,7 +54,7 @@
 	<text class="y-break-label" x="10" y="196.75757575757578" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">2</text>
 	<text class="y-break-label" x="10" y="28.272727272727252" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">3</text>
 	<g clip-path="url(#ggID)">
-		<path d="M 44.18181818181819 530.7272727272727 L 285.6363636363636 530.7272727272727 L 164.9090909090909 193.75757575757578 Z M 406.3636363636364 362.2424242424243 L 647.8181818181819 362.2424242424243 L 647.8181818181819 25.272727272727252 L 406.3636363636364 25.272727272727252 Z" class="" fill="#23d0fc" fill-opacity="1" stroke="#000000" stroke-width="0" clip-path="url(#ggID)" />
+		<path d="M 164.9090909090909 193.75757575757578 L 285.6363636363636 530.7272727272727 L 44.18181818181819 530.7272727272727 Z M 406.3636363636364 25.272727272727252 L 647.8181818181819 25.272727272727252 L 647.8181818181819 362.2424242424243 L 406.3636363636364 362.2424242424243 Z" class="" fill="#23d0fc" fill-opacity="1" stroke="#000000" stroke-width="0" clip-path="url(#ggID)" />
 		<g transform="translate(140.76363636363635, 429.6363636363636)">
 			<circle cx="0" cy="0" r="4" class="" stroke-width="0.71" stroke="#23d0fc" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" />
 		</g>

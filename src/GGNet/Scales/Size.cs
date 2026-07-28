@@ -10,6 +10,9 @@ internal class SizeContinuous : Continuous<double>
 {
 	protected readonly bool defined;
 	protected (double min, double max) limits;
+	// Initialization is tracked separately: (0, 0) is a legitimate trained state, so a leading
+	// zero observation must not be mistaken for "nothing trained yet".
+	private bool trained;
 	protected readonly (double min, double max) range;
 	protected readonly bool oob;
 	private readonly IFormatter<double> formatter;
@@ -47,9 +50,10 @@ internal class SizeContinuous : Continuous<double>
 			return;
 		}
 
-		if (limits.min == 0 && limits.max == 0)
+		if (!trained)
 		{
 			limits = (key, key);
+			trained = true;
 		}
 		else
 		{
@@ -102,6 +106,13 @@ internal class SizeContinuous : Continuous<double>
 			return range.max;
 		}
 
+		// Constant data has no span to divide by: every key takes the midpoint of the size range.
+		// Without this the ratio below is 0/0 and a NaN radius reaches the SVG.
+		if (limits.max <= limits.min)
+		{
+			return range.min + (range.max - range.min) / 2.0;
+		}
+
 		if (limits.min >= 0)
 		{
 			return range.min + (Sqrt(key) - Sqrt(limits.min)) / (Sqrt(limits.max) - Sqrt(limits.min)) * (range.max - range.min);
@@ -120,5 +131,6 @@ internal class SizeContinuous : Continuous<double>
 		}
 
 		limits = (0.0, 0.0);
+		trained = false;
 	}
 }
