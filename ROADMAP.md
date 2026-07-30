@@ -63,7 +63,7 @@ Out of scope by decision: NuGet packaging/publishing.
 
 ## Operating conventions
 
-- Every commit lands green locally: `dotnet build GGNet.slnx -warnaserror`, full test suite, `dotnet format whitespace|style --verify-no-changes` (the same three gates CI runs).
+- Every commit lands green locally: `dotnet build GGNet.slnx -warnaserror`, full test suite, `dotnet format whitespace|style --verify-no-changes` (the same gates CI runs).
 - Render-touching changes byte-compare against the gallery snapshots (`tests/GGNet.Headless.Tests/Gallery/`); a re-pin is a deliberate, eyeballed decision, never a reflex.
 - Changes touching the JS module (`Components/Panel.razor.js`) or its wrapper also run the executed-JS smoke: `GGNET_E2E=1 dotnet test tests/GGNet.E2ETests` (needs a Playwright Chromium; tests self-skip without the flag, so the plain gates stay browser-free).
 - Breaking API changes go in their own commits, separately revertable, and each adds itself to the tag list above.

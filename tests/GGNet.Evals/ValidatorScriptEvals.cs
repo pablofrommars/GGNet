@@ -19,7 +19,7 @@ public class ValidatorScriptEvals
 			var xy = new[] { (X: 1.0, Y: 2.0), (X: 2.0, Y: 3.5) };
 			var plot = PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Point().Style();
 			Console.WriteLine((await plot.AsStringAsync()).Length);
-			""");
+			""", TestContext.Current.CancellationToken);
 
 		try
 		{
@@ -37,9 +37,9 @@ public class ValidatorScriptEvals
 
 			run.Start();
 
-			var stdout = await run.StandardOutput.ReadToEndAsync();
-			var stderr = await run.StandardError.ReadToEndAsync();
-			await run.WaitForExitAsync();
+			var stdout = await run.StandardOutput.ReadToEndAsync(TestContext.Current.CancellationToken);
+			var stderr = await run.StandardError.ReadToEndAsync(TestContext.Current.CancellationToken);
+			await run.WaitForExitAsync(TestContext.Current.CancellationToken);
 
 			// Assert
 

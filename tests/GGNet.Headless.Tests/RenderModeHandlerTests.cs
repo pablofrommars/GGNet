@@ -61,11 +61,11 @@ public class RenderModeHandlerTests
 		// Act
 
 		await sut.RefreshAsync(RenderTarget.Render, CancellationToken.None);
-		var logged = await gate.WaitAsync(TimeSpan.FromSeconds(5));
+		var logged = await gate.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
 
 		// A second refresh proves the loop survived the failed frame.
 		await sut.RefreshAsync(RenderTarget.Render, CancellationToken.None);
-		var loggedAgain = await gate.WaitAsync(TimeSpan.FromSeconds(5));
+		var loggedAgain = await gate.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
 
 		// Assert
 
@@ -119,7 +119,7 @@ public class RenderModeHandlerTests
 
 		// Act
 
-		await handler.RefreshAsync(RenderTarget.Render, default);
+		await handler.RefreshAsync(RenderTarget.Render, TestContext.Current.CancellationToken);
 
 		// Assert
 
@@ -174,8 +174,8 @@ public class RenderModeHandlerTests
 
 		handler.ShouldRender().Should().BeFalse();
 
-		await handler.RefreshAsync(RenderTarget.Render, default);
-		await rendered.WaitAsync();
+		await handler.RefreshAsync(RenderTarget.Render, TestContext.Current.CancellationToken);
+		await rendered.WaitAsync(TestContext.Current.CancellationToken);
 
 		// Assert
 
@@ -208,17 +208,17 @@ public class RenderModeHandlerTests
 		// Act
 
 		// Batch 1: a single Loading. The loop renders it, then blocks on backpressure.
-		await handler.RefreshAsync(RenderTarget.Loading, default);
-		await rendered.WaitAsync();
+		await handler.RefreshAsync(RenderTarget.Loading, TestContext.Current.CancellationToken);
+		await rendered.WaitAsync(TestContext.Current.CancellationToken);
 
 		// While the loop is blocked, queue a burst: two Render and one Loading.
-		await handler.RefreshAsync(RenderTarget.Render, default);
-		await handler.RefreshAsync(RenderTarget.Render, default);
-		await handler.RefreshAsync(RenderTarget.Loading, default);
+		await handler.RefreshAsync(RenderTarget.Render, TestContext.Current.CancellationToken);
+		await handler.RefreshAsync(RenderTarget.Render, TestContext.Current.CancellationToken);
+		await handler.RefreshAsync(RenderTarget.Loading, TestContext.Current.CancellationToken);
 
 		// Release backpressure: the loop drains the whole burst in one pass.
 		handler.OnAfterRender(firstRender: false);
-		await rendered.WaitAsync();
+		await rendered.WaitAsync(TestContext.Current.CancellationToken);
 
 		// Assert
 
@@ -275,8 +275,8 @@ public class RenderModeHandlerTests
 		// single-writer + backpressure contract, exercised repeatedly.
 		for (var i = 0; i < n; i++)
 		{
-			await handler.RefreshAsync(RenderTarget.Render, default);
-			await rendered.WaitAsync();
+			await handler.RefreshAsync(RenderTarget.Render, TestContext.Current.CancellationToken);
+			await rendered.WaitAsync(TestContext.Current.CancellationToken);
 			handler.OnAfterRender(firstRender: false);
 		}
 

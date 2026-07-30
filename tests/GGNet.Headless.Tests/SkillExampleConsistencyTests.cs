@@ -52,7 +52,7 @@ public class SkillExampleConsistencyTests
 
 		var root = RepoRoot();
 		var geoms = File.ReadAllText(Path.Combine(root, "skills", "ggnet", "reference", "geoms.md"));
-		var section = geoms[geoms.IndexOf("## Multi-layer recipes")..];
+		var section = geoms[geoms.IndexOf("## Multi-layer recipes", StringComparison.Ordinal)..];
 		var source = Normalize(File.ReadAllText(Path.Combine(root, "tests", "GGNet.Headless.Tests", "TierCCompositionTests.cs")));
 
 		// Act

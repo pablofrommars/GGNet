@@ -7,7 +7,7 @@ public class McpServerFixture : IAsyncLifetime
 {
 	public McpClient Client { get; private set; } = null!;
 
-	public async Task InitializeAsync()
+	public async ValueTask InitializeAsync()
 	{
 		var project = Path.Combine(RepoRoot(), "src", "GGNet.Mcp");
 
@@ -21,9 +21,11 @@ public class McpServerFixture : IAsyncLifetime
 		Client = await McpClient.CreateAsync(transport);
 	}
 
-	public async Task DisposeAsync()
+	public async ValueTask DisposeAsync()
 	{
 		await Client.DisposeAsync();
+
+		GC.SuppressFinalize(this);
 	}
 
 	private static string RepoRoot([CallerFilePath] string path = "")
@@ -37,7 +39,7 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 	{
 		// Arrange / Act
 
-		var tools = await fixture.Client.ListToolsAsync();
+		var tools = await fixture.Client.ListToolsAsync(cancellationToken: TestContext.Current.CancellationToken);
 
 		// Assert
 

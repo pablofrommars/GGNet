@@ -40,9 +40,9 @@ public class PolarGridSvgTests
 
 		using var _ = new AssertionScope();
 
-		Regex.Matches(svg, "class=\"x-break\"").Count.Should().Be(5);
-		Regex.Matches(svg, "<path class=\"y-break\"").Count.Should().BeGreaterThanOrEqualTo(1);
-		Regex.Matches(svg, "class=\"x-break-label\"").Count.Should().Be(5);
+		Regex.Count(svg, "class=\"x-break\"").Should().Be(5);
+		Regex.Count(svg, "<path class=\"y-break\"").Should().BeGreaterThanOrEqualTo(1);
+		Regex.Count(svg, "class=\"x-break-label\"").Should().Be(5);
 
 		svg.Should().NotContain("class=\"x-break-title\"");
 		svg.Should().NotContain("class=\"x-title\"");
@@ -66,7 +66,7 @@ public class PolarGridSvgTests
 
 		using var _ = new AssertionScope();
 
-		Regex.Matches(svg, "<circle class=\"y-break\"").Count.Should().BeGreaterThanOrEqualTo(1);
+		Regex.Count(svg, "<circle class=\"y-break\"").Should().BeGreaterThanOrEqualTo(1);
 		svg.Should().NotContain("<path class=\"y-break\"");
 	}
 }

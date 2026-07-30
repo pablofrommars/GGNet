@@ -67,6 +67,6 @@ public class BuilderForwardingTests
 		var d = System.Text.RegularExpressions.Regex.Match(svg, "<path d=\"([^\"]+)\"").Groups[1].Value;
 
 		d.Should().NotBeEmpty();
-		System.Text.RegularExpressions.Regex.Matches(d, " M ").Count.Should().Be(2, "the NaN gap lifts the pen into a second subpath");
+		System.Text.RegularExpressions.Regex.Count(d, " M ").Should().Be(2, "the NaN gap lifts the pen into a second subpath");
 	}
 }

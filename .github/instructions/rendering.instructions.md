@@ -50,7 +50,7 @@ Rendering without a browser: `Host` builds an empty `ServiceCollection` and crea
 
 ---
 
-## 4. Goldens — Byte-Pinned SVG via Verify.Xunit
+## 4. Goldens — Byte-Pinned SVG via Verify.XunitV3
 
 Render-touching output is pinned byte-for-byte. Wiring in `tests/GGNet.Headless.Tests/`:
 

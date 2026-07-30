@@ -58,10 +58,10 @@ public class RadarSvgTests
 			polygon.Groups[1].Value.Trim().Should().EndWith("Z");
 		}
 
-		Regex.Matches(svg, "fill=\"transparent\"").Count.Should().Be(10);
-		Regex.Matches(svg, "class=\"x-break\"").Count.Should().Be(5);
-		Regex.Matches(svg, "class=\"x-break-label\"").Count.Should().Be(5);
-		Regex.Matches(svg, "<path class=\"y-break\"").Count.Should().BeGreaterThanOrEqualTo(1);
+		Regex.Count(svg, "fill=\"transparent\"").Should().Be(10);
+		Regex.Count(svg, "class=\"x-break\"").Should().Be(5);
+		Regex.Count(svg, "class=\"x-break-label\"").Should().Be(5);
+		Regex.Count(svg, "<path class=\"y-break\"").Should().BeGreaterThanOrEqualTo(1);
 	}
 
 	[Fact]

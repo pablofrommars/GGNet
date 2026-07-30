@@ -9,11 +9,13 @@ Entry point for AI coding assistants working in GGNet. Short project overview pl
 GGNet is a **grammar-of-graphics charting library** for .NET / Blazor — ggplot2-inspired, a single fluent C# chain, **SVG** output. `2.0.0-beta` is the current breaking window (`ROADMAP.md`).
 
 - **Runtime**: C# on the **.NET 11 preview SDK** (pinned in `global.json`), `LangVersion=preview` (uses the preview `union` keyword)
-- **Solution**: `GGNet.slnx` — four production projects + three test projects
+- **Solution**: `GGNet.slnx` — five production projects + four test projects
 - **`src/GGNet`** (Razor class library) — the core: the DSL (`PlotContext`, `BuilderExtensions`), geoms, scales, stats, shapes, the render pipeline, the `Plot` component, themes
 - **`src/GGNet.Headless`** — pure-SVG headless export (`AsStringAsync`/`SaveAsync`)
-- **`src/GGNet.Mcp`** — an MCP server exposing the chart-selection + composition surface (reflected from the live assembly)
+- **`src/GGNet.Mcp`** — an MCP server exposing the chart-selection + composition surface (reflected from the live assembly); see [src/GGNet.Mcp/README.md](src/GGNet.Mcp/README.md)
 - **`src/GGNet.ChartSelection`** — data-shape → chart selection, driven by the embedded `chart_selection.json`
+- **`src/GGNet.Demo`** — Blazor Web App (Interactive Server, Tailwind v4) exercising the interactive surface; also the host `GGNet.E2ETests` drives
+- **Tests**: `tests/` — xUnit v3 on Microsoft.Testing.Platform v2 + AwesomeAssertions + Moq + bUnit + Verify.XunitV3. `GGNet.Headless.Tests` (goldens + pipeline), `GGNet.Components.Tests` (bUnit), `GGNet.Evals` (deterministic evals), `GGNet.E2ETests` (Playwright; self-skips unless `GGNET_E2E=1`)
 - **`skills/ggnet`** — the packaged, model-facing skill for authoring charts (examples pinned to the gallery)
 - **Errors**: thrown exceptions via the `GGNetException` / `GGNetUserException` / `GGNetInternalException` hierarchy — **no `Result<TError>`**
 - **Time**: NodaTime is the temporal type system for axes/scales (`LocalDate`/`LocalDateTime`/`Instant`) — a charting concern, not a domain-time mandate
@@ -28,9 +30,9 @@ GGNet is a **grammar-of-graphics charting library** for .NET / Blazor — ggplot
 - MCP server: [src/GGNet.Mcp/Program.cs](src/GGNet.Mcp/Program.cs)
 - Goldens: [tests/GGNet.Headless.Tests/GalleryTests.cs](tests/GGNet.Headless.Tests/GalleryTests.cs) + `Gallery/*.verified.svg`
 
-## Build, Test & the Three Gates
+## Build, Test & the Local Gates
 
-Every change lands green locally against the same three gates CI runs (`ROADMAP.md` "Operating conventions"):
+Every change lands green locally against the same gates CI runs — build, test, and both `dotnet format` checks (`ROADMAP.md` "Operating conventions"):
 
 ```
 dotnet build GGNet.slnx -warnaserror
@@ -90,6 +92,6 @@ Read a file before changing it. The scoped guides below apply — consult the on
 - Read a file before changing it. Do not fabricate conventions — every rule above is grounded in existing code.
 - Tabs for indentation, Allman braces, file-scoped namespaces, no `this.`, no `_` field prefix, `camelCase` private fields.
 - `internal` is the default; `public` is the deliberate DSL surface (which carries `///` docs).
-- No `Directory.Build.props` / `Directory.Packages.props` — package versions are inline per `.csproj` (no CPM).
+- `Directory.Build.props` carries shared build properties and the packable projects' NuGet metadata; no `Directory.Packages.props` — package versions stay inline per `.csproj` (no CPM).
 - Switches over the `union` types (`Shape`, `Element`, `ScreenPrimitive`) are exhaustive — no discard arm; a new variant must break the build.
 - Never interpolate a raw number into SVG — route it through `SvgFormat.Num`/`Attr`.

@@ -12,16 +12,21 @@ Scope: all test projects under `tests/`. Assumes [csharp.instructions.md](./csha
 
 | Purpose | Library |
 |---|---|
-| Test framework | **xUnit** |
+| Test framework | **xUnit v3** on **Microsoft.Testing.Platform v2** — package `xunit.v3.mtp-v2` |
 | Assertions | **AwesomeAssertions** (the FluentAssertions fork) — exclusively |
 | Mocking | **Moq** — only where an interface seam genuinely needs it |
 | Blazor components | **bUnit** (v2) |
-| Snapshot / goldens | **Verify.Xunit** |
-| Coverage | **coverlet.collector** |
+| Snapshot / goldens | **Verify.XunitV3** |
+
+Test projects are **self-hosting MTP executables**: `<OutputType>Exe</OutputType>` + `<UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>`. The entry point is generated — never write a `Main`. Runner selection lives in `global.json` (`"test": { "runner": "Microsoft.Testing.Platform" }`), which the SDK 10+ `dotnet test` honours.
+
+Keep the **`-mtp-v2` suffix** on every future xunit bump: plain `xunit.v3` pulls MTP v1. MTP v2 becomes the default only in xunit v4.
+
+Do **not** reintroduce `Microsoft.NET.Test.Sdk`, `xunit.runner.visualstudio`, or `coverlet.collector` — MTP is native to xunit v3 and needs no VSTest adapter, and coverlet's collector is a VSTest data collector that does not run under MTP. For coverage, use `Microsoft.Testing.Extensions.CodeCoverage`.
 
 Do **not** introduce: real FluentAssertions, NSubstitute, Shouldly, NUnit, MSTest, Bogus, AutoFixture, raw `Assert.*`. There is **no Aspire, no integration-DB fixture** — GGNet is a library; tests run in-process.
 
-Test projects: `GGNet.Components.Tests` (bUnit), `GGNet.Headless.Tests` (Verify goldens + pipeline), `GGNet.Evals` (deterministic evals). Each has a `GlobalUsings.cs` and pulls xUnit via `<Using Include="Xunit" />`.
+Test projects: `GGNet.Components.Tests` (bUnit), `GGNet.Headless.Tests` (Verify goldens + pipeline), `GGNet.Evals` (deterministic evals), `GGNet.E2ETests` (Playwright smoke over the spawned `GGNet.Demo` app — every test self-skips unless `GGNET_E2E=1`, so the default gate stays browser-free). Each has a `GlobalUsings.cs` and pulls xUnit via `<Using Include="Xunit" />`.
 
 ---
 

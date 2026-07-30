@@ -36,10 +36,10 @@ public class E2ESmokeTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtur
 		(await condition()).Should().BeTrue(because);
 	}
 
-	[SkippableFact]
+	[Fact]
 	public async Task WheelZoomRecomputesTheAxisOnAResponsiveSvg()
 	{
-		Skip.IfNot(fixture.Available, fixture.Reason);
+		Assert.SkipUnless(fixture.Available, fixture.Reason);
 
 		// Arrange
 
@@ -62,10 +62,10 @@ public class E2ESmokeTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtur
 		await WaitUntilAsync(async () => await XLabelsAsync(page) == before, "double-click should restore the authored view");
 	}
 
-	[SkippableFact]
+	[Fact]
 	public async Task DragPanPreviewsClientSideAndCommitsOnRelease()
 	{
-		Skip.IfNot(fixture.Available, fixture.Reason);
+		Assert.SkipUnless(fixture.Available, fixture.Reason);
 
 		// Arrange
 
@@ -96,10 +96,10 @@ public class E2ESmokeTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtur
 		(await target.GetAttributeAsync("transform")).Should().BeNull("the preview transform must clear on commit");
 	}
 
-	[SkippableFact]
+	[Fact]
 	public async Task CursorTooltipOpensAsAPopoverAndFollowsThePointer()
 	{
-		Skip.IfNot(fixture.Available, fixture.Reason);
+		Assert.SkipUnless(fixture.Available, fixture.Reason);
 
 		// Arrange
 

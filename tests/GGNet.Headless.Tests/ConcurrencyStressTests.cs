@@ -57,7 +57,7 @@ public class ConcurrencyStressTests
 		await Task.WhenAll(writers);
 
 		// Drain: the loop is quiescent once no render arrives within a beat.
-		while (await renderGate.WaitAsync(TimeSpan.FromMilliseconds(250)))
+		while (await renderGate.WaitAsync(TimeSpan.FromMilliseconds(250), TestContext.Current.CancellationToken))
 		{
 		}
 
@@ -65,7 +65,7 @@ public class ConcurrencyStressTests
 
 		// One more refresh proves the loop survived the storm.
 		await sut.RefreshAsync(RenderTarget.Render, CancellationToken.None);
-		var alive = await renderGate.WaitAsync(TimeSpan.FromSeconds(5));
+		var alive = await renderGate.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
 
 		// Assert
 
@@ -116,7 +116,7 @@ public class ConcurrencyStressTests
 			{
 				context.Render();
 			}
-		});
+		}, TestContext.Current.CancellationToken);
 
 		var storm = async () => await Task.WhenAll([.. writers, renderer]);
 
@@ -148,7 +148,7 @@ public class ConcurrencyStressTests
 			{
 				await sut.RefreshAsync(RenderTarget.Render, CancellationToken.None);
 			}
-		});
+		}, TestContext.Current.CancellationToken);
 
 		// Act
 

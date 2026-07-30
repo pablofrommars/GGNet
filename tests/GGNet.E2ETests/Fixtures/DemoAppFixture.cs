@@ -29,7 +29,7 @@ public sealed class DemoAppFixture : IAsyncLifetime
 	private IBrowser? browser;
 	private Process? app;
 
-	public async Task InitializeAsync()
+	public async ValueTask InitializeAsync()
 	{
 		if (Environment.GetEnvironmentVariable("GGNET_E2E") != "1")
 		{
@@ -87,7 +87,7 @@ public sealed class DemoAppFixture : IAsyncLifetime
 		Reason = "The demo app did not start within 30s (is the solution built?)";
 	}
 
-	public async Task DisposeAsync()
+	public async ValueTask DisposeAsync()
 	{
 		if (browser is not null)
 		{

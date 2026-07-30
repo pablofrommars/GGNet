@@ -23,7 +23,7 @@ Scope: every `.cs` file in the solution. GGNet is a single-author, gate-enforced
 | `CS1591` / `CS1573` | **off** | XML docs are additive: the public builder surface is documented, everything else stays undocumented without warnings (§8) |
 | `IDE0130` + `dotnet_style_namespace_match_folder` | **warning / true** | Namespace must match folder — with one documented exception for `Stats/` (§3) |
 
-The three local gates every change must pass (also in CI, `ROADMAP.md` "Operating conventions"):
+The local gates every change must pass — build, test, and both `dotnet format` checks (also in CI, `ROADMAP.md` "Operating conventions"):
 
 ```
 dotnet build GGNet.slnx -warnaserror
@@ -50,15 +50,15 @@ After every `.cs` edit, check diagnostics (LSP or a build) before moving on — 
 
 - Root namespace is **`GGNet`** (file-scoped). Sub-namespaces mirror folders: `GGNet.Exceptions`, `GGNet.Geoms`, `GGNet.Geoms.Point`, `GGNet.Scales`, `GGNet.Shapes`, `GGNet.Elements`, `GGNet.Coords`, `GGNet.Data`, `GGNet.Formats`, `GGNet.Scene`.
 - **Match-folder is enforced** (`IDE0130` = warning). The one documented exception: files under `src/GGNet/Stats/` declare the root `namespace GGNet;` on purpose — `Stat.Bin` is DSL surface and sits next to `PlotContext.Build`. That exception is encoded in `.editorconfig`; don't add others without a rationale comment there.
-- **One `GlobalUsings.cs` per project** (4 under `src/`, plus one per test project). The core project's globally imports `System.Globalization`, `System.Collections.Frozen`, `System.Text`, `Microsoft.Extensions.ObjectPool`, the `Microsoft.AspNetCore.Components.*` set, and `NodaTime` + `NodaTime.Text`. **Global usings are preferred** — add a broadly-used namespace here. Per-file `using` directives do appear as a local convenience (sub-namespace imports like `using Geoms.Line;` / `using Scales;`, `using static Position;`, plus alias usings for genuine conflicts such as `Moq`'s `Match` vs `System.Text.RegularExpressions.Match`); when a per-file import is used widely, promote it to `GlobalUsings.cs`.
+- **One `GlobalUsings.cs` per project** (5 under `src/`, plus one per test project). The core project's globally imports `System.Globalization`, `System.Collections.Frozen`, `System.Text`, `Microsoft.Extensions.ObjectPool`, the `Microsoft.AspNetCore.Components.*` set, and `NodaTime` + `NodaTime.Text`. **Global usings are preferred** — add a broadly-used namespace here. Per-file `using` directives do appear as a local convenience (sub-namespace imports like `using Geoms.Line;` / `using Scales;`, `using static Position;`, plus alias usings for genuine conflicts such as `Moq`'s `Match` vs `System.Text.RegularExpressions.Match`); when a per-file import is used widely, promote it to `GlobalUsings.cs`.
 
 ---
 
-## 4. Project Configuration — No Central Package Management
+## 4. Project Configuration — Shared Properties, No Central Package Management
 
-**There is no `Directory.Build.props`, no `Directory.Packages.props`, no CPM.** Each `.csproj` declares its own `TargetFramework`, `LangVersion`, and **versioned** `PackageReference` items inline. To add a package, add a `<PackageReference Include="X" Version="Y" />` to the consuming project directly.
+**`Directory.Build.props` at the repo root carries shared *properties*. There is still no `Directory.Packages.props`, no CPM** — every `PackageReference` keeps its `Version` inline in the consuming `.csproj`. To add a package, add a `<PackageReference Include="X" Version="Y" />` to that project directly.
 
-Standard `PropertyGroup` for a production project (`net11.0`, preview language):
+These are set once in `Directory.Build.props` and inherited by every project — **do not restate them in a `.csproj`**:
 
 ```xml
 <TargetFramework>net11.0</TargetFramework>
@@ -68,7 +68,10 @@ Standard `PropertyGroup` for a production project (`net11.0`, preview language):
 <AnalysisMode>Recommended</AnalysisMode>
 <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 <GenerateDocumentationFile>true</GenerateDocumentationFile>
+<IsPackable>false</IsPackable>
 ```
+
+It also holds the NuGet metadata shared by the two packable projects (`Version`, `Authors`, `Title`, `Copyright`, `Description`, `PackageTags`, `PackageLicenseExpression`) — so the shipped version is stated **once**. A `.csproj` declares only what is genuinely its own: `IsPackable=true` and its distinct `PackageDescription` on `GGNet`/`GGNet.Headless`, `OutputType`, `IsTestProject`, project-specific `NoWarn`.
 
 `LangVersion=preview` is **required**, not optional — the codebase uses the preview `union` keyword (§6). The SDK is pinned in `global.json` (`11.0.100-preview.*`).
 

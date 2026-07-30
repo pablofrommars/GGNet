@@ -9,9 +9,9 @@ Codex CLI entry point for GGNet. `CLAUDE.md` carries the same project context fo
 GGNet is a **grammar-of-graphics charting library** for .NET / Blazor — ggplot2-inspired, one fluent C# chain, **SVG** output.
 
 - **Runtime**: C# on the **.NET 11 preview SDK** (pinned in `global.json`), `LangVersion=preview` (uses the preview `union` keyword)
-- **Solution**: `GGNet.slnx`
-- **Production**: `src/GGNet` (core Razor library — DSL, geoms, scales, stats, render pipeline, components, themes), `src/GGNet.Headless` (pure-SVG export), `src/GGNet.Mcp` (MCP server), `src/GGNet.ChartSelection` (data-shape → chart selection)
-- **Tests**: `tests/` — xUnit + AwesomeAssertions + Moq + bUnit + Verify.Xunit
+- **Solution**: `GGNet.slnx` — five production projects + four test projects
+- **Production**: `src/GGNet` (core Razor library — DSL, geoms, scales, stats, render pipeline, components, themes), `src/GGNet.Headless` (pure-SVG export), `src/GGNet.Mcp` (MCP server — see its `README.md`), `src/GGNet.ChartSelection` (data-shape → chart selection), `src/GGNet.Demo` (Blazor Web App exercising the interactive surface; the host `GGNet.E2ETests` drives)
+- **Tests**: `tests/` — xUnit v3 on Microsoft.Testing.Platform v2 + AwesomeAssertions + Moq + bUnit + Verify.XunitV3. `GGNet.Headless.Tests`, `GGNet.Components.Tests`, `GGNet.Evals`, `GGNet.E2ETests` (Playwright; self-skips unless `GGNET_E2E=1`)
 - **Skill**: `skills/ggnet` — the packaged model-facing chart-authoring manual
 - **Errors**: thrown exceptions (`GGNetException` / `GGNetUserException` / `GGNetInternalException`) — no `Result<TError>`
 - **Time**: NodaTime for temporal axes/scales only
@@ -19,7 +19,7 @@ GGNet is a **grammar-of-graphics charting library** for .NET / Blazor — ggplot
 
 ## Build & Run
 
-The three local gates (also CI):
+The local gates — build, test, and both `dotnet format` checks (also CI):
 
 ```
 dotnet build GGNet.slnx -warnaserror
