@@ -32,6 +32,8 @@
     --ggnet-spinner-track: #f1f5f9;
     --ggnet-spinner-accent: var(--color-primary, #23d0fc);
     --ggnet-tooltip-bg: #f1f5f9;
+    --ggnet-crosshair: #9ca3af;
+    --ggnet-crosshair-label: #111827;
 
     position: relative;
 }
@@ -100,6 +102,16 @@
 
 .ggnet .panel {
     fill: var(--ggnet-bg);
+}
+
+.ggnet .crosshair {
+    stroke: var(--ggnet-crosshair);
+    stroke-width: 1;
+    stroke-dasharray: 4 3;
+}
+
+.ggnet .crosshair-label {
+    fill: var(--ggnet-crosshair-label);
 }
 
 .ggnet .title {
@@ -214,8 +226,10 @@
 }
 
 [role^="tooltip"] {
-    --tooltip-theme-color: var(--ggnet-tooltip-bg, #f1f5f9);
-    --tooltip-theme-opacity: 1;
+    /* The mark's color/opacity, when the geom passed them (--tooltip-color /
+       --tooltip-opacity on the host element), else the theme background. */
+    --tooltip-theme-color: var(--tooltip-color, var(--ggnet-tooltip-bg, #f1f5f9));
+    --tooltip-theme-opacity: var(--tooltip-opacity, 1);
 
     --tooltip-fadein-duration: 500ms;
 
@@ -226,6 +240,18 @@
 [role^="tooltip"] .container {
     position: fixed;
     /* pointer-events: none; */
+}
+
+/* Cursor-glued mode: the container is a manual top-layer popover positioned
+   by the interactivity module; undo the browser's popover UA styles. */
+[role^="tooltip"] .container[popover] {
+    margin: 0;
+    inset: auto;
+    border: none;
+    padding: 0;
+    background: transparent;
+    overflow: visible;
+    color: inherit;
 }
 
 [role^="tooltip"] .arrow {
@@ -358,39 +384,4 @@
     to {
         opacity: var(--tooltip-theme-opacity);
     }
-}
-
-[role^="sparkline-tooltip"] {
-    --tooltip-fadein-duration: 500ms;
-
-    overflow: visible;
-}
-
-[role^="sparkline-tooltip"]+div {
-    position: relative;
-    pointer-events: none;
-}
-
-[role^="sparkline-tooltip"] .bubble {
-    position: absolute;
-    border-radius: 4px;
-    padding: 2px 4px;
-    background: var(--tooltip-theme-color);
-    white-space: nowrap;
-    pointer-events: none;
-    font-size: 0.75em;
-}
-
-[role^="sparkline-tooltip"] .bubble {
-    top: 50%;
-    transform: translateY(-50%);
-    animation: fadein var(--tooltip-fadein-duration) linear forwards;
-}
-
-[role^="sparkline-tooltip-left"] .bubble {
-    right: calc(100% + 2px);
-}
-
-[role^="sparkline-tooltip-right"] .bubble {
-    left: calc(100% + 2px);
 }

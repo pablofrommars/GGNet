@@ -64,6 +64,36 @@ jobs:
       - name: Test
         run: dotnet test GGNet.slnx --configuration Release
 
+  test-e2e:
+    name: E2E smoke (Playwright)
+    runs-on: ubuntu-latest
+    # The only layer that executes the collocated JS module: real browser,
+    # real circuit. Opt-in via GGNET_E2E so the plain test gate stays
+    # browser-free; tests self-skip without it.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', '**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Build
+        run: dotnet build GGNet.slnx --configuration Release -warnaserror
+
+      - name: Install Chromium
+        run: pwsh tests/GGNet.E2ETests/bin/Release/net11.0/playwright.ps1 install --with-deps chromium
+
+      - name: E2E smoke
+        env:
+          GGNET_E2E: "1"
+        run: dotnet test tests/GGNet.E2ETests --no-build --configuration Release
+
   format:
     name: Style gates
     runs-on: ubuntu-latest

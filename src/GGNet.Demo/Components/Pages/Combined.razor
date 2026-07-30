@@ -1,0 +1,35 @@
+@page "/combined"
+@rendermode InteractiveServer
+
+<PageTitle>Combined — GGNet Demo</PageTitle>
+
+<h1 class="text-2xl font-semibold">Combined features</h1>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    Everything shipped so far on one chart: host buttons drive the view window
+    through @@ref commands, the wheel zooms about the cursor, the crosshair
+    reads out the time axis, and double-click resets — all reconciling
+    last-writer-wins on the same view state.
+</p>
+
+<div class="mt-4 flex flex-wrap gap-2">
+    <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" @onclick=ZoomToMidWeekAsync>Zoom: day 2–4</button>
+    <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" @onclick=ShowLastTwoDaysAsync>Last 48 h</button>
+    <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" @onclick=ResetAsync>Reset</button>
+</div>
+
+<div class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot @ref=plot Context=@context RenderMode=@renderMode Interactivity=@interactivity />
+</div>
+
+<h2 class="mt-8 text-xl font-semibold">Faceted</h2>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    The same gestures on a faceted plot: the view window lives on the
+    plot-wide axis container, so wheel zoom in either panel windows both, and
+    every re-instanced facet scale inherits it.
+</p>
+
+<div class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@facetedContext RenderMode=@renderMode Interactivity=@interactivity />
+</div>

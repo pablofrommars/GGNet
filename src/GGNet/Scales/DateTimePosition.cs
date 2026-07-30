@@ -37,7 +37,6 @@ internal class DateTimePosition : Position<LocalDateTime>
 				first = date;
 			}
 
-			date = key.Date;
 			if (last < date)
 			{
 				last = date;
@@ -52,38 +51,85 @@ internal class DateTimePosition : Position<LocalDateTime>
 			{
 				max = key;
 			}
-
-			var current = values[^1];
-			if (current.Date == key.Date)
-			{
-				current = current.Plus(sampling);
-
-				while (current <= key)
-				{
-					values.Add(current);
-
-					current = current.Plus(sampling);
-				}
-			}
-			else
-			{
-				values.Add(key);
-			}
 		}
 		else
 		{
-			values.Add(key);
-
-			max = key;
 			first = key.Date;
 			last = key.Date;
 			min = key;
 			max = key;
 		}
+
+		// Every observed key is retained. Minute sampling used to be interpolated here, forward
+		// of the running maximum, which silently dropped any key that arrived out of order.
+		values.Add(key);
+
+		sampled = false;
+	}
+
+	// The pipeline shapes before it commits — geoms call Map while the scale is still being
+	// read for the first time — so the derived grid is finalized on first read, not at Commit.
+	// Deriving it at Commit left marks on observed-only indices while the axis used sampled ones.
+	private bool sampled;
+
+	private void EnsureSampled()
+	{
+		if (sampled)
+		{
+			return;
+		}
+
+		sampled = true;
+
+		Sample();
+	}
+
+	// One 1-minute grid per observed day, spanning that day's observed extent. Derived from the
+	// sorted buffer at commit time, so the result depends on the data and not on arrival order.
+	private void Sample()
+	{
+		if (values.Count < 2)
+		{
+			return;
+		}
+
+		var samples = new List<LocalDateTime>();
+
+		var i = 0;
+		while (i < values.Count)
+		{
+			var date = values[i].Date;
+
+			var j = i;
+			while (j < values.Count && values[j].Date == date)
+			{
+				j++;
+			}
+
+			var current = values[i].Plus(sampling);
+			var dayLast = values[j - 1];
+
+			while (current <= dayLast)
+			{
+				samples.Add(current);
+
+				current = current.Plus(sampling);
+			}
+
+			i = j;
+		}
+
+		// Collected first: the buffer must not be mutated while it is being walked.
+		for (i = 0; i < samples.Count; i++)
+		{
+			values.Add(samples[i]);
+		}
 	}
 
 	public override void Commit(bool grid)
 	{
+		EnsureSampled();
+
 		var min = _min ?? 0.0;
 		var max = _max ?? 0.0;
 
@@ -110,7 +156,16 @@ internal class DateTimePosition : Position<LocalDateTime>
 			}
 		}
 
-		SetRange(min, max);
+		if (CommitViewRange())
+		{
+			// Snap the break window to the samples inside the view.
+			start = Math.Max(0, (int)Math.Ceiling(Range.min));
+			end = Math.Min(values.Count, (int)Math.Floor(Range.max) + 1);
+		}
+		else
+		{
+			SetRange(min, max);
+		}
 
 		if (!grid)
 		{
@@ -153,8 +208,6 @@ internal class DateTimePosition : Position<LocalDateTime>
 				minorBreaks.Add(i);
 			}
 
-			values.Add(date);
-
 			dlast = i;
 		}
 
@@ -171,6 +224,8 @@ internal class DateTimePosition : Position<LocalDateTime>
 
 	public override double Map(LocalDateTime key)
 	{
+		EnsureSampled();
+
 		var index = values.IndexOf(key);
 		if (index < 0)
 		{
@@ -179,6 +234,25 @@ internal class DateTimePosition : Position<LocalDateTime>
 
 		return index;
 	}
+
+	public override LocalDateTime? Unmap(double value)
+	{
+		EnsureSampled();
+
+		var index = (int)Math.Round(value);
+
+		if (index < 0 || index >= values.Count)
+		{
+			return null;
+		}
+
+		return values[index];
+	}
+
+	public override string? Label(LocalDateTime value) => readoutPattern.Format(value);
+
+	// Readout formatting only; break labels keep their own day/hour logic.
+	private static readonly LocalDateTimePattern readoutPattern = LocalDateTimePattern.CreateWithInvariantCulture("MMM d HH:mm");
 
 	public override void Clear()
 	{
@@ -191,5 +265,7 @@ internal class DateTimePosition : Position<LocalDateTime>
 		max = null;
 
 		values.Clear();
+
+		sampled = false;
 	}
 }

@@ -34,7 +34,16 @@ internal class InstantPosition : Position<Instant>
 			(Instant limit, _) => (limit, Map(limit)),
 		};
 
-		SetRange(mappedStart, mappedEnd);
+		if (CommitViewRange())
+		{
+			// Breaks follow the windowed range, not the trained extent.
+			start = Instant.FromUnixTimeMilliseconds((long)Range.min);
+			end = Instant.FromUnixTimeMilliseconds((long)Range.max);
+		}
+		else
+		{
+			SetRange(mappedStart, mappedEnd);
+		}
 
 		if (!grid)
 		{
@@ -60,4 +69,8 @@ internal class InstantPosition : Position<Instant>
 	}
 
 	public override double Map(Instant key) => key.ToUnixTimeMilliseconds();
+
+	public override Instant? Unmap(double value) => Instant.FromUnixTimeMilliseconds((long)value);
+
+	public override string? Label(Instant value) => formatter.Format(value);
 }

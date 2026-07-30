@@ -158,4 +158,5 @@ PlotContext.Build(pairs, p => p.SeriesA, p => p.SeriesB).Geom_Point()   // conne
 - `Geom_Boxplot` is **horizontal by data design**: x carries the measurements, y the category — `Build(grouped, i => i.Value, i => i.Group)`.
 - `Geom_Violin` draws a *precomputed* profile: `width:` is the density at each y; feed it from `Stat.Density` (`width: d => d.Density`).
 - Time axes are NodaTime (`LocalDate`/`LocalDateTime`/`Instant` `Build` overloads) — never `DateTime`.
-- Labels (`Title`, `XLab`, …) render Markdown; escape user text if it may contain Markdown syntax.
+- A discrete palette must hold at least one value per distinct key: fewer throws `GGNetUserException` at render, naming the key count it needed. Size the palette to the data's cardinality (`Colors.Brewer` sets are keyed by class count).
+- Labels (`Title`, `XLab`, …) render Markdown. Markup in label text is HTML-escaped by the library, so interpolating untrusted data cannot inject SVG — but `*`, `~` and `^` are still read as formatting, so strip them from user text you want shown literally.

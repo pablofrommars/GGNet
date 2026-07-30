@@ -205,15 +205,47 @@ internal static class ShapeComposer
 		return true;
 	}
 
-	private static void AppendPolygon(StringBuilder sb, ICoord coord, Geospacial.Polygon poly)
+	// Shoelace over the projected ring. Only the sign is used, so the y-down screen space and
+	// the missing halving are both irrelevant — what matters is one ring against another.
+	private static double SignedArea(ICoord coord, Geospacial.Polygon poly)
 	{
-		var (px, py) = coord.Project(poly.Longitude[0], poly.Latitude[0]);
+		var (fx, fy) = coord.Project(poly.Longitude[0], poly.Latitude[0]);
 
-		sb.Append(CultureInfo.InvariantCulture, $"M {px} {py}");
+		var area = 0.0;
+		var (px, py) = (fx, fy);
 
 		for (var i = 1; i < poly.Longitude.Length; i++)
 		{
-			(px, py) = coord.Project(poly.Longitude[i], poly.Latitude[i]);
+			var (cx, cy) = coord.Project(poly.Longitude[i], poly.Latitude[i]);
+
+			area += (px * cy) - (cx * py);
+
+			(px, py) = (cx, cy);
+		}
+
+		return area + (px * fy) - (fx * py);
+	}
+
+	private static void AppendPolygon(StringBuilder sb, ICoord coord, Geospacial.Polygon poly)
+	{
+		// SVG fills with the nonzero rule, under which a ring only punches a hole when it is
+		// wound against the exterior enclosing it. Callers hand over whatever winding their
+		// source data carried, so orientation is normalized here — exteriors one way, holes the
+		// other — which also leaves overlapping exteriors filled instead of cancelling.
+		var n = poly.Longitude.Length;
+		var reverse = (SignedArea(coord, poly) < 0.0) != poly.Hole;
+
+		var index = reverse ? n - 1 : 0;
+
+		var (px, py) = coord.Project(poly.Longitude[index], poly.Latitude[index]);
+
+		sb.Append(CultureInfo.InvariantCulture, $"M {px} {py}");
+
+		for (var i = 1; i < n; i++)
+		{
+			index = reverse ? n - 1 - i : i;
+
+			(px, py) = coord.Project(poly.Longitude[index], poly.Latitude[index]);
 
 			sb.Append(CultureInfo.InvariantCulture, $" L {px} {py}");
 		}

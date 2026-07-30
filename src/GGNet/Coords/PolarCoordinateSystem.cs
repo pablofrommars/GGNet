@@ -1,4 +1,5 @@
 using GGNet.Components;
+using GGNet.Exceptions;
 
 namespace GGNet.Coords;
 
@@ -37,6 +38,9 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 
 	public (double x, double y) Project(double cx, double cy)
 	  => Polar.Project(cx, cy, CenterX, CenterY, Radius, options.StartAngle, options.Clockwise);
+
+	public (double cx, double cy) Unproject(double px, double py)
+	  => throw new GGNetUserException("Unproject is not supported with polar coordinates");
 
 	public GridComposition ComposeGrid(GridInputs inputs)
 	{

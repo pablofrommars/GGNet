@@ -11,15 +11,15 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
   where TX : struct
   where TY : struct
 {
-	private sealed class Comparer : IComparer<(double coord, Dictionary<string, SortedBuffer<double>> data)>
+	private sealed class Comparer : IComparer<(double coord, Dictionary<string, SampleBuffer<double>> data)>
 	{
-		public int Compare((double coord, Dictionary<string, SortedBuffer<double>> data) x, (double coord, Dictionary<string, SortedBuffer<double>> data) y)
+		public int Compare((double coord, Dictionary<string, SampleBuffer<double>> data) x, (double coord, Dictionary<string, SampleBuffer<double>> data) y)
 		  => x.coord.CompareTo(y.coord);
 
 		public static readonly Comparer Instance = new();
 	}
 
-	private readonly SortedBuffer<(double coord, Dictionary<string, SortedBuffer<double>> data)> boxes = new(Comparer.Instance);
+	private readonly SortedBuffer<(double coord, Dictionary<string, SampleBuffer<double>> data)> boxes = new(Comparer.Instance);
 
 	private readonly double size;
 
@@ -111,7 +111,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 				}
 				else
 				{
-					points = new SortedBuffer<double>();
+					points = new SampleBuffer<double>();
 					points.Add(x);
 					data[fill] = points;
 				}
@@ -123,7 +123,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 
 		if (!exist)
 		{
-			var points = new SortedBuffer<double>();
+			var points = new SampleBuffer<double>();
 			points.Add(x);
 
 			boxes.Add((y, new() { [fill] = points }));
@@ -242,7 +242,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 		boxes.Clear();
 	}
 
-	public static double Percentile(SortedBuffer<double> points, double p)
+	public static double Percentile(SampleBuffer<double> points, double p)
 	{
 		var n = (points.Count - 1.0) * p + 1.0;
 		if (n == 1)

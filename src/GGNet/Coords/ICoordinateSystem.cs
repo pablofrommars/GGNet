@@ -22,5 +22,9 @@ internal interface ICoordinateSystem
 
 	(double x, double y) Project(double cx, double cy);
 
+	// Inverse of Project: pixels in, fractions out. Systems without a
+	// meaningful inverse (polar, until a need arrives) throw.
+	(double cx, double cy) Unproject(double px, double py);
+
 	GridComposition ComposeGrid(GridInputs inputs);
 }

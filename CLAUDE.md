@@ -10,7 +10,7 @@ GGNet is a **grammar-of-graphics charting library** for .NET / Blazor — ggplot
 
 - **Runtime**: C# on the **.NET 11 preview SDK** (pinned in `global.json`), `LangVersion=preview` (uses the preview `union` keyword)
 - **Solution**: `GGNet.slnx` — four production projects + three test projects
-- **`src/GGNet`** (Razor class library) — the core: the DSL (`PlotContext`, `BuilderExtensions`), geoms, scales, stats, shapes, the render pipeline, the `Plot`/`SparkLine` components, themes
+- **`src/GGNet`** (Razor class library) — the core: the DSL (`PlotContext`, `BuilderExtensions`), geoms, scales, stats, shapes, the render pipeline, the `Plot` component, themes
 - **`src/GGNet.Headless`** — pure-SVG headless export (`AsStringAsync`/`SaveAsync`)
 - **`src/GGNet.Mcp`** — an MCP server exposing the chart-selection + composition surface (reflected from the live assembly)
 - **`src/GGNet.ChartSelection`** — data-shape → chart selection, driven by the embedded `chart_selection.json`
@@ -22,7 +22,7 @@ GGNet is a **grammar-of-graphics charting library** for .NET / Blazor — ggplot
 ## Key Entry Points
 
 - DSL entry: [src/GGNet/PlotContext.Build.cs](src/GGNet/PlotContext.Build.cs) and [src/GGNet/BuilderExtensions.cs](src/GGNet/BuilderExtensions.cs) (+ 21 `BuilderExtensions.<Geom>.cs` partials)
-- Component: [src/GGNet/Components/Plot.razor.cs](src/GGNet/Components/Plot.razor.cs) / [PlotBase.cs](src/GGNet/Components/PlotBase.cs)
+- Component: [src/GGNet/Components/Plot.razor.cs](src/GGNet/Components/Plot.razor.cs)
 - Render pipeline: [src/GGNet/Scene/ShapeComposer.cs](src/GGNet/Scene/ShapeComposer.cs), invariant boundary [src/GGNet/Components/SvgFormat.cs](src/GGNet/Components/SvgFormat.cs)
 - Headless export: [src/GGNet.Headless/IPlotContextExtensions.cs](src/GGNet.Headless/IPlotContextExtensions.cs)
 - MCP server: [src/GGNet.Mcp/Program.cs](src/GGNet.Mcp/Program.cs)

@@ -19,6 +19,9 @@ internal sealed class CartesianCoordinateSystem(Style style) : ICoordinateSystem
 	public (double x, double y) Project(double cx, double cy)
 	  => (area.X + cx * area.Width, area.Y + (1.0 - cy) * area.Height);
 
+	public (double cx, double cy) Unproject(double px, double py)
+	  => ((px - area.X) / area.Width, 1.0 - (py - area.Y) / area.Height);
+
 	public GridComposition ComposeGrid(GridInputs inputs)
 	{
 		var grid = new GridComposition();

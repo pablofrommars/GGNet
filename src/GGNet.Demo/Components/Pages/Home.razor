@@ -1,0 +1,15 @@
+@page "/"
+@rendermode InteractiveServer
+
+<PageTitle>GGNet Demo</PageTitle>
+
+<h1 class="text-2xl font-semibold">GGNet Interactivity Demo</h1>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    QA harness for GGNet's interactivity work. Each feature block lands with a dedicated page;
+    this page proves the hosting wiring using the surface shipped today (hover tooltip).
+</p>
+
+<div class="mt-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@context RenderMode=@renderMode />
+</div>

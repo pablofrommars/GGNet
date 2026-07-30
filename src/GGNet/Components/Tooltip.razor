@@ -6,6 +6,21 @@
 @code {
     protected override void RenderForeignObject(RenderTreeBuilder __builder)
     {
+        if (context is not null && Glued)
+        {
+            @* Cursor-glued: a manual top-layer popover. The JS module owns
+               position and edge-flipping; no arrow, no quadrant switch. The
+               foreignObject stays as the HTML host inside the svg — top-layer
+               promotion ignores it, custom-property inheritance does not. *@
+            <foreignObject role="tooltip-glued" x="0" y="0" width="1" height="1" style=@ContextStyle>
+                <div class="container" popover="manual" data-offset=@Num(context.Offset) @ref=element>
+                    <div class="bubble">@(context.Content)</div>
+                </div>
+            </foreignObject>
+
+            return;
+        }
+
         if (context is not null)
         {
             var px = (context.X - Zone.X) / Zone.Width;
@@ -22,8 +37,8 @@
                 var (_, _py) when _py < 0.25 => ("tooltip-top-center", context.X, context.Y - context.Offset),
                 _ => ("tooltip-right-center", context.X + context.Offset, context.Y)
             };
-            <foreignObject role=@role x=@Num(tx) y=@Num(ty) width="1" height="1">
-            <div class="container" style=@Attr($"--tootip-color: {context.Color}; --tooltip-opacity: {context.Opacity};")>
+            <foreignObject role=@role x=@Num(tx) y=@Num(ty) width="1" height="1" style=@ContextStyle>
+            <div class="container">
                 <div class="arrow"></div>
                 <div class="bubble">@(context.Content)</div>
             </div>

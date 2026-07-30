@@ -7,6 +7,8 @@ global using System.Xml.Linq;
 global using AwesomeAssertions;
 global using AwesomeAssertions.Execution;
 
+global using NodaTime;
+
 global using VerifyTests;
 global using VerifyXunit;
 global using GGNet.Buffers;

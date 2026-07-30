@@ -8,10 +8,7 @@ GGNet.Components.Area`3
 GGNet.Components.ICoord
 GGNet.Components.ITooltip
 GGNet.Components.Panel`3
-GGNet.Components.PlotBase`3
 GGNet.Components.Plot`3
-GGNet.Components.SparkLineTooltip
-GGNet.Components.SparkLine`3
 GGNet.Components.Tooltip
 GGNet.Components.TooltipBase
 GGNet.Components.VerticalOpacityGradient
@@ -36,6 +33,7 @@ GGNet.Geospacial.Polygon
 GGNet.Guide
 GGNet.IPlotContext
 GGNet.IStatSource
+GGNet.InteractivityOptions
 GGNet.LineType
 GGNet.NoData
 GGNet.Palettes.Discrete`2
@@ -71,4 +69,6 @@ GGNet.Summary
 GGNet.Summary`1
 GGNet.Transformations.ITransformation`1
 GGNet.Units
+GGNet.ViewExtensions
+GGNet.ZoomAxis
 GGNet._Imports

@@ -250,25 +250,40 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 		for (var i = 0; i < bars.Count; i++)
 		{
 			var (x, y) = bars[i];
-			var sum = 0.0;
+
+			// One accumulator per sign: a negative segment stacks downwards from the baseline
+			// and is emitted with a non-negative height, which is the only kind SVG draws.
+			var positive = 0.0;
+			var negative = 0.0;
 
 			for (var j = y.Count - 1; j >= 0; j--)
 			{
 				var (item, fill, value) = y[j];
 
-				AddRect(item, fill, x - delta / 2.0, sum, delta, value, x, sum + value);
+				if (value >= 0)
+				{
+					AddRect(item, fill, x - delta / 2.0, positive, delta, value, x, positive + value);
 
-				sum += value;
+					positive += value;
+				}
+				else
+				{
+					negative += value;
+
+					AddRect(item, fill, x - delta / 2.0, negative, delta, -value, x, negative);
+				}
 			}
 
 			if (scale.x)
 			{
-				Positions.X.Position.Shape(x - delta, x + delta);
+				// The rectangles span x ± delta/2; training the full delta on each side padded
+				// the grouping axis with twice the width that was actually drawn.
+				Positions.X.Position.Shape(x - delta / 2.0, x + delta / 2.0);
 			}
 
 			if (scale.y)
 			{
-				Positions.Y.Position.Shape(0, sum);
+				Positions.Y.Position.Shape(Math.Min(0.0, negative), Math.Max(0.0, positive));
 			}
 		}
 	}

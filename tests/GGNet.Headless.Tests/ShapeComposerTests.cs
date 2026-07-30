@@ -23,6 +23,8 @@ public class ShapeComposerTests
 		public (double min, double max) YRange => (0, 10);
 
 		public ITransformation<double> YTransformation => Identity<double>.Instance;
+
+		public (double x, double y) Unproject(double px, double py) => (px / 10.0, (100.0 - py) / 10.0);
 	}
 
 	private sealed class FakeGeom : IGeom

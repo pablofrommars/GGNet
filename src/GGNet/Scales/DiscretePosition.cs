@@ -83,7 +83,16 @@ internal class DiscretePosition<T> : Position<T>
 			}
 		}
 
-		SetRange(min, max);
+		if (CommitViewRange())
+		{
+			// Snap the label window to the categories inside the view.
+			start = Math.Max(0, (int)Math.Ceiling(Range.min));
+			end = Math.Min(values.Count, (int)Math.Floor(Range.max) + 1);
+		}
+		else
+		{
+			SetRange(min, max);
+		}
 
 		if (grid)
 		{
@@ -101,6 +110,20 @@ internal class DiscretePosition<T> : Position<T>
 
 		values.Clear();
 	}
+
+	public override T? Unmap(double value)
+	{
+		var index = (int)Math.Round(value);
+
+		if (index < 0 || index >= values.Count)
+		{
+			return null;
+		}
+
+		return values[index];
+	}
+
+	public override string? Label(T value) => formatter.Format(value);
 
 	public override double Map(T key)
 	{

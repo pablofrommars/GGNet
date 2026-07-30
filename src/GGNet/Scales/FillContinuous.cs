@@ -10,19 +10,24 @@ internal class FillContinuous(
 	int m = 5,
 	IFormatter<double>? formatter = null) : Scale<double, string>()
 {
-	private readonly string[] colors = colors;
+	private readonly string[] colors = Palettes.Utils.NonEmpty(colors, "Scale_Fill_Continuous");
 	private readonly int m = m;
 	private readonly IFormatter<double> formatter = formatter ?? new DoubleFormatter("0.##");
 
 	protected (double min, double max) limits = (0.0, 0.0);
 
+	// Initialization is tracked separately: (0, 0) is a legitimate trained state, so a leading
+	// zero observation must not be mistaken for "nothing trained yet".
+	private bool trained;
+
 	public override Guide Guide => Guide.ColorBar;
 
 	public override void Train(double key)
 	{
-		if (limits.min == 0 && limits.max == 0)
+		if (!trained)
 		{
 			limits = (key, key);
+			trained = true;
 		}
 		else
 		{
@@ -67,12 +72,16 @@ internal class FillContinuous(
 		}
 		else
 		{
-			return string.Empty;
+			// Constant data has no gradient to place a key on: every key takes the middle color,
+			// the same index a mid-range key would take above. Returning empty here would make
+			// every fill consumer skip the mark and the layer would vanish.
+			return colors[(colors.Length - 1) / 2];
 		}
 	}
 
 	public override void Clear()
 	{
 		limits = (0.0, 0.0);
+		trained = false;
 	}
 }

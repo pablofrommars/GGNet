@@ -104,6 +104,34 @@ Notes:
 - Changing `--ggnet-font` affects rendering only: server-side text measurement assumes Inter until font metrics ship with the theme.
 - **Self-contained export**: `plot.AsStringAsync(selfContained: true)` / `SaveAsync(..., selfContained: true)` embeds the bundled theme as a `<style>` element so the SVG renders standalone; off by default — app-hosted output is styled by the app's stylesheet.
 
+## Agent Skill
+
+The repo ships a model-facing skill for AI coding agents under [skills/ggnet/](skills/ggnet/) — the DSL manual, a data-shape → chart selection guide, 30 compile- and render-verified example recipes, and a snippet validator ([skills/ggnet/scripts/validate.cs](skills/ggnet/scripts/validate.cs)). Nothing in it is hand-maintained prose: signatures are extracted from source, examples are pinned gallery tests, and drift is caught by the test suite — the skill version *is* the library version.
+
+The repo is its own single-plugin marketplace ([`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)), so consuming projects install the skill straight from it.
+
+**Claude Code**, from GitHub:
+
+```
+/plugin marketplace add pablofrommars/GGNet
+/plugin install ggnet@ggnet
+```
+
+**Claude Code**, from a local checkout (e.g. a repo that vendors GGNet):
+
+```
+/plugin marketplace add path/to/GGNet
+/plugin install ggnet@ggnet
+```
+
+**Codex** consumes the same skill via the [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json) manifest; the agent-neutral manifest at the root ([plugin.json](plugin.json)) follows the [agentskills.io](https://agentskills.io) layout for everything else.
+
+Two pieces of the skill are live tooling and need the GGNet source tree present (a clone or a vendored copy — not just the installed skill): `scripts/validate.cs` compiles snippets against the in-repo projects, and the MCP server is registered with
+
+```
+claude mcp add ggnet -- dotnet run --project path/to/GGNet/src/GGNet.Mcp
+```
+
 ### Examples Gallery
 
 | | | |
@@ -113,6 +141,4 @@ Notes:
 ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/barplot.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/stacked.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/hbarplot.png)
 ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/lolipop.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/errorbar.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/violin.png)
 ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/hex.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/ridgeline.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/choropleth.png)
-![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/sparkline.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/CFR.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/abline.png)
- 
-![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/bubblemap.png)
+![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/CFR.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/abline.png) | ![](https://github.com/pablofrommars/GGNet.Site/blob/master/wwwroot/img/bubblemap.png)

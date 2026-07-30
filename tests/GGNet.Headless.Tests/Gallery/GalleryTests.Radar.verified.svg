@@ -40,5 +40,7 @@
 	<text class="y-break-label" x="364" y="132.85714285714286" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">3</text>
 	<text class="y-break-label" x="364" y="81.80952380952382" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">4</text>
 	<text class="y-break-label" x="364" y="30.761904761904788" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">5</text>
-	<path d="M 360 134.85714285714286 L 554.1966829463628 224.9016727676298 L 420.01007528166963 370.59678266380416 L 209.97481179582596 494.4919566595104 L 311.45082926340933 272.22541819190747 Z" class="" fill="#23d0fc" fill-opacity="0.25" stroke="#23d0fc" stroke-width="2" clip-path="url(#ggID)" />
+	<g clip-path="url(#ggID)">
+		<path d="M 360 134.85714285714286 L 554.1966829463628 224.9016727676298 L 420.01007528166963 370.59678266380416 L 209.97481179582596 494.4919566595104 L 311.45082926340933 272.22541819190747 Z" class="" fill="#23d0fc" fill-opacity="0.25" stroke="#23d0fc" stroke-width="2" clip-path="url(#ggID)" />
+	</g>
 </svg>

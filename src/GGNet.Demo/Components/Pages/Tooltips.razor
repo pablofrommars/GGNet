@@ -1,0 +1,64 @@
+@page "/tooltips"
+@rendermode InteractiveServer
+
+<PageTitle>Tooltips — GGNet Demo</PageTitle>
+
+<h1 class="text-2xl font-semibold">Tooltips</h1>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    Every data-mark geom takes a <code class="rounded bg-gray-100 px-1">tooltip:</code>
+    function returning a RenderFragment — content is always server-rendered.
+    The bubble's background is themable via
+    <code class="rounded bg-gray-100 px-1">--ggnet-tooltip-bg</code>.
+</p>
+
+<h2 class="mt-6 text-xl font-semibold">Mark-anchored (default)</h2>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    Anchored at the hovered mark, offset by its radius, with quadrant-based
+    placement — hover points near the corners and edges to see the bubble flip
+    sides. No JS, no opt-in.
+</p>
+
+<div class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@classicContext RenderMode=@renderMode />
+</div>
+
+<h2 class="mt-8 text-xl font-semibold">Cursor-glued (CursorTooltip)</h2>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    Under the <code class="rounded bg-gray-100 px-1">CursorTooltip</code> opt-in
+    the bubble becomes a top-layer popover that follows the pointer at frame
+    rate and edge-flips against the viewport — position runs client-side,
+    content still arrives from the server per mark.
+</p>
+
+<div class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@gluedContext RenderMode=@renderMode Interactivity=@glued />
+</div>
+
+<h2 class="mt-8 text-xl font-semibold">Rich content</h2>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    The tooltip is any RenderFragment — markup, multiple rows, your own
+    styling. Here a small two-row card, cursor-glued.
+</p>
+
+<div class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@richContext RenderMode=@renderMode Interactivity=@glued />
+</div>
+
+@code {
+    private readonly RenderFragment<Reading> richTemplate = reading =>
+        @<div class="text-xs">
+            <div class="font-semibold">@reading.Batch</div>
+            <div class="mt-1 flex gap-3">
+                <span class="text-gray-500">Gravity</span>
+                <span>@FormattableString.Invariant($"{reading.Gravity:0.000}")</span>
+            </div>
+            <div class="flex gap-3">
+                <span class="text-gray-500">Elapsed</span>
+                <span>@FormattableString.Invariant($"{reading.Hours} h")</span>
+            </div>
+        </div>;
+}
