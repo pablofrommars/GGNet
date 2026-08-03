@@ -1,0 +1,44 @@
+@page "/radar"
+@rendermode InteractiveServer
+
+<PageTitle>Radar — GGNet Demo</PageTitle>
+
+<h1 class="text-2xl font-semibold">Investment readiness</h1>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    A six-axis radar over a 0&ndash;4 maturity ladder. The hexagonal web comes
+    from <code>Geom_Radar</code> implying polar coordinates with
+    <code>PolarRingType.Polygon</code> rings; the outline is drawn as six
+    <code>Geom_Segment</code> chords so unverified edges can go dashed, and the
+    vertices are a <code>Geom_Point</code> layer. Hover a vertex for its rating.
+</p>
+
+<div class="readiness mt-4 rounded-lg border border-gray-800 bg-gray-900 p-4 text-gray-100 shadow-sm">
+    @* Polar inscribes the web in min(width, height); the extra width is the
+       room the long category labels need on the ±30° axes. *@
+    <Plot Context=@context RenderMode=@renderMode Width="1080" Height="700" />
+</div>
+
+<style>
+    /* Variable overrides must target the .ggnet element itself: the theme
+       declares --ggnet-* on .ggnet, and an element's own declaration beats
+       anything inherited from an ancestor like .readiness. */
+    .readiness .ggnet {
+        /* Dark card: transparent plot/panel so the card's own background shows
+           through (a transparent fill still hit-tests for the panel's click). */
+        --ggnet-bg: transparent;
+        --ggnet-grid: #374151;
+        --ggnet-break-label: #f9fafb;
+        /* The status line under each axis title reads lighter than the title;
+           break-title defaults dark for cartesian year rows, so override here. */
+        --ggnet-break-title: #9ca3af;
+        --ggnet-tooltip-bg: #1f2937;
+        --ggnet-spinner-track: #374151;
+    }
+
+    /* The default web is a 0.43px hairline; this design wants a visible rule. */
+    .readiness .ggnet .x-break,
+    .readiness .ggnet .y-break {
+        stroke-width: 1;
+    }
+</style>

@@ -1,0 +1,51 @@
+﻿<svg id="ggID" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720 576">
+	<defs></defs>
+	<clipPath id="ggID">
+		<rect x="0" y="0" width="720" height="576" />
+	</clipPath>
+	<rect class="plot" width="100%" height="100%"></rect>
+	<defs>
+		<clipPath id="ggID">
+			<rect x="0" y="0" width="720" height="576" />
+		</clipPath>
+		<clipPath id="ggID">
+			<rect x="0" y="0" width="720" height="576" />
+		</clipPath>
+	</defs>
+	<rect class="panel" x="0" y="0" width="720" height="576" />
+	<line class="x-break" x1="360" x2="360" y1="288" y2="35" clip-path="url(#ggID)" />
+	<line class="x-break" x1="360" x2="600.6172986226738" y1="288" y2="209.8187004231383" clip-path="url(#ggID)" />
+	<line class="x-break" x1="360" x2="508.70966882999573" y1="288" y2="492.6812995768617" clip-path="url(#ggID)" />
+	<line class="x-break" x1="360" x2="211.29033117000432" y1="288" y2="492.6812995768617" clip-path="url(#ggID)" />
+	<line class="x-break" x1="360" x2="119.38270137732613" y1="288" y2="209.81870042313835" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 288 L 360 288 L 360 288 L 360 288 L 360 288 Z" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 239.8095238095238 L 405.8318664043188 273.1083238901216 L 388.3256512057135 326.98691420511653 L 331.6743487942865 326.98691420511653 L 314.1681335956812 273.1083238901216 Z" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 191.61904761904762 L 451.66373280863763 258.2166477802432 L 416.6513024114269 365.973828410233 L 303.3486975885731 365.973828410233 L 268.33626719136237 258.2166477802432 Z" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 143.42857142857144 L 497.49559921295645 243.32497167036476 L 444.9769536171404 404.96074261534955 L 275.0230463828596 404.96074261534955 L 222.50440078704352 243.32497167036476 Z" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 95.23809523809524 L 543.3274656172753 228.43329556048633 L 473.3026048228539 443.947656820466 L 246.69739517714615 443.947656820466 L 176.67253438272468 228.43329556048636 Z" clip-path="url(#ggID)" />
+	<path class="y-break" fill="none" d="M 360 47.047619047619065 L 589.1593320215941 213.54161945060793 L 501.6282560285673 482.93457102558256 L 218.3717439714327 482.93457102558256 L 130.84066797840586 213.54161945060793 Z" clip-path="url(#ggID)" />
+	<path class="y-minor-break" fill="none" d="M 360 263.9047619047619 L 382.9159332021594 280.5541619450608 L 374.16282560285674 307.49345710255824 L 345.83717439714326 307.49345710255824 L 337.0840667978406 280.5541619450608 Z" clip-path="url(#ggID)" />
+	<path class="y-minor-break" fill="none" d="M 360 215.71428571428572 L 428.7477996064782 265.6624858351824 L 402.4884768085702 346.4803713076748 L 317.51152319142983 346.4803713076748 L 291.2522003935218 265.6624858351824 Z" clip-path="url(#ggID)" />
+	<path class="y-minor-break" fill="none" d="M 360 167.52380952380952 L 474.57966601079704 250.77080972530396 L 430.81412801428365 385.46728551279125 L 289.18587198571635 385.46728551279125 L 245.42033398920293 250.77080972530396 Z" clip-path="url(#ggID)" />
+	<path class="y-minor-break" fill="none" d="M 360 119.33333333333334 L 520.4115324151159 235.87913361542553 L 459.13977921999714 424.4541997179078 L 260.8602207800029 424.4541997179078 L 199.58846758488409 235.87913361542556 Z" clip-path="url(#ggID)" />
+	<path class="y-minor-break" fill="none" d="M 360 71.14285714285717 L 566.2433988194347 220.98745750554713 L 487.46543042571057 463.4411139230243 L 232.53456957428943 463.4411139230243 L 153.75660118056527 220.98745750554716 Z" clip-path="url(#ggID)" />
+	<text class="x-break-label" x="360" y="12" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">Speed</text>
+	<text class="x-break-label" x="608.2257507530351" y="200.84565543732685" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">Power</text>
+	<text class="x-break-label" x="513.4119508483354" y="506.40434456267315" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">Range</text>
+	<text class="x-break-label" x="206.58804915166453" y="506.40434456267315" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">Weight</text>
+	<text class="x-break-label" x="111.7742492469649" y="200.84565543732688" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">Cost</text>
+	<text class="x-break-title" x="360" y="27" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">strong</text>
+	<text class="x-break-title" x="608.2257507530351" y="215.84565543732685" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">very strong</text>
+	<text class="x-break-title" x="513.4119508483354" y="521.4043445626731" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">developing</text>
+	<text class="x-break-title" x="206.58804915166453" y="521.4043445626731" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">excellent</text>
+	<text class="x-break-title" x="111.7742492469649" y="215.84565543732688" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">weak</text>
+	<text class="y-break-label" x="364" y="286" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">0</text>
+	<text class="y-break-label" x="364" y="237.8095238095238" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">1</text>
+	<text class="y-break-label" x="364" y="189.61904761904762" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">2</text>
+	<text class="y-break-label" x="364" y="141.42857142857144" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">3</text>
+	<text class="y-break-label" x="364" y="93.23809523809524" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">4</text>
+	<text class="y-break-label" x="364" y="45.047619047619065" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">5</text>
+	<g clip-path="url(#ggID)">
+		<path d="M 360 143.42857142857144 L 543.3274656172753 228.43329556048633 L 416.6513024114269 365.973828410233 L 218.3717439714327 482.93457102558256 L 314.1681335956812 273.1083238901216 Z" class="" fill="#23d0fc" fill-opacity="0.25" stroke="#23d0fc" stroke-width="2" clip-path="url(#ggID)" />
+	</g>
+</svg>

@@ -290,6 +290,32 @@ public class GalleryTests
 		=> VerifyPlot(PlotContext.Build(rated, i => i.Metric, i => i.Value).Geom_Radar().Style());
 
 	[Fact]
+	public Task RadarBreakTitles()
+		// The two-line axis stack under polar: a break-title line beneath each
+		// break label, the pair shifted outward along the spoke so both lines
+		// stay outside the web at every angle. Setting the scale explicitly
+		// opts out of the coord system's expansion, so it is restated.
+		=> VerifyPlot(PlotContext.Build(rated, i => i.Metric, i => i.Value)
+			.Scale_X_Discrete(expand: (0.0, 0.0, 0.0, 1.0), titles: MetricStatus.Instance)
+			.Geom_Radar()
+			.Style());
+
+	private sealed class MetricStatus : Formats.IFormatter<Metric>
+	{
+		public static readonly MetricStatus Instance = new();
+
+		public string Format(Metric value) => value switch
+		{
+			Metric.Speed => "strong",
+			Metric.Power => "very strong",
+			Metric.Range => "developing",
+			Metric.Weight => "excellent",
+			Metric.Cost => "weak",
+			_ => value.ToString()
+		};
+	}
+
+	[Fact]
 	public Task DateTimeAxis()
 		// The datetime path renders nothing pinned otherwise: its scale derives a minute grid
 		// that the pipeline reads before Commit, which is where a regression slipped through.

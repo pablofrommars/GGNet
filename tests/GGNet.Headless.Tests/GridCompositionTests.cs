@@ -12,7 +12,7 @@ public class GridCompositionTests
 	{
 		var sut = new CartesianCoordinateSystem(Style.Default());
 
-		sut.Measure(area);
+		sut.Measure(area, hasXTitles: false);
 
 		return sut;
 	}
@@ -21,7 +21,7 @@ public class GridCompositionTests
 	{
 		var sut = new PolarCoordinateSystem(new PolarOptions(), Style.Default(init: s => s.Polar.Rings = rings));
 
-		sut.Measure(area);
+		sut.Measure(area, hasXTitles: false);
 
 		return sut;
 	}

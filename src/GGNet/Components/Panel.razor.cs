@@ -153,7 +153,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		xAxisText = zones.XAxisText;
 		xAxisTitle = zones.XAxisTitle;
 
-		coord.Measure(Area);
+		coord.Measure(Area, Data.X.Titles.Any());
 
 		grid = coord.ComposeGrid(new(
 			XAxis: Data.Axis.x,

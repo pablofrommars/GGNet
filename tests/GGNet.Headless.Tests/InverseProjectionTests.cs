@@ -14,7 +14,7 @@ public class InverseProjectionTests
 	{
 		var sut = new CartesianCoordinateSystem(Style.Default());
 
-		sut.Measure(new Zone { X = 40, Y = 20, Width = 640, Height = 480 });
+		sut.Measure(new Zone { X = 40, Y = 20, Width = 640, Height = 480 }, hasXTitles: false);
 
 		return sut;
 	}

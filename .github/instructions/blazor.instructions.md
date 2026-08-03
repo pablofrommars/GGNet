@@ -1,5 +1,5 @@
 ---
-applyTo: "**/*.razor,**/*.razor.cs,**/*.razor.css"
+applyTo: "**/*.razor,**/*.razor.cs,**/*.razor.css,**/*.razor.js"
 ---
 
 # Blazor Component Guide
@@ -21,6 +21,8 @@ src/GGNet/Components/
 ├── Plot.razor + Plot.razor.cs  # the hostable plot (720×576 default); ComponentBase, IPlot, IPlotRendering, IAsyncDisposable
 ├── Area.razor + Area.razor.cs  # the "dumb walker" over composed ScreenPrimitives
 ├── Panel / Tooltip / ...       # supporting components
+├── Panel.razor.js              # the library's only shipped JS asset — continuous gestures (§5)
+├── PanelInterop.cs             # typed wrapper owning that module's lifecycle (§5)
 ├── SvgFormat.cs                # the invariant-culture numeric choke point (see rendering guide)
 └── _Imports.razor              # two lines: the Rendering + Web namespaces
 ```
@@ -32,7 +34,7 @@ src/GGNet/Components/
 
 ## 2. Three-File Split
 
-Every non-trivial component: `<Name>.razor` (markup) + `<Name>.razor.cs` (`public partial class`) + rarely a `<Name>.razor.css`.
+Every non-trivial component: `<Name>.razor` (markup) + `<Name>.razor.cs` (`public partial class`) + rarely a `<Name>.razor.css`. `Panel` additionally has a collocated `<Name>.razor.js` — the one exception, and one that should stay singular (§5).
 
 - **Scoped `.razor.css` is essentially unused by design.** `plot.razor.css` exists but is a near-empty placeholder — **all paint lives in `Themes/Default.css`**, driven by CSS variables (§5). Do not add scoped component CSS to style output; add a `--ggnet-*` variable and paint it in the theme instead.
 - The code-behind is a `public partial class <Name><T, TX, TY>` declaring its own base and interfaces (`Plot` takes `ComponentBase, IPlot, IPlotRendering, IAsyncDisposable`); the `.razor` carries no `@inherits`.
@@ -74,13 +76,30 @@ GGNet does its own render orchestration through the handler; the component is a 
 
 ---
 
-## 5. No JavaScript — Interactivity Is a Server-Side Render Loop
+## 5. Interactivity — a Server-Side Render Loop Plus Exactly One JS Module
 
-**This library ships zero JavaScript.** There is no `IJSRuntime`, no `IJSObjectReference`, no `[JSInvokable]`, no `JSDisconnectedException`, no `.js`/`.ts` asset (the lone `wwwroot/dev/pixelWidthCalculator.html` is an offline dev tool, not shipped interop).
+The default is server-side. `InteractiveRenderModeHandler` runs a `System.Threading.Channels` background loop that coalesces `RenderTarget.Render` / `RenderTarget.Loading` signals and calls `StateHasChangedAsync()`. Tooltip content, hover, and refresh all live there.
 
-Interactivity — tooltips, hover, refresh — is driven entirely server-side: `InteractiveRenderModeHandler` runs a `System.Threading.Channels` background loop that coalesces `RenderTarget.Render` / `RenderTarget.Loading` signals and calls `StateHasChangedAsync()`. This is the deliberate Blazor-Server design.
+**The library ships exactly one JS asset**: `src/GGNet/Components/Panel.razor.js` (collocated with `Panel.razor`, served from `./_content/GGNet/Components/Panel.razor.js`). It landed with the interactivity tiers (2026-07-10) and exists for **continuous gestures only** — the wheel converted to plot units against the rendered size, drag-pan previewed as a transform on the marks group at frame rate, and the cursor-glued tooltip positioned and edge-flipped at frame rate. These are the cases that cannot cross the circuit per frame; a `mousemove` round trip per event is still never acceptable. `wwwroot/dev/pixelWidthCalculator.html` remains an offline dev tool, not shipped interop.
 
-- **Do not introduce JS interop as a matter of course.** If a feature genuinely needs the browser (e.g. `mousemove`-driven pan/zoom), that is a deliberate architectural decision tracked in `ROADMAP.md` (interactivity tiers), not a default reached for to implement a handler. The tsu-style "JS-interop module per concern" pattern does **not** apply here.
+### The opt-in gate
+
+`Plot.Interactivity` (`InteractivityOptions?`) is unset by default, and when unset there is **no capture group, no gesture handlers, and byte-identical static output** — which is why the goldens do not churn. Interop initialization is additionally gated on `coord.CarvesAxisBands`, so polar plots never wire it up.
+
+### The wiring pattern — follow `PanelInterop`, do not invent a second one
+
+`PanelInterop` (`Components/PanelInterop.cs`) is the model for any future module:
+
+- `internal sealed class` owning the module lifecycle, **one instance per interactive panel**, with **no DI registration** — the component constructs it around the framework-provided `IJSRuntime`, so consumers configure nothing. (This is where the per-concern-module-registered-`AddScoped` pattern from other codebases does *not* apply.)
+- Lazy import: `module ??= await runtime.InvokeAsync<IJSObjectReference>("import", ModulePath)`, from `OnAfterRenderAsync(firstRender)`.
+- **Batching rule: one `initialize` call carries every feature flag** (`PanelInteropOptions`, serialized camelCase). Do not add a second round trip per feature.
+- JS → .NET: `DotNetObjectReference.Create(this)` + `[JSInvokable]` methods, each named in a `[DynamicDependency(nameof(...))]` on the component so trimming preserves it. Dispose the reference alongside the module.
+- **Every JS call catches** `JSDisconnectedException`, `ObjectDisposedException`, and `TaskCanceledException` — a disconnected circuit is normal, not exceptional.
+- On the JS side, listeners are registered against an `AbortController` signal and torn down by the module's `dispose(id)`.
+
+### Adding browser-dependent behaviour
+
+Reaching for the browser is still a deliberate architectural decision tracked in `ROADMAP.md`, not a default. The tiers that landed are wheel-zoom, reset, crosshair + readout, drag-pan, cursor-glued tooltips, auto-fit y, and the imperative view API. The open ones — legend toggle, the anchor-model/shared-series tooltip, rubber-band selection — each carry a design note and a trigger. Extend the existing module and its single `initialize` payload rather than adding a second module.
 
 ---
 
@@ -119,4 +138,6 @@ Rules:
 
 ## 8. Component Testing
 
-Component tests use **bUnit** (`tests/GGNet.Components.Tests/`, `BunitContext`), rendering the interactive `Plot` in-process (no browser). Headless SVG output and goldens are tested separately (rendering + testing guides). See [testing.instructions.md](./testing.instructions.md).
+Component tests use **bUnit** (`tests/GGNet.Components.Tests/`, `BunitContext`), rendering the interactive `Plot` in-process (no browser). bUnit covers the circuit surface — tooltips, mouse events, gestures, the opt-in gate — but it cannot execute `Panel.razor.js`. **The only layer that runs the JS for real is `tests/GGNet.E2ETests`** (Playwright over the spawned demo app), and every test there self-skips unless `GGNET_E2E=1`, so a green default gate says nothing about the module. Touching the JS or its wrapper means running `GGNET_E2E=1 dotnet test tests/GGNet.E2ETests` explicitly.
+
+Headless SVG output and goldens are tested separately (rendering + testing guides). See [testing.instructions.md](./testing.instructions.md).

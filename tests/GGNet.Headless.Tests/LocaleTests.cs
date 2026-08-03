@@ -132,4 +132,33 @@ public class LocaleTests
 
 		svg.Should().NotMatchRegex(@"\d,\d");
 	}
+
+	[Fact]
+	public async Task PolarBreakTitlesAreCultureInvariant()
+	{
+		// Arrange
+
+		using var culture = new CultureScope("sv-SE");
+
+		// Break titles add a second grid-label pass and an extra gutter term
+		// under polar; both the title text (default-invariant formatter) and
+		// the stacked-label geometry must ignore the ambient culture.
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Scale_X_Discrete(expand: (0.0, 0.0, 0.0, 1.0), titles: new Formats.DoubleFormatter("N1"))
+			.Geom_Point()
+			.Coord_Polar()
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		svg.Should().Contain("x-break-title");
+		svg.Should().NotMatchRegex(@"\d,\d");
+		svg.Should().NotContain("−");
+	}
 }

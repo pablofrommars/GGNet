@@ -87,6 +87,9 @@ Read a file before changing it. The scoped guides below apply — consult the on
 ### Skill authoring — `skills/**`
 @.github/instructions/skill.instructions.md
 
+### Troubleshooting — read on failure, not before every edit
+@.github/instructions/troubleshooting.instructions.md
+
 ## Ground Rules
 
 - Read a file before changing it. Do not fabricate conventions — every rule above is grounded in existing code.

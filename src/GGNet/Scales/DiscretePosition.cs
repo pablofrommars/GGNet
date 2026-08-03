@@ -12,19 +12,22 @@ internal class DiscretePosition<T> : Position<T>
 	protected readonly IFormatter<T> formatter;
 	private readonly double offset;
 	private readonly bool hide;
+	private readonly IFormatter<T>? titles;
 
 	public DiscretePosition(ITransformation<T>? transformation = null,
 	  (T? min, T? max)? limits = null,
 	  (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 	  IFormatter<T>? formatter = null,
 	  double offset = 0.0,
-	  bool hide = false)
+	  bool hide = false,
+	  IFormatter<T>? titles = null)
 	  : base(transformation, expand ?? (0.0, 0.6, 0, 0.6))
 	{
 		Limits = limits ?? (null, null);
 		this.formatter = formatter ?? Standard<T>.Instance;
 		this.offset = offset;
 		this.hide = hide;
+		this.titles = titles;
 	}
 
 	public override Guide Guide => Guide.None;
@@ -41,6 +44,18 @@ internal class DiscretePosition<T> : Position<T>
 		}
 
 		Labels = labels;
+
+		if (titles is not null)
+		{
+			var breakTitles = new (double value, string title)[values.Count];
+
+			for (var i = 0; i < values.Count; i++)
+			{
+				breakTitles[i] = (i + offset, titles.Format(values[i]));
+			}
+
+			Titles = breakTitles;
+		}
 
 		if (!hide)
 		{

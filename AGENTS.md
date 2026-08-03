@@ -53,6 +53,14 @@ The detailed style guides live in `.github/instructions/`. Before editing files 
 | MCP server (`src/GGNet.Mcp/**`) | `.github/instructions/mcp.instructions.md` |
 | Skill authoring (`skills/**`) | `.github/instructions/skill.instructions.md` |
 
+One guide is symptom-scoped rather than file-scoped:
+
+| When | Instruction file |
+|---|---|
+| A gate fails, a test fails, or a command hangs | `.github/instructions/troubleshooting.instructions.md` |
+
+Read it on failure, not before every edit. It is indexed by symptom — silent `dotnet` hangs, `-warnaserror` diagnostics, golden/overload/theme/skill-drift test failures, polar traps, and how to actually look at a rendered chart.
+
 ## The Skill & Plugins
 
 `skills/ggnet` is a packaged chart-authoring skill exposed via `plugin.json` and `.codex-plugin/plugin.json`. When generating chart code, prefer the `ggnet` MCP server's tools if registered (`select_chart`, `list_geoms`, `list_scales`, `validate_plot`) — they read the live library and are deterministic — and validate generated snippets with `dotnet run skills/ggnet/scripts/validate.cs -- <snippet>` before presenting them.

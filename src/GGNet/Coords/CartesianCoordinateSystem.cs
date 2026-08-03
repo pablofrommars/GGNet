@@ -14,7 +14,7 @@ internal sealed class CartesianCoordinateSystem(Style style) : ICoordinateSystem
 
 	public (double minMult, double minAdd, double maxMult, double maxAdd)? YExpansion(bool discrete) => null;
 
-	public void Measure(Zone area) => this.area = area;
+	public void Measure(Zone area, bool hasXTitles) => this.area = area;
 
 	public (double x, double y) Project(double cx, double cy)
 	  => (area.X + cx * area.Width, area.Y + (1.0 - cy) * area.Height);

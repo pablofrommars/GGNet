@@ -25,16 +25,27 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 
 	public double Radius { get; private set; }
 
-	public void Measure(Zone area)
+	public void Measure(Zone area, bool hasXTitles)
 	{
 		// Polar draws breaks and labels inside the plotting area: inscribe the
-		// circle, minus a gutter for the angular labels around it.
+		// circle, minus a gutter for the angular labels around it — one line, or
+		// two when the scale carries break titles.
 		var gutter = style.Axis.Text.X.FontSize.Height() + style.Polar.LabelMargin;
+
+		if (hasXTitles)
+		{
+			gutter += TitleOffset();
+		}
 
 		CenterX = area.X + area.Width / 2.0;
 		CenterY = area.Y + area.Height / 2.0;
 		Radius = Math.Max(0.0, Math.Min(area.Width, area.Height) / 2.0 - gutter);
 	}
+
+	// Baseline distance from a break label to its title line: the title's own
+	// line height plus clearance for the label's descenders.
+	private double TitleOffset()
+	  => style.Axis.Title.X.FontSize.Height() + 0.25 * style.Axis.Text.X.FontSize.Height();
 
 	public (double x, double y) Project(double cx, double cy)
 	  => Polar.Project(cx, cy, CenterX, CenterY, Radius, options.StartAngle, options.Clockwise);
@@ -62,7 +73,13 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 		var fontHeight = style.Axis.Text.X.FontSize.Height();
 		var labelRadius = Radius + style.Polar.LabelMargin;
 
-		foreach (var (f, label) in inputs.XLabels)
+		// With a title line the two-line stack shifts outward along the spoke:
+		// fully up at the top spoke (the title takes the single line's place),
+		// not at all at the bottom (the title flows downward), half at the
+		// sides — so every line stays outside the web.
+		var titleOffset = inputs.XTitles.Count > 0 ? TitleOffset() : 0.0;
+
+		(double x, double y, string anchor) Anchor(double f)
 		{
 			var theta = Polar.Angle(f, options.StartAngle, options.Clockwise);
 
@@ -70,11 +87,25 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 			var sin = Math.Sin(theta);
 
 			var x = CenterX + labelRadius * cos;
-			var y = CenterY + labelRadius * sin + (sin + 1.0) / 2.0 * fontHeight * 0.8;
+			var y = CenterY + labelRadius * sin + (sin + 1.0) / 2.0 * fontHeight * 0.8 - (1.0 - (sin + 1.0) / 2.0) * titleOffset;
 
 			var anchor = cos < -0.1 ? "end" : cos > 0.1 ? "start" : "middle";
 
+			return (x, y, anchor);
+		}
+
+		foreach (var (f, label) in inputs.XLabels)
+		{
+			var (x, y, anchor) = Anchor(f);
+
 			grid.XLabels.Add(new("x-break-label", x, y, anchor, style.Axis.Text.X.FontSize, label, GridClip.Panel));
+		}
+
+		foreach (var (f, title) in inputs.XTitles)
+		{
+			var (x, y, anchor) = Anchor(f);
+
+			grid.XLabels.Add(new("x-break-title", x, y + titleOffset, anchor, style.Axis.Title.X.FontSize, title, GridClip.Panel));
 		}
 
 		foreach (var (f, label) in inputs.YLabels)

@@ -18,7 +18,10 @@ internal interface ICoordinateSystem
 
 	(double minMult, double minAdd, double maxMult, double maxAdd)? YExpansion(bool discrete);
 
-	void Measure(Zone area);
+	// hasXTitles: the x scale carries a break-title line under each break label.
+	// Cartesian reserves its band in PanelLayout and ignores this; polar grows
+	// its label gutter so the second line stays outside the web.
+	void Measure(Zone area, bool hasXTitles);
 
 	(double x, double y) Project(double cx, double cy);
 

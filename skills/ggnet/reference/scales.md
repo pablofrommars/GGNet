@@ -18,8 +18,11 @@ Scale_X_Log10(...) / Scale_Y_Log10(...) / Scale_X_Sqrt(...) / Scale_Y_Sqrt(...)
     // Continuous with the Log10/Sqrt transformation pre-applied — use for skewed / power-law data
 
 Scale_X_Discrete((TX? min, TX? max)? limits = null, expand = null,
-    IFormatter<TX>? formatter = null, double offset = 0.0, bool hide = false)
-Scale_Y_Discrete( /* same over TY */ )
+    IFormatter<TX>? formatter = null, double offset = 0.0, bool hide = false,
+    IFormatter<TX>? titles = null)
+    // titles: second label line per category (class x-break-title) — rendered in the
+    // axis-title band on cartesian axes, stacked beneath each break label under polar
+Scale_Y_Discrete( /* same over TY, minus titles */ )
 
 Scale_X_Discrete_Date(...)      // LocalDate axis, day/month tick labeling
 Scale_X_Discrete_DateTime(...)  // LocalDateTime axis

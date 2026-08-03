@@ -94,17 +94,19 @@ public static partial class BuilderExtensions
 	/// <param name="formatter">Break-label formatter; defaults to invariant general formatting.</param>
 	/// <param name="offset">Break and label offset from the category index, in axis units.</param>
 	/// <param name="hide">Train and map normally but render no axis.</param>
+	/// <param name="titles">Break-title formatter for a second label line per category — rendered in the axis-title band on cartesian axes, stacked beneath each break label under polar coordinates; null renders no titles.</param>
 	public static PlotContext<T, TX, TY> Scale_X_Discrete<T, TX, TY>(
 	   this PlotContext<T, TX, TY> context,
 	   (TX? min, TX? max)? limits = null,
 	   (double minMult, double minAdd, double maxMult, double maxAdd)? expand = null,
 	   IFormatter<TX>? formatter = null,
 	   double offset = 0.0,
-	   bool hide = false)
+	   bool hide = false,
+	   IFormatter<TX>? titles = null)
 	   where TX : struct
 	   where TY : struct
 	{
-		context.Positions.X.Factory = () => new DiscretePosition<TX>(null, limits, expand, formatter, offset, hide);
+		context.Positions.X.Factory = () => new DiscretePosition<TX>(null, limits, expand, formatter, offset, hide, titles);
 
 		return context;
 	}
