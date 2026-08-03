@@ -1,7 +1,5 @@
 <Project>
 
-	<!-- Shared across every project in the repo. Package *versions* stay inline
-	     per .csproj by design — this file carries properties only, not CPM. -->
 	<PropertyGroup>
 		<TargetFramework>net11.0</TargetFramework>
 		<LangVersion>preview</LangVersion>
@@ -13,17 +11,17 @@
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
-	<!-- NuGet metadata shared by the packable projects (GGNet, GGNet.Headless),
-	     which opt in with IsPackable. PackageDescription stays per-project —
-	     the two genuinely differ. -->
 	<PropertyGroup>
 		<Version>2.0.0-beta.0.1</Version>
 		<Authors>Pablo Belin</Authors>
 		<Title>GG.Net Data Visualization</Title>
-		<Copyright>Copyright (c) 2020-2022 Pablo Belin</Copyright>
+		<Copyright>Copyright (c) 2020-2026 Pablo Belin</Copyright>
 		<Description>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</Description>
 		<PackageTags>plotting;plot;plots;charting;chart;charts;visualization;ML.Net;csharp;fsharp;blazor;geospacial</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/pablofrommars/GGNet</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/pablofrommars/GGNet</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 
 </Project>

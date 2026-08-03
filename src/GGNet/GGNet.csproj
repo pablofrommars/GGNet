@@ -3,7 +3,12 @@
     <PropertyGroup>
         <IsPackable>true</IsPackable>
         <PackageDescription>GG.Net lets Data Scientists and Developers create flexible charts for .Net in C# and F#</PackageDescription>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="../../README.md" Pack="true" PackagePath="/" />
+    </ItemGroup>
 
     <ItemGroup>
         <InternalsVisibleTo Include="GGNet.Headless" />

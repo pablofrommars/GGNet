@@ -8,6 +8,31 @@ Taking its inspiration from the highly popular [ggpplot2](https://ggplot2.tidyve
 
 [Learn more about GG.Net](https://pablofrommars.github.io/)
 
+## Install
+
+`2.0` builds publish to **GitHub Packages**. That feed requires authentication even for public packages, so add a `nuget.config` next to your solution with a [personal access token](https://github.com/settings/tokens) carrying the `read:packages` scope:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+	<packageSources>
+		<add key="ggnet" value="https://nuget.pkg.github.com/pablofrommars/index.json" />
+	</packageSources>
+	<packageSourceCredentials>
+		<ggnet>
+			<add key="Username" value="USERNAME" />
+			<add key="ClearTextPassword" value="TOKEN" />
+		</ggnet>
+	</packageSourceCredentials>
+</configuration>
+```
+
+```
+dotnet add package GGNet --prerelease
+```
+
+The `1.4.0` release remains on [nuget.org](https://www.nuget.org/packages/GGNet/1.4.0).
+
 ## The DSL
 
 A plot is one fluent chain: `PlotContext.Build(source, x, y)` establishes the data source and default selectors, each `Geom_*` call adds a layer configured in place, `Scale_*` calls shape the axes and legends, and `.Style()` finishes the plot.
