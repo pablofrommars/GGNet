@@ -1,6 +1,11 @@
 <Project>
 
 	<PropertyGroup>
+		<BaseIntermediateOutputPath>obj/</BaseIntermediateOutputPath>
+	</PropertyGroup>
+
+
+	<PropertyGroup>
 		<TargetFramework>net11.0</TargetFramework>
 		<LangVersion>preview</LangVersion>
 		<Nullable>enable</Nullable>
