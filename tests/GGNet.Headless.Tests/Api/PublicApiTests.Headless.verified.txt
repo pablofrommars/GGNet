@@ -1,3 +1,2 @@
 ﻿GGNet.Headless.Host
 GGNet.Headless.IPlotContextExtensions
-GGNet.Headless.RenderedComponent

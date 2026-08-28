@@ -46,7 +46,22 @@ public static string Attr(FormattableString value) => FormattableString.Invarian
 
 `ThemeCss.SelfContained` loads the embedded theme, re-roots `.ggnet` selectors onto `svg` (`css.Replace(".ggnet", "svg")`), and throws `GGNetUserException` for an unbundled theme.
 
-Rendering without a browser: `Host` builds an empty `ServiceCollection` and creates a fresh `HeadlessRenderer` **per render** (Blazor renderers are single-threaded). `SVGRenderer` walks the `RenderTreeFrame`s directly, finds the `<svg>` element, strips the Blazor scoped-CSS `b-…` marker attributes (regex), and serializes **only** the svg subtree (the surrounding div + loading indicator belong to the interactive experience). It carries `[SuppressMessage("...", "BL0006")]` because it touches RenderTree types; the self-closing element set is `line, circle, rect, path, stop`.
+Rendering without a browser is two stages: **render, then extract.**
+
+`Host` builds an empty `ServiceCollection` once and creates a fresh `HtmlRenderer` **per export** (Blazor renderers are single-threaded), renders inside `renderer.Dispatcher.InvokeAsync`, reads `ToHtmlString()`, and disposes the renderer. The parameter set comes from `IPlotContextExtensions.Parameters` and names `RenderMode.Static` explicitly: `Plot.RenderMode` is `required`, but component activation does not enforce `required`, so an unnamed render mode silently exports as `Interactive` and spins up that handler's refresh machinery. `IPlotContextExtensionsTests` pins the set.
+
+`SvgExtractor` turns that HTML into pure SVG. The renderer's output is **not** XML — `plot.razor.css` gives every `Plot.razor` element a bare `b-…` scoped-CSS attribute — so extraction parses it with **AngleSharp** (an inline `PackageReference` on `GGNet.Headless`) rather than a regex or `XDocument`. It selects the chart `svg` structurally, as the component root's own `svg` child; the loading indicator's `svg` is nested inside `div.spinner` and never matches. A component output with no chart `svg` throws `GGNetInternalException`.
+
+Serialization is byte-defined, and the gallery goldens are pinned to exactly these rules:
+
+- a child element is preceded by a newline and one tab per depth, **unless** the preceding sibling output was text;
+- an element closes on its own line when its content begins with an element, and inline when it begins with text (`<text class="title">` versus `<text class="x-title">x <tspan…>`);
+- an empty element in the set `line, circle, rect, path, stop` self-closes; every other empty element writes an open/close pair (`<defs></defs>`);
+- `b-…` attributes and whitespace-only text nodes are dropped;
+- a content text node is trimmed at its start when it is the first child and at its end when it is the last, and written verbatim otherwise;
+- text and attribute values are escaped with `SecurityElement.Escape`, matching `Markdown.Text` — so mixed-content labels round-trip their `&apos;`/`&quot;`/`&amp;`/`&lt;` entities unchanged.
+
+`SvgExtractorTests` pins every rule above; `GalleryTests.MarkdownTitle` pins the mixed-content shape end to end.
 
 ---
 

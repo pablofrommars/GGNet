@@ -1,6 +1,5 @@
-﻿namespace GGNet.Headless;
+namespace GGNet.Headless;
 
-[SuppressMessage("Usage", "BL0006:Do not use RenderTree types", Justification = "GGNet Headless")]
 public sealed class Host
 {
 	private readonly ServiceCollection serviceCollection = new();
@@ -14,23 +13,19 @@ public sealed class Host
 
 	internal async Task RenderAsync(Type type, TextWriter writer, IDictionary<string, object?>? parameters = null)
 	{
-		// Blazor renderers are single-threaded: attaching root components and reading
-		// render trees must not interleave across renders. A renderer per render keeps
-		// concurrent renders isolated; the (empty) service provider stays shared.
-		var renderer = new HeadlessRenderer(provider.Value, new NullLoggerFactory());
+		// Blazor renderers are single-threaded: rendering and reading the result
+		// must not interleave across exports. A renderer per export keeps
+		// concurrent exports isolated; the (empty) service provider stays shared.
+		await using var renderer = new HtmlRenderer(provider.Value, NullLoggerFactory.Instance);
 
-		try
+		var html = await renderer.Dispatcher.InvokeAsync(async () =>
 		{
-			var component = new RenderedComponent(renderer);
+			var component = await renderer.RenderComponentAsync(type, parameters is null ? ParameterView.Empty : ParameterView.FromDictionary(parameters));
 
-			await component.RenderAsync(type, parameters is null ? ParameterView.Empty : ParameterView.FromDictionary(parameters));
+			return component.ToHtmlString();
+		});
 
-			component.WriteHTML(writer);
-		}
-		finally
-		{
-			await renderer.DisposeAsync();
-		}
+		SvgExtractor.Write(html, writer);
 	}
 
 	private static readonly Lazy<Host> lazy = new(() => new());

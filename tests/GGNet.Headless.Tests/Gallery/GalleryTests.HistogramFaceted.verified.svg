@@ -3,7 +3,7 @@
 	<clipPath id="ggID">
 		<rect x="0" y="0" width="720" height="576" />
 	</clipPath>
-	<rect class="plot" width="100%" height="100%"></rect>
+	<rect class="plot" width="100%" height="100%" />
 	<defs>
 		<clipPath id="ggID">
 			<rect x="0" y="0" width="720" height="278" />

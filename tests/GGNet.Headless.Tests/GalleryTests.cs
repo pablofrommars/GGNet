@@ -113,6 +113,20 @@ public class GalleryTests
 	public Task Bar()
 		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Bar().Style());
 
+	[Fact]
+	public Task MarkdownTitle()
+		// Markdown labels are the only place the export emits a text element whose
+		// children interleave text and tspans, and the only place its entities come
+		// from: the golden pins that mixed-content shape in every label slot.
+		=> VerifyPlot(PlotContext.Build(xy[..3], i => i.X, i => i.Y)
+			.Title("**Bold** start, *italic* middle, ~sub~ and ^sup^ end's \"quote\" & <amp>")
+			.SubTitle("plain subtitle")
+			.Caption("caption with **bold** end")
+			.XLab("x ~2~")
+			.YLab("y ^2^")
+			.Geom_Line()
+			.Style());
+
 	private sealed record Reading(double Value, double Tank);
 
 	private static readonly Reading[] readings =

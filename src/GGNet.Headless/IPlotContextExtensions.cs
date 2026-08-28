@@ -2,15 +2,20 @@
 
 public static class IPlotContextExtensions
 {
+	// The export is a one-shot render with no interactivity to schedule, so it
+	// names its render mode rather than inheriting the parameter's default.
+	internal static Dictionary<string, object?> Parameters(IPlotContext context, double width, double height, string theme) => new()
+	{
+		["Context"] = context,
+		["Width"] = width,
+		["Height"] = height,
+		["Theme"] = theme,
+		["RenderMode"] = RenderMode.Static
+	};
+
 	private static Task RenderAsync(IPlotContext context, TextWriter writer, double width = 720, double height = 576, string theme = "default")
 	{
-		return Host.Instance.RenderAsync(context.PlotType, writer, new Dictionary<string, object?>
-		{
-			["Context"] = context,
-			["Width"] = width,
-			["Height"] = height,
-			["Theme"] = theme
-		});
+		return Host.Instance.RenderAsync(context.PlotType, writer, Parameters(context, width, height, theme));
 	}
 
 	/// <summary>Renders the plot to a file as pure SVG.</summary>

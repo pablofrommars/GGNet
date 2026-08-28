@@ -1,5 +1,3 @@
-using GGNet.Exceptions;
-
 namespace GGNet.Headless;
 
 // Produces the embeddable form of a bundled theme for self-contained export:

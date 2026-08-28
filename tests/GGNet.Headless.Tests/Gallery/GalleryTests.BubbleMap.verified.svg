@@ -3,7 +3,7 @@
 	<clipPath id="ggID">
 		<rect x="0" y="0" width="720" height="576" />
 	</clipPath>
-	<rect class="plot" width="100%" height="100%"></rect>
+	<rect class="plot" width="100%" height="100%" />
 	<circle cx="694" cy="251.20405107093438" r="4" stroke-width="0.71" stroke="inherit" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
 	<text class="legend-label" x="710" y="254.20405107093438" text-anchor="start" font-size="0.75em" clip-path="url(#ggID)">2</text>
 	<circle cx="694" cy="268.2979055477936" r="7.09385447685924" stroke-width="0.71" stroke="inherit" stroke-opacity="1" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
