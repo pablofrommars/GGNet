@@ -88,15 +88,111 @@
 			"command": "dotnet",
 			"type": "process",
 			"args": [
-				"nuget", "push", "${input:package}",
+				"nuget",
+				"push",
+				"${input:package}",
 				"--skip-duplicate",
-				"--api-key", "${env:NUGET_API_KEY}",
-				"--source", "https://api.nuget.org/v3/index.json"
+				"--api-key",
+				"${env:NUGET_API_KEY}",
+				"--source",
+				"https://api.nuget.org/v3/index.json"
 			],
 			"options": {
 				"cwd": "packages"
 			},
 			"problemMatcher": "$msCompile"
+		},
+		{
+			"label": "ggnet-git: status",
+			"type": "shell",
+			"command": "${workspaceFolder}/.vscode/scripts/git-flow.sh",
+			"args": [
+				"status"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "ggnet-git: doctor",
+			"type": "shell",
+			"command": "${workspaceFolder}/.vscode/scripts/git-flow.sh",
+			"args": [
+				"doctor"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "ggnet-git: start agent task",
+			"type": "shell",
+			"command": "${workspaceFolder}/.vscode/scripts/git-flow.sh",
+			"args": [
+				"agent-start",
+				"${input:branchName}"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "ggnet-git: cleanup task (dry run)",
+			"type": "shell",
+			"command": "${workspaceFolder}/.vscode/scripts/git-flow.sh",
+			"args": [
+				"cleanup"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "ggnet-git: refresh from parent",
+			"type": "shell",
+			"command": "${workspaceFolder}/.vscode/scripts/git-flow.sh",
+			"args": [
+				"refresh"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "ggnet-git: squash task commits",
+			"type": "shell",
+			"command": "${workspaceFolder}/.vscode/scripts/git-flow.sh",
+			"args": [
+				"squash"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "ggnet-git: merge directly to main",
+			"type": "shell",
+			"command": "${workspaceFolder}/.vscode/scripts/git-flow.sh",
+			"args": [
+				"merge"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
 		}
 	],
 	"inputs": [
@@ -105,6 +201,11 @@
 			"type": "promptString",
 			"description": "Package file(s)",
 			"default": "*.nupkg"
+		},
+		{
+			"id": "branchName",
+			"type": "promptString",
+			"description": "Branch name (e.g. ABC-123-add-widget)"
 		}
 	]
 }
