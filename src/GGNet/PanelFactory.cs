@@ -10,8 +10,8 @@ public sealed class PanelFactory<T, TX, TY>(PlotContext<T, TX, TY> context, doub
 {
 	private readonly List<Func<Data.Panel<T, TX, TY>, Facet<T>?, IGeom>> geoms = [];
 
-	private readonly double width = width;
-	private readonly double height = height;
+	private readonly double defaultWidth = width;
+	private readonly double defaultHeight = height;
 	private readonly Func<MouseEventArgs, Task>? onClick = onClick;
 
 	internal PlotContext<T, TX, TY> Context { get; } = context;
@@ -26,8 +26,8 @@ public sealed class PanelFactory<T, TX, TY>(PlotContext<T, TX, TY> context, doub
 	{
 		var panel = new Data.Panel<T, TX, TY>(coord,
 		  Context,
-		  width ?? this.width,
-		  height ?? this.height,
+		  width ?? defaultWidth,
+		  height ?? defaultHeight,
 		  onClick
 		);
 

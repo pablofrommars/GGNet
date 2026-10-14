@@ -1,0 +1,258 @@
+prefix_rule(
+    pattern = ["dotnet", ["build", "test", "restore", "clean", "format", "list", "sln"]],
+    decision = "allow",
+    justification = "Routine .NET solution inspection, build, and test commands are allowed for this repository.",
+    match = [
+        "dotnet build GGNet.slnx",
+        "dotnet test",
+        "dotnet restore GGNet.slnx",
+        "dotnet format",
+    ],
+    not_match = [
+        "dotnet publish",
+        "dotnet nuget push package.nupkg",
+    ],
+)
+
+prefix_rule(
+    pattern = ["dotnet", "run"],
+    decision = "allow",
+    justification = "Running local .NET projects is part of normal development for this repository.",
+    match = [
+        "dotnet run --project src/GGNet.Demo",
+    ],
+)
+
+prefix_rule(
+    pattern = ["dotnet", ["new", "add", "remove", "tool", "pack", "ef", "watch", "user-secrets", "workload"]],
+    decision = "prompt",
+    justification = "These .NET commands can change project shape, install tools, run long-lived processes, or affect local secrets and should be confirmed.",
+    match = [
+        "dotnet add src/GGNet.Headless package Example",
+        "dotnet tool restore",
+        "dotnet ef database update",
+        "dotnet watch",
+        "dotnet user-secrets list",
+    ],
+)
+
+prefix_rule(
+    pattern = ["dotnet", "publish"],
+    decision = "prompt",
+    justification = "Publishing can create deployment artifacts and should be confirmed.",
+    match = [
+        "dotnet publish src/GGNet.Demo",
+    ],
+)
+
+prefix_rule(
+    pattern = ["dotnet", "nuget", "push"],
+    decision = "prompt",
+    justification = "Publishing packages is externally visible and should be confirmed.",
+    match = [
+        "dotnet nuget push package.nupkg",
+    ],
+)
+
+prefix_rule(
+    pattern = ["dotnet", "nuget", "delete"],
+    decision = "forbidden",
+    justification = "Deleting packages is destructive; do it manually outside Codex.",
+    match = [
+        "dotnet nuget delete Package 1.0.0",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", ["status", "diff", "log", "show"]],
+    decision = "allow",
+    justification = "Read-only git inspection is allowed.",
+    match = [
+        "git status --short",
+        "git diff",
+        "git log --oneline",
+        "git show HEAD",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", ["branch", "remote", "add", "commit", "stash", "switch", "checkout", "restore", "fetch", "pull", "merge", "rebase", "cherry-pick", "tag"]],
+    decision = "prompt",
+    justification = "Git commands that change local state or fetch remote state should be confirmed.",
+    match = [
+        "git branch feature",
+        "git remote add upstream https://example.invalid/repo.git",
+        "git add src/GGNet/GGNet.csproj",
+        "git commit -m update",
+        "git fetch origin",
+        "git rebase main",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push"],
+    decision = "prompt",
+    justification = "Pushing publishes repository changes and should be confirmed.",
+    match = [
+        "git push",
+        "git push origin feature",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "--force"],
+    decision = "forbidden",
+    justification = "Force-push is destructive; do it manually outside Codex.",
+    match = [
+        "git push --force",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "push", "-f"],
+    decision = "forbidden",
+    justification = "Force-push is destructive; do it manually outside Codex.",
+    match = [
+        "git push -f",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Hard reset discards local work; do it manually outside Codex.",
+    match = [
+        "git reset --hard",
+    ],
+)
+
+prefix_rule(
+    pattern = ["git", "clean"],
+    decision = "prompt",
+    justification = "Cleaning removes untracked files and should be confirmed.",
+    match = [
+        "git clean -fd",
+    ],
+)
+
+prefix_rule(
+    pattern = ["gh", ["pr", "issue", "repo", "run", "workflow"]],
+    decision = "prompt",
+    justification = "GitHub CLI commands can read or change remote state and should be confirmed.",
+    match = [
+        "gh pr view 123",
+        "gh issue list",
+        "gh run view 123 --log",
+    ],
+)
+
+prefix_rule(
+    pattern = ["gh", "pr", "merge"],
+    decision = "prompt",
+    justification = "Merging pull requests is externally visible and should be confirmed.",
+    match = [
+        "gh pr merge 123",
+    ],
+)
+
+prefix_rule(
+    pattern = ["gh", "release"],
+    decision = "prompt",
+    justification = "Creating or modifying releases is externally visible and should be confirmed.",
+    match = [
+        "gh release create v1.0.0",
+    ],
+)
+
+prefix_rule(
+    pattern = [["ls", "cat", "rg", "grep", "find", "tree", "head", "tail", "wc", "pwd", "which", "diff"]],
+    decision = "allow",
+    justification = "Local read-only inspection commands are allowed.",
+    match = [
+        "rg Codex src",
+        "find src -name '*.cs'",
+        "wc -l README.md",
+    ],
+)
+
+prefix_rule(
+    pattern = [["sed", "awk", "jq", "yq"]],
+    decision = "allow",
+    justification = "Local text processing commands are allowed.",
+    match = [
+        "sed -n 1,40p README.md",
+        "jq . config.json",
+    ],
+)
+
+prefix_rule(
+    pattern = [["mkdir", "touch", "cp", "mv"]],
+    decision = "prompt",
+    justification = "Filesystem mutation commands should be confirmed unless handled by Codex file-edit tools.",
+    match = [
+        "mkdir generated",
+        "cp a b",
+        "mv old new",
+    ],
+)
+
+prefix_rule(
+    pattern = ["rm"],
+    decision = "prompt",
+    justification = "Removing files should be confirmed.",
+    match = [
+        "rm temp.txt",
+    ],
+)
+
+prefix_rule(
+    pattern = ["rm", "-rf"],
+    decision = "forbidden",
+    justification = "Recursive force removal is destructive; do it manually outside Codex.",
+    match = [
+        "rm -rf out",
+        "rm -rf /tmp/example",
+    ],
+)
+
+prefix_rule(
+    pattern = [["npm", "npx", "pnpm", "node"]],
+    decision = "prompt",
+    justification = "Node tooling can execute package scripts or download code and should be confirmed.",
+    match = [
+        "npm install",
+        "npm run build",
+        "npx playwright install",
+    ],
+)
+
+prefix_rule(
+    pattern = [["curl", "http"]],
+    decision = "prompt",
+    justification = "Network calls should be confirmed unless they are already allowed by the active permission profile.",
+    match = [
+        "curl https://learn.microsoft.com",
+        "http GET https://api.github.com",
+    ],
+)
+
+prefix_rule(
+    pattern = [["brew", "docker", "podman", "az", "aws", "kubectl", "terraform"]],
+    decision = "prompt",
+    justification = "System, cloud, container, and infrastructure tools can affect external resources and should be confirmed.",
+    match = [
+        "docker push image",
+        "az account show",
+        "kubectl get pods",
+        "terraform apply",
+    ],
+)
+
+prefix_rule(
+    pattern = ["sudo"],
+    decision = "forbidden",
+    justification = "Do not run elevated commands from Codex.",
+    match = [
+        "sudo dotnet workload install wasm-tools",
+    ],
+)

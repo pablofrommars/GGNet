@@ -90,7 +90,7 @@ The default is server-side. `InteractiveRenderModeHandler` runs a `System.Thread
 
 `PanelInterop` (`Components/PanelInterop.cs`) is the model for any future module:
 
-- `internal sealed class` owning the module lifecycle, **one instance per interactive panel**, with **no DI registration** — the component constructs it around the framework-provided `IJSRuntime`, so consumers configure nothing. (This is where the per-concern-module-registered-`AddScoped` pattern from other codebases does *not* apply.)
+- `internal sealed class` owning the module lifecycle, **one instance per interactive panel**, with **no DI registration** — the component constructs it around the framework-provided `IJSRuntime`, so consumers configure nothing. **Exception:** tsu's per-concern module registered with `AddScoped` does *not* apply — one JS module without DI is GGNet's rule.
 - Lazy import: `module ??= await runtime.InvokeAsync<IJSObjectReference>("import", ModulePath)`, from `OnAfterRenderAsync(firstRender)`.
 - **Batching rule: one `initialize` call carries every feature flag** (`PanelInteropOptions`, serialized camelCase). Do not add a second round trip per feature.
 - JS → .NET: `DotNetObjectReference.Create(this)` + `[JSInvokable]` methods, each named in a `[DynamicDependency(nameof(...))]` on the component so trimming preserves it. Dispose the reference alongside the module.
@@ -99,7 +99,7 @@ The default is server-side. `InteractiveRenderModeHandler` runs a `System.Thread
 
 ### Adding browser-dependent behaviour
 
-Reaching for the browser is still a deliberate architectural decision tracked in `ROADMAP.md`, not a default. The tiers that landed are wheel-zoom, reset, crosshair + readout, drag-pan, cursor-glued tooltips, auto-fit y, and the imperative view API. The open ones — legend toggle, the anchor-model/shared-series tooltip, rubber-band selection — each carry a design note and a trigger. Extend the existing module and its single `initialize` payload rather than adding a second module.
+Reaching for the browser is still a deliberate architectural decision, not a default. The tiers that landed are wheel-zoom, reset, crosshair + readout, drag-pan, cursor-glued tooltips, auto-fit y, and the imperative view API. The open ones — legend toggle, the anchor-model/shared-series tooltip, rubber-band selection — each carry a design note and a trigger. Extend the existing module and its single `initialize` payload rather than adding a second module.
 
 ---
 

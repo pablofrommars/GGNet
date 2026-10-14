@@ -6,14 +6,14 @@ using GGNet.Formats;
 
 internal class InstantPosition : Position<Instant>
 {
-	private readonly IFormatter<Instant> formatter;
+	private readonly IFormatter<Instant> labelFormatter;
 
 	public InstantPosition(Instant? start, Instant? end, IFormatter<Instant>? formatter = null)
 	  : base(null, (0, 0, 0, 0))
 	{
 		Limits = (start, end);
 
-		this.formatter = formatter ?? new InstantFormatter("H:mm:ss");
+		labelFormatter = formatter ?? new InstantFormatter("H:mm:ss");
 	}
 
 	public override Guide Guide => Guide.None;
@@ -36,7 +36,6 @@ internal class InstantPosition : Position<Instant>
 
 		if (CommitViewRange())
 		{
-			// Breaks follow the windowed range, not the trained extent.
 			start = Instant.FromUnixTimeMilliseconds((long)Range.min);
 			end = Instant.FromUnixTimeMilliseconds((long)Range.max);
 		}
@@ -62,7 +61,7 @@ internal class InstantPosition : Position<Instant>
 
 		for (var i = 0; i < labels.Length; i++)
 		{
-			labels[i] = (breaks[i], formatter.Format(Instant.FromUnixTimeMilliseconds((long)breaks[i])));
+			labels[i] = (breaks[i], labelFormatter.Format(Instant.FromUnixTimeMilliseconds((long)breaks[i])));
 		}
 
 		Labels = labels;
@@ -72,5 +71,5 @@ internal class InstantPosition : Position<Instant>
 
 	public override Instant? Unmap(double value) => Instant.FromUnixTimeMilliseconds((long)value);
 
-	public override string? Label(Instant value) => formatter.Format(value);
+	public override string? Label(Instant value) => labelFormatter.Format(value);
 }

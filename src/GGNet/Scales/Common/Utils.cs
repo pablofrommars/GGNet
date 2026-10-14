@@ -20,7 +20,6 @@ internal static class Utils
 
 		var m = (int)Ceiling((end - start) / by);
 
-		// One minor break per step except every n-th, which lands on a major break.
 		var minor = new double[m - (m + n - 1) / n];
 
 		var j = 0;

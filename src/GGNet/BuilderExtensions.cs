@@ -559,8 +559,6 @@ public static partial class BuilderExtensions
 		return context;
 	}
 
-	// Geoms are constructed with the panel's own axis types, so binding is fully typed.
-
 	internal static PanelFactory<T1, TX1, TY1> AddTyped<T1, TX1, TY1, T2>(this PanelFactory<T1, TX1, TY1> panel, Func<Geom<T2, TX1, TY1>> builder)
 	  where TX1 : struct
 	  where TY1 : struct

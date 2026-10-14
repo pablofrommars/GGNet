@@ -70,10 +70,10 @@ Serialization is byte-defined, and the gallery goldens are pinned to exactly the
 Render-touching output is pinned byte-for-byte. Wiring in `tests/GGNet.Headless.Tests/`:
 
 - **`VerifyConfig.cs`** (`[ModuleInitializer]`): a scrubber replaces nondeterministic plot ids `gg…` → `ggID` via a regex with a negative lookahead that preserves `--ggnet-*` variables. `Verifier.DerivePathInfo` routes `PublicApiTests` snapshots to `Api/` and everything else to `Gallery/`.
-- **`GalleryTests.VerifyPlot`**: `var svg = await plot.AsStringAsync(); XDocument.Parse(svg); await Verifier.Verify(svg, extension: "svg");`. `XDocument.Parse` additionally asserts the output is well-formed pure SVG (not an HTML fragment). One `[Fact]` per geom/scenario, one snapshot each — `Gallery/GalleryTests.<Name>.verified.svg` (~40 files).
-- **`PublicApiTests`** pins the exported-type manifest: `assembly.GetExportedTypes()` ordered, verified as `.txt` (`Api/PublicApiTests.GGNet.verified.txt`, `…Headless.verified.txt`). This is the deliberate public-surface lock (the 74-type cut in `ROADMAP.md`).
+- **`GalleryTests`**: each fact arranges a plot, acts with `var svg = await plot.AsStringAsync();`, and asserts through `VerifySvg(svg)` — `XDocument.Parse(svg); await Verifier.Verify(svg, extension: "svg");`. `XDocument.Parse` additionally asserts the output is well-formed pure SVG (not an HTML fragment). One `[Fact]` per geom/scenario, one snapshot each — `Gallery/GalleryTests.<Name>.verified.svg` (~40 files).
+- **`PublicApiTests`** pins the exported-type manifest: `assembly.GetExportedTypes()` ordered, verified as `.txt` (`Api/PublicApiTests.GGNet.verified.txt`, `…Headless.verified.txt`). This is the deliberate public-surface lock: widening it is an API decision, not a test fix.
 
-**Re-pinning is a deliberate, eyeballed decision — never a reflex.** A failing `Verify` writes `*.received.*`; accept it into `*.verified.*` only after eyeballing the diff (`ROADMAP.md` "Operating conventions"). CI surfaces received files via `actions/upload-artifact` on failure. If a change alters the SVG, expect gallery churn and confirm each diff is intended.
+**Re-pinning is a deliberate, eyeballed decision — never a reflex.** A failing `Verify` writes `*.received.*`; accept it into `*.verified.*` only after eyeballing the diff. CI surfaces received files via `actions/upload-artifact` on failure. If a change alters the SVG, expect gallery churn and confirm each diff is intended.
 
 ---
 

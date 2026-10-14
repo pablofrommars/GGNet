@@ -2,13 +2,13 @@ namespace GGNet;
 
 public sealed class StatSource<T> : IReadOnlyList<T>, IStatSource
 {
-	private readonly Func<List<T>> compute;
+	private readonly Func<List<T>> recompute;
 
 	private List<T> items;
 
 	internal StatSource(Func<List<T>> compute)
 	{
-		this.compute = compute;
+		recompute = compute;
 
 		items = compute();
 	}
@@ -17,7 +17,7 @@ public sealed class StatSource<T> : IReadOnlyList<T>, IStatSource
 
 	public T this[int i] => items[i];
 
-	public void Recompute() => items = compute();
+	public void Recompute() => items = recompute();
 
 	public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
 

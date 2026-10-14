@@ -1,6 +1,6 @@
 namespace GGNet.Headless.Tests;
 
-// The imperative view commands end to end through headless export (Block 4):
+// The imperative view commands end to end through headless export:
 // programmatic windows need no component and no prior render — the
 // server-side "zoom to / show last" export path.
 public class ViewCommandTests

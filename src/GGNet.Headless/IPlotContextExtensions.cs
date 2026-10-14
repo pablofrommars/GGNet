@@ -2,8 +2,6 @@
 
 public static class IPlotContextExtensions
 {
-	// The export is a one-shot render with no interactivity to schedule, so it
-	// names its render mode rather than inheriting the parameter's default.
 	internal static Dictionary<string, object?> Parameters(IPlotContext context, double width, double height, string theme) => new()
 	{
 		["Context"] = context,

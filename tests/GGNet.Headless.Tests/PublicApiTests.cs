@@ -4,19 +4,41 @@ namespace GGNet.Headless.Tests;
 // snapshot. A change here is a deliberate surface decision, not an accident.
 public class PublicApiTests
 {
-	private static Task VerifyExportedTypes(Assembly assembly)
-	{
-		var manifest = string.Join('\n', assembly
+	private static string Manifest(Assembly assembly)
+		=> string.Join('\n', assembly
 			.GetExportedTypes()
 			.Select(type => type.FullName)
 			.OrderBy(name => name, StringComparer.Ordinal));
 
-		return Verifier.Verify(manifest, extension: "txt");
+	[Fact]
+	public async Task GGNet()
+	{
+		// Arrange
+
+		var assembly = typeof(PlotContext).Assembly;
+
+		// Act
+
+		var manifest = Manifest(assembly);
+
+		// Assert
+
+		await Verifier.Verify(manifest, extension: "txt");
 	}
 
 	[Fact]
-	public Task GGNet() => VerifyExportedTypes(typeof(PlotContext).Assembly);
+	public async Task Headless()
+	{
+		// Arrange
 
-	[Fact]
-	public Task Headless() => VerifyExportedTypes(typeof(Host).Assembly);
+		var assembly = typeof(Host).Assembly;
+
+		// Act
+
+		var manifest = Manifest(assembly);
+
+		// Assert
+
+		await Verifier.Verify(manifest, extension: "txt");
+	}
 }

@@ -27,103 +27,6 @@ internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 			Low = low,
 			Close = close
 		};
-
-		/*
-		var aes = new Elements.Line
-		{
-			Width = width,
-			Color = color,
-			Alpha = alpha,
-			LineType = LineType.Solid
-		};
-
-		mapping = new Mapping
-		{
-			Open = open,
-			High = high,
-			Low = low,
-			Close = close
-		};
-
-		vstrip = new VStrip<T>(
-			panel,
-			x: o => panel.Data.Scales.X.Map(o) - 0.5,
-			y: mapping.Close,
-			width: o => 1.0,
-			layer: Layer)
-		{
-			OnMouseOver = (item, _) =>
-			{
-				if (vtrack)
-				{
-					Panel.Component.Plot.VTrack.Show(panel.Data.Scales.X.Map(item));
-				}
-
-				if (ylabel)
-				{
-					Panel.Component.YLabel.Show(mapping.Close(item));
-				}
-
-				return Task.CompletedTask;
-			},
-			OnMouseOut = (item, _) =>
-			{
-				if (vtrack)
-				{
-					Panel.Component.Plot.VTrack.Hide();
-				}
-
-				if (ylabel)
-				{
-					Panel.Component.YLabel.Hide();
-				}
-
-				return Task.CompletedTask;
-			}
-		};
-
-		this.open = new Segment<T>(
-			panel,
-			x: o => panel.Data.Scales.X.Map(o) - 0.5,
-			xend: o => panel.Data.Scales.X.Map(o),
-			y: mapping.Open,
-			yend: mapping.Open,
-			layer: Layer)
-		{
-			OnClick = onclick,
-			OnMouseOver = OnMouseOver,
-			OnMouseOut = OnMouseOut,
-			Aesthetic = aes
-		};
-
-		range = new Segment<T>(
-			panel,
-			x: o => panel.Data.Scales.X.Map(o),
-			xend: o => panel.Data.Scales.X.Map(o),
-			y: mapping.High,
-			yend: mapping.Low,
-			layer: Layer)
-		{
-			OnClick = onclick,
-			OnMouseOver = OnMouseOver,
-			OnMouseOut = OnMouseOut,
-			Aesthetic = aes
-		};
-
-		this.close = new Segment<T>(
-			panel,
-			x: o => panel.Data.Scales.X.Map(o),
-			xend: o => panel.Data.Scales.X.Map(o) + 0.5,
-			y: mapping.Close,
-			yend: mapping.Close,
-			layer: Layer)
-		{
-			OnClick = onclick,
-			OnMouseOver = OnMouseOver,
-			OnMouseOut = OnMouseOut,
-			Aesthetic = aes
-		};
-		*/
 	}
 
 	public Selectors<T, TX, TY> Selectors { get; }
@@ -230,12 +133,6 @@ internal sealed class OHLC<T, TX, TY> : Geom<T, TX, TY>
 		});
 
 		Positions.X.Position.Shape(x - 0.5, x + 0.5);
-		/*
-		Positions.Open.Position.Shape(open, open);
-		Positions.High.Position.Shape(high, high);
-		Positions.Low.Position.Shape(low, low);
-		Positions.Close.Position.Shape(close, close);
-		*/
 		Positions.Close.Position.Shape(low, high);
 	}
 }

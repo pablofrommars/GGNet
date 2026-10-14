@@ -6,7 +6,7 @@ namespace GGNet.Geoms.Map;
 
 internal sealed class Map<T> : Geom<T, double, double>
 {
-	private readonly bool animation;
+	private readonly bool animated;
 
 	public Map(
 	  Source<T> source,
@@ -28,7 +28,7 @@ internal sealed class Map<T> : Geom<T, double, double>
 			Fill = fill
 		};
 
-		this.animation = animation;
+		animated = animation;
 	}
 
 	public Selectors<T> Selectors { get; }
@@ -50,8 +50,6 @@ internal sealed class Map<T> : Geom<T, double, double>
 	{
 		base.Init(panel, facet);
 
-		// Map only trains the panel scales with polygon extents; it never maps items
-		// through selectors, so it holds the scales directly.
 		xscale = panel.X;
 		yscale = panel.Y;
 
@@ -153,7 +151,7 @@ internal sealed class Map<T> : Geom<T, double, double>
 
 		var multi = new MultiPolygon
 		{
-			Classes = animation ? "animate-map" : string.Empty,
+			Classes = animated ? "animate-map" : string.Empty,
 			Polygons = polygons,
 			Aesthetic = new()
 			{

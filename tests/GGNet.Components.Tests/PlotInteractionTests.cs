@@ -1,6 +1,6 @@
 namespace GGNet.Components.Tests;
 
-// Phase 2 — the circuit: mark events, panel clicks, and tooltip hover, driven
+// The circuit: mark events, panel clicks, and tooltip hover, driven
 // through real Blazor events with bUnit. The roadmap's untested triad.
 public class PlotInteractionTests : BunitContext
 {
@@ -115,18 +115,24 @@ public class PlotInteractionTests : BunitContext
 		var cut = Render(context);
 		var circle = cut.Find("circle");
 
-		// Act / Assert
+		// Act
 
-		cut.FindAll("foreignObject").Should().BeEmpty();
+		var beforeHover = cut.FindAll("foreignObject").Count;
 
 		circle.MouseOver();
-		using (new AssertionScope())
-		{
-			cut.FindAll("foreignObject").Should().NotBeEmpty();
-			cut.Markup.Should().Contain("tip");
-		}
+		var whileHovered = cut.FindAll("foreignObject").Count;
+		var hoveredMarkup = cut.Markup;
 
 		circle.MouseOut();
-		cut.FindAll("foreignObject").Should().BeEmpty();
+		var afterMouseOut = cut.FindAll("foreignObject").Count;
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		beforeHover.Should().Be(0);
+		whileHovered.Should().BePositive();
+		hoveredMarkup.Should().Contain("tip");
+		afterMouseOut.Should().Be(0);
 	}
 }

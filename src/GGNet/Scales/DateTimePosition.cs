@@ -60,16 +60,11 @@ internal class DateTimePosition : Position<LocalDateTime>
 			max = key;
 		}
 
-		// Every observed key is retained. Minute sampling used to be interpolated here, forward
-		// of the running maximum, which silently dropped any key that arrived out of order.
 		values.Add(key);
 
 		sampled = false;
 	}
 
-	// The pipeline shapes before it commits — geoms call Map while the scale is still being
-	// read for the first time — so the derived grid is finalized on first read, not at Commit.
-	// Deriving it at Commit left marks on observed-only indices while the axis used sampled ones.
 	private bool sampled;
 
 	private void EnsureSampled()
@@ -84,8 +79,6 @@ internal class DateTimePosition : Position<LocalDateTime>
 		Sample();
 	}
 
-	// One 1-minute grid per observed day, spanning that day's observed extent. Derived from the
-	// sorted buffer at commit time, so the result depends on the data and not on arrival order.
 	private void Sample()
 	{
 		if (values.Count < 2)
@@ -119,7 +112,7 @@ internal class DateTimePosition : Position<LocalDateTime>
 			i = j;
 		}
 
-		// Collected first: the buffer must not be mutated while it is being walked.
+		// INVARIANT: collect first, then mutate — the buffer must not change while it is being walked.
 		for (i = 0; i < samples.Count; i++)
 		{
 			values.Add(samples[i]);
@@ -158,7 +151,6 @@ internal class DateTimePosition : Position<LocalDateTime>
 
 		if (CommitViewRange())
 		{
-			// Snap the break window to the samples inside the view.
 			start = Math.Max(0, (int)Math.Ceiling(Range.min));
 			end = Math.Min(values.Count, (int)Math.Floor(Range.max) + 1);
 		}
@@ -251,7 +243,6 @@ internal class DateTimePosition : Position<LocalDateTime>
 
 	public override string? Label(LocalDateTime value) => readoutPattern.Format(value);
 
-	// Readout formatting only; break labels keep their own day/hour logic.
 	private static readonly LocalDateTimePattern readoutPattern = LocalDateTimePattern.CreateWithInvariantCulture("MMM d HH:mm");
 
 	public override void Clear()

@@ -8,9 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AwesomeAssertions" Version="9.5.0" />
-    <PackageReference Include="ModelContextProtocol" Version="2.0.0" />
-    <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.2" />
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="ModelContextProtocol" />
+    <PackageReference Include="xunit.v3.mtp-v2" />
   </ItemGroup>
 
   <ItemGroup>

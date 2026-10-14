@@ -2,9 +2,9 @@ using GGNet.Scales;
 
 namespace GGNet.Headless.Tests;
 
-// Phase 3 — the persist/clear seam interactivity's runtime view window will rely
-// on (§8c #1): Clear() drops the data-trained bounds but must NOT drop Limits,
-// and Commit honors Limits over the trained data. Position<double> behaviour is
+// The persist/clear seam the runtime view window relies on: Clear() drops the
+// data-trained bounds but must NOT drop Limits, and Commit honors Limits over
+// the trained data. Position<double> behaviour is
 // exercised through Extended; DiscretePosition adds its values-buffer reset.
 public class ScalePersistenceTests
 {
@@ -84,16 +84,21 @@ public class ScalePersistenceTests
 		sut.Train(1);
 		sut.Train(2);
 
-		// Act / Assert
+		// Act
 
-		using var _ = new AssertionScope();
-
-		sut.Map(1).Should().Be(0.0);
-		sut.Map(2).Should().Be(1.0);
+		var (trainedOne, trainedTwo) = (sut.Map(1), sut.Map(2));
 
 		sut.Clear();
 
-		double.IsNaN(sut.Map(1)).Should().BeTrue();
-		double.IsNaN(sut.Map(2)).Should().BeTrue();
+		var (clearedOne, clearedTwo) = (sut.Map(1), sut.Map(2));
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		trainedOne.Should().Be(0.0);
+		trainedTwo.Should().Be(1.0);
+		double.IsNaN(clearedOne).Should().BeTrue();
+		double.IsNaN(clearedTwo).Should().BeTrue();
 	}
 }

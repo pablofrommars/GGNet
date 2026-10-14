@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace GGNet.Components.Tests;
 
-// The imperative view commands (implementation-blocks Block 4): host code
+// The imperative view commands: host code
 // drives the view window through the Plot component's @ref surface; each
 // command mutates context state and re-renders through the handler.
 public class PlotViewCommandTests : BunitContext

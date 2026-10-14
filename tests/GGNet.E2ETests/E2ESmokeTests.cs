@@ -1,6 +1,6 @@
 namespace GGNet.E2ETests;
 
-// The executed-JS smoke layer (implementation-blocks §9 Layer 3): the only
+// The executed-JS smoke layer: the only
 // tests that run the collocated module in a real browser — wheel coordinates
 // against a responsive svg, the drag-pan preview transform, and the cursor-
 // glued popover. Thin by design; behavior details live in bUnit and xUnit.
@@ -48,18 +48,26 @@ public class E2ESmokeTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtur
 		var before = await XLabelsAsync(page);
 		var panel = page.Locator("rect.panel").First;
 
-		// Act / Assert
-
-		// The svg renders responsive (no width attribute): the module converts
+		// Act — the svg renders responsive (no width attribute): the module converts
 		// client px to svg units against the rendered size per event.
+
 		await panel.HoverAsync();
 		await page.Mouse.WheelAsync(0, -300);
 
 		await WaitUntilAsync(async () => await XLabelsAsync(page) != before, "wheel over the panel should window the x axis");
+		var zoomed = await XLabelsAsync(page);
 
 		await panel.DblClickAsync();
 
 		await WaitUntilAsync(async () => await XLabelsAsync(page) == before, "double-click should restore the authored view");
+		var restored = await XLabelsAsync(page);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		zoomed.Should().NotBe(before, "wheel over the panel should window the x axis");
+		restored.Should().Be(before, "double-click should restore the authored view");
 	}
 
 	[Fact]
@@ -81,19 +89,26 @@ public class E2ESmokeTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtur
 		// The marks-only transform target: capture group's direct child.
 		var target = page.Locator("svg > g > g").First;
 
-		// Act / Assert
+		// Act
 
 		await page.Mouse.MoveAsync(cx, cy);
 		await page.Mouse.DownAsync();
 		await page.Mouse.MoveAsync(cx + 120, cy, new() { Steps = 8 });
 
-		(await target.GetAttributeAsync("transform")).Should().NotBeNull("the drag must preview as a client-side transform");
+		var preview = await target.GetAttributeAsync("transform");
 
 		await page.Mouse.UpAsync();
 
 		await WaitUntilAsync(async () => await XLabelsAsync(page) != before, "releasing the drag should commit a window shift");
 
-		(await target.GetAttributeAsync("transform")).Should().BeNull("the preview transform must clear on commit");
+		var committed = await target.GetAttributeAsync("transform");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		preview.Should().NotBeNull("the drag must preview as a client-side transform");
+		committed.Should().BeNull("the preview transform must clear on commit");
 	}
 
 	[Fact]

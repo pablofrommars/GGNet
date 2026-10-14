@@ -14,9 +14,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AwesomeAssertions" Version="9.5.0" />
-        <PackageReference Include="Microsoft.Playwright" Version="1.61.0" />
-        <PackageReference Include="xunit.v3.mtp-v2" Version="3.2.2" />
+        <PackageReference Include="AwesomeAssertions" />
+        <PackageReference Include="Microsoft.Playwright" />
+        <PackageReference Include="xunit.v3.mtp-v2" />
     </ItemGroup>
 
     <ItemGroup>

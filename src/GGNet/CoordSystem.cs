@@ -1,7 +1,8 @@
 namespace GGNet;
 
-// Flags: PlotContext.CoordSystem holds a single value; geoms declare the set they
-// support via IGeom.SupportedCoordSystems.
+/// <summary>
+/// Coordinate systems as flags: a plot holds a single value; each geom declares the set it supports.
+/// </summary>
 [Flags]
 public enum CoordSystem
 {

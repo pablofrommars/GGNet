@@ -4,8 +4,6 @@ namespace GGNet.Palettes;
 
 internal static class Utils
 {
-	// An empty palette is knowable the moment it is supplied, so it is rejected there rather
-	// than surfacing as an index-out-of-range from inside a render pass.
 	public static T[] NonEmpty<T>(T[] palette, string scale)
 		=> palette.Length > 0 ? palette : throw new GGNetUserException($"{scale} requires a palette with at least one value; the supplied palette is empty.");
 

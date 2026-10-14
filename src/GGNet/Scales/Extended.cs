@@ -6,9 +6,9 @@ namespace GGNet.Scales;
 
 internal sealed class Extended : Position<double>
 {
-	private readonly IFormatter<double> formatter;
-	private readonly bool hide;
-	private readonly bool includeMinorBreaks;
+	private readonly IFormatter<double> labelFormatter;
+	private readonly bool hidden;
+	private readonly bool minorBreaks;
 
 	public Extended(ITransformation<double>? transformation = null,
 		(double? min, double? max)? limits = null,
@@ -20,9 +20,9 @@ internal sealed class Extended : Position<double>
 	{
 		Limits = limits ?? (null, null);
 
-		this.formatter = formatter ?? Standard<double>.Instance;
-		this.hide = hide;
-		this.includeMinorBreaks = includeMinorBreaks;
+		labelFormatter = formatter ?? Standard<double>.Instance;
+		hidden = hide;
+		minorBreaks = includeMinorBreaks;
 	}
 
 	public override Guide Guide => Guide.None;
@@ -39,7 +39,7 @@ internal sealed class Extended : Position<double>
 			return;
 		}
 
-		if (hide)
+		if (hidden)
 		{
 			return;
 		}
@@ -52,7 +52,7 @@ internal sealed class Extended : Position<double>
 
 		Breaks = breaks;
 
-		if (includeMinorBreaks)
+		if (minorBreaks)
 		{
 			var minorBreaks = Utils.MinorBreaks(breaks, Range.min, Range.max);
 
@@ -68,7 +68,7 @@ internal sealed class Extended : Position<double>
 
 		for (var i = 0; i < labels.Length; i++)
 		{
-			labels[i] = (breaks[i], formatter.Format(transformation.Inverse(breaks[i])));
+			labels[i] = (breaks[i], labelFormatter.Format(transformation.Inverse(breaks[i])));
 		}
 
 		Labels = labels;
@@ -78,7 +78,7 @@ internal sealed class Extended : Position<double>
 
 	public override double? Unmap(double value) => transformation.Inverse(value);
 
-	public override string? Label(double value) => formatter.Format(value);
+	public override string? Label(double value) => labelFormatter.Format(value);
 
 	public override ITransformation<double> RangeTransformation => transformation;
 }

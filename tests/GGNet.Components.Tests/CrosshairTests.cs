@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace GGNet.Components.Tests;
 
-// The Tier-0 crosshair (implementation-blocks Block 6): invisible hover strips
+// The Tier-0 crosshair: invisible hover strips
 // sample the pointer, the readout snaps through Unmap/Label, and leaving the
 // panel clears it. Emitted only under the Crosshair opt-in.
 public class CrosshairTests : BunitContext
@@ -37,10 +37,15 @@ public class CrosshairTests : BunitContext
 	[Fact]
 	public void StripsEmittedOnlyWithTheCrosshairOptIn()
 	{
-		// Arrange / Act
+		// Arrange
 
-		var without = Render(PointPlot(), new InteractivityOptions());
-		var with = Render(PointPlot(), new InteractivityOptions { Crosshair = true });
+		var plain = new InteractivityOptions();
+		var crosshair = new InteractivityOptions { Crosshair = true };
+
+		// Act
+
+		var without = Render(PointPlot(), plain);
+		var with = Render(PointPlot(), crosshair);
 
 		// Assert
 

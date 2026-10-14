@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace GGNet.Components.Tests;
 
-// Drag-pan (implementation-blocks Block 8): the JS module owns the gesture, so
+// Drag-pan: the JS module owns the gesture, so
 // bUnit verifies the .NET half — interop is initialized only under the Pan
 // opt-in, and the gesture-end callback commits a window shift. The executed-JS
 // half belongs to the deferred Playwright smoke layer.
@@ -59,11 +59,14 @@ public class PanInteropTests : BunitContext
 	[Fact]
 	public void WithoutTheOptInNoInteropHappens()
 	{
-		// Arrange / Act
+		// Arrange — strict JSInterop: an unexpected call would throw during render.
 
-		// Strict JSInterop: an unexpected call would throw during render.
+		var context = PointPlot();
+
+		// Act
+
 		var cut = Render<Plot<P, double, double>>(parameters => parameters
-			.Add(p => p.Context, PointPlot())
+			.Add(p => p.Context, context)
 			.Add(p => p.RenderMode, RenderMode.InteractiveAuto));
 
 		// Assert

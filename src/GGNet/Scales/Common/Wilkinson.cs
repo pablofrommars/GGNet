@@ -70,7 +70,6 @@ internal static class Wilkinson
 
 		if (dmax - dmin < eps)
 		{
-			//return(seq(from=dmin, to=dmax, length.out=m))
 			return null;
 		}
 

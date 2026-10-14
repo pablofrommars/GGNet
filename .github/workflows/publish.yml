@@ -35,7 +35,7 @@ jobs:
       - uses: actions/cache@v6
         with:
           path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', '**/*.csproj') }}
+          key: nuget-${{ runner.os }}-${{ hashFiles('global.json', 'Directory.Packages.props', '**/*.csproj') }}
           restore-keys: nuget-${{ runner.os }}-
 
       - name: Resolve package version

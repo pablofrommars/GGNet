@@ -315,17 +315,23 @@ public class ChartSelectionEvals
 			.Select(Path.GetFileNameWithoutExtension)
 			.ToHashSet();
 
-		// Act / Assert
+		// Act
+
+		var recipes = cfg["leaves"]!.AsArray()
+			.Select(n => n!.AsObject())
+			.Where(leaf => leaf["ggnet"]!["recipe"] is not null)
+			.Select(leaf => (id: leaf["id"], recipe: leaf["ggnet"]!["recipe"]!.GetValue<string>()))
+			.ToList();
+
+		// Assert
 
 		using var _ = new AssertionScope();
 
-		foreach (var leaf in cfg["leaves"]!.AsArray().Select(n => n!.AsObject()))
+		recipes.Should().NotBeEmpty();
+
+		foreach (var (id, recipe) in recipes)
 		{
-			if (leaf["ggnet"]!["recipe"] is JsonNode recipe)
-			{
-				examples.Should().Contain(recipe.GetValue<string>(),
-					$"leaf '{leaf["id"]}' names it as its recipe");
-			}
+			examples.Should().Contain(recipe, $"leaf '{id}' names it as its recipe");
 		}
 	}
 
@@ -335,19 +341,27 @@ public class ChartSelectionEvals
 	[Fact]
 	public void SupportedLeavesCarryGuidance()
 	{
-		// Act / Assert
+		// Arrange
+
+		var leaves = cfg["leaves"]!.AsArray().Select(n => n!.AsObject()).ToList();
+
+		// Act
+
+		var supported = leaves
+			.Where(leaf => leaf["ggnet"]!["supported"]!.GetValue<bool>())
+			.Select(leaf => (id: leaf["id"], ggnet: leaf["ggnet"]!.AsObject()))
+			.ToList();
+
+		// Assert
 
 		using var _ = new AssertionScope();
 
-		foreach (var leaf in cfg["leaves"]!.AsArray().Select(n => n!.AsObject()))
-		{
-			var ggnet = leaf["ggnet"]!.AsObject();
+		supported.Should().NotBeEmpty();
 
-			if (ggnet["supported"]!.GetValue<bool>())
-			{
-				(ggnet.ContainsKey("recipe") || ggnet.ContainsKey("note") || ggnet.ContainsKey("caveat"))
-					.Should().BeTrue($"supported leaf '{leaf["id"]}' needs a recipe, note, or caveat");
-			}
+		foreach (var (id, ggnet) in supported)
+		{
+			(ggnet.ContainsKey("recipe") || ggnet.ContainsKey("note") || ggnet.ContainsKey("caveat"))
+				.Should().BeTrue($"supported leaf '{id}' needs a recipe, note, or caveat");
 		}
 	}
 
@@ -356,7 +370,9 @@ public class ChartSelectionEvals
 	[Fact]
 	public void ConfigLoadsAndValidates()
 	{
-		// Arrange / Act
+		// Arrange
+
+		// Act
 
 		var loaded = Selector.LoadConfig();
 

@@ -4,7 +4,7 @@ internal sealed class ABLine<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	private readonly (bool x, bool y) transformation;
+	private readonly (bool x, bool y) transforms;
 
 	public ABLine(
 		Source<T> source,
@@ -14,7 +14,7 @@ internal sealed class ABLine<T, TX, TY> : Geom<T, TX, TY>
 		(bool x, bool y)? transformation = null)
 		: base(source, null)
 	{
-		this.transformation = transformation ?? (true, true);
+		transforms = transformation ?? (true, true);
 
 		Selectors = new()
 		{
@@ -52,7 +52,7 @@ internal sealed class ABLine<T, TX, TY> : Geom<T, TX, TY>
 		{
 			A = a,
 			B = b,
-			Transformation = transformation,
+			Transformation = transforms,
 			Label = label,
 			Line = Line,
 			Text = Text

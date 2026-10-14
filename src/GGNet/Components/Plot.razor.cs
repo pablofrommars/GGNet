@@ -23,16 +23,14 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	[Parameter]
 	public string Theme { get; init; } = "default";
 
-	// The opt-in gate: unset means today's output, byte for byte. Headless
-	// never sets it, so Static/export purity is structural, not conditional.
 	[Parameter]
 	public InteractivityOptions? Interactivity { get; init; }
 
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
-	// IServiceProvider, not ILoggerFactory: the headless renderer builds an
-	// empty container, so a hard logging dependency would break static renders.
+	// INVARIANT: logging resolves lazily through IServiceProvider — the headless renderer builds an
+	// empty container, so a hard ILoggerFactory dependency breaks every static render and export.
 	[Inject]
 	private IServiceProvider Services { get; init; } = default!;
 
@@ -105,9 +103,6 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		}
 	}
 
-	// Runs the context pipeline and carves the plot-level zones. Child refresh
-	// is the caller's concern: OnInitialized composes before children exist,
-	// Render(target) composes and then refreshes them.
 	private bool Compose(RenderTarget target)
 	{
 		if (target == RenderTarget.Loading)

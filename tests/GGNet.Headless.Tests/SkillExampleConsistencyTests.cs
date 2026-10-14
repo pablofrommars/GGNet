@@ -1,7 +1,7 @@
 namespace GGNet.Headless.Tests;
 
 // The skill's example files are checked-in copies of gallery test code
-// (extraction decided over generation, plan/PLAN.md 1.3): every csharp block
+// (extraction chosen over generation): every csharp block
 // under skills/ggnet/examples must appear verbatim (modulo whitespace) in
 // GalleryTests.cs, so an API change that rewrites a gallery entry fails here
 // until the example follows.
@@ -16,10 +16,13 @@ public class SkillExampleConsistencyTests
 	[Fact]
 	public void ExamplesMatchGallerySource()
 	{
-		// Arrange / Act
+		// Arrange
 
 		var root = RepoRoot();
 		var examples = Directory.GetFiles(Path.Combine(root, "skills", "ggnet", "examples"), "*.md");
+
+		// Act
+
 		var gallery = Normalize(File.ReadAllText(Path.Combine(root, "tests", "GGNet.Headless.Tests", "GalleryTests.cs")));
 
 		// Assert
@@ -43,7 +46,7 @@ public class SkillExampleConsistencyTests
 	}
 
 	// The Tier-C compositions documented in geoms.md have no pinned gallery
-	// entry (plan/PLAN.md 1.2); their chains must match TierCCompositionTests
+	// entry; their chains must match TierCCompositionTests
 	// so the reference can never document code that doesn't compile.
 	[Fact]
 	public void TierCRecipesMatchCompositionSource()

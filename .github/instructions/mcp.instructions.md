@@ -4,7 +4,7 @@ applyTo: "src/GGNet.Mcp/**"
 
 # MCP Server Guide
 
-Scope: `src/GGNet.Mcp` — the Model Context Protocol server that exposes GGNet's chart-selection and composition surface to AI agents. Assumes [csharp.instructions.md](./csharp.instructions.md) applies. It uses the `ModelContextProtocol` package (`2.0.0-preview.1`) + `Microsoft.Extensions.Hosting`, and is the only `OutputType=Exe` project.
+Scope: `src/GGNet.Mcp` — the Model Context Protocol server that exposes GGNet's chart-selection and composition surface to AI agents. Assumes [csharp.instructions.md](./csharp.instructions.md) applies. It uses the `ModelContextProtocol` package + `Microsoft.Extensions.Hosting` (versions in `Directory.Packages.props`), and is the only production project with `OutputType=Exe`.
 
 The load-bearing property of this server is **determinism grounded in the live library**: its answers are computed from the loaded `GGNet.dll` (or the embedded config), never from prose that can drift.
 
@@ -48,7 +48,7 @@ public static class CompositionTools
 }
 ```
 
-Two tool classes today: `ChartSelectionTools` and `CompositionTools`.
+Two tool classes today: `ChartSelectionTools` and `CompositionTools`. **Exception:** tsu's one-file-per-tool layout does not apply — tools stay grouped by concern.
 
 ---
 

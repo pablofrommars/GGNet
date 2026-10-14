@@ -2,7 +2,7 @@
 
 public sealed class Source<T> : IReadOnlyList<T>
 {
-	private readonly List<T> items = [];
+	private readonly List<T> list = [];
 
 	public Source()
 	{
@@ -10,24 +10,24 @@ public sealed class Source<T> : IReadOnlyList<T>
 
 	public Source(IEnumerable<T> items)
 	{
-		this.items.AddRange(items);
+		list.AddRange(items);
 	}
 
-	public int Count => items.Count;
+	public int Count => list.Count;
 
 	public T this[int i]
 	{
-		get => items[i];
-		set => items[i] = value;
+		get => list[i];
+		set => list[i] = value;
 	}
 
-	public void Add(T item) => items.Add(item);
+	public void Add(T item) => list.Add(item);
 
-	public void Add(IEnumerable<T> items) => this.items.AddRange(items);
+	public void Add(IEnumerable<T> items) => list.AddRange(items);
 
-	public void Clear() => items.Clear();
+	public void Clear() => list.Clear();
 
-	public IEnumerator<T> GetEnumerator() => items.GetEnumerator();
+	public IEnumerator<T> GetEnumerator() => list.GetEnumerator();
 
 	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

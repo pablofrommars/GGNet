@@ -4,15 +4,14 @@
 		"args": [
 			"--server",
 			"roslyn-language-server",
-			"--solution",
-			"/Users/pablo/source/ziggy-brew/source/dependencies/GGNet/GGNet.slnx",
 			"--",
 			"--stdio",
 			"--autoLoadProjects"
 		],
 		"extensionToLanguage": {
 			".cs": "csharp",
-			".razor": "aspnetcorerazor"
+			".razor": "aspnetcorerazor",
+			".cshtml": "aspnetcorerazor"
 		},
 		"startupTimeout": 120000
 	}

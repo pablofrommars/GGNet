@@ -1,6 +1,6 @@
 {
 	"$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-	"name": "local-lsp",
+	"name": "ggnet-lsp",
 	"description": "Local LSP plugins committed to this repository.",
 	"owner": {
 		"name": "GGNet"

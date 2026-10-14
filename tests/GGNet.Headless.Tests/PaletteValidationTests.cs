@@ -91,9 +91,13 @@ public class PaletteValidationTests
 	[Fact]
 	public void EmptyPaletteThrowsBeforeAnyRender()
 	{
-		// Arrange / Act
+		// Arrange
 
-		Action act = () => _ = new Palettes.Discrete<string, string>([]);
+		string[] palette = [];
+
+		// Act
+
+		Action act = () => _ = new Palettes.Discrete<string, string>(palette);
 
 		// Assert
 

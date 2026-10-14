@@ -2,10 +2,6 @@ using GGNet.Exceptions;
 
 namespace GGNet;
 
-// Interaction bucket: durable view-window state, written by host commands
-// (and later by pointer gestures) — never authored by the fluent chain and
-// never cleared by the per-pass Reset(). Commands speak data units (TX/TY);
-// pixels enter only through the inverse projection seam.
 public partial class PlotContext<T, TX, TY>
 	where TX : struct
 	where TY : struct
@@ -34,8 +30,6 @@ public partial class PlotContext<T, TX, TY>
 
 		var y = (min: double.PositiveInfinity, max: double.NegativeInfinity);
 
-		// Measure what's drawn: the layers hold the previous pass's shapes,
-		// which is exact at commit time — only the window changed.
 		for (var p = 0; p < Panels.Count; p++)
 		{
 			var geoms = Panels[p].Geoms;
@@ -50,20 +44,14 @@ public partial class PlotContext<T, TX, TY>
 
 		if (y.min > y.max)
 		{
-			// Nothing drawn yet (pre-render, headless export): fall back to
-			// the default source through the default selectors.
 			y = VisibleYFromSource(window);
 		}
 
-		// Nothing visible: keep the previous y window rather than collapse.
 		if (y.min > y.max)
 		{
 			return;
 		}
 
-		// ViewRange is exact by design; the fit brings its own margin so the
-		// extremes don't sit on the panel edge. Degenerate spans pad like
-		// SetRange does.
 		var pad = y.min == y.max ? 0.05 : 0.05 * (y.max - y.min);
 
 		Positions.Y.SetView((y.min - pad, y.max + pad));
@@ -80,7 +68,6 @@ public partial class PlotContext<T, TX, TY>
 
 		if (Positions.X.Scales.Count == 0 && Positions.X.Factory is null)
 		{
-			// Defaulted scales receive their factory in Init; idempotent.
 			Init();
 		}
 
@@ -116,17 +103,11 @@ public partial class PlotContext<T, TX, TY>
 		return y;
 	}
 
-	// Data units map into the scale's double space through a live scale when
-	// one exists; before the first render a throwaway factory instance serves,
-	// which is exact for continuous/instant scales (their Map is stateless).
-	// Discrete scales map through their trained values, so they need a render
-	// first — the NaN guard below turns that into an actionable error.
 	private (double min, double max) MapView<TKey>(Data.Position<TKey> position, TKey min, TKey max)
 		where TKey : struct
 	{
 		if (position.Scales.Count == 0 && position.Factory is null)
 		{
-			// Defaulted scales receive their factory in Init; idempotent.
 			Init();
 		}
 

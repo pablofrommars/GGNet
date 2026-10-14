@@ -1,11 +1,5 @@
 namespace GGNet.ChartSelection;
 
-// Deterministic chart-type recommendation. The embedded JSON config is the
-// knowledge (axes, leaves, constraints, ggnet renderability blocks); this
-// class is the protocol: normalize → gate → filter (stat bridges) →
-// constrain (structural escapes) → relax → rank. An agent's only jobs are
-// building the query object and presenting results — it never executes
-// matching logic itself. Behavior is pinned by GGNet.Evals.
 public static class Selector
 {
 	private static readonly string[] axisFields =
@@ -15,9 +9,6 @@ public static class Selector
 		"metric_type", "spatial_grain",
 	];
 
-	// A leaf declaring one of these true REQUIRES the query to affirm it —
-	// unknown never opens a gated door (keeps spatial/relational/physical
-	// leaves out of ordinary queries).
 	private static readonly string[] gatingFields = ["is_relational", "is_spatial", "physical_subject"];
 
 	public static JsonObject LoadConfig()
@@ -135,10 +126,6 @@ public static class Selector
 			var (allowed, caveats, reason) = Constraints(leaf, q);
 			if (!allowed)
 			{
-				// The leaf matched intent and shape but broke a limit: report
-				// it as excluded-with-reason (never silently dropped), and
-				// when a structural way out exists (facet the same recipe),
-				// as an escape too.
 				excluded.Add(new JsonObject
 				{
 					["chart_id"] = id,
@@ -188,10 +175,6 @@ public static class Selector
 		return (candidates, escapes, excluded);
 	}
 
-	// Absent leaf field = wildcard; null query field = no constraint. Collects
-	// every mismatched field (rather than failing fast) so the caller can
-	// decide whether a stat bridge covers the whole mismatch. Gating stays a
-	// hard fail: unknown never opens a gated door, bridged or not.
 	private static (bool Ok, List<string> Matched, List<string> Mismatched) AxisMatch(JsonObject leaf, JsonObject q)
 	{
 		List<string> matched = [], mismatched = [];
@@ -227,9 +210,6 @@ public static class Selector
 		return (mismatched.Count == 0, matched, mismatched);
 	}
 
-	// Allowlists: reject only on a non-null query value outside the list.
-	// A rejection carries its reason so it can be reported, not silently
-	// dropped — the caller's refusal is only as strong as its explanation.
 	private static (bool Ok, List<string> Caveats, string? Reason) Constraints(JsonObject leaf, JsonObject q)
 	{
 		var caveats = new List<string>();
@@ -265,10 +245,6 @@ public static class Selector
 		return (true, caveats, null);
 	}
 
-	// Conditions AND together. Three forms: "field": value (equality — a null
-	// value matches an UNKNOWN query field, expressing "unverified" rules),
-	// "field": [v1, v2] (in-list), and "field_gt": n (numeric threshold; an
-	// unknown field never exceeds a threshold).
 	private static bool RuleFires(JsonObject when, JsonObject q)
 	{
 		foreach (var (key, expected) in when)
@@ -296,9 +272,6 @@ public static class Selector
 		return true;
 	}
 
-	// A stat bridge admits the leaf when it covers the ENTIRE axis mismatch:
-	// the query's raw shape is exactly what the declared Stat.* pre-processing
-	// turns into the leaf's expected shape.
 	private static string? Bridge(JsonObject leaf, JsonObject q, List<string> mismatched)
 	{
 		if (leaf["ggnet"]?["stat_bridge"] is not JsonObject bridge)

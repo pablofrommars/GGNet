@@ -37,9 +37,13 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 	[Fact]
 	public async Task ListsExpectedTools()
 	{
-		// Arrange / Act
+		// Arrange
 
-		var tools = await fixture.Client.ListToolsAsync(cancellationToken: TestContext.Current.CancellationToken);
+		var token = TestContext.Current.CancellationToken;
+
+		// Act
+
+		var tools = await fixture.Client.ListToolsAsync(cancellationToken: token);
 
 		// Assert
 
@@ -82,13 +86,17 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 	[Fact]
 	public async Task StatBridgeSurfacesOverTheWire()
 	{
-		// Arrange / Act
+		// Arrange
 
-		var result = await CallAsJson("select_chart", new Dictionary<string, object?>
+		var args = new Dictionary<string, object?>
 		{
 			["query"] = """{"functions": ["comparison"], "num_vars": "1", "cat_vars": "1", "cat_structure": "flat", "obs_per_group": "many", "ordered_num": false}""",
 			["topN"] = 99,
-		});
+		};
+
+		// Act
+
+		var result = await CallAsJson("select_chart", args);
 
 		// Assert
 
@@ -102,7 +110,9 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 	[Fact]
 	public async Task IntrospectionIsLive()
 	{
-		// Arrange / Act
+		// Arrange
+
+		// Act
 
 		var geoms = await CallAsJson("list_geoms", []);
 		var scales = await CallAsJson("list_scales", []);
@@ -120,9 +130,9 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 	[Fact]
 	public async Task ValidatePlotCompilesAndRenders()
 	{
-		// Arrange / Act
+		// Arrange
 
-		var result = await CallAsJson("validate_plot", new Dictionary<string, object?>
+		var args = new Dictionary<string, object?>
 		{
 			["snippet"] =
 				"""
@@ -130,7 +140,11 @@ public class McpServerEvals(McpServerFixture fixture) : IClassFixture<McpServerF
 				var plot = PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Point().Style();
 				Console.WriteLine((await plot.AsStringAsync()).Length);
 				""",
-		});
+		};
+
+		// Act
+
+		var result = await CallAsJson("validate_plot", args);
 
 		// Assert
 

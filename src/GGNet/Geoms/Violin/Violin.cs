@@ -20,7 +20,7 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 
 	private readonly SortedDictionary<double, Dictionary<string, SortedBuffer<(double y, double width)>>> violins = [];
 
-	private readonly PositionAdjustment position;
+	private readonly PositionAdjustment adjustment;
 
 	public Violin(
 	  Source<T> source,
@@ -44,7 +44,7 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 			Fill = fill
 		};
 
-		this.position = position;
+		adjustment = position;
 	}
 
 	public Selectors<T, TX, TY> Selectors { get; }
@@ -304,11 +304,11 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 
 	protected override void Set()
 	{
-		if (position == PositionAdjustment.Identity)
+		if (adjustment == PositionAdjustment.Identity)
 		{
 			Identity();
 		}
-		else if (position == PositionAdjustment.Dodge)
+		else if (adjustment == PositionAdjustment.Dodge)
 		{
 			Dodge();
 		}

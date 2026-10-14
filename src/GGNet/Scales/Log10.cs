@@ -6,7 +6,7 @@ namespace GGNet.Scales;
 
 internal sealed class Log10 : Position<double>
 {
-	private readonly IFormatter<double> formatter;
+	private readonly IFormatter<double> labelFormatter;
 
 	private static readonly DoubleFormatter defaultFormatter = new("0.##e0");
 
@@ -17,7 +17,7 @@ internal sealed class Log10 : Position<double>
 	{
 		Limits = limits ?? (null, null);
 
-		this.formatter = formatter ?? defaultFormatter;
+		labelFormatter = formatter ?? defaultFormatter;
 	}
 
 	public override Guide Guide => Guide.None;
@@ -45,14 +45,14 @@ internal sealed class Log10 : Position<double>
 			Breaks = Log10Utils.MinorBreaks(Range.max);
 		}
 
-		Labels = [.. Breaks.Select(b => (b, formatter.Format(transformation!.Inverse(b))))];
+		Labels = [.. Breaks.Select(b => (b, labelFormatter.Format(transformation!.Inverse(b))))];
 	}
 
 	public override double Map(double key) => transformation!.Apply(key);
 
 	public override double? Unmap(double value) => transformation!.Inverse(value);
 
-	public override string? Label(double value) => formatter.Format(value);
+	public override string? Label(double value) => labelFormatter.Format(value);
 
 	public override ITransformation<double> RangeTransformation => transformation!;
 }

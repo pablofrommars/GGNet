@@ -1,10 +1,7 @@
 namespace GGNet.Headless;
 
-// Produces the embeddable form of a bundled theme for self-contained export:
-// the interactive selectors are scoped to the .ggnet wrapper div, which the
-// pure-SVG export deliberately strips, so prefixes re-root onto the svg
-// element. The theme files are authored for this transform to be a plain
-// prefix replacement.
+// INVARIANT: theme files use .ggnet only as a selector prefix — self-contained export re-roots them
+// onto svg by plain string replacement, so any other use corrupts the embedded stylesheet.
 internal static class ThemeCss
 {
 	public static string SelfContained(string theme)

@@ -20,7 +20,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 
 	private readonly List<(string fill, SortedBuffer<(double x, double y, T item)> points)> series = [];
 
-	private readonly PositionAdjustment position;
+	private readonly PositionAdjustment adjustment;
 
 	public Area(
 	  IReadOnlyList<T> source,
@@ -44,7 +44,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 			Fill = fill
 		};
 
-		this.position = position;
+		adjustment = position;
 	}
 
 	public Selectors<T, TX, TY> Selectors { get; }
@@ -398,11 +398,11 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 
 	protected override void Set()
 	{
-		if (position == PositionAdjustment.Stack)
+		if (adjustment == PositionAdjustment.Stack)
 		{
 			Stack();
 		}
-		else if (position == PositionAdjustment.Identity)
+		else if (adjustment == PositionAdjustment.Identity)
 		{
 			Identity();
 		}

@@ -8,23 +8,40 @@ namespace GGNet.Headless.Tests;
 // invariant for the whole family so the next scale to derive state cannot repeat it.
 public class PositionScaleContractTests
 {
-	private static void MapIsStableAcrossCommit<TKey>(Position<TKey> sut, params TKey[] keys)
+	private static Position<TKey> Trained<TKey>(Position<TKey> sut, TKey[] keys)
 		where TKey : struct
 	{
-		// Arrange
-
 		foreach (var key in keys)
 		{
 			sut.Train(key);
 		}
 
-		// Act
+		return sut;
+	}
 
+	private static (double[] beforeCommit, double[] afterCommit) MapAcrossCommit<TKey>(Position<TKey> sut, TKey[] keys)
+		where TKey : struct
+	{
 		var beforeCommit = keys.Select(sut.Map).ToArray();
 
 		sut.Commit(grid: true);
 
 		var afterCommit = keys.Select(sut.Map).ToArray();
+
+		return (beforeCommit, afterCommit);
+	}
+
+	[Fact]
+	public void ExtendedMapsIdenticallyBeforeAndAfterCommit()
+	{
+		// Arrange
+
+		double[] keys = [1.0, 5.0, 12.5];
+		var sut = Trained(new Extended(), keys);
+
+		// Act
+
+		var (beforeCommit, afterCommit) = MapAcrossCommit(sut, keys);
 
 		// Assert
 
@@ -35,37 +52,113 @@ public class PositionScaleContractTests
 	}
 
 	[Fact]
-	public void ExtendedMapsIdenticallyBeforeAndAfterCommit()
-		=> MapIsStableAcrossCommit(new Extended(), 1.0, 5.0, 12.5);
-
-	[Fact]
 	public void Log10MapsIdenticallyBeforeAndAfterCommit()
-		=> MapIsStableAcrossCommit(new Log10(), 1.0, 100.0, 1000.0);
+	{
+		// Arrange
+
+		double[] keys = [1.0, 100.0, 1000.0];
+		var sut = Trained(new Log10(), keys);
+
+		// Act
+
+		var (beforeCommit, afterCommit) = MapAcrossCommit(sut, keys);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		beforeCommit.Should().NotContain(double.NaN);
+		afterCommit.Should().Equal(beforeCommit);
+	}
 
 	[Fact]
 	public void DiscretePositionMapsIdenticallyBeforeAndAfterCommit()
-		=> MapIsStableAcrossCommit(new DiscretePosition<double>(), 3.0, 1.0, 2.0);
+	{
+		// Arrange
+
+		double[] keys = [3.0, 1.0, 2.0];
+		var sut = Trained(new DiscretePosition<double>(), keys);
+
+		// Act
+
+		var (beforeCommit, afterCommit) = MapAcrossCommit(sut, keys);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		beforeCommit.Should().NotContain(double.NaN);
+		afterCommit.Should().Equal(beforeCommit);
+	}
 
 	[Fact]
 	public void DiscreteDatesMapsIdenticallyBeforeAndAfterCommit()
-		=> MapIsStableAcrossCommit(
-			new DiscreteDates(),
+	{
+		// Arrange
+
+		LocalDate[] keys = [
 			new LocalDate(2026, 1, 30),
 			new LocalDate(2026, 1, 31),
-			new LocalDate(2026, 2, 1));
+			new LocalDate(2026, 2, 1),
+		];
+		var sut = Trained(new DiscreteDates(), keys);
+
+		// Act
+
+		var (beforeCommit, afterCommit) = MapAcrossCommit(sut, keys);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		beforeCommit.Should().NotContain(double.NaN);
+		afterCommit.Should().Equal(beforeCommit);
+	}
 
 	[Fact]
 	public void DateTimePositionMapsIdenticallyBeforeAndAfterCommit()
-		=> MapIsStableAcrossCommit(
-			new DateTimePosition(),
+	{
+		// Arrange
+
+		LocalDateTime[] keys = [
 			new LocalDateTime(2026, 7, 1, 9, 0),
 			new LocalDateTime(2026, 7, 1, 9, 30),
-			new LocalDateTime(2026, 7, 1, 10, 0));
+			new LocalDateTime(2026, 7, 1, 10, 0),
+		];
+		var sut = Trained(new DateTimePosition(), keys);
+
+		// Act
+
+		var (beforeCommit, afterCommit) = MapAcrossCommit(sut, keys);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		beforeCommit.Should().NotContain(double.NaN);
+		afterCommit.Should().Equal(beforeCommit);
+	}
 
 	[Fact]
 	public void InstantPositionMapsIdenticallyBeforeAndAfterCommit()
-		=> MapIsStableAcrossCommit(
-			new InstantPosition(null, null),
+	{
+		// Arrange
+
+		Instant[] keys = [
 			Instant.FromUtc(2026, 7, 1, 9, 0),
-			Instant.FromUtc(2026, 7, 1, 12, 30));
+			Instant.FromUtc(2026, 7, 1, 12, 30),
+		];
+		var sut = Trained(new InstantPosition(null, null), keys);
+
+		// Act
+
+		var (beforeCommit, afterCommit) = MapAcrossCommit(sut, keys);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		beforeCommit.Should().NotContain(double.NaN);
+		afterCommit.Should().Equal(beforeCommit);
+	}
 }

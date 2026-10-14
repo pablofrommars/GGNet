@@ -6,9 +6,8 @@ internal sealed class InteractiveAutoRenderModeHandler(IPlotRendering plot) : Re
 	{
 		plot.Render(RenderTarget.Render);
 
-		// A refresh must surface without waiting for an unrelated event render:
-		// host commands (ZoomToXAsync, ResetViewAsync) arrive outside Blazor's
-		// event pipeline, so nothing else schedules the render.
+		// INVARIANT: a refresh renders inline — host commands (ZoomToXAsync, ResetViewAsync) arrive
+		// outside Blazor's event pipeline, so nothing else would schedule the render.
 		await plot.StateHasChangedAsync();
 	}
 

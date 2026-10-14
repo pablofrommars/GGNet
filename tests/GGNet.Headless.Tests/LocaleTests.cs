@@ -54,10 +54,10 @@ public class LocaleTests
 			invariant = Normalize(await RenderAsync());
 		}
 
-		// Act / Assert
-
-		// Every installed culture, not three hand-picked ones: exotic cultures
+		// Act — every installed culture, not three hand-picked ones: exotic cultures
 		// (non-Latin digits, U+2212 minus) are where invariance bugs hide.
+
+		var renders = new List<(string culture, string svg)>();
 		foreach (var culture in CultureInfo.GetCultures(CultureTypes.AllCultures))
 		{
 			if (string.IsNullOrEmpty(culture.Name))
@@ -65,17 +65,23 @@ public class LocaleTests
 				continue;
 			}
 
-			string localized;
 			using (new CultureScope(culture.Name))
 			{
-				localized = Normalize(await RenderAsync());
+				renders.Add((culture.Name, Normalize(await RenderAsync())));
 			}
+		}
 
+		// Assert
+
+		renders.Should().NotBeEmpty();
+
+		foreach (var (culture, localized) in renders)
+		{
 			using var _ = new AssertionScope();
 
-			localized.Should().Be(invariant, "culture '{0}' must render invariant geometry", culture.Name);
-			localized.Should().NotMatchRegex(@"\d,\d", "culture '{0}'", culture.Name);
-			localized.Should().NotContain("−", "culture '{0}'", culture.Name);
+			localized.Should().Be(invariant, "culture '{0}' must render invariant geometry", culture);
+			localized.Should().NotMatchRegex(@"\d,\d", "culture '{0}'", culture);
+			localized.Should().NotContain("−", "culture '{0}'", culture);
 
 			XDocument.Parse(localized);
 		}

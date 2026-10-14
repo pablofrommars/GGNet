@@ -10,7 +10,7 @@ internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>
   where TX : struct
   where TY : struct
 {
-	private readonly bool animation;
+	private readonly bool animated;
 
 	public Point(
 	  IReadOnlyList<T> source,
@@ -36,7 +36,7 @@ internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>
 			Color = color,
 		};
 
-		this.animation = animation;
+		animated = animation;
 	}
 
 	public Selectors<T, TX, TY> Selectors { get; }
@@ -83,7 +83,7 @@ internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>
 					radius = Aesthetics.Size.Map(item);
 				}
 
-				if (animation)
+				if (animated)
 				{
 					radius *= 1.5;
 				}
@@ -176,7 +176,7 @@ internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>
 
 		var circle = new Circle
 		{
-			Classes = animation ? "animate-point" : string.Empty,
+			Classes = animated ? "animate-point" : string.Empty,
 			X = x,
 			Y = y,
 			Aesthetic = new()

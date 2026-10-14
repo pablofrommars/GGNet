@@ -2,14 +2,8 @@ using Microsoft.JSInterop;
 
 namespace GGNet.Components;
 
-// One initialize call carries every feature flag (batching rule); serialized
-// camelCase by the interop serializer.
 internal sealed record PanelInteropOptions(bool Pan, bool PanX, bool PanY, bool Tooltip);
 
-// Typed wrapper over the collocated Panel.razor.js module: owns the module
-// lifecycle, one instance per interactive panel. No DI registration — the
-// component constructs it around the framework-provided IJSRuntime, so
-// consumers configure nothing.
 internal sealed class PanelInterop(IJSRuntime runtime) : IAsyncDisposable
 {
 	internal const string ModulePath = "./_content/GGNet/Components/Panel.razor.js";

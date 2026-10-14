@@ -2,7 +2,7 @@ namespace GGNet.Evals;
 
 // The profiler is the anti-gaming half of the data-quality gate: objective
 // shape fields measured from raw samples, overriding whatever the caller
-// supplied (plan/PLAN.md 2.2).
+// supplied.
 public class ProfilerEvals
 {
 	[Fact]

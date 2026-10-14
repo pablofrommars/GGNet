@@ -21,7 +21,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 
 	private readonly SortedBuffer<(double coord, Dictionary<string, SampleBuffer<double>> data)> boxes = new(Comparer.Instance);
 
-	private readonly double size;
+	private readonly double boxSize;
 
 	public Boxplot(
 	  IReadOnlyList<T> source,
@@ -43,7 +43,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 			Fill = fill
 		};
 
-		this.size = size;
+		boxSize = size;
 	}
 
 	public Selectors<T, TX, TY> Selectors { get; }
@@ -132,7 +132,7 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 
 	protected override void Set()
 	{
-		var delta = size;
+		var delta = boxSize;
 
 		if (boxes.Count > 1)
 		{

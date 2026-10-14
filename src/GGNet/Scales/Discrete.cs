@@ -6,8 +6,8 @@ internal abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 	where TKey : notnull
 {
 	private readonly bool defined;
-	private readonly Palettes.Discrete<TKey, TValue> palette;
-	private readonly TValue na;
+	private readonly Palettes.Discrete<TKey, TValue> discretePalette;
+	private readonly TValue naValue;
 
 	public Discrete(
 		Palettes.Discrete<TKey, TValue> palette,
@@ -16,8 +16,8 @@ internal abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 			: base(transformation)
 	{
 		defined = true;
-		this.palette = palette;
-		this.na = na;
+		discretePalette = palette;
+		naValue = na;
 	}
 
 	public Discrete(
@@ -27,8 +27,8 @@ internal abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 		ITransformation<TKey>? transformation)
 			: base(transformation)
 	{
-		this.palette = new Palettes.Discrete<TKey, TValue>(palette, direction);
-		this.na = na;
+		discretePalette = new Palettes.Discrete<TKey, TValue>(palette, direction);
+		naValue = na;
 	}
 
 	public override void Train(TKey key)
@@ -38,14 +38,14 @@ internal abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 			return;
 		}
 
-		palette.Add(key);
+		discretePalette.Add(key);
 	}
 
 	public override void Commit(bool grid)
 	{
 		if (!defined)
 		{
-			palette.Set();
+			discretePalette.Set();
 		}
 
 		if (!grid)
@@ -53,7 +53,7 @@ internal abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 			return;
 		}
 
-		var values = palette.Values();
+		var values = discretePalette.Values();
 
 		var breaks = new TValue[values.Length];
 		var labels = new (TValue value, string label)[values.Length];
@@ -70,9 +70,9 @@ internal abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 
 	public override TValue Map(TKey key)
 	{
-		if (!palette.TryGetValue(key, out var result))
+		if (!discretePalette.TryGetValue(key, out var result))
 		{
-			return na;
+			return naValue;
 		}
 
 		return result;
@@ -82,7 +82,7 @@ internal abstract class Discrete<TKey, TValue> : Scale<TKey, TValue>
 	{
 		if (!defined)
 		{
-			palette.Clear();
+			discretePalette.Clear();
 		}
 	}
 }

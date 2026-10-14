@@ -9,7 +9,7 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
   where TX : struct
   where TY : struct
 {
-	private readonly bool animation;
+	private readonly bool animated;
 
 	public Hex(
 	  Source<T> source,
@@ -37,7 +37,7 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
 			Fill = fill
 		};
 
-		this.animation = animation;
+		animated = animation;
 	}
 
 	public Selectors<T, TX, TY> Selectors { get; }
@@ -146,7 +146,7 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
 
 		var hex = new Shapes.Polygon
 		{
-			Classes = animation ? "animate-hex" : string.Empty,
+			Classes = animated ? "animate-hex" : string.Empty,
 			Path = new()
 			{
 				Longitude = [x + dx, x + dx, x, x - dx, x - dx, x],

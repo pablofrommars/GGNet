@@ -21,8 +21,8 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 
 	private readonly SortedBuffer<(double x, List<(string color, double y, double ymin, double ymax, T item)> bars)> bars = new(Comparer.Instance);
 
-	private readonly PositionAdjustment position;
-	private readonly bool animation;
+	private readonly PositionAdjustment adjustment;
+	private readonly bool animated;
 
 	public ErrorBar(
 	  Source<T> source,
@@ -51,8 +51,8 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 			Color = color
 		};
 
-		this.animation = animation;
-		this.position = position;
+		animated = animation;
+		adjustment = position;
 	}
 
 	public Selectors<T, TX, TY> Selectors { get; }
@@ -110,7 +110,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 			onMouseOver = (item, x, y, _) =>
 			{
 				var radius = Circle.Radius;
-				if (animation)
+				if (animated)
 				{
 					radius *= 1.5;
 				}
@@ -166,8 +166,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 		{
 		  Fill = value,
 		  FillOpacity = Circle.FillOpacity,
-                    //Radius = Circle.Radius
-                    Radius = 2
+		  Radius = 2
 		}
 		]);
 	}
@@ -238,7 +237,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 
 				var circle = new Circle
 				{
-					Classes = animation ? "animate-point" : string.Empty,
+					Classes = animated ? "animate-point" : string.Empty,
 					X = bar.x,
 					Y = y,
 					Aesthetic = new()
@@ -315,7 +314,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 
 				var circle = new Circle
 				{
-					Classes = animation ? "animate-point" : string.Empty,
+					Classes = animated ? "animate-point" : string.Empty,
 					X = x,
 					Y = y,
 					Aesthetic = new()
@@ -349,11 +348,11 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 
 	protected override void Set()
 	{
-		if (position == PositionAdjustment.Identity)
+		if (adjustment == PositionAdjustment.Identity)
 		{
 			Identity();
 		}
-		else if (position == PositionAdjustment.Dodge)
+		else if (adjustment == PositionAdjustment.Dodge)
 		{
 			Dodge();
 		}

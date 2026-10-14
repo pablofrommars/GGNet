@@ -175,7 +175,6 @@ internal sealed class Radar<T, TX, TY> : Geom<T, TX, TY>
 
 		if (scale.y)
 		{
-			// The radial scale is zero-based: the web center is 0, not the data minimum.
 			Positions.Y.Position.Shape(0.0, y);
 		}
 	}
@@ -216,7 +215,8 @@ internal sealed class Radar<T, TX, TY> : Geom<T, TX, TY>
 			});
 		}
 
-		// Hit-target circles go on top of the polygons so they receive mouse events.
+		// INVARIANT: hit-target circles are emitted after the polygons — SVG paints and hit-tests in
+		// document order, so circles drawn first never receive the pointer.
 		for (var i = 0; i < circles.Count; i++)
 		{
 			Layer.Add(circles[i]);

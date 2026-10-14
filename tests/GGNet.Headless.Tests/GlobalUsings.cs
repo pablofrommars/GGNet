@@ -4,8 +4,12 @@ global using System.Runtime.CompilerServices;
 global using System.Text.RegularExpressions;
 global using System.Xml.Linq;
 
+global using Match = System.Text.RegularExpressions.Match;
+
 global using AwesomeAssertions;
 global using AwesomeAssertions.Execution;
+
+global using Moq;
 
 global using NodaTime;
 

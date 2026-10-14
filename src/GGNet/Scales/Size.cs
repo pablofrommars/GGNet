@@ -9,13 +9,11 @@ namespace GGNet.Scales;
 internal class SizeContinuous : Continuous<double>
 {
 	protected readonly bool defined;
-	protected (double min, double max) limits;
-	// Initialization is tracked separately: (0, 0) is a legitimate trained state, so a leading
-	// zero observation must not be mistaken for "nothing trained yet".
+	protected (double min, double max) domain;
 	private bool trained;
-	protected readonly (double min, double max) range;
-	protected readonly bool oob;
-	private readonly IFormatter<double> formatter;
+	protected readonly (double min, double max) outputRange;
+	protected readonly bool squish;
+	private readonly IFormatter<double> labelFormatter;
 
 	public SizeContinuous(
 		(double min, double max)? limits = null,
@@ -28,17 +26,17 @@ internal class SizeContinuous : Continuous<double>
 		if (limits.HasValue)
 		{
 			defined = true;
-			this.limits = limits.Value;
+			domain = limits.Value;
 		}
 		else
 		{
-			this.limits = (0.0, 0.0);
+			domain = (0.0, 0.0);
 		}
 
-		this.range = range ?? (0.0, 1.0);
-		this.oob = oob;
+		outputRange = range ?? (0.0, 1.0);
+		squish = oob;
 
-		this.formatter = formatter ?? new DoubleFormatter("0.##");
+		labelFormatter = formatter ?? new DoubleFormatter("0.##");
 	}
 
 	public override Guide Guide => Guide.Items;
@@ -52,12 +50,12 @@ internal class SizeContinuous : Continuous<double>
 
 		if (!trained)
 		{
-			limits = (key, key);
+			domain = (key, key);
 			trained = true;
 		}
 		else
 		{
-			limits = (Min(limits.min, key), Max(limits.max, key));
+			domain = (Min(domain.min, key), Max(domain.max, key));
 		}
 	}
 
@@ -68,7 +66,7 @@ internal class SizeContinuous : Continuous<double>
 			return;
 		}
 
-		var breaks = Wilkinson.Extended(limits.min, limits.max);
+		var breaks = Wilkinson.Extended(domain.min, domain.max);
 		if (breaks is null)
 		{
 			return;
@@ -80,7 +78,7 @@ internal class SizeContinuous : Continuous<double>
 		{
 			var value = breaks[i];
 
-			labels[i] = (Map(value), formatter.Format(value));
+			labels[i] = (Map(value), labelFormatter.Format(value));
 		}
 
 		Breaks = breaks;
@@ -89,37 +87,35 @@ internal class SizeContinuous : Continuous<double>
 
 	public override double Map(double key)
 	{
-		if (!oob)
+		if (!squish)
 		{
-			if (key < limits.min || key > limits.max)
+			if (key < domain.min || key > domain.max)
 			{
 				return double.NaN;
 			}
 		}
 
-		if (key < limits.min)
+		if (key < domain.min)
 		{
-			return range.min;
+			return outputRange.min;
 		}
-		else if (key > limits.max)
+		else if (key > domain.max)
 		{
-			return range.max;
-		}
-
-		// Constant data has no span to divide by: every key takes the midpoint of the size range.
-		// Without this the ratio below is 0/0 and a NaN radius reaches the SVG.
-		if (limits.max <= limits.min)
-		{
-			return range.min + (range.max - range.min) / 2.0;
+			return outputRange.max;
 		}
 
-		if (limits.min >= 0)
+		if (domain.max <= domain.min)
 		{
-			return range.min + (Sqrt(key) - Sqrt(limits.min)) / (Sqrt(limits.max) - Sqrt(limits.min)) * (range.max - range.min);
+			return outputRange.min + (outputRange.max - outputRange.min) / 2.0;
+		}
+
+		if (domain.min >= 0)
+		{
+			return outputRange.min + (Sqrt(key) - Sqrt(domain.min)) / (Sqrt(domain.max) - Sqrt(domain.min)) * (outputRange.max - outputRange.min);
 		}
 		else
 		{
-			return range.min + Sqrt(key - limits.min) / Sqrt(limits.max - limits.min) * (range.max - range.min);
+			return outputRange.min + Sqrt(key - domain.min) / Sqrt(domain.max - domain.min) * (outputRange.max - outputRange.min);
 		}
 	}
 
@@ -130,7 +126,7 @@ internal class SizeContinuous : Continuous<double>
 			return;
 		}
 
-		limits = (0.0, 0.0);
+		domain = (0.0, 0.0);
 		trained = false;
 	}
 }

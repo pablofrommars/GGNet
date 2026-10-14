@@ -16,8 +16,6 @@ internal class FillContinuous(
 
 	protected (double min, double max) limits = (0.0, 0.0);
 
-	// Initialization is tracked separately: (0, 0) is a legitimate trained state, so a leading
-	// zero observation must not be mistaken for "nothing trained yet".
 	private bool trained;
 
 	public override Guide Guide => Guide.ColorBar;
@@ -72,9 +70,6 @@ internal class FillContinuous(
 		}
 		else
 		{
-			// Constant data has no gradient to place a key on: every key takes the middle color,
-			// the same index a mid-range key would take above. Returning empty here would make
-			// every fill consumer skip the mark and the layer would vanish.
 			return colors[(colors.Length - 1) / 2];
 		}
 	}

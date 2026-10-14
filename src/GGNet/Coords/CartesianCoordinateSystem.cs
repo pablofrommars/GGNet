@@ -6,7 +6,7 @@ internal sealed class CartesianCoordinateSystem(Style style) : ICoordinateSystem
 {
 	private readonly Style style = style;
 
-	private Zone area;
+	private Zone panelArea;
 
 	public bool CarvesAxisBands => true;
 
@@ -14,20 +14,20 @@ internal sealed class CartesianCoordinateSystem(Style style) : ICoordinateSystem
 
 	public (double minMult, double minAdd, double maxMult, double maxAdd)? YExpansion(bool discrete) => null;
 
-	public void Measure(Zone area, bool hasXTitles) => this.area = area;
+	public void Measure(Zone area, bool hasXTitles) => panelArea = area;
 
 	public (double x, double y) Project(double cx, double cy)
-	  => (area.X + cx * area.Width, area.Y + (1.0 - cy) * area.Height);
+	  => (panelArea.X + cx * panelArea.Width, panelArea.Y + (1.0 - cy) * panelArea.Height);
 
 	public (double cx, double cy) Unproject(double px, double py)
-	  => ((px - area.X) / area.Width, 1.0 - (py - area.Y) / area.Height);
+	  => ((px - panelArea.X) / panelArea.Width, 1.0 - (py - panelArea.Y) / panelArea.Height);
 
 	public GridComposition ComposeGrid(GridInputs inputs)
 	{
 		var grid = new GridComposition();
 
-		var y1 = area.Y;
-		var y2 = area.Y + area.Height;
+		var y1 = panelArea.Y;
+		var y2 = panelArea.Y + panelArea.Height;
 
 		foreach (var f in inputs.XBreaks)
 		{
@@ -49,7 +49,7 @@ internal sealed class CartesianCoordinateSystem(Style style) : ICoordinateSystem
 			{
 				var (x, _) = Project(f, 0.0);
 
-				if (area.X < x && x < (area.X + area.Width))
+				if (panelArea.X < x && x < (panelArea.X + panelArea.Width))
 				{
 					grid.XLabels.Add(new("x-break-label", x, inputs.XLabelY, style.Axis.Text.X.Anchor.Render(), style.Axis.Text.X.FontSize, label, GridClip.Plot));
 				}
@@ -59,15 +59,15 @@ internal sealed class CartesianCoordinateSystem(Style style) : ICoordinateSystem
 			{
 				var (x, _) = Project(f, 0.0);
 
-				if (area.X < x && x < (area.X + area.Width))
+				if (panelArea.X < x && x < (panelArea.X + panelArea.Width))
 				{
 					grid.XLabels.Add(new("x-break-title", x, inputs.XTitleY, "middle", style.Axis.Title.X.FontSize, title, GridClip.Plot));
 				}
 			}
 		}
 
-		var x1 = area.X;
-		var x2 = area.X + area.Width;
+		var x1 = panelArea.X;
+		var x2 = panelArea.X + panelArea.Width;
 
 		foreach (var f in inputs.YBreaks)
 		{
@@ -92,7 +92,7 @@ internal sealed class CartesianCoordinateSystem(Style style) : ICoordinateSystem
 			{
 				var y = Project(0.0, f).y + offset;
 
-				if (area.Y < (y - height / 2.0) && (y + offset) < (area.Y + area.Height))
+				if (panelArea.Y < (y - height / 2.0) && (y + offset) < (panelArea.Y + panelArea.Height))
 				{
 					grid.YLabels.Add(new("y-break-label", inputs.YLabelX, y, style.Axis.Text.Y.Anchor.Render(), style.Axis.Text.Y.FontSize, label, GridClip.Panel));
 				}

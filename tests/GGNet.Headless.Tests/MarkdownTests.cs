@@ -85,7 +85,9 @@ public class MarkdownTests
 	[InlineData("plain — text", "plain — text")]
 	public void PreservesStyling(string markdown, string expected)
 	{
-		// Arrange / Act
+		// Arrange
+
+		// Act
 
 		var text = Markdown.Text(markdown);
 

@@ -12,20 +12,13 @@
 			"problemMatcher": "$msCompile"
 		},
 		{
-			"label": "build GGNet.Static",
+			"label": "build all",
 			"command": "dotnet",
 			"type": "process",
 			"args": [
 				"build",
-				"${workspaceFolder}/src/GGNet.Static/GGNet.Static.csproj"
-			],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "build all",
-			"dependsOn": [
-				"build GGNet",
-				"build GGNet.Static"
+				"${workspaceFolder}/GGNet.slnx",
+				"-warnaserror"
 			],
 			"problemMatcher": "$msCompile"
 		},
@@ -53,7 +46,7 @@
 			}
 		},
 		{
-			"label": "pack GGNet.Static",
+			"label": "pack GGNet.Headless",
 			"command": "dotnet",
 			"type": "process",
 			"args": [
@@ -62,7 +55,7 @@
 				"release",
 				"--output",
 				"${workspaceFolder}/packages",
-				"${workspaceFolder}/src/GGNet.Static/GGNet.Static.csproj"
+				"${workspaceFolder}/src/GGNet.Headless/GGNet.Headless.csproj"
 			],
 			"problemMatcher": "$msCompile",
 			"presentation": {
@@ -79,7 +72,7 @@
 			"label": "pack all",
 			"dependsOn": [
 				"pack GGNet",
-				"pack GGNet.Static"
+				"pack GGNet.Headless"
 			],
 			"problemMatcher": "$msCompile"
 		},
@@ -187,6 +180,19 @@
 			"command": "${workspaceFolder}/.vscode/scripts/git-flow.sh",
 			"args": [
 				"merge"
+			],
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "keep awake: toggle",
+			"type": "shell",
+			"command": "${workspaceFolder}/.vscode/scripts/keep-awake.sh",
+			"args": [
+				"toggle"
 			],
 			"presentation": {
 				"reveal": "always",

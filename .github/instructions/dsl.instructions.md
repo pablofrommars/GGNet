@@ -48,14 +48,14 @@ How it is wired (know this before editing the surface):
 
 ## 4. The Overload-Partial Discipline (this is where regressions hide)
 
-The wide per-geom signatures are **hand-copied across overloads** — source generation of these families was tried and **retired by decision** in favor of verification (`ROADMAP.md`). The guarantee is a test battery, so consistency is on you when you touch a family:
+The wide per-geom signatures are **hand-copied across overloads** — source generation of these families was tried and **retired by decision** in favor of verification. The guarantee is a test battery, so consistency is on you when you touch a family:
 
 - **`OverloadConsistencyTests`** (`tests/GGNet.Headless.Tests/OverloadConsistencyTests.cs`) reflects over `BuilderExtensions`/`PlotContext`/`Stat` and asserts four invariants per name-family:
   1. **Defaults agree** — the same parameter name has an identical default value across every overload.
   2. **Parameter shapes agree** — parameter types agree within a `(name, receiver)` sub-family (generics erased; `source`/`palette`/`polygons` excluded as legitimate dispatch variance).
   3. **Sugar overloads preserve canonical order** — a shorter overload keeps the parameter order of its longest sibling.
   4. **Docs agree** — each `<param>`'s XML-doc text is identical across the family (loaded from `GGNet.xml`).
-- **`BuilderForwardingTests`** guards that overloads forward to the canonical implementation correctly (a positional-forwarding bug shipped for years before the gates caught it — `ROADMAP.md`).
+- **`BuilderForwardingTests`** guards that overloads forward to the canonical implementation correctly (a positional-forwarding bug shipped for years before the gates caught it).
 
 **When you add or edit a geom overload:** keep parameter **names, defaults, order, and `<param>` docs** consistent across the entire family, or these tests fail. Every public method on this surface must carry full `///` docs (§C# guide).
 

@@ -9,10 +9,10 @@ internal class DiscretePosition<T> : Position<T>
 {
 	protected readonly SortedBuffer<T> values = new();
 
-	protected readonly IFormatter<T> formatter;
-	private readonly double offset;
-	private readonly bool hide;
-	private readonly IFormatter<T>? titles;
+	protected readonly IFormatter<T> labelFormatter;
+	private readonly double breakOffset;
+	private readonly bool hidden;
+	private readonly IFormatter<T>? titleFormatter;
 
 	public DiscretePosition(ITransformation<T>? transformation = null,
 	  (T? min, T? max)? limits = null,
@@ -24,10 +24,10 @@ internal class DiscretePosition<T> : Position<T>
 	  : base(transformation, expand ?? (0.0, 0.6, 0, 0.6))
 	{
 		Limits = limits ?? (null, null);
-		this.formatter = formatter ?? Standard<T>.Instance;
-		this.offset = offset;
-		this.hide = hide;
-		this.titles = titles;
+		labelFormatter = formatter ?? Standard<T>.Instance;
+		breakOffset = offset;
+		hidden = hide;
+		titleFormatter = titles;
 	}
 
 	public override Guide Guide => Guide.None;
@@ -40,30 +40,30 @@ internal class DiscretePosition<T> : Position<T>
 
 		for (var i = 0; i < values.Count; i++)
 		{
-			labels[i] = (i + offset, formatter.Format(values[i]));
+			labels[i] = (i + breakOffset, labelFormatter.Format(values[i]));
 		}
 
 		Labels = labels;
 
-		if (titles is not null)
+		if (titleFormatter is not null)
 		{
 			var breakTitles = new (double value, string title)[values.Count];
 
 			for (var i = 0; i < values.Count; i++)
 			{
-				breakTitles[i] = (i + offset, titles.Format(values[i]));
+				breakTitles[i] = (i + breakOffset, titleFormatter.Format(values[i]));
 			}
 
 			Titles = breakTitles;
 		}
 
-		if (!hide)
+		if (!hidden)
 		{
 			var breaks = new double[values.Count];
 
 			for (var i = 0; i < values.Count; i++)
 			{
-				breaks[i] = i + offset;
+				breaks[i] = i + breakOffset;
 			}
 
 			Breaks = breaks;
@@ -100,7 +100,6 @@ internal class DiscretePosition<T> : Position<T>
 
 		if (CommitViewRange())
 		{
-			// Snap the label window to the categories inside the view.
 			start = Math.Max(0, (int)Math.Ceiling(Range.min));
 			end = Math.Min(values.Count, (int)Math.Floor(Range.max) + 1);
 		}
@@ -115,10 +114,6 @@ internal class DiscretePosition<T> : Position<T>
 		}
 	}
 
-	// No persistent trained state: values rebuild every pass. Reintroduce
-	// persistence only if a streaming case proves hot, as a documented
-	// optimization — the append-across-passes invariant hid a SortedBuffer
-	// corruption bug once already.
 	public override void Clear()
 	{
 		base.Clear();
@@ -138,7 +133,7 @@ internal class DiscretePosition<T> : Position<T>
 		return values[index];
 	}
 
-	public override string? Label(T value) => formatter.Format(value);
+	public override string? Label(T value) => labelFormatter.Format(value);
 
 	public override double Map(T key)
 	{

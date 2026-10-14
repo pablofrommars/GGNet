@@ -1,0 +1,4 @@
+sandbox_mode = "workspace-write"
+
+[tui]
+vim_mode_default = true

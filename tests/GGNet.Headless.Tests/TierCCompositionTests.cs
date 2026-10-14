@@ -1,7 +1,7 @@
 namespace GGNet.Headless.Tests;
 
 // Tier-C chart compositions (dot plot, dumbbell, waffle): supported by the
-// selector without pinned gallery examples — decided in plan/PLAN.md 1.2.
+// selector without pinned gallery examples.
 // These tests keep their skill-documented recipes compiling and rendering
 // (structure verified, no byte pin); the csharp blocks in
 // skills/ggnet/reference/geoms.md §multi-layer must match this source
@@ -37,33 +37,67 @@ public class TierCCompositionTests
 		   select new Unit(index % 10, index / 10, index < 42 ? "a" : index < 77 ? "b" : "c")
 	];
 
-	private static async Task RenderPlot(IPlotContext plot)
+	private static void AssertRenders(string svg)
 	{
-		var svg = await plot.AsStringAsync();
-
 		XDocument.Parse(svg);
 
 		svg.Should().Contain("<svg");
 	}
 
 	[Fact]
-	public Task DotPlot()
-		=> RenderPlot(PlotContext.Build(kpis, k => k.Value, k => k.Team)
+	public async Task DotPlot()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(kpis, k => k.Value, k => k.Team)
 			.Geom_Point()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		AssertRenders(svg);
+	}
 
 	[Fact]
-	public Task Dumbbell()
-		=> RenderPlot(PlotContext.Build(changes, c => c.Before, c => c.Team)
+	public async Task Dumbbell()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(changes, c => c.Before, c => c.Team)
 			.Geom_Segment(c => c.Before, c => c.After, c => c.Team, c => c.Team)
 			.Geom_Point()
 			.Geom_Point(x: c => c.After)
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		AssertRenders(svg);
+	}
 
 	[Fact]
-	public Task Waffle()
-		=> RenderPlot(PlotContext.Build(units, u => u.Column, u => u.Row)
+	public async Task Waffle()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(units, u => u.Column, u => u.Row)
 			.Scale_Fill_Discrete(u => u.Part, ["#23d0fc", "#fc9d23", "#8b5cf6"])
 			.Geom_Tile(u => u.Column, u => u.Row, u => 0.95, u => 0.95)
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		AssertRenders(svg);
+	}
 }

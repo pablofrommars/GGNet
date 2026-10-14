@@ -1,7 +1,7 @@
 namespace GGNet.Components.Tests;
 
-// Phase 0 reference harness: proves bUnit can render a GGNet Plot to SVG and
-// dispatch a mark event through the circuit. The two patterns every Phase 2
+// Reference harness: proves bUnit can render a GGNet Plot to SVG and
+// dispatch a mark event through the circuit. The two patterns every
 // component/circuit test builds on — render + assert markup, and fire + assert
 // handler. Rendered with RenderMode.InteractiveAuto: a synchronous inline
 // handler, so re-render completes in the dispatch turn and assertions need no

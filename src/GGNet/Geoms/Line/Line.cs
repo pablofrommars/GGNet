@@ -12,7 +12,7 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
 {
 	private readonly Dictionary<(string, LineType), Shapes.Path> paths = [];
 
-	private readonly bool piecewise;
+	private readonly bool isPiecewise;
 
 	public Line(
 	  IReadOnlyList<T> source,
@@ -25,7 +25,7 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
 	  bool piecewise = false)
 	  : base(source, scale)
 	{
-		this.piecewise = piecewise;
+		isPiecewise = piecewise;
 
 		Selectors = new()
 		{
@@ -177,7 +177,7 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
 		var y = Positions.Y.Map(item);
 		if (double.IsNaN(y))
 		{
-			if (piecewise)
+			if (isPiecewise)
 			{
 				path.Points.Add((x, double.NaN));
 			}

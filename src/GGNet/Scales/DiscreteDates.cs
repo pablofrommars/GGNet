@@ -12,15 +12,6 @@ internal class DiscreteDates(
 
 	protected void DayMonth(int start, int end)
 	{
-		/*
-		var delta = (int)Pretty.delta(start, end);
-
-		if (delta == 0)
-		{
-			return;
-		}
-		*/
-
 		var delta = (end - start + 1) switch
 		{
 			var _n when _n <= 7 => 1,
@@ -123,8 +114,6 @@ internal class DiscreteDates(
 
 			j = 1;
 			i = last + 1;
-			// end is exclusive, like every other loop here: on a full-range axis values[end] is out
-			// of bounds, and on a windowed one it is a real element outside the requested window.
 			while (i < end)
 			{
 				if (j++ % delta == 0)

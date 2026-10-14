@@ -3,9 +3,9 @@ using GGNet.Exceptions;
 
 namespace GGNet;
 
-// Time-axis view commands, surfaced only on the closed generic instantiations
-// where a trailing window is meaningful (Instant x). State lives on
-// PlotContext (SetXView); these are typed composites over it.
+/// <summary>
+/// Time-axis view commands, surfaced only where a trailing window is meaningful (an <c>Instant</c> x axis).
+/// </summary>
 public static class ViewExtensions
 {
 	/// <summary>Windows the x axis to the trailing span of the plot's source — "show the last 48 hours". Anchored at the latest x value in the source; survives re-renders until the view is reset.</summary>

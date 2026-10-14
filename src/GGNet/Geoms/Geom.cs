@@ -12,24 +12,20 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 	protected readonly IReadOnlyList<T> source = source;
 	protected readonly (bool x, bool y) scale = scale ?? (true, true);
 
-	private Facet<T>? facet;
+	private Facet<T>? layerFacet;
 	private Legends? legends;
 
 	public List<Shape> Layer { get; } = [];
 
-	// Capability check, captured once: a stat-backed source participates in
-	// the pipeline's per-pass Reset.
 	public IStatSource? StatSource { get; } = source as IStatSource;
 
 	public virtual CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 
-	// Geoms share the panel's axis types by construction, so position mappings are
-	// direct — no runtime type tests.
 	public virtual void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{
 		if (facet is not null && panel.Data.Source is not null && panel.Data.Source.Equals(source))
 		{
-			this.facet = (facet as Facet<T>)!;
+			layerFacet = (facet as Facet<T>)!;
 		}
 
 		legends = panel.Data.Legends;
@@ -43,7 +39,7 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 		{
 			var item = source[i];
 
-			if (facet is not null && !facet.Include(item))
+			if (layerFacet is not null && !layerFacet.Include(item))
 			{
 				continue;
 			}
@@ -113,7 +109,7 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 		{
 			var item = source[i];
 
-			if (facet is not null && !facet.Include(item))
+			if (layerFacet is not null && !layerFacet.Include(item))
 			{
 				continue;
 			}

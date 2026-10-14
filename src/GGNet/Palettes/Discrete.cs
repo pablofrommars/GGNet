@@ -23,14 +23,11 @@ public sealed class Discrete<TKey, TValue>(TValue[] palette, int direction = 1)
 			return;
 		}
 
-		// Two-phase: indices are handed out on Train; values land on Commit.
 		map[key] = (i++, default!);
 	}
 
 	public void Set()
 	{
-		// Exhaustion is only knowable here: the key count comes from the data. Leaving the
-		// mappings at default renders an empty chart with no diagnostic.
 		var sub = Utils.Sample(palette, map.Count, direction)
 			?? throw new GGNetUserException($"Palette exhausted: {map.Count} distinct keys were trained but the palette has only {palette.Length} value(s). Supply a palette with at least {map.Count} values.");
 

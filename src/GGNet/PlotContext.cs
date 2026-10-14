@@ -4,10 +4,6 @@ using static System.Math;
 
 namespace GGNet;
 
-// Identity and orchestration: the render pipeline and its per-pass lifecycle.
-// State lives in the bucketed partials — authored spec in PlotContext.Spec,
-// per-pass realization in PlotContext.Realization; durable interaction state
-// (view window, series visibility) gets its own partial when it lands.
 public partial class PlotContext<T, TX, TY> : IPlotContext
 	where TX : struct
 	where TY : struct
@@ -26,7 +22,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	internal bool Initialized { get; private set; }
 
-	private bool grid = true;
+	private bool showGrid = true;
 
 	public Type PlotType => typeof(Components.Plot<T, TX, TY>);
 
@@ -52,7 +48,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			return;
 		}
 
-		this.grid = grid;
+		showGrid = grid;
 
 		Style ??= Style.Default();
 
@@ -290,8 +286,6 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		}
 		else if (Panels.Count > 0)
 		{
-			// Faceted legends are built once, off the first panel. A source with no rows
-			// yields no facets and therefore no panels — an empty plot, not a failure.
 			var panel = Panels[0];
 
 			for (int g = 0; g < panel.Geoms.Count; g++)
@@ -301,15 +295,11 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		}
 	}
 
-	// The render pipeline. Flagless and idempotent by construction: Reset clears
-	// every stateful participant unconditionally (clearing empty state is free),
-	// EnsurePanels builds only what is absent, and no stage depends on whether a
-	// previous pass ran. Rendering twice yields identical output.
 	public void Render()
 	{
 		if (!Initialized)
 		{
-			Init(grid);
+			Init(showGrid);
 		}
 
 		Reset();
@@ -318,7 +308,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		Train();
 		CommitAesthetics();
 
-		if (grid)
+		if (showGrid)
 		{
 			BuildLegends();
 		}
@@ -359,8 +349,8 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 		Faceting?.Clear();
 
-		// Clear contents, never replace the instance: geoms capture the container
-		// reference at panel-build time, and default-path panels outlive passes.
+		// INVARIANT: clear contents, never replace the instance — geoms capture the container reference
+		// at panel-build time, and default-path panels outlive passes.
 		Legends.Clear();
 	}
 
@@ -399,7 +389,6 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		}
 		else
 		{
-			// The panel set is data-dependent under faceting: re-derive it every pass.
 			Panels.Clear();
 
 			Positions.X.Scales.Clear();
@@ -444,7 +433,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 	{
 		for (var i = 0; i < Aesthetics.Scales.Count; i++)
 		{
-			Aesthetics.Scales[i].Commit(grid);
+			Aesthetics.Scales[i].Commit(showGrid);
 		}
 	}
 
@@ -465,12 +454,12 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 	{
 		for (var i = 0; i < Positions.X.Scales.Count; i++)
 		{
-			Positions.X.Scales[i].Commit(grid);
+			Positions.X.Scales[i].Commit(showGrid);
 		}
 
 		for (var i = 0; i < Positions.Y.Scales.Count; i++)
 		{
-			Positions.Y.Scales[i].Commit(grid);
+			Positions.Y.Scales[i].Commit(showGrid);
 		}
 	}
 
@@ -479,7 +468,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		var height = 0.0;
 		var xtitles = 0.0;
 
-		if (grid)
+		if (showGrid)
 		{
 			for (var i = 0; i < Positions.X.Scales.Count; i++)
 			{
@@ -504,7 +493,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		var width = 0.0;
 		var ytitles = 0.0;
 
-		if (grid)
+		if (showGrid)
 		{
 			for (var i = 0; i < Positions.Y.Scales.Count; i++)
 			{
@@ -524,8 +513,6 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 		if (!Coord.CarvesAxisBands)
 		{
-			// Breaks and labels live inside the plotting area;
-			// no axis bands are reserved around it.
 			Axis = (0.0, 0.0);
 
 			AxisTitles = (0.0, 0.0);

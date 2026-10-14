@@ -2,7 +2,7 @@ using GGNet.Scales;
 
 namespace GGNet.Headless.Tests;
 
-// The runtime view window (implementation-blocks Block 3): a durable
+// The runtime view window: a durable
 // interaction-bucket override. It survives the per-pass Reset(), takes the
 // committed range verbatim (no expansion — zoom shows the exact window), and
 // clearing it restores the spec-driven range exactly.

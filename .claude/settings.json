@@ -2,42 +2,17 @@
 	"permissions": {
 		"allow": [
 			"Bash(dotnet build:*)",
-			"Bash(dotnet test:*)",
 			"Bash(dotnet run:*)",
+			"Bash(dotnet test:*)",
 			"Bash(dotnet restore:*)",
 			"Bash(dotnet clean:*)",
 			"Bash(dotnet format:*)",
-			"Bash(dotnet add:*)",
-			"Bash(dotnet remove:*)",
 			"Bash(dotnet list:*)",
-			"Bash(dotnet pack:*)",
-			"Bash(dotnet tool:*)",
 			"Bash(dotnet sln:*)",
-			"Bash(dotnet nuget locals:*)",
-			"Bash(dnx:*)",
 			"Bash(git status:*)",
 			"Bash(git diff:*)",
 			"Bash(git log:*)",
 			"Bash(git show:*)",
-			"Bash(git branch:*)",
-			"Bash(git checkout:*)",
-			"Bash(git switch:*)",
-			"Bash(git add:*)",
-			"Bash(git commit:*)",
-			"Bash(git stash:*)",
-			"Bash(git restore:*)",
-			"Bash(git fetch:*)",
-			"Bash(git merge:*)",
-			"Bash(git rebase:*)",
-			"Bash(git cherry-pick:*)",
-			"Bash(git tag:*)",
-			"Bash(git remote:*)",
-			"Bash(gh pr:*)",
-			"Bash(gh issue:*)",
-			"Bash(gh repo view:*)",
-			"Bash(gh run:*)",
-			"Bash(gh workflow:*)",
-			"Bash(gh api:*)",
 			"Bash(ls:*)",
 			"Bash(cat:*)",
 			"Bash(rg:*)",
@@ -47,39 +22,25 @@
 			"Bash(head:*)",
 			"Bash(tail:*)",
 			"Bash(wc:*)",
-			"Bash(echo:*)",
 			"Bash(pwd)",
 			"Bash(which:*)",
-			"Bash(mkdir:*)",
-			"Bash(touch:*)",
-			"Bash(cp:*)",
-			"Bash(mv:*)",
 			"Bash(diff:*)",
+			"Bash(sed:*)",
+			"Bash(awk:*)",
 			"Bash(jq:*)",
-			"WebFetch(domain:learn.microsoft.com)",
-			"WebFetch(domain:devblogs.microsoft.com)",
-			"WebFetch(domain:dotnet.microsoft.com)",
-			"WebFetch(domain:nuget.org)",
-			"WebFetch(domain:www.nuget.org)",
-			"WebFetch(domain:github.com)",
-			"WebFetch(domain:raw.githubusercontent.com)",
-			"WebFetch(domain:www.data-to-viz.com)",
-			"WebSearch"
-		],
-		"ask": [
-			"Bash(dotnet nuget push:*)",
-			"Bash(dotnet nuget delete:*)",
-			"Bash(dotnet publish:*)",
-			"Bash(git push:*)",
-			"Bash(git reset --hard:*)",
-			"Bash(git clean:*)",
-			"Bash(gh pr merge:*)",
-			"Bash(gh release:*)"
+			"Bash(yq:*)",
+			"Read(**)",
+			"Edit(**)",
+			"Grep(**)"
 		],
 		"deny": [
 			"Bash(sudo:*)",
 			"Bash(git push --force:*)",
 			"Bash(git push -f:*)",
+			"Bash(git reset --hard:*)",
+			"Bash(dotnet nuget delete:*)",
+			"Bash(rm -rf:*)",
+			"Bash(rm -fr:*)",
 			"Read(.env)",
 			"Read(.env.*)",
 			"Read(**/secrets.json)",
@@ -90,14 +51,115 @@
 			"Read(**/*.pfx)",
 			"Read(**/*.pem)",
 			"Read(**/*.key)",
-			"Write(.git/**)"
+			"Edit(.git/**)"
+		],
+		"ask": [
+			"Bash(dotnet new:*)",
+			"Bash(dotnet add:*)",
+			"Bash(dotnet remove:*)",
+			"Bash(dotnet tool:*)",
+			"Bash(dotnet pack:*)",
+			"Bash(dotnet ef:*)",
+			"Bash(dotnet watch:*)",
+			"Bash(dotnet user-secrets:*)",
+			"Bash(dotnet workload:*)",
+			"Bash(dotnet nuget push:*)",
+			"Bash(dotnet publish:*)",
+			"Bash(git branch:*)",
+			"Bash(git remote:*)",
+			"Bash(git checkout:*)",
+			"Bash(git switch:*)",
+			"Bash(git add:*)",
+			"Bash(git commit:*)",
+			"Bash(git stash:*)",
+			"Bash(git restore:*)",
+			"Bash(git fetch:*)",
+			"Bash(git pull:*)",
+			"Bash(git rebase:*)",
+			"Bash(git merge:*)",
+			"Bash(git cherry-pick:*)",
+			"Bash(git tag:*)",
+			"Bash(git push:*)",
+			"Bash(git clean:*)",
+			"Bash(gh pr:*)",
+			"Bash(gh issue:*)",
+			"Bash(gh repo:*)",
+			"Bash(gh run:*)",
+			"Bash(gh workflow:*)",
+			"Bash(gh release:*)",
+			"Bash(mkdir:*)",
+			"Bash(touch:*)",
+			"Bash(cp:*)",
+			"Bash(mv:*)",
+			"Bash(rm:*)",
+			"Bash(npm:*)",
+			"Bash(npx:*)",
+			"Bash(pnpm:*)",
+			"Bash(node:*)",
+			"Bash(curl:*)",
+			"Bash(http:*)",
+			"Bash(brew:*)",
+			"Bash(podman:*)",
+			"Bash(docker:*)",
+			"Bash(az:*)",
+			"Bash(aws:*)",
+			"Bash(kubectl:*)",
+			"Bash(terraform:*)",
+			"Edit(.env*)",
+			"Edit(**/appsettings.Production.json)",
+			"Edit(**/*.pubxml)",
+			"WebFetch(domain:learn.microsoft.com)",
+			"WebFetch(domain:docs.microsoft.com)",
+			"WebFetch(domain:devblogs.microsoft.com)",
+			"WebFetch(domain:nuget.org)",
+			"WebFetch(domain:www.nuget.org)",
+			"WebFetch(domain:github.com)",
+			"WebFetch(domain:raw.githubusercontent.com)",
+			"WebFetch(domain:stackoverflow.com)",
+			"WebFetch(domain:dotnet.microsoft.com)",
+			"WebFetch(domain:www.data-to-viz.com)"
+		]
+	},
+	"hooks": {
+		"PreToolUse": [
+			{
+				"matcher": "Edit|MultiEdit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"$CLAUDE_PROJECT_DIR/agent/hooks/guide.sh\" claude",
+						"timeout": 5
+					}
+				]
+			}
+		],
+		"Stop": [
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"$CLAUDE_PROJECT_DIR/agent/hooks/format.sh\" claude --solution GGNet.slnx",
+						"timeout": 120,
+						"statusMessage": "Verifying whitespace formatting..."
+					}
+				]
+			},
+			{
+				"hooks": [
+					{
+						"type": "command",
+						"command": "bash \"$CLAUDE_PROJECT_DIR/agent/hooks/session.sh\" notify claude",
+						"timeout": 5
+					}
+				]
+			}
 		]
 	},
 	"enabledPlugins": {
-		"csharp-lsp@local-lsp": true
+		"csharp-lsp@ggnet-lsp": true
 	},
 	"extraKnownMarketplaces": {
-		"local-lsp": {
+		"ggnet-lsp": {
 			"source": {
 				"source": "directory",
 				"path": "./.claude/lsp-marketplace"
@@ -106,8 +168,8 @@
 	},
 	"sandbox": {
 		"enabled": true,
-		"failIfUnavailable": false,
-		"autoAllowBashIfSandboxed": true,
+		"failIfUnavailable": true,
+		"autoAllowBashIfSandboxed": false,
 		"allowUnsandboxedCommands": true,
 		"network": {
 			"allowedDomains": [
@@ -125,6 +187,8 @@
 				"aka.ms",
 				"*.azureedge.net",
 				"pkgs.dev.azure.com",
+				"registry.npmjs.org",
+				"*.npmjs.org",
 				"www.data-to-viz.com"
 			],
 			"allowLocalBinding": true
@@ -146,27 +210,14 @@
 			]
 		},
 		"excludedCommands": [
+			"brew *",
 			"docker *",
-			"podman *"
-		]
-	},
-	"hooks": {
-		"SessionStart": [
-			{ "hooks": [ { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/caffeinate-start.sh" } ] }
-		],
-		"SessionEnd": [
-			{ "hooks": [ { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/caffeinate-stop.sh" } ] }
-		],
-		"Stop": [
-			{
-				"matcher": "",
-				"hooks": [
-					{
-						"type": "command",
-						"command": "cd \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; [ -n \"$(git diff --name-only -- '*.cs'; git diff --cached --name-only -- '*.cs')\" ] || exit 0; dotnet format GGNet.slnx --verify-no-changes >/tmp/ggnet-format.log 2>&1 && echo 'dotnet format: clean' || { echo 'dotnet format --verify-no-changes: drift detected — run: dotnet format GGNet.slnx'; tail -n 20 /tmp/ggnet-format.log; }"
-					}
-				]
-			}
+			"podman *",
+			"az *",
+			"aws *",
+			"kubectl *",
+			"terraform *",
+			"dotnet *"
 		]
 	}
 }

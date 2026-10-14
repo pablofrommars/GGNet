@@ -1,0 +1,26 @@
+{
+  "description": "Portable project lifecycle hooks.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/agent/hooks/format.sh\" codex --solution GGNet.slnx",
+            "timeout": 120,
+            "statusMessage": "Verifying whitespace formatting..."
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$(git rev-parse --show-toplevel)/agent/hooks/session.sh\" notify codex",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

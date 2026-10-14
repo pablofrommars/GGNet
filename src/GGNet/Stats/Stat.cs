@@ -1,9 +1,10 @@
 namespace GGNet;
 
-// Stats are sources, not layers: each method returns a typed, lazily
-// recomputed source that any geom draws unchanged. Per-facet statistics are
-// grouped statistics — compute with groupBy and facet the output on the same
-// key (Facet_Wrap(b => b.Group)); the key is deliberately stated twice.
+/// <summary>
+/// Statistical sources: each method returns a typed, lazily recomputed source that any geom draws
+/// unchanged. Per-facet statistics are grouped statistics — compute with <c>groupBy</c> and facet the
+/// output on the same key.
+/// </summary>
 public static partial class Stat
 {
 	/// <summary>
@@ -77,7 +78,6 @@ public static partial class Stat
 			max = Math.Max(max, v);
 		}
 
-		// Degenerate range: one bin of nominal width centered on the value.
 		var width = max > min ? (max - min) / bins : 1.0;
 
 		var counts = new int[bins];

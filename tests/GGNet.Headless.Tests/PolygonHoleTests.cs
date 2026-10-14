@@ -62,9 +62,13 @@ public class PolygonHoleTests
 	[Fact]
 	public async Task HoleIsWoundAgainstItsExterior()
 	{
-		// Arrange / Act
+		// Arrange
 
-		var d = await Path([exterior, hole]);
+		Geospacial.Polygon[] shapes = [exterior, hole];
+
+		// Act
+
+		var d = await Path(shapes);
 
 		// Assert
 
@@ -127,14 +131,16 @@ public class PolygonHoleTests
 	{
 		// Arrange
 
-		var svg = await PlotContext.Build([new Region([exterior, hole])])
+		var plot = PlotContext.Build([new Region([exterior, hole])])
 			.Geom_Map(r => r.Shapes)
-			.Style()
-			.AsStringAsync();
+			.Style();
 
-		// Act / Assert
+		// Act
 
-		// Holes are carried by winding under the default nonzero rule, not by a fill rule.
+		var svg = await plot.AsStringAsync();
+
+		// Assert — holes are carried by winding under the default nonzero rule, not by a fill rule.
+
 		svg.Should().NotContain("fill-rule");
 	}
 }

@@ -9,12 +9,8 @@ internal static partial class Markdown
 
 	private static readonly ObjectPool<StringBuilder> pool = new DefaultObjectPoolProvider().CreateStringBuilderPool();
 
-	// The result is rendered as MarkupString (Panel.razor) and written verbatim into exported SVG, so
-	// the tspan wrappers are the only markup allowed to originate here: every caller-supplied span —
-	// unmatched text and matched token values alike — is XML-escaped before it is appended.
 	private static string Escape(string text) => SecurityElement.Escape(text);
 
-	// * Usage: <text>@((MarkupString)@Markdown.Text("**bold** *italic* ~subscript~ ^superscript^", 10, 20))</text>
 	public static string Text([StringSyntax("Markdown")] string markdown)
 	{
 		var sb = pool.Get();

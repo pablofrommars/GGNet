@@ -1,6 +1,6 @@
 namespace GGNet.Components.Tests;
 
-// The cursor-glued tooltip (implementation-blocks Block 9, slices a+b): under
+// The cursor-glued tooltip: under
 // the CursorTooltip opt-in the bubble renders as a manual top-layer popover
 // whose element is handed to the JS module after each contentful render; the
 // classic mark-anchored tooltip stays byte-untouched without the opt-in.

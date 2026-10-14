@@ -10,9 +10,6 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 
 	public bool CarvesAxisBands => false;
 
-	// The angular scale spans the full turn: discrete (0,0,0,1) maps n
-	// categories to fractions i/n with the extra slot as the closing wrap
-	// segment. The radial scale is zero-based at the center.
 	public (double minMult, double minAdd, double maxMult, double maxAdd)? XExpansion(bool discrete)
 	  => discrete ? (0.0, 0.0, 0.0, 1.0) : (0.0, 0.0, 0.0, 0.0);
 
@@ -27,9 +24,6 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 
 	public void Measure(Zone area, bool hasXTitles)
 	{
-		// Polar draws breaks and labels inside the plotting area: inscribe the
-		// circle, minus a gutter for the angular labels around it — one line, or
-		// two when the scale carries break titles.
 		var gutter = style.Axis.Text.X.FontSize.Height() + style.Polar.LabelMargin;
 
 		if (hasXTitles)
@@ -42,8 +36,6 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 		Radius = Math.Max(0.0, Math.Min(area.Width, area.Height) / 2.0 - gutter);
 	}
 
-	// Baseline distance from a break label to its title line: the title's own
-	// line height plus clearance for the label's descenders.
 	private double TitleOffset()
 	  => style.Axis.Title.X.FontSize.Height() + 0.25 * style.Axis.Text.X.FontSize.Height();
 
@@ -73,10 +65,6 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 		var fontHeight = style.Axis.Text.X.FontSize.Height();
 		var labelRadius = Radius + style.Polar.LabelMargin;
 
-		// With a title line the two-line stack shifts outward along the spoke:
-		// fully up at the top spoke (the title takes the single line's place),
-		// not at all at the bottom (the title flows downward), half at the
-		// sides — so every line stays outside the web.
 		var titleOffset = inputs.XTitles.Count > 0 ? TitleOffset() : 0.0;
 
 		(double x, double y, string anchor) Anchor(double f)

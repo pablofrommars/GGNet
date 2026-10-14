@@ -1,12 +1,8 @@
-// Per-file usings (not global): Moq.Match collides with the globally-used
-// System.Text.RegularExpressions.Match, and only this file needs either.
 using GGNet.Rendering;
-
-using Moq;
 
 namespace GGNet.Headless.Tests;
 
-// Phase 1: the render-mode handlers in isolation. The Interactive handler runs
+// The render-mode handlers in isolation. The Interactive handler runs
 // a background channel loop with semaphore backpressure; tests drive it
 // deterministically by using that same backpressure as the synchronization
 // signal (StateHasChangedAsync releases a test semaphore) — never Task.Delay.
@@ -100,12 +96,17 @@ public class RenderModeHandlerTests
 
 		await using var handler = new StaticRenderModeHandler(plot.Object);
 
-		// Act / Assert
+		// Act
+
+		var parent = handler.ShouldRender();
+		var child = handler.Child().ShouldRender();
+
+		// Assert
 
 		using var _ = new AssertionScope();
 
-		handler.ShouldRender().Should().BeFalse();
-		handler.Child().ShouldRender().Should().BeFalse();
+		parent.Should().BeFalse();
+		child.Should().BeFalse();
 	}
 
 	[Fact]
@@ -137,20 +138,28 @@ public class RenderModeHandlerTests
 
 		var child = new InteractiveRenderModeHandler.ChildRenderHandler();
 
-		// Act / Assert
+		// Act
+
+		var initially = child.ShouldRender();
+
+		child.Refresh();
+		var afterOneRefresh = child.ShouldRender();
+		var thenConsumed = child.ShouldRender();
+
+		child.Refresh();
+		child.Refresh();
+		var afterTwoRefreshes = child.ShouldRender();
+		var thenConsumedAgain = child.ShouldRender();
+
+		// Assert
 
 		using var _ = new AssertionScope();
 
-		child.ShouldRender().Should().BeFalse();
-
-		child.Refresh();
-		child.ShouldRender().Should().BeTrue();
-		child.ShouldRender().Should().BeFalse();
-
-		child.Refresh();
-		child.Refresh();
-		child.ShouldRender().Should().BeTrue();
-		child.ShouldRender().Should().BeFalse();
+		initially.Should().BeFalse();
+		afterOneRefresh.Should().BeTrue();
+		thenConsumed.Should().BeFalse();
+		afterTwoRefreshes.Should().BeTrue();
+		thenConsumedAgain.Should().BeFalse();
 	}
 
 	[Fact]

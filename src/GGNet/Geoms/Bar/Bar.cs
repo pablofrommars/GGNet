@@ -20,10 +20,10 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 
 	private readonly SortedBuffer<(double x, List<(T item, string fill, double value)> y)> bars = new(Comparer.Instance);
 
-	private readonly PositionAdjustment position;
-	private readonly double width;
+	private readonly PositionAdjustment adjustment;
+	private readonly double barWidth;
 
-	private readonly bool animation;
+	private readonly bool animated;
 
 	private bool flip;
 
@@ -51,10 +51,10 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 			Fill = fill
 		};
 
-		this.position = position;
-		this.width = width;
+		adjustment = position;
+		barWidth = width;
 
-		this.animation = animation;
+		animated = animation;
 	}
 
 	public Selectors<T, TX, TY> Selectors { get; }
@@ -87,9 +87,6 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 			throw new GGNetUserException("Y selector is required");
 		}
 
-		// Flip is Bar's statistical-axis choice, captured at wiring time: the
-		// grouping key and the stacking axis swap roles (selector/scale pairs
-		// stay intact) and AddRect transposes the emitted rectangles to match.
 		flip = panel.Data.Flip;
 
 		if (flip)
@@ -200,7 +197,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 		Layer.Add(flip
 			? new Rectangle
 			{
-				Classes = animation ? "animate-bar" : string.Empty,
+				Classes = animated ? "animate-bar" : string.Empty,
 				X = y,
 				Y = x,
 				Width = h,
@@ -212,7 +209,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 			}
 			: new Rectangle
 			{
-				Classes = animation ? "animate-bar" : string.Empty,
+				Classes = animated ? "animate-bar" : string.Empty,
 				X = x,
 				Y = y,
 				Width = w,
@@ -226,7 +223,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 
 	private double Delta()
 	{
-		var delta = width;
+		var delta = barWidth;
 
 		if (bars.Count > 1)
 		{
@@ -251,8 +248,6 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 		{
 			var (x, y) = bars[i];
 
-			// One accumulator per sign: a negative segment stacks downwards from the baseline
-			// and is emitted with a non-negative height, which is the only kind SVG draws.
 			var positive = 0.0;
 			var negative = 0.0;
 
@@ -276,8 +271,6 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 
 			if (scale.x)
 			{
-				// The rectangles span x ± delta/2; training the full delta on each side padded
-				// the grouping axis with twice the width that was actually drawn.
 				Positions.X.Position.Shape(x - delta / 2.0, x + delta / 2.0);
 			}
 
@@ -330,11 +323,11 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 
 	protected override void Set()
 	{
-		if (position == PositionAdjustment.Stack)
+		if (adjustment == PositionAdjustment.Stack)
 		{
 			Stack();
 		}
-		else if (position == PositionAdjustment.Dodge)
+		else if (adjustment == PositionAdjustment.Dodge)
 		{
 			Dodge();
 		}

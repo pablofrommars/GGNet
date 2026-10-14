@@ -6,7 +6,7 @@ using Log10 = GGNet.Transformations.Log10;
 
 namespace GGNet.Headless.Tests;
 
-// The interactivity inverse seam (implementation-blocks Block 1): every forward
+// The interactivity inverse seam: every forward
 // map has a pure inverse, so pixel gestures can recover data-space windows.
 public class InverseProjectionTests
 {

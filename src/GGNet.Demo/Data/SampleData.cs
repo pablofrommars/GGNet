@@ -4,7 +4,6 @@ public sealed record Reading(double Hours, double Gravity, string Batch);
 
 public sealed record TimedReading(Instant Ts, double Gravity);
 
-// Deterministic sample data so every demo page renders identically across runs.
 public static class SampleData
 {
 	public static readonly IReadOnlyList<Reading> Readings =
@@ -41,8 +40,6 @@ public static class SampleData
 		new(168, 1.015, "Lager")
 	];
 
-	// A seven-day fermentation at 12-hour cadence on a real time axis, for the
-	// Instant-x pages (external controls, ShowLast).
 	public static readonly Instant Start = Instant.FromUtc(2026, 7, 1, 0, 0);
 
 	public static readonly IReadOnlyList<TimedReading> TimedReadings =

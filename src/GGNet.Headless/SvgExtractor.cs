@@ -1,8 +1,5 @@
 namespace GGNet.Headless;
 
-// The rendered component is HTML — bare scoped-CSS attributes, no self-closing
-// tags, razor source whitespace between elements — so the chart svg is located
-// structurally and re-serialized here under the export's own formatting rules.
 internal static class SvgExtractor
 {
 	private static readonly HashSet<string> selfClosingElements = new(StringComparer.OrdinalIgnoreCase)
@@ -21,8 +18,6 @@ internal static class SvgExtractor
 		WriteElement(svg, writer, 0, false);
 	}
 
-	// The chart is the component root's own svg; the loading indicator's svg is
-	// nested one level deeper, inside div.spinner.
 	private static IElement? Chart(IDocument document)
 	{
 		var root = document.Body?.FirstElementChild;
@@ -55,8 +50,6 @@ internal static class SvgExtractor
 
 		foreach (var attribute in element.Attributes)
 		{
-			// Blazor scoped-CSS markers: meaningless outside the component, and
-			// valueless attributes break XML validity.
 			if (attribute.Name.StartsWith("b-", StringComparison.Ordinal))
 			{
 				continue;
@@ -101,8 +94,6 @@ internal static class SvgExtractor
 				continue;
 			}
 
-			// Razor source indentation surrounds the content, not the content's
-			// own leading and trailing spacing.
 			var text = ((IText)content[i]).Data;
 
 			if (i == 0)
@@ -129,7 +120,6 @@ internal static class SvgExtractor
 		writer.Write('>');
 	}
 
-	// Razor source-file whitespace is not document structure.
 	private static List<INode> Content(IElement element)
 	{
 		var content = new List<INode>();

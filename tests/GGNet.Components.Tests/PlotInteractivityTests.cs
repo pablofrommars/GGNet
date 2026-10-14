@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Components.Web;
 
 namespace GGNet.Components.Tests;
 
-// The opt-in gate and the wheel gesture (implementation-blocks Blocks 5 + the
-// responsive upgrade). The §0 acceptance: without Interactivity the markup
-// carries no gesture scaffolding; with it the capture group appears and the
+// The opt-in gate and the wheel gesture, with the responsive svg. The gate's
+// contract: without Interactivity the markup carries no gesture scaffolding; with it the capture group appears and the
 // svg stays responsive — wheel coordinates arrive from the JS module in svg
 // units, so the commit path is exercised by invoking the JSInvokable directly.
 public class PlotInteractivityTests : BunitContext
@@ -47,9 +46,13 @@ public class PlotInteractivityTests : BunitContext
 	[Fact]
 	public void OptInOffEmitsNoScaffolding()
 	{
-		// Arrange / Act
+		// Arrange
 
-		var cut = Render(PointPlot());
+		var context = PointPlot();
+
+		// Act
+
+		var cut = Render(context);
 
 		// Assert
 
@@ -62,9 +65,13 @@ public class PlotInteractivityTests : BunitContext
 	[Fact]
 	public void OptInOnEmitsTheCaptureGroupAndKeepsTheSvgResponsive()
 	{
-		// Arrange / Act
+		// Arrange
 
-		var cut = Render(PointPlot(), new InteractivityOptions());
+		var context = PointPlot();
+
+		// Act
+
+		var cut = Render(context, new InteractivityOptions());
 
 		// Assert
 

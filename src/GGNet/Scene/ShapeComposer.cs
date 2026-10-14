@@ -4,9 +4,6 @@ using GGNet.Shapes;
 
 namespace GGNet.Scene;
 
-// The compose stage for shapes: walks the geoms' data-space layers and
-// produces screen-space primitives. All projection and annotation-label
-// geometry lives here; the Area component is a dumb walker over the result.
 internal static class ShapeComposer
 {
 	private static readonly ObjectPool<StringBuilder> pool = new DefaultObjectPoolProvider().CreateStringBuilderPool();
@@ -23,8 +20,6 @@ internal static class ShapeComposer
 			{
 				var shape = geom.Layer[l];
 
-				// Exhaustive over the Shape union: an unhandled case is a
-				// compile error (CS8509 as error), not a silently dropped shape.
 				_ = shape switch
 				{
 					Circle circle => ComposeCircle(scene, coord, circle, circle),
@@ -205,8 +200,6 @@ internal static class ShapeComposer
 		return true;
 	}
 
-	// Shoelace over the projected ring. Only the sign is used, so the y-down screen space and
-	// the missing halving are both irrelevant — what matters is one ring against another.
 	private static double SignedArea(ICoord coord, Geospacial.Polygon poly)
 	{
 		var (fx, fy) = coord.Project(poly.Longitude[0], poly.Latitude[0]);
@@ -228,10 +221,6 @@ internal static class ShapeComposer
 
 	private static void AppendPolygon(StringBuilder sb, ICoord coord, Geospacial.Polygon poly)
 	{
-		// SVG fills with the nonzero rule, under which a ring only punches a hole when it is
-		// wound against the exterior enclosing it. Callers hand over whatever winding their
-		// source data carried, so orientation is normalized here — exteriors one way, holes the
-		// other — which also leaves overlapping exteriors filled instead of cancelling.
 		var n = poly.Longitude.Length;
 		var reverse = (SignedArea(coord, poly) < 0.0) != poly.Hole;
 

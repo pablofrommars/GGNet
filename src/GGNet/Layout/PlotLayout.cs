@@ -4,8 +4,6 @@ namespace GGNet.Layout;
 
 using static Position;
 
-// Pure plot geometry: title/subtitle/legend/caption carving of the outer
-// canvas, and subdivision of the remaining wrapper into panel zones.
 internal static class PlotLayout
 {
 	internal readonly record struct Inputs(

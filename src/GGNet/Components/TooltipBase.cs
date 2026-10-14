@@ -8,9 +8,6 @@ public abstract class TooltipBase : ComponentBase, ITooltip
 	[Parameter]
 	public Zone Zone { get; set; }
 
-	// Cursor-glued mode: the host renders the bubble as a top-layer popover
-	// and GlueAsync hands its element to the JS module after each render, so
-	// position and edge-flipping run client-side. Content stays server-owned.
 	[Parameter]
 	public bool Glued { get; set; }
 
@@ -42,8 +39,6 @@ public abstract class TooltipBase : ComponentBase, ITooltip
 	{
 		var (px, py) = Coord.Project(x, y);
 
-		// Null stays null: the theme falls back to --ggnet-tooltip-bg when the
-		// geom passed no mark color.
 		context = new(
 		  X: px,
 		  Y: py,
@@ -56,9 +51,6 @@ public abstract class TooltipBase : ComponentBase, ITooltip
 		_ = InvokeAsync(StateHasChanged);
 	}
 
-	// The mark's color/opacity ride as custom properties the theme derives
-	// from; emitted on the tooltip host so both the classic bubble and the
-	// top-layer popover inherit them.
 	internal string? ContextStyle => context switch
 	{
 		null or { Color: null, Opacity: null } => null,

@@ -2,7 +2,7 @@ using System.Text.RegularExpressions;
 
 namespace GGNet.Components.Tests;
 
-// Phase 2 — component rendering. Rendered with InteractiveAuto (synchronous
+// Component rendering. Rendered with InteractiveAuto (synchronous
 // inline handler) so markup is available immediately, no WaitForState. Inherits
 // BunitContext: xUnit constructs/disposes it per test.
 public class PlotComponentTests : BunitContext
@@ -36,9 +36,13 @@ public class PlotComponentTests : BunitContext
 	[Fact]
 	public void RendersSvgWithPanel()
 	{
-		// Arrange / Act
+		// Arrange
 
-		var cut = Render(PointPlot(), RenderMode.InteractiveAuto);
+		var context = PointPlot();
+
+		// Act
+
+		var cut = Render(context, RenderMode.InteractiveAuto);
 
 		// Assert
 

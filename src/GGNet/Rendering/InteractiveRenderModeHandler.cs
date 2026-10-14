@@ -8,13 +8,10 @@ internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 
 	private readonly SemaphoreSlim semaphore = new(0, 1);
 
-	private readonly ILogger? logger;
+	private readonly ILogger? frameLogger;
 
 	private volatile int render;
 
-	// SingleWriter is deliberately false: RefreshAsync is public surface —
-	// gestures arrive on the circuit thread, host commands from any thread
-	// (ConcurrencyStressTests pins the multi-writer contract).
 	readonly Channel<RenderTarget> channel = Channel.CreateUnbounded<RenderTarget>(new()
 	{
 		SingleReader = true,
@@ -26,7 +23,7 @@ internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 	public InteractiveRenderModeHandler(IPlotRendering plot, ILogger? logger = null)
 	  : base(plot)
 	{
-		this.logger = logger;
+		frameLogger = logger;
 
 		background = RunBackground();
 	}
@@ -52,7 +49,6 @@ internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 	{
 		private volatile int render;
 
-		// Single-bit pending: set-then-consume cannot lose an update.
 		public void Refresh() => Interlocked.Exchange(ref render, 1);
 
 		public bool ShouldRender() => Interlocked.Exchange(ref render, 0) == 1;
@@ -88,7 +84,6 @@ internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 						continue;
 					}
 
-					// A queued render subsumes any queued loading state.
 					plot.Render(pendingRender ? RenderTarget.Render : RenderTarget.Loading);
 
 					Interlocked.Exchange(ref render, 1);
@@ -102,12 +97,9 @@ internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 				}
 				catch (Exception exception)
 				{
-					// The loop must survive a failed frame, but never silently:
-					// every interactive commit (wheel, pan, host commands)
-					// renders through here.
-					if (logger is not null)
+					if (frameLogger is not null)
 					{
-						Log.RenderFrameFailed(logger, exception);
+						Log.RenderFrameFailed(frameLogger, exception);
 					}
 				}
 			}

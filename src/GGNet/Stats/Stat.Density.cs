@@ -70,7 +70,7 @@ public static partial class Stat
 		var sd = StandardDeviation(values);
 
 		var sorted = values.Order().ToArray();
-		var iqr = Quantile(sorted, 0.75) - Quantile(sorted, 0.25);
+		var iqr = QuantileType7(sorted, 0.75) - QuantileType7(sorted, 0.25);
 
 		var spread = Math.Min(sd, iqr / 1.34);
 
@@ -113,8 +113,7 @@ public static partial class Stat
 		}
 	}
 
-	// Type-7 quantile (R default) over a pre-sorted sample.
-	private static double Quantile(double[] sorted, double p)
+	private static double QuantileType7(double[] sorted, double p)
 	{
 		var h = (sorted.Length - 1) * p;
 		var lo = (int)Math.Floor(h);

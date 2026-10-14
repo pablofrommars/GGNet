@@ -78,10 +78,8 @@ public class GalleryTests
 		])
 	];
 
-	private static async Task VerifyPlot(IPlotContext plot)
+	private static async Task VerifySvg(string svg)
 	{
-		var svg = await plot.AsStringAsync();
-
 		// Static export must be pure, well-formed SVG — not an HTML fragment.
 		XDocument.Parse(svg);
 
@@ -91,41 +89,93 @@ public class GalleryTests
 	[Fact]
 	public async Task SelfContained()
 	{
-		// Self-contained export embeds the theme css; pinned separately so the
-		// default lean output stays byte-stable.
+		// Arrange — self-contained export embeds the theme css; pinned separately so the
+		// default lean output stays byte-stable. The chained form below is pinned verbatim
+		// by skills/ggnet/examples/themed.md, so the plot is built inside Act.
+
+		// Act
+
 		var svg = await PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Point().Style()
 			.AsStringAsync(selfContained: true);
 
-		XDocument.Parse(svg);
+		// Assert
 
-		await Verifier.Verify(svg, extension: "svg");
+		await VerifySvg(svg);
 	}
 
 	[Fact]
-	public Task Point()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Point().Style());
+	public async Task Point()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Point().Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Line()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Line().Style());
+	public async Task Line()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Line().Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Bar()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Bar().Style());
+	public async Task Bar()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Bar().Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task MarkdownTitle()
+	public async Task MarkdownTitle()
+	{
+		// Arrange
 		// Markdown labels are the only place the export emits a text element whose
 		// children interleave text and tspans, and the only place its entities come
 		// from: the golden pins that mixed-content shape in every label slot.
-		=> VerifyPlot(PlotContext.Build(xy[..3], i => i.X, i => i.Y)
+
+		var plot = PlotContext.Build(xy[..3], i => i.X, i => i.Y)
 			.Title("**Bold** start, *italic* middle, ~sub~ and ^sup^ end's \"quote\" & <amp>")
 			.SubTitle("plain subtitle")
 			.Caption("caption with **bold** end")
 			.XLab("x ~2~")
 			.YLab("y ^2^")
 			.Geom_Line()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	private sealed record Reading(double Value, double Tank);
 
@@ -138,46 +188,118 @@ public class GalleryTests
 	];
 
 	[Fact]
-	public Task Histogram()
+	public async Task Histogram()
+	{
+		// Arrange
 		// The stats acid test: Stat.Bin + Geom_Bar composes a histogram —
 		// no Histogram geom exists.
-		=> VerifyPlot(PlotContext.Build(Stat.Bin(readings, r => r.Value, bins: 12), b => b.Mid, b => b.Count)
+
+		var plot = PlotContext.Build(Stat.Bin(readings, r => r.Value, bins: 12), b => b.Mid, b => b.Count)
 			.Geom_Bar(width: 1.0)
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task HistogramFaceted()
+	public async Task HistogramFaceted()
+	{
+		// Arrange
 		// Per-facet statistics are grouped statistics: bin per group, facet
 		// the output on the same key.
-		=> VerifyPlot(PlotContext.Build(Stat.Bin(readings, r => r.Value, r => r.Tank, bins: 10), b => b.Mid, b => b.Count)
+
+		var plot = PlotContext.Build(Stat.Bin(readings, r => r.Value, r => r.Tank, bins: 10), b => b.Mid, b => b.Count)
 			.Geom_Bar(width: 1.0)
 			.Facet_Wrap(b => b.Group)
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task DensityArea()
-		=> VerifyPlot(PlotContext.Build(Stat.Density(readings, r => r.Value, n: 128), d => d.At, d => d.Density)
+	public async Task DensityArea()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(Stat.Density(readings, r => r.Value, n: 128), d => d.At, d => d.Density)
 			.Geom_Area()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task ViolinFromDensity()
+	public async Task ViolinFromDensity()
+	{
+		// Arrange
 		// Stat.Density is the producer Geom_Violin's precomputed-profile
 		// contract always wanted.
-		=> VerifyPlot(PlotContext.Build(Stat.Density(readings, r => r.Value, r => r.Tank, n: 64), d => d.Group, d => d.At)
+
+		var plot = PlotContext.Build(Stat.Density(readings, r => r.Value, r => r.Tank, n: 64), d => d.Group, d => d.At)
 			.Geom_Violin(width: d => d.Density)
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task SummaryErrorBar()
-		=> VerifyPlot(PlotContext.Build(Stat.Summary(readings, r => r.Tank, r => r.Value), s => s.X, s => s.Center)
+	public async Task SummaryErrorBar()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(Stat.Summary(readings, r => r.Tank, r => r.Value), s => s.X, s => s.Center)
 			.Geom_ErrorBar(ymin: s => s.Lower, ymax: s => s.Upper)
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task BarFlipped()
+	public async Task BarFlipped()
+	{
+		// Arrange
 		// Pins Flip() output ahead of the coord-strategy absorption (session D).
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Bar().Flip().Style());
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Bar().Flip().Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	private sealed record Grouped2(double Pos, double Value, double Series);
 
@@ -189,130 +311,386 @@ public class GalleryTests
 	];
 
 	[Fact]
-	public Task BarFlippedDodged()
+	public async Task BarFlippedDodged()
+	{
+		// Arrange
 		// Flipped Dodge threw NotImplementedException before the flip absorption;
 		// this pins the capability that fell out of the unified emission path.
-		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+
+		var plot = PlotContext.Build(dodged, i => i.Pos, i => i.Value)
 			.Scale_Fill_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
 			.Geom_Bar(position: PositionAdjustment.Dodge)
 			.Flip()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task LegendLineVertical()
+	public async Task LegendLineVertical()
+	{
+		// Arrange
 		// Pins the vertical-legend line-swatch path (LegendVHLine), where the
 		// x1=Legend.Y axis typo lived unexercised until this snapshot.
-		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+
+		var plot = PlotContext.Build(dodged, i => i.Pos, i => i.Value)
 			.Scale_Color_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
 			.Geom_Line()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task LegendBarHorizontal()
+	public async Task LegendBarHorizontal()
+	{
+		// Arrange
 		// Pins the horizontal-legend rectangle-swatch path (LegendHRect), where
 		// stroke was bound to StrokeOpacity.
-		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+
+		var plot = PlotContext.Build(dodged, i => i.Pos, i => i.Value)
 			.Scale_Fill_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
 			.Geom_Bar(position: PositionAdjustment.Dodge)
-			.Style(legend: Position.Top));
+			.Style(legend: Position.Top);
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Area()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Area().Style());
+	public async Task Area()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y).Geom_Area().Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Ribbon()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
-			.Geom_Ribbon(ymin: i => i.Y - 0.5, ymax: i => i.Y + 0.5).Style());
+	public async Task Ribbon()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Geom_Ribbon(ymin: i => i.Y - 0.5, ymax: i => i.Y + 0.5).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task ErrorBar()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
-			.Geom_ErrorBar(ymin: i => i.Y - 0.4, ymax: i => i.Y + 0.4).Style());
+	public async Task ErrorBar()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Geom_ErrorBar(ymin: i => i.Y - 0.4, ymax: i => i.Y + 0.4).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Segment()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
-			.Geom_Segment(i => i.X, i => i.X + 0.5, i => i.Y, i => i.Y + 0.3).Style());
+	public async Task Segment()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Geom_Segment(i => i.X, i => i.X + 0.5, i => i.Y, i => i.Y + 0.3).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Text()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
-			.Geom_Text(text: i => $"p{i.X}").Style());
+	public async Task Text()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Geom_Text(text: i => $"p{i.X}").Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Tile()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
-			.Geom_Tile(i => i.X, i => i.Y, i => 0.9, i => 0.8).Style());
+	public async Task Tile()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Geom_Tile(i => i.X, i => i.Y, i => 0.9, i => 0.8).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Hex()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
-			.Geom_Hex(dx: i => 0.5, dy: i => 0.4).Style());
+	public async Task Hex()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Geom_Hex(dx: i => 0.5, dy: i => 0.4).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Boxplot()
+	public async Task Boxplot()
+	{
+		// Arrange
 		// Boxplot is horizontal: x carries the measurements, y the category.
-		=> VerifyPlot(PlotContext.Build(grouped, i => i.Value, i => i.Group).Geom_Boxplot().Style());
+
+		var plot = PlotContext.Build(grouped, i => i.Value, i => i.Group).Geom_Boxplot().Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Violin()
+	public async Task Violin()
+	{
+		// Arrange
 		// Violin consumes a precomputed profile: width is the density at each y.
-		=> VerifyPlot(PlotContext.Build(profile, i => i.Group, i => i.At)
-			.Geom_Violin(width: i => i.Density).Style());
+
+		var plot = PlotContext.Build(profile, i => i.Group, i => i.At)
+			.Geom_Violin(width: i => i.Density).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task RidgeLine()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
-			.Geom_RidgeLine(height: i => 0.8).Style());
+	public async Task RidgeLine()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
+			.Geom_RidgeLine(height: i => 0.8).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Candlestick()
-		=> VerifyPlot(PlotContext.Build(candles, i => i.T, i => i.Close)
-			.Geom_Candlestick(i => i.T, i => i.Open, i => i.High, i => i.Low, i => i.Close).Style());
+	public async Task Candlestick()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(candles, i => i.T, i => i.Close)
+			.Geom_Candlestick(i => i.T, i => i.Open, i => i.High, i => i.Low, i => i.Close).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task OHLC()
-		=> VerifyPlot(PlotContext.Build(candles, i => i.T, i => i.Close)
-			.Geom_OHLC(i => i.T, i => i.Open, i => i.High, i => i.Low, i => i.Close).Style());
+	public async Task OHLC()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(candles, i => i.T, i => i.Close)
+			.Geom_OHLC(i => i.T, i => i.Open, i => i.High, i => i.Low, i => i.Close).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Volume()
-		=> VerifyPlot(PlotContext.Build(candles, i => i.T, i => i.Volume)
-			.Geom_Volume(volume: i => i.Volume).Style());
+	public async Task Volume()
+	{
+		// Arrange
 
+		var plot = PlotContext.Build(candles, i => i.T, i => i.Volume)
+			.Geom_Volume(volume: i => i.Volume).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
+
+	// CA1861 (hoist constant array arguments) targets hot paths; these are one-shot facts, and the
+	// inline `new[] { … }` is the DSL form the skill docs teach.
+#pragma warning disable CA1861
 	[Fact]
-	public Task VLine()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
+	public async Task VLine()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
 			.Geom_Line()
-			.Geom_VLine(new[] { 2.5 }, v => v, v => "mark").Style());
+			.Geom_VLine(new[] { 2.5 }, v => v, v => "mark").Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task HLine()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
+	public async Task HLine()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
 			.Geom_Line()
-			.Geom_HLine(new[] { 3.0 }, v => v, v => "level").Style());
+			.Geom_HLine(new[] { 3.0 }, v => v, v => "level").Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
+#pragma warning restore CA1861
 
 	[Fact]
-	public Task ABLine()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
+	public async Task ABLine()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
 			.Geom_Point()
-			.Geom_ABLine(new[] { (a: 0.5, b: 1.0) }, i => i.a, i => i.b, i => "trend").Style());
+			.Geom_ABLine(new[] { (a: 0.5, b: 1.0) }, i => i.a, i => i.b, i => "trend").Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Radar()
-		=> VerifyPlot(PlotContext.Build(rated, i => i.Metric, i => i.Value).Geom_Radar().Style());
+	public async Task Radar()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(rated, i => i.Metric, i => i.Value).Geom_Radar().Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task RadarBreakTitles()
+	public async Task RadarBreakTitles()
+	{
+		// Arrange
 		// The two-line axis stack under polar: a break-title line beneath each
 		// break label, the pair shifted outward along the spoke so both lines
 		// stay outside the web at every angle. Setting the scale explicitly
 		// opts out of the coord system's expansion, so it is restated.
-		=> VerifyPlot(PlotContext.Build(rated, i => i.Metric, i => i.Value)
+
+		var plot = PlotContext.Build(rated, i => i.Metric, i => i.Value)
 			.Scale_X_Discrete(expand: (0.0, 0.0, 0.0, 1.0), titles: MetricStatus.Instance)
 			.Geom_Radar()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	private sealed class MetricStatus : Formats.IFormatter<Metric>
 	{
@@ -330,70 +708,178 @@ public class GalleryTests
 	}
 
 	[Fact]
-	public Task DateTimeAxis()
+	public async Task DateTimeAxis()
+	{
+		// Arrange
 		// The datetime path renders nothing pinned otherwise: its scale derives a minute grid
 		// that the pipeline reads before Commit, which is where a regression slipped through.
-		=> VerifyPlot(PlotContext.Build(timed, i => i.At, i => i.Value)
+
+		var plot = PlotContext.Build(timed, i => i.At, i => i.Value)
 			.Geom_Line()
 			.Geom_Point()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Map()
-		=> VerifyPlot(PlotContext.Build(regions)
-			.Geom_Map(r => r.Shapes).Style());
+	public async Task Map()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(regions)
+			.Geom_Map(r => r.Shapes).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task MapWithHole()
+	public async Task MapWithHole()
+	{
+		// Arrange
 		// Hole rings are wound against their exterior at compose time, so the cut-out
 		// renders under SVG's default nonzero fill regardless of the source's winding.
-		=> VerifyPlot(PlotContext.Build(holed)
-			.Geom_Map(r => r.Shapes).Style());
+
+		var plot = PlotContext.Build(holed)
+			.Geom_Map(r => r.Shapes).Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task BarStacked()
+	public async Task BarStacked()
+	{
+		// Arrange
 		// Stack is Geom_Bar's default position; the fill scale supplies the series.
-		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+
+		var plot = PlotContext.Build(dodged, i => i.Pos, i => i.Value)
 			.Scale_Fill_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
 			.Geom_Bar()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task AreaStacked()
-		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+	public async Task AreaStacked()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(dodged, i => i.Pos, i => i.Value)
 			.Scale_Fill_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
 			.Geom_Area(position: PositionAdjustment.Stack)
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task GroupedScatter()
-		=> VerifyPlot(PlotContext.Build(dodged, i => i.Pos, i => i.Value)
+	public async Task GroupedScatter()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(dodged, i => i.Pos, i => i.Value)
 			.Scale_Color_Discrete(i => i.Series, ["#23d0fc", "#fc9d23"])
 			.Geom_Point()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Bubble()
+	public async Task Bubble()
+	{
+		// Arrange
 		// range is the radius in pixels; the default (0, 1) renders sub-pixel bubbles.
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
 			.Scale_Size_Continuous(i => i.Y, range: (3, 9))
 			.Geom_Point()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task Lollipop()
+	public async Task Lollipop()
+	{
+		// Arrange
 		// A lollipop is a stem segment plus a point tip — two layers, one source.
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
 			.Geom_Segment(i => i.X, i => i.X, i => 0.0, i => i.Y)
 			.Geom_Point()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	[Fact]
-	public Task ConnectedScatter()
-		=> VerifyPlot(PlotContext.Build(xy, i => i.X, i => i.Y)
+	public async Task ConnectedScatter()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(xy, i => i.X, i => i.Y)
 			.Geom_Line()
 			.Geom_Point()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	private sealed record Change(string Name, double Before, double After);
 
@@ -405,13 +891,25 @@ public class GalleryTests
 	];
 
 	[Fact]
-	public Task Slope()
-		=> VerifyPlot(PlotContext.Build(changes, c => 0.0, c => c.Before)
+	public async Task Slope()
+	{
+		// Arrange
+
+		var plot = PlotContext.Build(changes, c => 0.0, c => c.Before)
 			.Geom_Segment(c => 0.0, c => 1.0, c => c.Before, c => c.After)
 			.Geom_Point()
 			.Geom_Point(x: c => 1.0, y: c => c.After)
 			.Geom_Text(x: c => 1.1, y: c => c.After, text: c => c.Name, anchor: Anchor.Start)
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	private sealed record Day(double Week, double Weekday, double Value);
 
@@ -423,12 +921,24 @@ public class GalleryTests
 	];
 
 	[Fact]
-	public Task CalendarHeatmap()
+	public async Task CalendarHeatmap()
+	{
+		// Arrange
 		// Composable recipe: the caller computes the week/weekday grid; GGNet draws tiles.
-		=> VerifyPlot(PlotContext.Build(days, d => d.Week, d => d.Weekday)
+
+		var plot = PlotContext.Build(days, d => d.Week, d => d.Weekday)
 			.Scale_Fill_Continuous(d => d.Value, ["#132b43", "#56b1f7"])
 			.Geom_Tile(d => d.Week, d => d.Weekday, d => 0.95, d => 0.95)
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	private sealed record Cell(double Row, double Column, double R);
 
@@ -440,12 +950,24 @@ public class GalleryTests
 	];
 
 	[Fact]
-	public Task Correlogram()
+	public async Task Correlogram()
+	{
+		// Arrange
 		// Composable recipe: the caller computes the pairwise matrix; GGNet draws tiles.
-		=> VerifyPlot(PlotContext.Build(correlations, c => c.Column, c => c.Row)
+
+		var plot = PlotContext.Build(correlations, c => c.Column, c => c.Row)
 			.Scale_Fill_Continuous(c => c.R, ["#b2182b", "#f7f7f7", "#2166ac"])
 			.Geom_Tile(c => c.Column, c => c.Row, c => 0.95, c => 0.95)
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 
 	private sealed record Timed(LocalDateTime At, double Value);
 
@@ -468,12 +990,24 @@ public class GalleryTests
 	];
 
 	[Fact]
-	public Task BubbleMap()
+	public async Task BubbleMap()
+	{
+		// Arrange
 		// Sites are the primary source so the size scale can train on them;
 		// the map polygons come in as a secondary layer source.
-		=> VerifyPlot(PlotContext.Build(sites, s => s.Longitude, s => s.Latitude)
+
+		var plot = PlotContext.Build(sites, s => s.Longitude, s => s.Latitude)
 			.Scale_Size_Continuous(s => s.Value, range: (4, 12))
 			.Geom_Map(regions, r => r.Shapes)
 			.Geom_Point()
-			.Style());
+			.Style();
+
+		// Act
+
+		var svg = await plot.AsStringAsync();
+
+		// Assert
+
+		await VerifySvg(svg);
+	}
 }

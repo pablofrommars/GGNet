@@ -2,7 +2,7 @@ using GGNet.Scales;
 
 namespace GGNet.Headless.Tests;
 
-// The typed readout seam (implementation-blocks Block 6): Unmap is the typed
+// The typed readout seam: Unmap is the typed
 // inverse of Map — exact for continuous scales, snapped to the nearest trained
 // value for discrete ones — and Label formats through the scale's own
 // formatter, invariantly by default.
@@ -15,9 +15,13 @@ public class ScaleReadoutTests
 
 		var sut = new Extended();
 
-		// Act / Assert
+		// Act
 
-		sut.Unmap(sut.Map(4.2)).Should().Be(4.2);
+		var unmapped = sut.Unmap(sut.Map(4.2));
+
+		// Assert
+
+		unmapped.Should().Be(4.2);
 	}
 
 	[Fact]
@@ -27,9 +31,13 @@ public class ScaleReadoutTests
 
 		var sut = new Log10();
 
-		// Act / Assert
+		// Act
 
-		sut.Unmap(sut.Map(100.0)).Should().NotBeNull()
+		var unmapped = sut.Unmap(sut.Map(100.0));
+
+		// Assert
+
+		unmapped.Should().NotBeNull()
 			.And.Subject!.Value.Should().BeApproximately(100.0, 1e-9);
 	}
 
@@ -46,9 +54,13 @@ public class ScaleReadoutTests
 		sut.Train(20);
 		sut.Train(30);
 
-		// Act / Assert
+		// Act
 
-		sut.Unmap(value).Should().Be(expected);
+		var unmapped = sut.Unmap(value);
+
+		// Assert
+
+		unmapped.Should().Be(expected);
 	}
 
 	[Theory]
@@ -61,9 +73,13 @@ public class ScaleReadoutTests
 		var sut = new DiscretePosition<int>();
 		sut.Train(10);
 
-		// Act / Assert
+		// Act
 
-		sut.Unmap(value).Should().BeNull();
+		var unmapped = sut.Unmap(value);
+
+		// Assert
+
+		unmapped.Should().BeNull();
 	}
 
 	[Fact]
@@ -74,9 +90,13 @@ public class ScaleReadoutTests
 		var sut = new InstantPosition(null, null);
 		var instant = NodaTime.Instant.FromUtc(2026, 7, 1, 12, 30);
 
-		// Act / Assert
+		// Act
 
-		sut.Unmap(sut.Map(instant)).Should().Be(instant);
+		var unmapped = sut.Unmap(sut.Map(instant));
+
+		// Assert
+
+		unmapped.Should().Be(instant);
 	}
 
 	[Fact]
@@ -85,20 +105,24 @@ public class ScaleReadoutTests
 		// Arrange
 
 		var current = CultureInfo.CurrentCulture;
+		var sut = new Extended();
+		string? label;
+
+		// Act
 
 		try
 		{
 			CultureInfo.CurrentCulture = new CultureInfo("sv-SE");
 
-			var sut = new Extended();
-
-			// Act / Assert
-
-			sut.Label(2.5).Should().Be("2.5");
+			label = sut.Label(2.5);
 		}
 		finally
 		{
 			CultureInfo.CurrentCulture = current;
 		}
+
+		// Assert
+
+		label.Should().Be("2.5");
 	}
 }

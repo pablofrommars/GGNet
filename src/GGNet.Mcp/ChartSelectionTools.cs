@@ -3,8 +3,8 @@ namespace GGNet.Mcp;
 [McpServerToolType]
 public static class ChartSelectionTools
 {
-	// Parsed and validated once; the stdio server handles one client and the
-	// engine only ever reads the config (queries are cloned per call).
+	// INVARIANT: the engine only reads the shared config (queries are cloned per call); a write would
+	// leak state into every later call this server answers.
 	private static readonly Lazy<JsonObject> config = new(Selector.LoadConfig);
 
 	[McpServerTool(Name = "select_chart"), Description(

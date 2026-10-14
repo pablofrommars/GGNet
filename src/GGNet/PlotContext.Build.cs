@@ -19,11 +19,6 @@ public partial class PlotContext
 		return context;
 	}
 
-	// Default scales are decided here, where overload resolution has already
-	// dispatched on TX/TY; Init invokes them only when the user registered no
-	// scale. Expansions come from the coordinate system's hints (polar: angular
-	// wraps the full turn, radial is zero-based at the center).
-
 	private static void ContinuousX<T, TY>(PlotContext<T, double, TY> context)
 	  where TY : struct
 	  => context.XScaleDefault = coord => context.Scale_X_Continuous(expand: coord.XExpansion(discrete: false));

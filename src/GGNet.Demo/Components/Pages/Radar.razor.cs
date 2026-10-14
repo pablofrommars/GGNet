@@ -4,15 +4,11 @@ namespace GGNet.Demo.Components.Pages;
 
 public partial class Radar
 {
-	// GGNet.RenderMode: named here (not in markup) to avoid the ambiguity with
-	// Microsoft.AspNetCore.Components.Web.RenderMode imported by _Imports.razor.
 	private readonly RenderMode renderMode = RenderMode.Interactive;
 
-	// The maturity ladder: 0 unrated, 1 emerging, 2 developing, 3 strong, 4 investor-ready.
-	private const double Ladder = 4.0;
+	private const double InvestorReady = 4.0;
 
-	// An unrated axis still needs a visible vertex, so it sits just off the centre.
-	private const double Unrated = 0.35;
+	private const double UnratedVertex = 0.35;
 
 	private const string Accent = "#3b76d8";
 
@@ -28,8 +24,6 @@ public partial class Radar
 
 	private sealed record Dimension(Axis Axis, double Score, string Status, bool Rated, bool Verified);
 
-	// Radar draws one closed polygon; the outline is six explicit chords so an
-	// edge touching an unverified axis can be dashed on its own.
 	private sealed record Edge(Axis From, Axis To, double FromScore, double ToScore, bool Verified);
 
 	private static readonly Dimension[] dimensions =
@@ -38,7 +32,7 @@ public partial class Radar
 		new(Axis.Product, 3.0, "Strong signal", Rated: true, Verified: true),
 		new(Axis.Team, 3.0, "Strong signal", Rated: true, Verified: true),
 		new(Axis.Financial, 1.0, "Emerging", Rated: true, Verified: true),
-		new(Axis.Legal, Unrated, "Needs data room", Rated: false, Verified: false),
+		new(Axis.Legal, UnratedVertex, "Needs data room", Rated: false, Verified: false),
 		new(Axis.Pitch, 2.0, "Developing", Rated: true, Verified: false)
 	];
 
@@ -49,11 +43,10 @@ public partial class Radar
 	protected override void OnInitialized()
 	{
 		context = PlotContext.Build(dimensions, d => d.Axis, d => d.Score)
-			// The polar angular scale needs the full turn: n categories at i/n
-			// with the extra slot closing the wrap. Setting the scale explicitly
-			// opts out of the coord system's default expansion, so restate it.
+			// INVARIANT: an explicit x scale under polar must restate expand (0, 0, 0, 1) — it opts out of the
+			// coordinate system's full-turn hint, and every category then lands at the wrong angle.
 			.Scale_X_Discrete(expand: (0.0, 0.0, 0.0, 1.0), formatter: AxisTitles.Instance, titles: AxisStatus.Instance)
-			.Scale_Y_Continuous(limits: (0.0, Ladder), expand: (0.0, 0.0, 0.0, 0.0), formatter: Unlabelled.Instance, includeMinorBreaks: false)
+			.Scale_Y_Continuous(limits: (0.0, InvestorReady), expand: (0.0, 0.0, 0.0, 0.0), formatter: Unlabelled.Instance, includeMinorBreaks: false)
 			.Geom_Radar(fill: Accent, fillOpacity: 0.10, strokeWidth: 0.0)
 			.Geom_Segment(
 				edges.Where(e => e.Verified),
@@ -111,8 +104,6 @@ public partial class Radar
 		};
 	}
 
-	// The status line stacked under each axis title, looked up from the
-	// dimension the axis rates.
 	private sealed class AxisStatus : IFormatter<Axis>
 	{
 		public static readonly AxisStatus Instance = new();
@@ -121,8 +112,6 @@ public partial class Radar
 		  => Array.Find(dimensions, d => d.Axis == value)?.Status ?? string.Empty;
 	}
 
-	// Polar draws radial break labels up the twelve-o'clock spoke; this design
-	// keeps the rings but not their numbers.
 	private sealed class Unlabelled : IFormatter<double>
 	{
 		public static readonly Unlabelled Instance = new();

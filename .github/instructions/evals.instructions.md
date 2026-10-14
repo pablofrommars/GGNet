@@ -6,7 +6,7 @@ applyTo: "tests/GGNet.Evals/**"
 
 Scope: `tests/GGNet.Evals`. Assumes [csharp.instructions.md](./csharp.instructions.md) and [testing.instructions.md](./testing.instructions.md) apply in full; this file documents only what is eval-specific.
 
-**These are deterministic behavior-pin evals — not paid LLM evals.** There is no chat client, no API key, no model spend (grep the project for `IChatClient`/`ApiKey`/`HttpClient` returns nothing). `ModelContextProtocol` appears only as the **client** used to spawn the local stdio MCP server. Consequently there is no cost tiering, no `RunEvals` opt-out, no "treat every case as paid" framing — these run under `dotnet test` on every invocation like any other test. Do not import that framing from other codebases.
+**These are deterministic behavior-pin evals — not paid LLM evals.** There is no chat client, no API key, no model spend (grep the project for `IChatClient`/`ApiKey`/`HttpClient` returns nothing). `ModelContextProtocol` appears only as the **client** used to spawn the local stdio MCP server. Consequently there is no cost tiering, no `RunEvals` opt-out, no "treat every case as paid" framing — these run under `dotnet test` on every invocation like any other test. Do not import that framing from other codebases. **Exception:** tsu's separated, paid eval execution model is deliberately not adopted.
 
 The evals pin the *behavior* of the chart-selection engine, the MCP surface, the profiler, the standalone validator, and the skill docs against curated expectations.
 
@@ -15,6 +15,14 @@ The evals pin the *behavior* of the chart-selection engine, the MCP surface, the
 ## 1. What the Golden Is
 
 The "golden" reference is the embedded config `src/GGNet.ChartSelection/chart_selection.json` (an `<EmbeddedResource>`), loaded via `Selector.LoadConfig()` (`GetManifestResourceStream("GGNet.ChartSelection.chart_selection.json")`). It is **JSON, not YAML**. Eval *expectations* are **inline C# data** (a `Dictionary<string, Case>` fed through `[Theory]` + `[MemberData]`), not a separate dataset file. `GGNet.ChartSelection` grants `InternalsVisibleTo("GGNet.Evals")`.
+
+How `Selector` reads the config — the grammar a config edit must respect (normalize → gate → filter → constrain → relax → rank):
+
+- **Matching.** An absent leaf field is a wildcard; a null query field is no constraint. Mismatches are collected rather than failed fast, so a stat bridge can be judged against the whole mismatch.
+- **Gates.** A leaf declaring a gated field true requires the query to affirm it — unknown never opens a gated door (this keeps spatial, relational and physical leaves out of ordinary queries), bridged or not.
+- **Stat bridges.** A bridge admits a leaf only when it covers the entire axis mismatch: the query's raw shape is exactly what the declared `Stat.*` pre-processing turns into the leaf's expected shape.
+- **Constraints.** Conditions AND together, in three forms: `"field": value` (equality — a null value matches an *unknown* query field, expressing "unverified" rules), `"field": [v1, v2]` (in-list), and `"field_gt": n` (numeric threshold; an unknown field never exceeds one). Allowlists reject only a non-null query value outside the list.
+- **Never silent.** A leaf that matched intent and shape but broke a limit is reported in `excluded` with its reason — and in `structural_escapes` when faceting the same recipe is a way out — never silently dropped.
 
 ---
 

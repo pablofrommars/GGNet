@@ -1,9 +1,5 @@
 namespace GGNet.ChartSelection;
 
-// Measured shape fields from raw column samples. The calling model keeps
-// intent (functions); measurement keeps honesty — objective fields computed
-// here override whatever the caller supplied, closing the honor-system gap
-// (omit sample_size, shade cardinality) in the data-quality gate.
 public static class Profiler
 {
 	public static JsonObject Profile(IReadOnlyList<double?>? values, IReadOnlyList<string?>? categories)
@@ -21,9 +17,7 @@ public static class Profiler
 			profile["sample_size"] = present.Length;
 			profile["completeness"] = (double)present.Length / values.Count;
 
-			// Only claim a shape when the signal is unambiguous: |skewness| > 1
-			// is the conventional "highly skewed" threshold. Anything milder
-			// stays unset — unknown never disqualifies, it caveats.
+			// TODO: calibration — |skewness| > 1 is the textbook "highly skewed" cut; tune it against real column samples through ProfilerEvals (SkewedSampleIsDetected, SymmetricSampleClaimsNoShape).
 			if (present.Length >= 3 && Math.Abs(Skewness(present)) > 1.0)
 			{
 				profile["distribution_shape"] = "skewed";
@@ -45,7 +39,6 @@ public static class Profiler
 		return profile;
 	}
 
-	// Query fields the profiler measured win over caller-supplied values.
 	public static JsonObject Apply(JsonObject query, JsonObject profile)
 	{
 		var merged = query.DeepClone().AsObject();

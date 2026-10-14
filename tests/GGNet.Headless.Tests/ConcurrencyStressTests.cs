@@ -1,13 +1,8 @@
-// Per-file usings (not global): Moq.Match collides with the globally-used
-// System.Text.RegularExpressions.Match.
 using GGNet.Rendering;
-
-using Moq;
 
 namespace GGNet.Headless.Tests;
 
-// The spec/realization split's phase-0 precondition (§8c #4): the one seam the
-// single-threaded headless goldens cannot see. Interactive commits mutate
+// The one seam the single-threaded headless goldens cannot see. Interactive commits mutate
 // view-window state from caller threads while the handler's background loop
 // renders — these tests hammer exactly that and assert the system-level
 // contract: no crash, the loop survives, and state converges to the last

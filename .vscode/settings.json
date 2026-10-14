@@ -15,7 +15,9 @@
 		"activityBarTop.background": "#89beff",
 		"activityBarTop.foreground": "#15202b",
 		"activityBarTop.inactiveForeground": "#15202b99",
-		"commandCenter.foreground": "#15202b"
+		"commandCenter.foreground": "#15202b",
+		"activityBar.activeBorder": "#15202b",
+		"activityBarTop.activeBorder": "#15202b"
 	},
 	"peacock.color": "#56a2ff"
 }

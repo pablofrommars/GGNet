@@ -1,7 +1,3 @@
----
-applyTo: "**"
----
-
 # Troubleshooting Guide
 
 Scope: the failures an agent actually hits in this repo, indexed by **symptom**. Read this when something fails or hangs — not before every edit. The other guides say what the conventions *are*; this one says what it looks like when you have broken one, and what the fix is.
@@ -12,7 +8,7 @@ Every entry below is grounded in this repo's gates, tests, and tooling. If you h
 
 ## 1. A `dotnet` command hangs with no output at all
 
-**Symptom.** `dotnet run`, `dotnet test`, a first-time `restore`, or `dotnet format` produces **zero** output and eventually times out. `dotnet build` of an already-restored project works fine, which makes it look like the specific command is slow rather than blocked.
+**Symptom.** `dotnet run`, `dotnet test`, `dotnet build`, a first-time `restore`, or `dotnet format` produces **zero** output and eventually times out — or a build ends `Build FAILED.` with `0 Warning(s)` and `0 Error(s)` after minutes. An incremental build of an already-restored project can still pass, which makes it look like the specific command is slow rather than blocked.
 
 **Cause.** Agent shells often run in a sandbox that blocks local named pipes and socket binding. Every one of those commands spawns a child process and talks to it over IPC, so it stalls at connect time instead of failing loudly.
 
@@ -24,7 +20,7 @@ at Microsoft.CodeAnalysis.MSBuild.BuildHostProcessManager.BuildHostProcess.Conne
 
 That stack trace names the root cause for *all* of the above.
 
-**Fix.** Re-run the same command with the sandbox disabled (in Claude Code, `dangerouslyDisableSandbox: true`; the user can adjust defaults with `/sandbox`). Do not spend time bisecting a silent hang — it is not your command, it is the pipe.
+**Fix.** The project settings exclude `dotnet *` from the Claude Code sandbox (`.claude/settings.json` → `sandbox.excludedCommands`), so a session launched with them never hits this. Where the exclusion is not in force — an older session, a host without it, a command that wraps `dotnet` in another program — re-run the same command with the sandbox disabled (in Claude Code, `dangerouslyDisableSandbox: true`; the user can adjust defaults with `/sandbox`). Do not spend time bisecting a silent hang — it is not your command, it is the pipe.
 
 **Corollaries.**
 - A scratch project created outside the repo is un-restored *and* outside `Directory.Build.props` / `global.json`, so it hangs on restore and has no `TargetFramework`. Put scratch projects **inside** the repo tree, declare only `OutputType` + `ProjectReference`, and delete them when done.
@@ -56,12 +52,12 @@ Read `.editorconfig` before arguing with a severity — every deliberate suppres
 **First question: did you intend to change the rendered output?**
 
 - **No** → you have a real regression. Diff received vs verified; the delta points straight at the change.
-- **Yes** → eyeball every diff, then promote received → verified. A re-pin is a deliberate, eyeballed decision, never a reflex (`ROADMAP.md`, Operating conventions). One render-touching change can legitimately move 40+ snapshots; that is normal, but confirm each one is intended rather than accepting in bulk.
+- **Yes** → eyeball every diff, then promote received → verified. A re-pin is a deliberate, eyeballed decision, never a reflex. One render-touching change can legitimately move 40+ snapshots; that is normal, but confirm each one is intended rather than accepting in bulk.
 
 **Things that trip people up.**
 - Per-instance plot ids (`gg<hash>`) are scrubbed to `ggID` by `VerifyConfig.cs`. The scrubber regex is `gg(?!net-)…` so `--ggnet-*` theme variables survive — if you name something `gg…`, expect it to be scrubbed.
 - `PublicApiTests` snapshots route to `Api/`, everything else to `Gallery/` (`Verifier.DerivePathInfo`). A new snapshot appearing in the wrong folder means the type name did not match.
-- `GalleryTests.VerifyPlot` runs `XDocument.Parse` on the SVG, so a *parse* failure means you emitted something that is not well-formed pure SVG (an HTML fragment, an unescaped attribute), not a snapshot mismatch.
+- `GalleryTests.VerifySvg` runs `XDocument.Parse` on the SVG, so a *parse* failure means you emitted something that is not well-formed pure SVG (an HTML fragment, an unescaped attribute), not a snapshot mismatch.
 - A changed public surface fails `PublicApiTests` as a `.txt` diff. That file is the deliberate public-surface lock — widening it is an API decision, not a test fix.
 - CI uploads `tests/**/*.received.*` as the `received-snapshots` artifact on failure, so a red CI run is inspectable without reproducing locally.
 
@@ -129,11 +125,24 @@ It needs a Playwright Chromium installed.
 - Keep the **`-mtp-v2` suffix** on every xunit bump: plain `xunit.v3` pulls MTP v1. MTP v2 becomes the default only in xunit v4.
 - Do **not** add `Microsoft.NET.Test.Sdk`, `xunit.runner.visualstudio`, or `coverlet.collector`. MTP is native to xunit v3 and needs no VSTest adapter; coverlet's collector is a VSTest data collector that does not run under MTP. For coverage use `Microsoft.Testing.Extensions.CodeCoverage`.
 - Mocking **internal** interfaces works because `GGNet.csproj` grants `InternalsVisibleTo("DynamicProxyGenAssembly2")`. If a mock fails to proxy, check that IVT before redesigning the seam.
-- `using Moq;` is deliberately **per-file**, not global — `Moq.Match` collides with `System.Text.RegularExpressions.Match`.
+- `Moq` is a global using in `GGNet.Headless.Tests`, and `Moq.Match` collides with the globally-used `System.Text.RegularExpressions.Match`. The project's `GlobalUsings.cs` pins `global using Match = System.Text.RegularExpressions.Match;`; an ambiguous-`Match` error (`CS0104`) means that alias was lost, not that Moq must go back to a per-file using.
 
 ---
 
-## 9. Polar / radar traps
+## 9. An agent hook blocked an edit or a turn
+
+- **`Guide check: <path> is governed by …` (exit 2 on an edit).** `agent/hooks/guide.sh` routes the first edit of a file each guide governs to that guide, once per guide per session. Read the named guide(s) and retry the same edit — the guide is already recorded as seen, so the retry passes. Its routes mirror each guide's `applyTo` front matter; when a guide's scope changes, change both.
+- **`dotnet format whitespace --verify-no-changes failed` at the end of a turn (exit 2).** `agent/hooks/format.sh` is a blocking whitespace gate over `GGNet.slnx`: tabs, LF, final newline, no trailing whitespace. Scripted rewrites (`sed`/`python`) are the usual cause. Run `dotnet format whitespace GGNet.slnx` and re-check; it runs with `--no-restore`, so a turn that changed packages must restore first.
+
+---
+
+## 10. `CommentPolicyTests` fails
+
+The test lists every untagged full-line `//` comment block under `src/` with its file and line. Apply the gate in the [C# guide](./csharp.instructions.md) §12 to each one: if a test can pin the claim, write the test and delete the comment; if the comment restates the code, delete it; otherwise tag it `TODO: calibration`, `RUNBOOK`, `INVARIANT`, or `DEVIATION`. Do not tag a comment just to pass the test. `TheGuideDeclaresExactlyTheTagsThisGuardEnforces` failing means the guide's tag list and the test's drifted apart — reconcile them in the same change.
+
+---
+
+## 11. Polar / radar traps
 
 `Coord_Polar` (implied by `Geom_Radar`) changes the rules in ways that produce silently wrong output rather than errors:
 
@@ -147,7 +156,7 @@ It needs a Playwright Chromium installed.
 
 ---
 
-## 10. You need to *see* a chart, not just its SVG
+## 12. You need to *see* a chart, not just its SVG
 
 Reading SVG text does not tell you whether a chart looks right — clipped labels, collisions, and bad spacing are invisible in the markup. The loop:
 
@@ -165,14 +174,14 @@ To exercise the real interactive component instead, run `dotnet run --project sr
 
 ---
 
-## 11. Code navigation returns nothing
+## 13. Code navigation returns nothing
 
 - `workspaceSymbol` returns empty until the C# language server finishes its first warmup on the solution (~1–2 min). **Retry — do not fall back to grep** and conclude the symbol does not exist.
 - `.razor` **markup** is not served by Roslyn. Use text search there. `.razor.cs` is served normally.
 
 ---
 
-## 12. A guide contradicts the code
+## 14. A guide contradicts the code
 
 The scoped guides are hand-maintained prose and can lag the source. **The code wins.** When a guide's claim is load-bearing for what you are about to do, verify it against the source first — and when you find drift, fix the guide in the same change rather than working around it.
 

@@ -13,9 +13,8 @@ public sealed class Host
 
 	internal async Task RenderAsync(Type type, TextWriter writer, IDictionary<string, object?>? parameters = null)
 	{
-		// Blazor renderers are single-threaded: rendering and reading the result
-		// must not interleave across exports. A renderer per export keeps
-		// concurrent exports isolated; the (empty) service provider stays shared.
+		// INVARIANT: one renderer per export — Blazor renderers are single-threaded, and a shared one
+		// interleaves concurrent exports' render and read.
 		await using var renderer = new HtmlRenderer(provider.Value, NullLoggerFactory.Instance);
 
 		var html = await renderer.Dispatcher.InvokeAsync(async () =>

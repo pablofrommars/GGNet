@@ -2,11 +2,6 @@ using static System.Math;
 
 namespace GGNet.Shapes;
 
-// Visible-y measurement for the auto-fit: the y extent each drawn shape
-// contributes inside an x window, in mapped double space (the space geoms
-// shape in and ViewRange lives in). Measuring what's drawn — not the raw
-// data — makes the fit exact for bar baselines, ribbon bands and layered
-// sources, while statistics stay frozen: only their output is measured.
 internal static class ShapeExtents
 {
 	public static (double min, double max) VisibleY(IReadOnlyList<Shape> layer, (double min, double max) window)
@@ -15,18 +10,14 @@ internal static class ShapeExtents
 
 		for (var i = 0; i < layer.Count; i++)
 		{
-			// Exhaustive over the Shape union (CS8509): a new variant is a
-			// compile error until it declares its visible-y contribution.
 			y = layer[i] switch
 			{
 				Circle circle => Point(y, window, circle.X, circle.Y),
 				Text text => Point(y, window, text.X, text.Y),
 				Line line => Segment(y, window, line.X1, line.Y1, line.X2, line.Y2),
 				Rectangle rectangle => Span(y, window, rectangle.X, rectangle.X + rectangle.Width, rectangle.Y, rectangle.Y + rectangle.Height),
-				// A bounded reference line participates (it trains scales too).
 				HLine hline => Include(y, hline.Y),
 				VLine => y,
-				// An unbounded diagonal annotation would fight the fit; skipped.
 				ABLine => y,
 				Area area => AreaPoints(y, window, area),
 				Path path => PathPoints(y, window, path),
@@ -47,8 +38,6 @@ internal static class ShapeExtents
 	private static (double min, double max) Span((double min, double max) y, (double min, double max) window, double x1, double x2, double value1, double value2)
 		=> x2 < window.min || x1 > window.max ? y : Include(Include(y, value1), value2);
 
-	// A segment contributes its endpoints clamped to the window, interpolating
-	// at the boundary — a segment fully spanning the window still counts.
 	private static (double min, double max) Segment((double min, double max) y, (double min, double max) window, double x1, double y1, double x2, double y2)
 	{
 		if (x2 < x1)
@@ -113,8 +102,6 @@ internal static class ShapeExtents
 		return y;
 	}
 
-	// Polygon vertices inside the window; edge interpolation is deliberately
-	// skipped — maps pan by roam, not by axis window.
 	private static (double min, double max) Ring((double min, double max) y, (double min, double max) window, Geospacial.Polygon path)
 	{
 		for (var i = 0; i < path.Longitude.Length; i++)

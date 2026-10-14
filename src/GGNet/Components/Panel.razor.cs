@@ -14,9 +14,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	[CascadingParameter]
 	public required Plot<T, TX, TY> Plot { get; init; }
 
-	// IServiceProvider, not IJSRuntime: the headless renderer builds an empty
-	// container, so a hard IJSRuntime dependency would break every static
-	// render. Resolved lazily on the pan path only, which headless never takes.
+	// INVARIANT: IJSRuntime resolves lazily through IServiceProvider — the headless renderer builds an
+	// empty container, so a hard dependency breaks every static render and export.
 	[Inject]
 	private IServiceProvider Services { get; init; } = default!;
 
@@ -44,8 +43,6 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	private IChildRenderModeHandler? renderModeHandler;
 	private IChildRenderModeHandler? areaRenderModeHandler;
 
-	// default!: assigned in OnInitialized/OnParametersSet before first render;
-	// tooltipComponent and clip follow the same Blazor lifecycle guarantee.
 	private Position<TX> xscale = default!;
 	private Position<TY> yscale = default!;
 
@@ -79,7 +76,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	private readonly RenderFragment renderYLab;
 	private readonly RenderFragment renderContent;
 
-	// Trimming must preserve the JS-invokable gesture commits.
+	// INVARIANT: trimming removes the JS-invokable gesture commits unless each is named here; no test
+	// trims, so a published app is the first place it would fail.
 	[DynamicDependency(nameof(OnPanEndAsync))]
 	[DynamicDependency(nameof(OnWheelAsync))]
 	public Panel()
@@ -244,7 +242,6 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			return Task.CompletedTask;
 		}
 
-		// Over the axis bands or margins: not a zoom gesture.
 		if (px < Area.X || px > (Area.X + Area.Width)
 			|| py < Area.Y || py > (Area.Y + Area.Height))
 		{
@@ -260,7 +257,6 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			Plot.Context.Positions.X.SetView(Window(xscale, cx, factor));
 		}
 
-		// Under AutoFitY the y window is derived from the x window.
 		if (options.AutoFitY)
 		{
 			Plot.Context.FitYToXView();
@@ -273,8 +269,6 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		return Plot.RefreshAsync(RenderTarget.Render, CancellationToken.None);
 	}
 
-	// Shrinks (or grows) the committed range about the cursor's data position,
-	// so the point under the cursor stays put while the window scales.
 	private static (double min, double max) Window<TKey>(Position<TKey> scale, double fraction, double factor)
 		where TKey : struct
 	{
@@ -296,8 +290,6 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		return Plot.RefreshAsync(RenderTarget.Render, CancellationToken.None);
 	}
 
-	// The active crosshair, in pixels plus readout text; null when the pointer
-	// is not over the panel. Panel-local presentation state, not plot state.
 	private (double x, string? label)? crosshair;
 
 	private void OnCrosshairOver(double px)
@@ -336,9 +328,6 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		Refresh();
 	}
 
-	// Drag-pan (the first JS-interop feature): the collocated module owns the
-	// pointer gesture and the client-side preview; .NET sees one callback per
-	// gesture, carrying the net pixel delta.
 	private ElementReference captureRef;
 	private ElementReference panRef;
 
@@ -347,7 +336,6 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		// Wheel capture lives in the module, so any opt-in initializes it.
 		if (!firstRender || Plot.Interactivity is not { } options || !coord.CarvesAxisBands)
 		{
 			return;
@@ -369,13 +357,10 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			new PanelInteropOptions(
 				Pan: options.Pan,
 				PanX: options.Zoom is ZoomAxis.X or ZoomAxis.Both,
-				// Y is derived under AutoFitY — a vertical preview would only snap back.
 				PanY: !options.AutoFitY && options.Zoom is ZoomAxis.Y or ZoomAxis.Both,
 				Tooltip: options.CursorTooltip));
 	}
 
-	// Hands the glued tooltip's element to the JS module after each render
-	// with content; the module shows the popover and keeps it on the cursor.
 	private async ValueTask GlueTooltipAsync(ElementReference element)
 	{
 		if (interop is not null)
@@ -403,7 +388,6 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			Plot.Context.Positions.X.SetView((min + shift, max + shift));
 		}
 
-		// Under AutoFitY the y window is derived from the x window.
 		if (options.AutoFitY)
 		{
 			Plot.Context.FitYToXView();

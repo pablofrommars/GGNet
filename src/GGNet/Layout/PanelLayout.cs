@@ -4,8 +4,6 @@ using static System.Math;
 
 namespace GGNet.Layout;
 
-// Pure panel geometry: carve strips and axis bands out of the panel's outer
-// zone, in exactly the order the markup consumes them. No Blazor, no scales.
 internal static class PanelLayout
 {
 	internal readonly record struct Inputs(
