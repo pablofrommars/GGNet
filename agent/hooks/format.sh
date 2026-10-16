@@ -18,8 +18,18 @@
 # skips with a note, as does a --solution path that does not exist. A relative --solution resolves
 # against the repository root.
 #
+# dotnet format loads the whole MSBuild workspace, which costs seconds warm and minutes cold, so it
+# runs only when the C# and Razor sources have changed since the last pass. The fingerprint covers
+# HEAD, the working-tree diff, and untracked files of the repository and of every initialized
+# submodule, plus the solution and checks; it is kept per repository root under
+# $TMPDIR/agent-format and written only after every check passes, so a failing tree is re-checked
+# on every turn until it is fixed. Outside a git repository there is no fingerprint and the check
+# always runs.
+#
 # Exit 2 tells the agent host to keep working and fix the violations rather than ending the turn.
-# Exit 1 reports a malformed invocation without blocking the turn.
+# Exit 1 reports a malformed invocation without blocking the turn. A dotnet format failure that
+# names no violation (a crashed or wedged build host) is reported without blocking the turn, and the
+# next turn tries again.
 
 set -u
 
@@ -107,6 +117,39 @@ if ! command -v dotnet >/dev/null 2>&1; then
 	exit 0
 fi
 
+source_state() {
+	local root=$1
+	echo "repository $root"
+	git -C "$root" rev-parse HEAD 2>/dev/null
+	git -C "$root" diff --no-ext-diff --binary HEAD -- '*.cs' '*.razor' 2>/dev/null
+	git -C "$root" ls-files -z --others --exclude-standard -- '*.cs' '*.razor' 2>/dev/null |
+		while IFS= read -r -d '' path; do
+			printf '%s %s\n' "$path" "$(git -C "$root" hash-object -- "$path")"
+		done
+}
+
+fingerprint=
+pass_file=
+if git -C "$repository_root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+	fingerprint=$(
+		{
+			echo "solution $solution"
+			echo "checks $checks"
+			source_state "$repository_root"
+			git -C "$repository_root" submodule foreach --quiet --recursive pwd 2>/dev/null |
+				while IFS= read -r submodule; do
+					source_state "$submodule"
+				done
+		} | git hash-object --stdin
+	)
+	state_root="${TMPDIR:-/tmp}/agent-format"
+	repository_key=$(printf '%s' "$repository_root" | LC_ALL=C tr -c 'A-Za-z0-9_.-' '_')
+	pass_file="$state_root/$repository_key.pass"
+	if [ -n "$fingerprint" ] && [ -f "$pass_file" ] && [ "$(cat "$pass_file" 2>/dev/null)" = "$fingerprint" ]; then
+		exit 0
+	fi
+fi
+
 for check in "${check_list[@]}"; do
 	# --no-restore keeps the gate fast and offline; a turn that changed packages has already restored.
 	output=$(cd "$repository_root" && dotnet format "$check" "$solution" --verify-no-changes --no-restore 2>&1)
@@ -117,16 +160,24 @@ for check in "${check_list[@]}"; do
 	fi
 
 	violations=$(printf '%s\n' "$output" | grep -E '\.(cs|razor)\(' | head -40)
+	if [ -z "$violations" ]; then
+		{
+			echo "agent format hook ($host): dotnet format $check exited $status without naming a violation; not blocking, the next turn retries:"
+			printf '%s\n' "$output" | tail -5
+		} >&2
+		exit 0
+	fi
+
 	{
 		echo "dotnet format $check --verify-no-changes failed — fix the violations:"
-		if [ -n "$violations" ]; then
-			printf '%s\n' "$violations"
-		else
-			printf '%s\n' "$output" | tail -20
-		fi
+		printf '%s\n' "$violations"
 	} >&2
 
 	exit 2
 done
+
+if [ -n "$pass_file" ]; then
+	mkdir -p "$(dirname "$pass_file")" 2>/dev/null && printf '%s\n' "$fingerprint" > "$pass_file" 2>/dev/null
+fi
 
 exit 0
