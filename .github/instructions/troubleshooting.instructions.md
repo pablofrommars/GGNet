@@ -131,7 +131,7 @@ It needs a Playwright Chromium installed.
 
 ## 9. An agent hook blocked an edit or a turn
 
-- **`Guide check: <path> is governed by …` (exit 2 on an edit).** `agent/hooks/guide.sh` routes the first edit of a file each guide governs to that guide, once per guide per session. Read the named guide(s) and retry the same edit — the guide is already recorded as seen, so the retry passes. Its routes mirror each guide's `applyTo` front matter; when a guide's scope changes, change both.
+- **`Guide check: <path> is governed by …` (exit 2 on an edit).** `agent/hooks/guide.sh` routes the first edit of a file each guide governs to that guide, once per guide per session and per subagent, unless that transcript already shows the guide read. Read the named guide(s) and retry the same edit — the guide is already recorded as seen, so the retry passes. Its routes mirror each guide's `applyTo` front matter; when a guide's scope changes, change both.
 - **`dotnet format whitespace --verify-no-changes failed` at the end of a turn (exit 2).** `agent/hooks/format.sh` is a blocking whitespace gate over `GGNet.slnx`: tabs, LF, final newline, no trailing whitespace. Scripted rewrites (`sed`/`python`) are the usual cause. Run `dotnet format whitespace GGNet.slnx` and re-check; it runs with `--no-restore`, so a turn that changed packages must restore first.
 
 ---

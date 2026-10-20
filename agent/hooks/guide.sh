@@ -19,6 +19,14 @@ payload=$(cat 2>/dev/null || true)
 session_id=$(printf '%s' "$payload" | jq -r 'if type == "object" then (.session_id // "") else "" end' 2>/dev/null)
 cwd=$(printf '%s' "$payload" | jq -r 'if type == "object" then (.cwd // "") else "" end' 2>/dev/null)
 file_path=$(printf '%s' "$payload" | jq -r 'if type == "object" then (.tool_input.file_path // "") else "" end' 2>/dev/null)
+transcript_path=$(printf '%s' "$payload" | jq -r 'if type == "object" then (.transcript_path // "") else "" end' 2>/dev/null)
+agent_id=$(printf '%s' "$payload" | jq -r 'if type == "object" then (.agent_id // "") else "" end' 2>/dev/null)
+
+# A subagent shares its parent's session_id and transcript_path but starts with none of its reads,
+# so it gets its own seen state and is judged on its own transcript.
+if [ -n "$agent_id" ] && [ -n "$transcript_path" ]; then
+	transcript_path="${transcript_path%.jsonl}/subagents/agent-$agent_id.jsonl"
+fi
 
 if [ -z "$file_path" ]; then
 	exit 0
@@ -51,7 +59,15 @@ routes=(
 	'skill|^skills/'
 )
 
-session_key=$(printf '%s' "${session_id:-nosession}" | LC_ALL=C tr -c 'A-Za-z0-9_.-' '_')
+# A guide the agent already read on its own (Read, or cat/sed through Bash) counts as seen: the
+# transcript records the tool call, so the router need not block to prove it.
+guide_read() {
+	[ -n "$transcript_path" ] && [ -f "$transcript_path" ] || return 1
+	grep -F "$1" "$transcript_path" 2>/dev/null |
+		jq -e --arg p "$1" 'select(.type == "assistant") | .message.content[]? | select(.type == "tool_use" and (.name == "Read" or .name == "Bash")) | (.input.file_path // .input.command // "") | select(contains($p))' >/dev/null 2>&1
+}
+
+session_key=$(printf '%s' "${session_id:-nosession}${agent_id:+-$agent_id}" | LC_ALL=C tr -c 'A-Za-z0-9_.-' '_')
 host_key=$(printf '%s' "$host" | LC_ALL=C tr -c 'A-Za-z0-9_.-' '_')
 state_root="${TMPDIR:-/tmp}/ggnet-agent-guides"
 seen_file="$state_root/$host_key-$session_key.seen"
@@ -67,7 +83,7 @@ for route in "${routes[@]}"; do
 		continue
 	fi
 
-	if grep -qx "$guide" "$seen_file" 2>/dev/null; then
+	if grep -qx "$guide" "$seen_file" 2>/dev/null || guide_read ".github/instructions/$guide.instructions.md"; then
 		continue
 	fi
 
