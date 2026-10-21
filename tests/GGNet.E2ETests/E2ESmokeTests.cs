@@ -1,9 +1,9 @@
 namespace GGNet.E2ETests;
 
-// The executed-JS smoke layer: the only
-// tests that run the collocated module in a real browser — wheel coordinates
-// against a responsive svg, the drag-pan preview transform, and the cursor-
-// glued popover. Thin by design; behavior details live in bUnit and xUnit.
+// The executed-JS smoke layer runs the collocated module in a real browser:
+// wheel coordinates against a responsive svg, the drag-pan preview transform,
+// and the cursor-glued popover. Focused browser regressions supplement these
+// smokes; the .NET behavior is covered by bUnit and xUnit.
 public class E2ESmokeTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixture>
 {
 	private async Task<IPage> PageAsync(string path)
@@ -49,7 +49,7 @@ public class E2ESmokeTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtur
 		var panel = page.Locator("rect.panel").First;
 
 		// Act — the svg renders responsive (no width attribute): the module converts
-		// client px to svg units against the rendered size per event.
+		// client pixels to SVG units through the capture element's inverse screen CTM.
 
 		await panel.HoverAsync();
 		await page.Mouse.WheelAsync(0, -300);
@@ -86,8 +86,8 @@ public class E2ESmokeTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtur
 		var cx = (float)(box!.X + box.Width / 2);
 		var cy = (float)(box.Y + box.Height / 2);
 
-		// The marks-only transform target: capture group's direct child.
-		var target = page.Locator("svg > g > g").First;
+		// The stable target survives changes to the surrounding clipping groups.
+		var target = page.Locator("[data-ggnet-pan]").First;
 
 		// Act
 

@@ -83,6 +83,18 @@ internal sealed class Boxplot<T, TX, TY> : Geom<T, TX, TY>
 		Aesthetics.Fill?.Train(item);
 	}
 
+	public override void Legend()
+	{
+		Legend(Aesthetics.Fill, value => new Elements.Rectangle
+		{
+			Fill = value,
+			FillOpacity = Aesthetic.FillOpacity,
+			Stroke = value,
+			StrokeOpacity = 1.0,
+			StrokeWidth = Aesthetic.StrokeWidth
+		});
+	}
+
 	protected override void Shape(T item)
 	{
 		var fill = Aesthetic.Fill;

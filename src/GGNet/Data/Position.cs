@@ -11,6 +11,11 @@ internal sealed class Position<T>
 
 	public void SetView((double min, double max)? view)
 	{
+		if (view is { } bounds)
+		{
+			GGNet.Scales.PositionRange.Validate(bounds.min, bounds.max);
+		}
+
 		View = view;
 
 		for (var i = 0; i < Scales.Count; i++)

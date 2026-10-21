@@ -174,6 +174,8 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 		var facets = Faceting.Facets(Style!);
 
+		Faceting.Index(Source, facets);
+
 		N = (Faceting.NRows, Faceting.NColumns);
 
 		var width = 1.0 / Faceting.NColumns;
@@ -302,8 +304,12 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			Init(showGrid);
 		}
 
+		var seen = new HashSet<IStatSource>(ReferenceEqualityComparer.Instance);
+		RecomputeStat(Source as IStatSource, seen);
+
 		Reset();
 		EnsurePanels();
+		RecomputeLayerStats(seen);
 		Validate();
 		Train();
 		CommitAesthetics();
@@ -320,8 +326,6 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	private void Reset()
 	{
-		RecomputeStats();
-
 		for (var i = 0; i < Positions.X.Scales.Count; i++)
 		{
 			Positions.X.Scales[i].Clear();
@@ -354,26 +358,36 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 		Legends.Clear();
 	}
 
-	private void RecomputeStats()
+	private static void RecomputeStat(IStatSource? source, HashSet<IStatSource> seen)
 	{
-		HashSet<IStatSource>? seen = null;
-
-		if (Source is IStatSource plotStat)
+		if (source is null || seen.Contains(source))
 		{
-			(seen ??= []).Add(plotStat);
-			plotStat.Recompute();
+			return;
 		}
 
+		var pending = new Stack<IStatSource>();
+
+		while (source is not null && seen.Add(source))
+		{
+			pending.Push(source);
+			source = (source as IStatDependency)?.Upstream;
+		}
+
+		while (pending.TryPop(out var stat))
+		{
+			stat.Recompute();
+		}
+	}
+
+	private void RecomputeLayerStats(HashSet<IStatSource> seen)
+	{
 		for (var p = 0; p < Panels.Count; p++)
 		{
 			var panel = Panels[p];
 
 			for (var g = 0; g < panel.Geoms.Count; g++)
 			{
-				if (panel.Geoms[g].StatSource is { } stat && (seen ??= []).Add(stat))
-				{
-					stat.Recompute();
-				}
+				RecomputeStat(panel.Geoms[g].StatSource, seen);
 			}
 		}
 	}

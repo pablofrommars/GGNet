@@ -28,27 +28,7 @@ internal abstract class Position<TKey>(ITransformation<TKey>? transformation, (d
 
 	protected void SetRange(double min, double max)
 	{
-		if (min == max)
-		{
-			Range = (
-				min - 0.05,
-				max + 0.05
-			);
-		}
-		else
-		{
-			if (max < min)
-			{
-				(max, min) = (min, max);
-			}
-
-			var range = max - min;
-
-			Range = (
-				min - (expand.minMult * range + expand.minAdd),
-				max + expand.maxMult * range + expand.maxAdd
-			);
-		}
+		Range = PositionRange.Expand(min, max, expand);
 	}
 
 	protected double? _min;
@@ -63,13 +43,17 @@ internal abstract class Position<TKey>(ITransformation<TKey>? transformation, (d
 			return false;
 		}
 
-		Range = view.max < view.min ? (view.max, view.min) : view;
+		PositionRange.Validate(view.min, view.max);
+		Range = view.min == view.max
+			? PositionRange.Expand(view.min, view.max, (0, 0, 0, 0))
+			: view.max < view.min ? (view.max, view.min) : view;
 
 		return true;
 	}
 
 	public virtual void Shape(double min, double max)
 	{
+		PositionRange.Validate(min, max);
 		_min ??= min;
 		_max ??= max;
 
@@ -84,10 +68,10 @@ internal abstract class Position<TKey>(ITransformation<TKey>? transformation, (d
 			return 0;
 		}
 
-		return (value - Range.min) / (Range.max - Range.min);
+		return PositionRange.Normalize(value, Range.min, Range.max);
 	}
 
-	public double Invert(double coord) => Range.min + coord * (Range.max - Range.min);
+	public double Invert(double coord) => PositionRange.Interpolate(Range.min, Range.max, coord);
 
 	public virtual TKey? Unmap(double value) => null;
 

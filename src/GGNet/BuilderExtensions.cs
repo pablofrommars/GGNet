@@ -870,8 +870,8 @@ public static partial class BuilderExtensions
 	/// <param name="selector">Facet key per item.</param>
 	/// <param name="freeX">Independent x scale per panel instead of shared.</param>
 	/// <param name="freeY">Independent y scale per panel instead of shared.</param>
-	/// <param name="nrows">Fix the row count; default derives from the key count.</param>
-	/// <param name="ncolumns">Fix the column count; default derives from the key count.</param>
+	/// <param name="nrows">Fix the row count; default derives from the key count. When both dimensions are fixed, their capacity must accommodate all distinct keys on every render.</param>
+	/// <param name="ncolumns">Fix the column count; default derives from the key count. When both dimensions are fixed, their capacity must accommodate all distinct keys on every render.</param>
 	public static PlotContext<T, TX, TY> Facet_Wrap<T, TX, TY, TKey>(this PlotContext<T, TX, TY> context, Func<T, TKey> selector, bool freeX = false, bool freeY = false, int? nrows = null, int? ncolumns = null)
 	  where TX : struct
 	  where TY : struct

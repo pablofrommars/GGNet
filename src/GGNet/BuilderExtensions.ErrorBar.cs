@@ -10,8 +10,8 @@ public static partial class BuilderExtensions
 	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
 	/// </summary>
 	/// <param name="source">Items to plot; one bar per item.</param>
-	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
-	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
 	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
 	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
@@ -27,10 +27,10 @@ public static partial class BuilderExtensions
 	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
 	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
-	  Source<T2> source,
+	  IReadOnlyList<T2> source,
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? y = null,
 	  Func<T2, TY1>? ymin = null,
@@ -48,6 +48,8 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
+		colorBy = ResolveMapping(colorBy, panel.Context.Aesthetics.Color, inherit, nameof(colorBy));
+
 		panel.AddTyped(() =>
 		{
 			var geom = new ErrorBar<T2, TX1, TY1>(source, x, y, ymin, ymax, colorBy, tooltip, position, animation, scale)
@@ -80,8 +82,8 @@ public static partial class BuilderExtensions
 	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
 	/// </summary>
 	/// <param name="source">Items to plot; one bar per item.</param>
-	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
-	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
 	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
 	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
@@ -97,7 +99,7 @@ public static partial class BuilderExtensions
 	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
 	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IEnumerable<T2> source,
@@ -118,15 +120,15 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return panel.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
+		return panel.Geom_ErrorBar(source as IReadOnlyList<T2> ?? new Source<T2>(source), x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale, inherit: inherit);
 	}
 
 	/// <summary>
 	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
 	/// </summary>
 	/// <param name="source">Items to plot; one bar per item.</param>
-	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
-	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
 	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
 	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
@@ -142,10 +144,10 @@ public static partial class BuilderExtensions
 	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
 	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
-	  Source<T2> source,
+	  IReadOnlyList<T2> source,
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? y = null,
 	  Func<T2, TY1>? ymin = null,
@@ -163,7 +165,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
+		context.Default_Panel().Geom_ErrorBar(source, x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale, inherit: inherit);
 
 		return context;
 	}
@@ -172,8 +174,8 @@ public static partial class BuilderExtensions
 	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
 	/// </summary>
 	/// <param name="source">Items to plot; one bar per item.</param>
-	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
-	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
 	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
 	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
@@ -189,7 +191,7 @@ public static partial class BuilderExtensions
 	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
 	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_ErrorBar<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IEnumerable<T2> source,
@@ -210,14 +212,14 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return context.Geom_ErrorBar(new Source<T2>(source), x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
+		return context.Geom_ErrorBar(source as IReadOnlyList<T2> ?? new Source<T2>(source), x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale, inherit: inherit);
 	}
 
 	/// <summary>
 	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
 	/// </summary>
-	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
-	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
 	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
 	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
@@ -233,7 +235,7 @@ public static partial class BuilderExtensions
 	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
 	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
@@ -253,14 +255,14 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_ErrorBar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, colorBy ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
+		return Geom_ErrorBar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, ymin ?? panel.Context.Selectors.Y, ymax ?? panel.Context.Selectors.Y, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale, inherit: inherit);
 	}
 
 	/// <summary>
 	/// Adds an error-bar layer: a center marker at y with whiskers from ymin to ymax.
 	/// </summary>
-	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
-	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Center marker position, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="ymin">Lower whisker end, in y-axis data units.</param>
 	/// <param name="ymax">Upper whisker end, in y-axis data units.</param>
 	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
@@ -276,7 +278,7 @@ public static partial class BuilderExtensions
 	/// <param name="position"><c>Dodge</c> separates overlapping bars per key; <c>Identity</c> draws them in place.</param>
 	/// <param name="animation">Adds the <c>animate-errorbar</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T, TX, TY> Geom_ErrorBar<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
@@ -296,7 +298,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale);
+		context.Default_Panel().Geom_ErrorBar(x, y, ymin, ymax, colorBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, radius, position, animation, scale, inherit: inherit);
 
 		return context;
 	}

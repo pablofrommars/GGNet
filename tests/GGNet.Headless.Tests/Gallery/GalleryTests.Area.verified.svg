@@ -29,17 +29,23 @@
 	<text class="x-break-label" x="367" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">3</text>
 	<text class="x-break-label" x="527.4545454545455" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">4</text>
 	<text class="x-break-label" x="687.9090909090909" y="576" text-anchor="middle" font-size="0.75em" clip-path="url(#ggID)">5</text>
-	<line class="y-break" x1="14" x2="720" y1="530.7272727272726" y2="530.7272727272726" clip-path="url(#ggID)" />
-	<line class="y-break" x1="14" x2="720" y1="300.9752066115703" y2="300.9752066115703" clip-path="url(#ggID)" />
-	<line class="y-break" x1="14" x2="720" y1="71.22314049586784" y2="71.22314049586784" clip-path="url(#ggID)" />
-	<line class="y-minor-break" x1="14" x2="720" y1="645.603305785124" y2="645.603305785124" clip-path="url(#ggID)" />
-	<line class="y-minor-break" x1="14" x2="720" y1="415.85123966942155" y2="415.85123966942155" clip-path="url(#ggID)" />
-	<line class="y-minor-break" x1="14" x2="720" y1="186.09917355371914" y2="186.09917355371914" clip-path="url(#ggID)" />
-	<line class="y-minor-break" x1="14" x2="720" y1="-43.652892561983386" y2="-43.652892561983386" clip-path="url(#ggID)" />
-	<text class="y-break-label" x="10" y="533.7272727272726" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">2</text>
-	<text class="y-break-label" x="10" y="303.9752066115703" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">3</text>
-	<text class="y-break-label" x="10" y="74.22314049586784" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">4</text>
+	<line class="y-break" x1="14" x2="720" y1="530.7272727272727" y2="530.7272727272727" clip-path="url(#ggID)" />
+	<line class="y-break" x1="14" x2="720" y1="410.3809523809524" y2="410.3809523809524" clip-path="url(#ggID)" />
+	<line class="y-break" x1="14" x2="720" y1="290.03463203463207" y2="290.03463203463207" clip-path="url(#ggID)" />
+	<line class="y-break" x1="14" x2="720" y1="169.68831168831173" y2="169.68831168831173" clip-path="url(#ggID)" />
+	<line class="y-break" x1="14" x2="720" y1="49.34199134199137" y2="49.34199134199137" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="590.900432900433" y2="590.900432900433" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="470.5541125541126" y2="470.5541125541126" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="350.20779220779224" y2="350.20779220779224" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="229.8614718614719" y2="229.8614718614719" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="109.51515151515154" y2="109.51515151515154" clip-path="url(#ggID)" />
+	<line class="y-minor-break" x1="14" x2="720" y1="-10.831168831168803" y2="-10.831168831168803" clip-path="url(#ggID)" />
+	<text class="y-break-label" x="10" y="533.7272727272727" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">0</text>
+	<text class="y-break-label" x="10" y="413.3809523809524" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">1</text>
+	<text class="y-break-label" x="10" y="293.03463203463207" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">2</text>
+	<text class="y-break-label" x="10" y="172.68831168831173" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">3</text>
+	<text class="y-break-label" x="10" y="52.34199134199137" text-anchor="end" font-size="0.75em" clip-path="url(#ggID)">4</text>
 	<g clip-path="url(#ggID)">
-		<path d="M 46.09090909090908 530.7272727272726 L 206.54545454545453 186.09917355371914 L 367 346.9256198347108 L 527.4545454545455 25.272727272727312 L 687.9090909090909 278.00000000000006 L 687.9090909090909 990.2314049586776 L 527.4545454545455 990.2314049586776 L 367 990.2314049586776 L 206.54545454545453 990.2314049586776 L 46.09090909090908 990.2314049586776 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
+		<path d="M 46.09090909090908 290.03463203463207 L 206.54545454545453 109.51515151515154 L 367 193.75757575757578 L 527.4545454545455 25.272727272727252 L 687.9090909090909 157.65367965367966 L 687.9090909090909 530.7272727272727 L 527.4545454545455 530.7272727272727 L 367 530.7272727272727 L 206.54545454545453 530.7272727272727 L 46.09090909090908 530.7272727272727 Z" fill="#23d0fc" fill-opacity="1" clip-path="url(#ggID)" />
 	</g>
 </svg>

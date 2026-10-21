@@ -52,6 +52,14 @@ var plot = PlotContext.Build(points, o => o.X, o => o.Y)
 - **The vocabulary is SVG's.** `strokeWidth`, `opacity`, `fillOpacity`, `strokeOpacity`, `strokeColor` mean exactly what they mean in SVG. `width` and `height` are reserved for geometric extent in data units (`Geom_Bar`, `Geom_Tile`, `Geom_Violin`, `Geom_RidgeLine`).
 - **Interactivity is a uniform block.** Every data-mark geom takes `onclick`, `onmouseover`, `onmouseout`, and (where a hover surface makes sense) `tooltip`. When `tooltip` is set and no explicit hover handlers are given, the default hover shows it. Annotation geoms (`Geom_ABLine`, `Geom_HLine`, `Geom_VLine`, `Geom_Text`) and statistical summaries (`Geom_Boxplot`, `Geom_Violin`, `Geom_RidgeLine`) deliberately take no event block.
 
+### Position ranges and updates
+
+Log10 positions require positive finite data, limits, and view bounds. Nonpositive values and infinities throw `GGNetUserException`; filter those rows or choose a continuous scale. Existing NaN missing-point and line-gap behavior is retained. Nonfinite position extents and view windows are rejected before tick generation.
+
+Automatic area ranges include their drawn baseline, which is zero in transformed coordinates (raw value one on a Log10 axis). Explicit limits and view windows still take precedence. Large finite numeric ranges use finite expansion and overflow-safe projection; very small, very large, or narrowly offset ranges use at most five evenly spaced major ticks. Expansion saturates at finite double endpoints. Equal view bounds receive singleton padding.
+
+In Blazor, changing `Context`, `Width`, or `Height` requests a refresh in both interactive modes and preserves view windows when resizing. `Static` retains its initial frame. A context may be reused sequentially after headless export; use separate contexts for concurrently mounted plots.
+
 ### Stats
 
 Stats are sources, not layers: each `Stat.*` call returns a typed source that any geom draws unchanged, recomputed on every render pass so streaming data stays current.

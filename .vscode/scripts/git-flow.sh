@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # .vscode/scripts/git-flow.sh
 # Usage: ./.vscode/scripts/git-flow.sh <command> [args...]
-# Commands: status, doctor, start, resume, cleanup, handoff, refresh, sync,
+# Commands: status, doctor, pull, start, resume, cleanup, handoff, refresh, sync,
 #           publish, squash, merge, release, agent-start, agent-done
 #
 # ─── Workflow ────────────────────────────────────────────────────────────────
 #
 #   status / doctor     inspect local refs, worktrees, and lifecycle evidence;
 #                       neither command fetches or calls GitHub.
+#   pull                fast-forward from the current branch's upstream, then
+#                       recursively align submodules to the recorded pins.
 #   start / resume      create or locate one isolated managed task worktree.
 #   handoff             report review evidence without staging or committing.
 #   refresh             fetch, rebase onto the base branch, and update only the
@@ -1529,6 +1531,85 @@ cmd_handoff() {
   echo "  performed_actions: none"
 }
 
+# Ignore checkout-only gitlink differences: aligning those is pull's purpose.
+# Inspect each initialized module recursively, including untracked files and
+# local branches, before a checkout can hide unpublished work. Staged pins
+# remain edits and must not be consumed by submodule update.
+require_pull_safe_worktree() {
+  local changed="$1"
+  if [ -n "$(GIT_OPTIONAL_LOCKS=0 git status --porcelain=v1 --untracked-files=normal --ignore-submodules=all)" ] \
+    || ! git diff --cached --quiet --ignore-submodules=none; then
+    blocked "pull requires a clean index and no local file changes." "$changed" \
+      "git status --short  # inspect and preserve local work before pulling" \
+      "$(rerun_step)"
+    return 1
+  fi
+  if ! git submodule foreach --quiet --recursive '
+    if [ -n "$(GIT_OPTIONAL_LOCKS=0 git status --porcelain=v1 --untracked-files=normal --ignore-submodules=all)" ] \
+      || ! git diff --cached --quiet --ignore-submodules=none; then
+      echo "error: submodule has local changes: $displaypath" >&2
+      exit 1
+    fi
+    if [ -n "$(git rev-list -n 1 HEAD --branches --not --remotes)" ]; then
+      echo "error: submodule holds unpublished commits: $displaypath" >&2
+      exit 1
+    fi
+  '; then
+    blocked "submodule alignment would disturb local work." "$changed" \
+      "git submodule foreach --recursive 'git status --short; git log --oneline HEAD --branches --not --remotes'  # inspect local work" \
+      "# preserve or publish the named submodule work before pulling" \
+      "$(rerun_step)"
+    return 1
+  fi
+}
+
+cmd_pull() {
+  if [ $# -ne 0 ]; then
+    echo "usage: git-flow.sh pull" >&2
+    exit 1
+  fi
+  local branch upstream old_head new_head
+  branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null || true)
+  if [ -z "$branch" ]; then
+    blocked "pull requires a branch, not detached HEAD." "nothing was fetched or updated." \
+      "git branch --list  # find the branch to update" \
+      "git switch <branch>" \
+      "$(rerun_step)"
+    exit 1
+  fi
+  upstream=$(git rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null || true)
+  if [ -z "$upstream" ]; then
+    blocked "pull requires a configured upstream for $branch." "nothing was fetched or updated." \
+      "git branch -vv  # inspect branch tracking" \
+      "git branch --set-upstream-to=<remote>/<branch>  # select the intended upstream" \
+      "$(rerun_step)"
+    exit 1
+  fi
+  cd "$(git rev-parse --show-toplevel)"
+  require_pull_safe_worktree "nothing was fetched or updated." || exit 1
+  old_head=$(git rev-parse HEAD)
+  if ! git pull --ff-only --no-rebase --no-autostash --no-recurse-submodules; then
+    blocked "fast-forward pull from $upstream failed." \
+      "fetch may have updated remote refs; HEAD is $(git rev-parse HEAD) (was $old_head). Submodule alignment was not attempted." \
+      "git status --short" \
+      "git log --oneline --left-right HEAD...@{upstream}  # inspect divergence" \
+      "$(rerun_step)"
+    exit 1
+  fi
+  new_head=$(git rev-parse HEAD)
+  require_pull_safe_worktree "pull completed: $old_head -> $new_head; submodule alignment was not attempted." || exit 1
+  if ! git submodule update --init --recursive --checkout; then
+    blocked "pull completed, but submodule alignment failed." \
+      "HEAD moved from $old_head to $new_head; some submodules may already be aligned. No rollback was attempted." \
+      "git submodule status --recursive  # inspect remaining mismatches" \
+      "# resolve the reported submodule access or checkout error" \
+      "$(rerun_step)"
+    exit 1
+  fi
+  echo "✓ pulled $branch from $upstream; submodules aligned to recorded pins."
+  git status --short --branch
+}
+
 cmd_sync() {
   if [ $# -ne 0 ]; then
     echo "usage: git-flow.sh sync" >&2
@@ -1876,6 +1957,7 @@ current_command="${1:-}"
 case "${1:-}" in
   status)      shift; cmd_status "$@" ;;
   doctor)      shift; cmd_doctor "$@" ;;
+  pull)        shift; cmd_pull "$@" ;;
   start)       shift; cmd_start "$@" ;;
   resume)      shift; cmd_resume "$@" ;;
   cleanup)     shift; cmd_cleanup "$@" ;;
@@ -1888,5 +1970,5 @@ case "${1:-}" in
   release)     shift; cmd_release "$@" ;;
   agent-start) shift; cmd_agent_start "$@" ;;
   agent-done)  shift; cmd_agent_done "$@" ;;
-  *) echo "usage: $0 {status|doctor|start [--worktree]|resume|cleanup [--apply]|handoff|refresh|sync|publish|squash|merge|release|agent-start|agent-done}" >&2; exit 1 ;;
+  *) echo "usage: $0 {status|doctor|pull|start [--worktree]|resume|cleanup [--apply]|handoff|refresh|sync|publish|squash|merge|release|agent-start|agent-done}" >&2; exit 1 ;;
 esac

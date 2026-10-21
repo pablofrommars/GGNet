@@ -64,6 +64,17 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 	{
 		Positions.X.Train(item);
 		Positions.Y.Train(item);
+
+		Aesthetics.Color?.Train(item);
+	}
+
+	public override void Legend()
+	{
+		Legend(Aesthetics.Color, value => new Elements.Rectangle
+		{
+			Fill = value,
+			FillOpacity = Aesthetic.Opacity
+		});
 	}
 
 	protected override void Shape(T item)

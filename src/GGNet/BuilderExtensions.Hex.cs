@@ -10,8 +10,8 @@ public static partial class BuilderExtensions
 	/// Adds a hex layer: one hexagon per item (binned density maps).
 	/// </summary>
 	/// <param name="source">Items to plot; one hexagon per item.</param>
-	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot’s x selector.</param>
-	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="dx">Horizontal half-extent per item, in x-axis data units.</param>
 	/// <param name="dy">Vertical half-extent per item, in y-axis data units.</param>
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
@@ -23,10 +23,10 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Fill opacity, 0–1.</param>
 	/// <param name="animation">Adds the <c>animate-hex</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
-	  Source<T2> source,
+	  IReadOnlyList<T2> source,
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? y = null,
 	  Func<T2, TX1>? dx = null,
@@ -52,6 +52,8 @@ public static partial class BuilderExtensions
 			throw new GGNetUserException($"{nameof(dy)} selector should not be null");
 		}
 
+		fillBy = ResolveMapping(fillBy, panel.Context.Aesthetics.Fill, inherit, nameof(fillBy));
+
 		panel.AddTyped(() =>
 		{
 			var geom = new Hex<T2, TX1, TY1>(source, x, y, dx, dy, fillBy, tooltip, animation, scale)
@@ -76,8 +78,8 @@ public static partial class BuilderExtensions
 	/// Adds a hex layer: one hexagon per item (binned density maps).
 	/// </summary>
 	/// <param name="source">Items to plot; one hexagon per item.</param>
-	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot’s x selector.</param>
-	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="dx">Horizontal half-extent per item, in x-axis data units.</param>
 	/// <param name="dy">Vertical half-extent per item, in y-axis data units.</param>
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
@@ -89,7 +91,7 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Fill opacity, 0–1.</param>
 	/// <param name="animation">Adds the <c>animate-hex</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IEnumerable<T2> source,
@@ -108,15 +110,15 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return panel.Geom_Hex(new Source<T2>(source), x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+		return panel.Geom_Hex(source as IReadOnlyList<T2> ?? new Source<T2>(source), x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit: inherit);
 	}
 
 	/// <summary>
 	/// Adds a hex layer: one hexagon per item (binned density maps).
 	/// </summary>
 	/// <param name="source">Items to plot; one hexagon per item.</param>
-	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot’s x selector.</param>
-	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="dx">Horizontal half-extent per item, in x-axis data units.</param>
 	/// <param name="dy">Vertical half-extent per item, in y-axis data units.</param>
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
@@ -128,10 +130,10 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Fill opacity, 0–1.</param>
 	/// <param name="animation">Adds the <c>animate-hex</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
-	  Source<T2> source,
+	  IReadOnlyList<T2> source,
 	  Func<T2, TX1>? x = null,
 	  Func<T2, TY1>? y = null,
 	  Func<T2, TX1>? dx = null,
@@ -147,7 +149,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Hex(source, x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+		context.Default_Panel().Geom_Hex(source, x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit: inherit);
 
 		return context;
 	}
@@ -156,8 +158,8 @@ public static partial class BuilderExtensions
 	/// Adds a hex layer: one hexagon per item (binned density maps).
 	/// </summary>
 	/// <param name="source">Items to plot; one hexagon per item.</param>
-	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot’s x selector.</param>
-	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="dx">Horizontal half-extent per item, in x-axis data units.</param>
 	/// <param name="dy">Vertical half-extent per item, in y-axis data units.</param>
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
@@ -169,7 +171,7 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Fill opacity, 0–1.</param>
 	/// <param name="animation">Adds the <c>animate-hex</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Hex<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IEnumerable<T2> source,
@@ -188,14 +190,14 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return context.Geom_Hex(new Source<T2>(source), x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+		return context.Geom_Hex(source as IReadOnlyList<T2> ?? new Source<T2>(source), x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit: inherit);
 	}
 
 	/// <summary>
 	/// Adds a hex layer: one hexagon per item (binned density maps).
 	/// </summary>
-	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot’s x selector.</param>
-	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="dx">Horizontal half-extent per item, in x-axis data units.</param>
 	/// <param name="dy">Vertical half-extent per item, in y-axis data units.</param>
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
@@ -207,7 +209,7 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Fill opacity, 0–1.</param>
 	/// <param name="animation">Adds the <c>animate-hex</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T, TX, TY> Geom_Hex<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
@@ -225,14 +227,14 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Hex(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, dx, dy, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+		return Geom_Hex(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit: inherit);
 	}
 
 	/// <summary>
 	/// Adds a hex layer: one hexagon per item (binned density maps).
 	/// </summary>
-	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot’s x selector.</param>
-	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot’s y selector.</param>
+	/// <param name="x">Hexagon center x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Hexagon center y, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="dx">Horizontal half-extent per item, in x-axis data units.</param>
 	/// <param name="dy">Vertical half-extent per item, in y-axis data units.</param>
 	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
@@ -244,7 +246,7 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Fill opacity, 0–1.</param>
 	/// <param name="animation">Adds the <c>animate-hex</c> css class.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T, TX, TY> Geom_Hex<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
@@ -262,7 +264,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Hex(x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale);
+		context.Default_Panel().Geom_Hex(x, y, dx, dy, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, opacity, animation, scale, inherit: inherit);
 
 		return context;
 	}

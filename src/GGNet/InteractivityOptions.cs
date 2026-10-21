@@ -5,7 +5,10 @@ namespace GGNet;
 /// component. When unset (the default), the plot renders exactly as a static
 /// one — no capture group, no gesture handlers, byte-identical output.
 /// The svg stays responsive: pointer coordinates are converted to plot units
-/// client-side against the rendered size.
+/// client-side using the capture element's inverse screen CTM.
+/// Options are fixed when the Plot component is initialized. Recreate the
+/// component with a different <c>@key</c> to change them; equal option values
+/// may be supplied again.
 /// </summary>
 public sealed record InteractivityOptions
 {

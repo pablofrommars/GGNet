@@ -30,12 +30,17 @@ public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX
 
 	internal Components.IPanel? Component { get; set; }
 
-	internal bool Registered { get; set; }
-
 	internal void Register(Components.IPanel component)
 	{
 		Component = component;
-		Registered = true;
+	}
+
+	internal void Unregister(Components.IPanel component)
+	{
+		if (ReferenceEquals(Component, component))
+		{
+			Component = null;
+		}
 	}
 
 	internal Scales.Position<TX> X => Data.Positions.X.Scales.Count == 1

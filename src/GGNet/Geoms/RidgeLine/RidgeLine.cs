@@ -12,7 +12,7 @@ internal sealed class RidgeLine<T, TX, TY> : Geom<T, TX, TY>
 	private readonly Dictionary<(double y, string fille), Shapes.Area> areas = [];
 
 	public RidgeLine(
-	  Source<T> source,
+	  IReadOnlyList<T> source,
 	  Func<T, TX>? x,
 	  Func<T, TY>? y,
 	  Func<T, double> height,

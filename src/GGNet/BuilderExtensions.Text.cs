@@ -11,8 +11,8 @@ public static partial class BuilderExtensions
 	/// Adds a text layer: one label per item.
 	/// </summary>
 	/// <param name="source">Items to plot; one label per item.</param>
-	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
-	/// <param name="y">Position along y, in y-axis data units. Defaults to the plot's y selector.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Position along y, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="angleBy">Per-item rotation in degrees. Data-driven but scale-less: no legend.</param>
 	/// <param name="text">Label content per item; formatted with the invariant culture.</param>
 	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
@@ -23,7 +23,7 @@ public static partial class BuilderExtensions
 	/// <param name="color">Constant text color for the whole layer; with <paramref name="colorBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="angle">Constant rotation in degrees.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TT>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IReadOnlyList<T2> source,
@@ -37,6 +37,8 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
+		colorBy = ResolveMapping(colorBy, panel.Context.Aesthetics.Color, inherit, nameof(colorBy));
+
 		panel.AddTyped(() =>
 		{
 			var geom = new Text<T2, TX1, TY1, TT>(source, x, y, angleBy, text, colorBy, scale)
@@ -62,8 +64,8 @@ public static partial class BuilderExtensions
 	/// Adds a text layer: one label per item.
 	/// </summary>
 	/// <param name="source">Items to plot; one label per item.</param>
-	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
-	/// <param name="y">Position along y, in y-axis data units. Defaults to the plot's y selector.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Position along y, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="angleBy">Per-item rotation in degrees. Data-driven but scale-less: no legend.</param>
 	/// <param name="text">Label content per item; formatted with the invariant culture.</param>
 	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
@@ -74,7 +76,7 @@ public static partial class BuilderExtensions
 	/// <param name="color">Constant text color for the whole layer; with <paramref name="colorBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="angle">Constant rotation in degrees.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Text<T1, TX1, TY1, T2, TT>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IReadOnlyList<T2> source,
@@ -88,7 +90,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Text(source, x, y, angleBy, text, colorBy, size, anchor, weight, style, color, angle, scale);
+		context.Default_Panel().Geom_Text(source, x, y, angleBy, text, colorBy, size, anchor, weight, style, color, angle, scale, inherit: inherit);
 
 		return context;
 	}
@@ -96,8 +98,8 @@ public static partial class BuilderExtensions
 	/// <summary>
 	/// Adds a text layer: one label per item.
 	/// </summary>
-	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
-	/// <param name="y">Position along y, in y-axis data units. Defaults to the plot's y selector.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Position along y, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="angleBy">Per-item rotation in degrees. Data-driven but scale-less: no legend.</param>
 	/// <param name="text">Label content per item; formatted with the invariant culture.</param>
 	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
@@ -108,7 +110,7 @@ public static partial class BuilderExtensions
 	/// <param name="color">Constant text color for the whole layer; with <paramref name="colorBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="angle">Constant rotation in degrees.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T, TX, TY> Geom_Text<T, TX, TY, TT>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
@@ -121,14 +123,14 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Text(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, angleBy, text, colorBy ?? (inherit ? panel.Context.Aesthetics.Color : null), size, anchor, weight, style, color, angle, scale);
+		return Geom_Text(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, angleBy, text, colorBy, size, anchor, weight, style, color, angle, scale, inherit: inherit);
 	}
 
 	/// <summary>
 	/// Adds a text layer: one label per item.
 	/// </summary>
-	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector.</param>
-	/// <param name="y">Position along y, in y-axis data units. Defaults to the plot's y selector.</param>
+	/// <param name="x">Position along x, in x-axis data units. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Position along y, in y-axis data units. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
 	/// <param name="angleBy">Per-item rotation in degrees. Data-driven but scale-less: no legend.</param>
 	/// <param name="text">Label content per item; formatted with the invariant culture.</param>
 	/// <param name="colorBy">Data-driven color: participates in the color scale and the legend. Build with <c>Scale_Color_Discrete</c>.</param>
@@ -139,7 +141,7 @@ public static partial class BuilderExtensions
 	/// <param name="color">Constant text color for the whole layer; with <paramref name="colorBy"/> set it still colors other aesthetics’ legend swatches.</param>
 	/// <param name="angle">Constant rotation in degrees.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T, TX, TY> Geom_Text<T, TX, TY, TT>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
@@ -152,7 +154,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Text(x, y, angleBy, text, colorBy, size, anchor, weight, style, color, angle, scale);
+		context.Default_Panel().Geom_Text(x, y, angleBy, text, colorBy, size, anchor, weight, style, color, angle, scale, inherit: inherit);
 
 		return context;
 	}

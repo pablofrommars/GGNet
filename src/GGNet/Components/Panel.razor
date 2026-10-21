@@ -34,8 +34,8 @@ else
     @* Gesture capture: bubbling catches wheel/dblclick over any child (marks
        included) without suppressing the per-mark handlers. Emitted only under
        the opt-in — non-interactive plots keep today's flat structure. *@
-    @* Wheel is captured by the JS module (fresh client-rect per event, so the
-       responsive svg's scale is always exact); discrete events stay Blazor's. *@
+    @* Continuous gestures use the capture group's screen transform; discrete
+       events stay Blazor's. *@
     <g @ref=captureRef @ondblclick=OnResetViewAsync @onmouseleave=OnCrosshairLeave>
         @renderContent
     </g>
@@ -53,9 +53,48 @@ else
 
 @code {
 
-    // The panel's gesture-capturable content: background, strips, grid, marks.
-    // One fragment so the opt-in wrapper and the flat default emit the same bytes.
     private void RenderContent(RenderTreeBuilder __builder)
+    {
+        var touchAction = coord.CarvesAxisBands && Plot.Interactivity is { } options
+            ? PanelInteropOptions.Create(options).TouchAction
+            : null;
+
+        if (touchAction is not null)
+        {
+            @renderStrip
+
+            @* INVARIANT: block display makes touch-action apply to this nested
+               viewport in Chromium; groups and inline nested SVGs do not supply
+               that boundary. The viewBox preserves panel coordinates. *@
+            <svg x=@Num(Area.X) y=@Num(Area.Y) width=@Num(Area.Width) height=@Num(Area.Height)
+                 viewBox=@Attr($"{Area.X} {Area.Y} {Area.Width} {Area.Height}")
+                 preserveAspectRatio="none" overflow="visible" data-ggnet-viewport=""
+                 style=@Attr($"display: block; touch-action: {touchAction}; x: {Area.X}px; y: {Area.Y}px; width: {Area.Width}px; height: {Area.Height}px;")>
+                @{ RenderBackground(__builder); }
+                @{ RenderGridContent(__builder, false); }
+                @{ RenderInteraction(__builder); }
+            </svg>
+
+            foreach (var label in grid.XLabels)
+            {
+                RenderGridLabel(__builder, label);
+            }
+
+            foreach (var label in grid.YLabels)
+            {
+                RenderGridLabel(__builder, label);
+            }
+
+            return;
+        }
+
+        RenderBackground(__builder);
+        @renderStrip
+        @renderGrid
+        RenderInteraction(__builder);
+    }
+
+    private void RenderBackground(RenderTreeBuilder __builder)
     {
         <rect
         class="panel"
@@ -64,11 +103,10 @@ else
         y=@Num(Area.Y)
         width=@Num(Area.Width)
         height=@Num(Area.Height) />
+    }
 
-        @renderStrip
-
-        @renderGrid
-
+    private void RenderInteraction(RenderTreeBuilder __builder)
+    {
         @if (Plot.Interactivity is { Crosshair: true } && coord.CarvesAxisBands)
         {
             @* Invisible hover strips under the marks: the Tier-0 crosshair
@@ -101,10 +139,12 @@ else
         }
         else
         {
-            @* The marks-only transform target: the drag preview translates this
-               group client-side; the capture group above stays the event surface. *@
-            <g @ref=panRef>
-                <Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderModeHandler=@areaRenderModeHandler />
+            @* The outer clip stays in panel space while the marks-only
+               target previews the drag as a client-side translation. *@
+            <g clip-path="url(#@(clip)-area)">
+                <g @ref=panRef data-ggnet-pan="">
+                    <Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderModeHandler=@areaRenderModeHandler />
+                </g>
             </g>
         }
 
@@ -194,7 +234,9 @@ else
         }
     }
 
-    private void RenderGrid(RenderTreeBuilder __builder)
+    private void RenderGrid(RenderTreeBuilder __builder) => RenderGridContent(__builder, true);
+
+    private void RenderGridContent(RenderTreeBuilder __builder, bool labels)
     {
         foreach (var line in grid.XLines)
         {
@@ -227,9 +269,12 @@ else
             clip-path="url(#@(clip)-area)" />
         }
 
-        @foreach (var label in grid.XLabels)
+        if (labels)
         {
-            RenderGridLabel(__builder, label);
+            foreach (var label in grid.XLabels)
+            {
+                RenderGridLabel(__builder, label);
+            }
         }
 
         foreach (var line in grid.YLines)
@@ -243,9 +288,12 @@ else
             clip-path="url(#@(clip)-area)" />
         }
 
-        @foreach (var label in grid.YLabels)
+        if (labels)
         {
-            RenderGridLabel(__builder, label);
+            foreach (var label in grid.YLabels)
+            {
+                RenderGridLabel(__builder, label);
+            }
         }
     }
 

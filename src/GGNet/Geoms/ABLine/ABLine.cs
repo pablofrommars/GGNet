@@ -7,7 +7,7 @@ internal sealed class ABLine<T, TX, TY> : Geom<T, TX, TY>
 	private readonly (bool x, bool y) transforms;
 
 	public ABLine(
-		Source<T> source,
+		IReadOnlyList<T> source,
 		Func<T, double> a,
 		Func<T, double> b,
 		Func<T, string>? label,

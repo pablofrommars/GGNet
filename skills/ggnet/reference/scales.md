@@ -40,7 +40,7 @@ NodaTime rules the time axes: `Build` has dedicated overloads for `LocalDate`, `
 
 ## Aesthetic scales — one call registers scale + legend + mapping
 
-The `Scale_Color/Fill/Size/LineType_*` call on the chain creates the mapping that the geoms' `colorBy`/`fillBy`/`sizeBy`/`lineTypeBy` parameters inherit (`inherit: true` default). You rarely pass `xxxBy:` explicitly — chain the scale before the geom.
+The `Scale_Color/Fill/Size/LineType_*` call on the chain creates the mapping that the geoms' `colorBy`/`fillBy`/`sizeBy`/`lineTypeBy` parameters inherit (`inherit: true` default). You rarely pass `xxxBy:` explicitly — chain the scale before the geom. Explicit-source layers also inherit missing mappings when their row type is compatible; incompatible requested mappings throw at the geom call. Explicit mappings win, and `inherit: false` opts out. See [the typed inheritance contract](geoms.md#explicit-source-aesthetic-inheritance).
 
 ```csharp
 Scale_Color_Discrete(Func<T,TKey> selector, string[] palette, int direction = 1, bool guide = true, string? name = null)

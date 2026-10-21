@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using GGNet.Exceptions;
+
+using Microsoft.Extensions.Logging;
 
 namespace GGNet.Components;
 
@@ -52,6 +54,11 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	private IChildRenderModeHandler? definitionsRenderModeHandler;
 
 	private bool loading;
+	private PlotContext<T, TX, TY>? renderedContext;
+	private double renderedWidth;
+	private double renderedHeight;
+	private bool parametersAccepted;
+	private InteractivityOptions? initialInteractivity;
 
 	private readonly RenderFragment renderLegendGradients;
 	private readonly RenderFragment renderLegend;
@@ -62,6 +69,29 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		renderLegendGradients = RenderLegendGradients;
 		renderLegend = RenderLegend;
 		renderPanels = RenderPanels;
+	}
+
+	public override Task SetParametersAsync(ParameterView parameters)
+	{
+		var requested = Interactivity;
+
+		foreach (var parameter in parameters)
+		{
+			if (string.Equals(parameter.Name, nameof(Interactivity), StringComparison.OrdinalIgnoreCase))
+			{
+				requested = (InteractivityOptions?)parameter.Value;
+			}
+		}
+
+		if (parametersAccepted && requested != initialInteractivity)
+		{
+			throw new GGNetUserException("Plot.Interactivity is initialization-only. Recreate the Plot component with a different @key to change its interaction options.");
+		}
+
+		initialInteractivity = requested;
+		parametersAccepted = true;
+
+		return base.SetParametersAsync(parameters);
 	}
 
 	private string? CssClass()
@@ -94,10 +124,9 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	{
 		base.OnParametersSet();
 
-		if (!Context.Initialized)
+		if (!ReferenceEquals(renderedContext, Context) || renderedWidth != Width || renderedHeight != Height)
 		{
 			Context.Init();
-			Context.Render();
 
 			await RefreshAsync(RenderTarget.Render, CancellationToken.None);
 		}
@@ -130,6 +159,10 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		SubTitle = zones.SubTitle;
 		Legend = zones.Legend;
 		Caption = zones.Caption;
+
+		renderedContext = Context;
+		renderedWidth = Width;
+		renderedHeight = Height;
 
 		return true;
 	}

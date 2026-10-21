@@ -255,7 +255,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 
 						if (scale.y)
 						{
-							Positions.Y.Position.Shape(0, slast);
+							Positions.Y.Position.Shape(Math.Min(0, slast), Math.Max(0, slast));
 						}
 
 						sum[head++] = (x, slast);
@@ -308,27 +308,13 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 					var xdelta = xhead - xlast;
 					var ydelta = y - ylast;
 
-					if (ydelta >= 0)
+					for (; k <= head; k++)
 					{
-						for (; k <= head; k++)
-						{
-							var (sx, sy) = sum[k];
-							var delta = sy + (sx - xlast) / xdelta * ydelta;
-							area.Points.Add((sx, sy, delta));
-							sum[k] = (sx, delta);
-							slast = delta;
-						}
-					}
-					else
-					{
-						for (; k <= head; k++)
-						{
-							var (sx, sy) = sum[k];
-							var delta = sy + ylast + (sx - xlast) / xdelta * ydelta;
-							area.Points.Add((sx, sy, delta));
-							sum[k] = (sx, delta);
-							slast = delta;
-						}
+						var (sx, sy) = sum[k];
+						var delta = sy + ylast + (sx - xlast) / xdelta * ydelta;
+						area.Points.Add((sx, sy, delta));
+						sum[k] = (sx, delta);
+						slast = delta;
 					}
 				}
 
@@ -336,7 +322,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 
 				if (scale.y)
 				{
-					Positions.Y.Position.Shape(0, slast);
+					Positions.Y.Position.Shape(Math.Min(0, slast), Math.Max(0, slast));
 				}
 
 				xlast = x;
@@ -348,6 +334,15 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 				}
 
 				head++;
+			}
+
+			if (scale.y)
+			{
+				for (var j = 0; j < area.Points.Count; j++)
+				{
+					var (_, bottom, top) = area.Points[j];
+					Positions.Y.Position.Shape(Math.Min(bottom, top), Math.Max(bottom, top));
+				}
 			}
 		}
 
@@ -388,7 +383,7 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 
 				if (scale.y)
 				{
-					Positions.Y.Position.Shape(y, y);
+					Positions.Y.Position.Shape(Math.Min(0, y), Math.Max(0, y));
 				}
 			}
 		}

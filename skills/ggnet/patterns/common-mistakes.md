@@ -87,6 +87,26 @@ Stat.Summary(readings, r => Array.IndexOf(tanks, r.Tank) + 1.0, r => r.GravityPo
 // (the pinned summary-errorbar example has a numeric Tank — don't copy its x selector for string categories)
 ```
 
+## Aesthetic inheritance corrections in 2.0 beta
+
+Sourceless context calls to `Geom_Area`, `Geom_Bar`, `Geom_Boxplot`, `Geom_ErrorBar`, `Geom_Hex`, `Geom_Map`, `Geom_Point`, `Geom_Radar`, `Geom_Ribbon`, `Geom_RidgeLine`, `Geom_Text`, `Geom_Tile`, and `Geom_Violin` now honor `inherit: false`, matching their panel overloads. This opts out of plot aesthetic mappings; the root source and default positional selectors still apply. Inheritance remains enabled by default, and explicit per-layer mappings take precedence.
+
+Radar now inherits **Fill only**. If a radar chart used the accidental `Scale_Color_Discrete` route for its polygons, change that configuration to `Scale_Fill_Discrete` before `Geom_Radar`. There is no Color fallback: a Color-only radar uses its constant `fill`, and Fill wins when both channels are configured. `Scale_Fill_Discrete` and `Scale_Fill_Continuous` configure inherited mappings on the context; they do not return an object to pass as `fillBy`. A custom `IAestheticMapping<T, string>` can still be supplied explicitly.
+
+Radar groups vertices by their **mapped fill color**, not an entity identifier. Distinct polygons require distinct mapped colors; different entities mapped to the same color share one polygon. A continuous fill that varies between vertices can split an entity and combine vertices across entities. Groups containing fewer than two vertices produce no polygon. Polygon paint, legend entries, and tooltip color use the Fill mapping. No separate grouping API is implied.
+
+Explicit-source calls in those families and `Geom_Line` now honor `inherit: true` as well. This can change paint, legends and series grouping for the same row type. Cross-type calls that previously ignored configured mappings can now throw: supply explicit mappings for every incompatible aesthetic used by the geom, or use `inherit: false` to retain independent layer styling. Setting a constant `color` or `fill` does not override a mapping; use `colorBy`/`fillBy` or opt out. The invariant mapping interface has not changed, and positional selectors remain required for explicit sources. Map's polygon-array convenience overload obeys the same rule with `Polygon[]` as its layer row type.
+
+## Source identity corrections in 2.0 beta
+
+The explicit-source `Geom_Point`, `Geom_Tile`, and `Geom_Segment` context signatures now accept `IReadOnlyList<T2>` instead of `Source<T2>`. `Geom_ABLine`, `Geom_ErrorBar`, `Geom_Hex`, `Geom_Map`, `Geom_Ribbon`, `Geom_RidgeLine`, and `Geom_Violin` make the same replacement on both context and panel receivers. This is a **binary breaking change** with no compatibility shims: recompile consumers against this beta. Existing `Source<T2>` arguments implement the replacement interface.
+
+These ten families now retain list objects, including lists passed through an `IEnumerable<T2>` variable. Mutations before or between renders are visible; non-list enumerables are materialized once at chain construction. For a deliberate snapshot, pass `new Source<T>(rows)` or a copied list.
+
+Inherited layers in the seven families above, and explicit same-source layers in all ten families, now participate in facet partitioning instead of accidentally repeating all data. Matching remains `plotSource.Equals(layerSource)`; ordinary arrays and lists use object identity. To repeat a complete ordinary list in each facet, pass a distinct `rows.ToList()` to the layer. Custom equality may match distinct objects; facet matching evaluates it after source refresh and before training.
+
+Stat source markers survive these adapters. Rendering refreshes retained root and active-layer stats on the first export and later passes, traversing directly composed built-in dependencies upstream first and deduplicating by object identity. Direct `Recompute()` stays shallow; dependencies hidden in selectors or copied adapters are not discovered. See [statistics lifecycle and numeric contracts](../reference/stats.md).
+
 ## Sharp edges found the hard way
 
 ```csharp

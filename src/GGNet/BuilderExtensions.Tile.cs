@@ -24,7 +24,7 @@ public static partial class BuilderExtensions
 	/// <param name="strokeOpacity">Outline opacity, 0–1.</param>
 	/// <param name="strokeWidth">Stroke width in pixels.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IReadOnlyList<T2> source,
@@ -43,6 +43,8 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
+		fillBy = ResolveMapping(fillBy, panel.Context.Aesthetics.Fill, inherit, nameof(fillBy));
+
 		panel.AddTyped(() =>
 		{
 			var geom = new Tile<T2, TX1, TY1>(source, x, y, width, height, fillBy, tooltip, scale)
@@ -85,10 +87,10 @@ public static partial class BuilderExtensions
 	/// <param name="strokeOpacity">Outline opacity, 0–1.</param>
 	/// <param name="strokeWidth">Stroke width in pixels.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
-	  Source<T2> source,
+	  IReadOnlyList<T2> source,
 	  Func<T2, TX1> x,
 	  Func<T2, TY1> y,
 	  Func<T2, double> width,
@@ -104,7 +106,7 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Tile(source, x, y, width, height, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
+		context.Default_Panel().Geom_Tile(source, x, y, width, height, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit: inherit);
 
 		return context;
 	}
@@ -128,7 +130,7 @@ public static partial class BuilderExtensions
 	/// <param name="strokeOpacity">Outline opacity, 0–1.</param>
 	/// <param name="strokeWidth">Stroke width in pixels.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Tile<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IEnumerable<T2> source,
@@ -146,7 +148,7 @@ public static partial class BuilderExtensions
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	  where TX1 : struct
 	  where TY1 : struct
-	  => context.Geom_Tile(new Source<T2>(source), x, y, width, height, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
+	  => context.Geom_Tile(source as IReadOnlyList<T2> ?? new Source<T2>(source), x, y, width, height, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit: inherit);
 
 	/// <summary>
 	/// Adds a tile layer: one rectangle per item, sized in data units (heatmaps).
@@ -166,7 +168,7 @@ public static partial class BuilderExtensions
 	/// <param name="strokeOpacity">Outline opacity, 0–1.</param>
 	/// <param name="strokeWidth">Stroke width in pixels.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T, TX, TY> Geom_Tile<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX> x,
@@ -184,7 +186,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Tile(panel, panel.Context.RequireSource(), (x ?? panel.Context.Selectors.X)!, (y ?? panel.Context.Selectors.Y)!, width, height, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
+		return Geom_Tile(panel, panel.Context.RequireSource(), (x ?? panel.Context.Selectors.X)!, (y ?? panel.Context.Selectors.Y)!, width, height, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit: inherit);
 	}
 
 	/// <summary>
@@ -205,7 +207,7 @@ public static partial class BuilderExtensions
 	/// <param name="strokeOpacity">Outline opacity, 0–1.</param>
 	/// <param name="strokeWidth">Stroke width in pixels.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T, TX, TY> Geom_Tile<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX> x,
@@ -223,7 +225,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Tile(x, y, width, height, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale);
+		context.Default_Panel().Geom_Tile(x, y, width, height, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, scale, inherit: inherit);
 
 		return context;
 	}

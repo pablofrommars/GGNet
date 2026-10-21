@@ -1,4 +1,4 @@
-﻿namespace GGNet.Facets;
+namespace GGNet.Facets;
 
 internal sealed class Facet<T>(Faceting<T> faceting, (int row, int column) coord, string? xStrip = null, string? yStrip = null)
 {
@@ -9,6 +9,8 @@ internal sealed class Facet<T>(Faceting<T> faceting, (int row, int column) coord
 	public string? XStrip { get; } = xStrip;
 
 	public string? YStrip { get; } = yStrip;
+
+	public List<int>? Indices { get; set; }
 
 	public bool Include(T item) => Faceting.Map(item) == Coord;
 }

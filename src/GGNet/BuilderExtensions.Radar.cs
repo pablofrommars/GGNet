@@ -6,12 +6,12 @@ using Scales;
 public static partial class BuilderExtensions
 {
 	/// <summary>
-	/// Adds a radar layer: a closed polygon over the angular categories. Implies polar coordinates.
+	/// Adds a radar layer: a closed polygon per mapped fill over the angular categories. Implies polar coordinates.
 	/// </summary>
 	/// <param name="source">Items to plot; one vertex per category.</param>
-	/// <param name="x">Angular category. Defaults to the plot’s x selector.</param>
-	/// <param name="y">Radial value, zero at the center. Defaults to the plot’s y selector.</param>
-	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
+	/// <param name="x">Angular category. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Radial value, zero at the center. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="fillBy">Explicit data-driven fill mapping, overriding inherited Fill. Configure inherited mappings with <c>Scale_Fill_Discrete</c>/<c>Scale_Fill_Continuous</c>. Equal mapped fill colors share a polygon; varying colors can split one entity. Color mappings are not inherited.</param>
 	/// <param name="onclick">Per-item click handler.</param>
 	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
 	/// <param name="onmouseout">Per-item hover-end handler.</param>
@@ -20,7 +20,7 @@ public static partial class BuilderExtensions
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
 	/// <param name="strokeWidth">Stroke width in pixels.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Radar<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IReadOnlyList<T2> source,
@@ -36,6 +36,8 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
+		fillBy = ResolveMapping(fillBy, panel.Context.Aesthetics.Fill, inherit, nameof(fillBy));
+
 		panel.Context.CoordSystem = CoordSystem.Polar;
 
 		panel.AddTyped(() =>
@@ -61,12 +63,12 @@ public static partial class BuilderExtensions
 	}
 
 	/// <summary>
-	/// Adds a radar layer: a closed polygon over the angular categories. Implies polar coordinates.
+	/// Adds a radar layer: a closed polygon per mapped fill over the angular categories. Implies polar coordinates.
 	/// </summary>
 	/// <param name="source">Items to plot; one vertex per category.</param>
-	/// <param name="x">Angular category. Defaults to the plot’s x selector.</param>
-	/// <param name="y">Radial value, zero at the center. Defaults to the plot’s y selector.</param>
-	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
+	/// <param name="x">Angular category. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Radial value, zero at the center. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="fillBy">Explicit data-driven fill mapping, overriding inherited Fill. Configure inherited mappings with <c>Scale_Fill_Discrete</c>/<c>Scale_Fill_Continuous</c>. Equal mapped fill colors share a polygon; varying colors can split one entity. Color mappings are not inherited.</param>
 	/// <param name="onclick">Per-item click handler.</param>
 	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
 	/// <param name="onmouseout">Per-item hover-end handler.</param>
@@ -75,7 +77,7 @@ public static partial class BuilderExtensions
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
 	/// <param name="strokeWidth">Stroke width in pixels.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Radar<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IReadOnlyList<T2> source,
@@ -91,17 +93,17 @@ public static partial class BuilderExtensions
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Radar(source, x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeWidth, scale);
+		context.Default_Panel().Geom_Radar(source, x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeWidth, scale, inherit: inherit);
 
 		return context;
 	}
 
 	/// <summary>
-	/// Adds a radar layer: a closed polygon over the angular categories. Implies polar coordinates.
+	/// Adds a radar layer: a closed polygon per mapped fill over the angular categories. Implies polar coordinates.
 	/// </summary>
-	/// <param name="x">Angular category. Defaults to the plot’s x selector.</param>
-	/// <param name="y">Radial value, zero at the center. Defaults to the plot’s y selector.</param>
-	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
+	/// <param name="x">Angular category. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Radial value, zero at the center. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="fillBy">Explicit data-driven fill mapping, overriding inherited Fill. Configure inherited mappings with <c>Scale_Fill_Discrete</c>/<c>Scale_Fill_Continuous</c>. Equal mapped fill colors share a polygon; varying colors can split one entity. Color mappings are not inherited.</param>
 	/// <param name="onclick">Per-item click handler.</param>
 	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
 	/// <param name="onmouseout">Per-item hover-end handler.</param>
@@ -110,7 +112,7 @@ public static partial class BuilderExtensions
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
 	/// <param name="strokeWidth">Stroke width in pixels.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T, TX, TY> Geom_Radar<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
@@ -125,15 +127,15 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Radar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, fillBy ?? (inherit ? panel.Context.Aesthetics.Color : null), onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeWidth, scale);
+		return Geom_Radar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeWidth, scale, inherit: inherit);
 	}
 
 	/// <summary>
-	/// Adds a radar layer: a closed polygon over the angular categories. Implies polar coordinates.
+	/// Adds a radar layer: a closed polygon per mapped fill over the angular categories. Implies polar coordinates.
 	/// </summary>
-	/// <param name="x">Angular category. Defaults to the plot’s x selector.</param>
-	/// <param name="y">Radial value, zero at the center. Defaults to the plot’s y selector.</param>
-	/// <param name="fillBy">Data-driven fill: participates in the fill scale and the legend. Build with <c>Scale_Fill_Discrete</c>/<c>_Continuous</c>.</param>
+	/// <param name="x">Angular category. Defaults to the plot's x selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="y">Radial value, zero at the center. Defaults to the plot's y selector only when no source is supplied; required with an explicit source.</param>
+	/// <param name="fillBy">Explicit data-driven fill mapping, overriding inherited Fill. Configure inherited mappings with <c>Scale_Fill_Discrete</c>/<c>Scale_Fill_Continuous</c>. Equal mapped fill colors share a polygon; varying colors can split one entity. Color mappings are not inherited.</param>
 	/// <param name="onclick">Per-item click handler.</param>
 	/// <param name="onmouseover">Per-item hover handler; setting it disables the default tooltip hover.</param>
 	/// <param name="onmouseout">Per-item hover-end handler.</param>
@@ -142,7 +144,7 @@ public static partial class BuilderExtensions
 	/// <param name="fillOpacity">Fill opacity, 0–1.</param>
 	/// <param name="strokeWidth">Stroke width in pixels.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T, TX, TY> Geom_Radar<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
@@ -157,7 +159,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Radar(x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeWidth, scale);
+		context.Default_Panel().Geom_Radar(x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeWidth, scale, inherit: inherit);
 
 		return context;
 	}

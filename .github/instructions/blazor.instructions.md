@@ -46,9 +46,10 @@ Every non-trivial component: `<Name>.razor` (markup) + `<Name>.razor.cs` (`publi
 Grounded in `Plot.razor.cs`:
 
 - **Required**: `[Parameter] public required PlotContext<T, TX, TY> Context` and `[Parameter] public required RenderMode RenderMode`.
-- **Init-only, with defaults**: `Width` (720), `Height` (576), `Theme` (`"default"`). Use `{ get; init; }` for parameters that are set once and not two-way bound.
+- **Init accessors, with defaults**: `Width` (720), `Height` (576), `Theme` (`"default"`). Blazor can deliver new parameter values despite the C# init accessor. `Context`, `Width`, and `Height` changes request a refresh through the existing handler: `InteractiveAuto` composes inline, `Interactive` queues a frame, and `Static` keeps its initial frame. Dimension changes preserve the context's view windows. `RenderMode` is selected at initialization.
 - **Unmatched attributes**: `[Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes` — forwarded onto the root element so callers can pass `class`, `data-*`, etc.
 - **`RenderMode`** is the enum in `src/GGNet/RenderMode.cs` — exactly three values: `Interactive`, `InteractiveAuto`, `Static`. It is **not** the framework's `IComponentRenderMode`; do not confuse the two.
+- **`Interactivity` is initialization-only.** A later unequal value, including switching to or from null, throws an actionable `GGNetUserException` before any parameters in that batch are applied. Equal-valued replacements and omitted parameters are accepted. Recreate the Plot (for example, change its Blazor `@key`) to use different options.
 
 ---
 
@@ -73,6 +74,7 @@ GGNet does its own render orchestration through the handler; the component is a 
   }
   ```
 - **Cache `RenderFragment` fields in the constructor** rather than allocating a new fragment per render (see `Plot.razor.cs`, `Area.razor.cs`).
+- **Panel ownership follows the component.** Panels are keyed by context and index so replacing a context recreates its components and interop. Facet rebuilds can replace panel data within a component; rebind against the actual data reference and unregister only the component that owns that registration. Sequential reuse after headless export is supported; simultaneous rendering of one mutable context in several plots is not an ownership guarantee.
 
 ---
 
@@ -80,7 +82,7 @@ GGNet does its own render orchestration through the handler; the component is a 
 
 The default is server-side. `InteractiveRenderModeHandler` runs a `System.Threading.Channels` background loop that coalesces `RenderTarget.Render` / `RenderTarget.Loading` signals and calls `StateHasChangedAsync()`. Tooltip content, hover, and refresh all live there.
 
-**The library ships exactly one JS asset**: `src/GGNet/Components/Panel.razor.js` (collocated with `Panel.razor`, served from `./_content/GGNet/Components/Panel.razor.js`). It landed with the interactivity tiers (2026-07-10) and exists for **continuous gestures only** — the wheel converted to plot units against the rendered size, drag-pan previewed as a transform on the marks group at frame rate, and the cursor-glued tooltip positioned and edge-flipped at frame rate. These are the cases that cannot cross the circuit per frame; a `mousemove` round trip per event is still never acceptable. `wwwroot/dev/pixelWidthCalculator.html` remains an offline dev tool, not shipped interop.
+**The library ships exactly one JS asset**: `src/GGNet/Components/Panel.razor.js` (collocated with `Panel.razor`, served from `./_content/GGNet/Components/Panel.razor.js`). It exists for **continuous gestures only** — wheel coordinates converted through the capture element's inverse screen CTM, drag-pan previewed as a transform on the marks group at frame rate, and the cursor-glued tooltip positioned and edge-flipped at frame rate. These are the cases that cannot cross the circuit per frame; a `mousemove` round trip per event is still never acceptable. `wwwroot/dev/pixelWidthCalculator.html` remains an offline dev tool, not shipped interop.
 
 ### The opt-in gate
 
@@ -91,11 +93,15 @@ The default is server-side. `InteractiveRenderModeHandler` runs a `System.Thread
 `PanelInterop` (`Components/PanelInterop.cs`) is the model for any future module:
 
 - `internal sealed class` owning the module lifecycle, **one instance per interactive panel**, with **no DI registration** — the component constructs it around the framework-provided `IJSRuntime`, so consumers configure nothing. **Exception:** tsu's per-concern module registered with `AddScoped` does *not* apply — one JS module without DI is GGNet's rule.
-- Lazy import: `module ??= await runtime.InvokeAsync<IJSObjectReference>("import", ModulePath)`, from `OnAfterRenderAsync(firstRender)`.
+- Lazy import from `OnAfterRenderAsync(firstRender)`. Initialization owns an acquired module until it can publish it to the live wrapper. Disposal retires the wrapper without waiting on a pending import or initialization; its continuation releases late acquisitions instead of publishing them. Module-reference release and callback-reference release must still run when JS teardown throws.
 - **Batching rule: one `initialize` call carries every feature flag** (`PanelInteropOptions`, serialized camelCase). Do not add a second round trip per feature.
 - JS → .NET: `DotNetObjectReference.Create(this)` + `[JSInvokable]` methods, each named in a `[DynamicDependency(nameof(...))]` on the component so trimming preserves it. Dispose the reference alongside the module.
 - **Every JS call catches** `JSDisconnectedException`, `ObjectDisposedException`, and `TaskCanceledException` — a disconnected circuit is normal, not exceptional.
 - On the JS side, listeners are registered against an `AbortController` signal and torn down by the module's `dispose(id)`.
+
+Pan uses one owning pointer and a transform captured from the stationary capture element, never the translated marks. Additional contacts are ignored; cancellation, lost capture, disposal, or a changed viewport transform clears the preview without committing. Normal pointer release commits once. A fixed outer panel clip bounds the translated marks while the existing Area clip remains inside.
+
+Touch policy applies only to the panel viewport and effective configured pan axes (including AutoFitY's Y restriction). The unused axis retains page scrolling and browser pinch remains native. A nested SVG viewport with `display: block` carries `touch-action`: Chromium ignores that policy on SVG groups, rectangles and an inline nested SVG. Matching inline geometry protects its identity mapping against ordinary responsive SVG styles. Labels and facet strips remain outside this viewport; no root-SVG scroll capture or chart pinch gesture is introduced.
 
 ### Adding browser-dependent behaviour
 

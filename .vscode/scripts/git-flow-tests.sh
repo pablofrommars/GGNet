@@ -411,7 +411,7 @@ validate_tasks_jsonc() {
     echo "tasks reference unsupported commands: $unsupported" >&2
     return 1
   fi
-  for name in status doctor agent-start cleanup refresh squash merge; do
+  for name in status doctor pull agent-start cleanup refresh squash merge; do
     if ! list_has "$commands" "$name"; then
       echo "missing active git-flow task: $name" >&2
       return 1
@@ -471,7 +471,7 @@ validate_contributing() {
     echo "CONTRIBUTING.md documents unsupported commands: $unsupported" >&2
     return 1
   fi
-  missing=$(set_difference "$(printf '%s\n' status doctor start resume cleanup handoff refresh squash merge)" "$documented")
+  missing=$(set_difference "$(printf '%s\n' status doctor pull start resume cleanup handoff refresh squash merge)" "$documented")
   if [ -n "$missing" ]; then
     echo "CONTRIBUTING.md omits commands: $missing" >&2
     return 1
@@ -1812,6 +1812,151 @@ run_fixture_suite() {
   suite_label=""
 }
 
+run_pull_suite() {
+  local base="$1" receiver sub nested old_pin pin tip output code before remote_before
+  suite_label="pull $base"
+  create_fixture "$base"
+  receiver="$test_root/receiver"
+  git clone --quiet "$test_root/remote.git" "$receiver"
+  git -C "$receiver" config user.name "Pull Fixture"
+  git -C "$receiver" config user.email "fixture@example.invalid"
+  git -C "$receiver" config core.hooksPath /dev/null
+  # Prove explicit options override user settings, including update=none below.
+  git -C "$receiver" config pull.rebase true
+  git -C "$receiver" config rebase.autoStash true
+  git -C "$receiver" config submodule.recurse true
+
+  git init --quiet --initial-branch="$base" "$test_root/library"
+  git -C "$test_root/library" config user.name "Library Fixture"
+  git -C "$test_root/library" config user.email "fixture@example.invalid"
+  printf '%s\n' library > "$test_root/library/lib.txt"
+  git -C "$test_root/library" add lib.txt
+  git -C "$test_root/library" commit -qm library
+  git clone --quiet --bare "$test_root/library" "$test_root/leaf.git"
+  git -C "$test_root/library" -c protocol.file.allow=always submodule add "$test_root/leaf.git" 'nested leaf' >/dev/null 2>&1
+  git -C "$test_root/library" commit -qam 'add nested module'
+  git clone --quiet --bare "$test_root/library" "$test_root/library.git"
+  git -C "$test_root/library" remote add origin "$test_root/library.git"
+  git -C "$test_root/repo" -c protocol.file.allow=always submodule add "$test_root/library.git" 'libs/library module' >/dev/null 2>&1
+  git -C "$test_root/repo" commit -qam 'add library'
+  git -C "$test_root/repo" push --quiet origin "$base"
+  remote_before=$(git --git-dir="$test_root/remote.git" rev-parse HEAD)
+  output=$(cd "$receiver" && bash "$source_script" pull)
+  sub="$receiver/libs/library module"
+  nested="$sub/nested leaf"
+  old_pin=$(git -C "$sub" rev-parse HEAD)
+  assert_contains "$output" 'submodules aligned to recorded pins' 'pull omitted completion'
+  assert_equal "$(git --git-dir="$test_root/leaf.git" rev-parse HEAD)" "$(git -C "$nested" rev-parse HEAD)" 'pull did not initialize nested module'
+  assert_equal '' "$(git -C "$receiver" status --porcelain)" 'initial pull left changes'
+  assert_equal "$remote_before" "$(git --git-dir="$test_root/remote.git" rev-parse HEAD)" 'pull changed remote'
+  pass 'pull fast-forwards the base and initializes nested modules with spaced paths'
+
+  printf '%s\n' pinned >> "$test_root/library/lib.txt"
+  git -C "$test_root/library" commit -qam pinned
+  pin=$(git -C "$test_root/library" rev-parse HEAD)
+  git -C "$test_root/library" push --quiet origin "$base"
+  git -C "$test_root/repo/libs/library module" fetch --quiet origin
+  git -C "$test_root/repo/libs/library module" checkout --quiet "$pin"
+  git -C "$test_root/repo" commit -qam 'advance library pin'
+  git -C "$test_root/repo" push --quiet origin "$base"
+  # The dependency remote moves again: pull must keep the reviewed pin.
+  printf '%s\n' latest >> "$test_root/library/lib.txt"
+  git -C "$test_root/library" commit -qam latest
+  tip=$(git -C "$test_root/library" rev-parse HEAD)
+  git -C "$test_root/library" push --quiet origin "$base"
+  git -C "$receiver" config 'submodule.libs/library module.update' none
+  output=$(cd "$receiver/libs" && bash "$source_script" pull)
+  assert_equal "$pin" "$(git -C "$sub" rev-parse HEAD)" 'pull chose remote tip or skipped alignment'
+  assert_equal '' "$(git -C "$receiver" status --porcelain)" 'pull left changed pins'
+  git -C "$sub" checkout --quiet "$old_pin"
+  output=$(cd "$receiver" && bash "$source_script" pull)
+  assert_equal "$pin" "$(git -C "$sub" rev-parse HEAD)" 'up-to-date pull did not repair stale checkout'
+  pass 'pull aligns exact pins, overrides update=none, and repairs a stale checkout on rerun'
+
+  before=$(git -C "$receiver" rev-parse HEAD)
+  printf '%s\n' local >> "$receiver/seed.txt"
+  code=$(cd "$receiver" && run_expect_failure "$test_root/blocked" bash "$source_script" pull)
+  assert_nonzero "$code" 'pull accepted local edits'
+  assert_contains "$(cat "$test_root/blocked")" 'nothing was fetched or updated' 'dirty refusal came too late'
+  assert_contains "$(cat "$receiver/seed.txt")" local 'pull lost file edits'
+  git -C "$receiver" restore seed.txt
+  printf '%s\n' local > "$nested/untracked.txt"
+  code=$(cd "$receiver" && run_expect_failure "$test_root/blocked" bash "$source_script" pull)
+  assert_nonzero "$code" 'pull accepted nested untracked files'
+  assert_contains "$(cat "$test_root/blocked")" 'libs/library module/nested leaf' 'pull did not name nested module'
+  remove_fixture_path "$nested/untracked.txt"
+  git -C "$sub" checkout --quiet "$tip"
+  git -C "$receiver" add 'libs/library module'
+  code=$(cd "$receiver" && run_expect_failure "$test_root/blocked" bash "$source_script" pull)
+  assert_nonzero "$code" 'pull accepted a staged pin'
+  assert_equal "$tip" "$(git -C "$receiver" rev-parse ':libs/library module')" 'pull changed staged pin'
+  git -C "$receiver" restore --staged 'libs/library module'
+  git -C "$sub" checkout --quiet "$pin"
+  git -C "$nested" config user.name Fixture
+  git -C "$nested" config user.email fixture@example.invalid
+  git -C "$nested" commit --allow-empty -qm unpublished
+  unpublished=$(git -C "$nested" rev-parse HEAD)
+  code=$(cd "$receiver" && run_expect_failure "$test_root/blocked" bash "$source_script" pull)
+  assert_nonzero "$code" 'pull accepted unpublished detached HEAD'
+  assert_equal "$unpublished" "$(git -C "$nested" rev-parse HEAD)" 'pull moved unpublished HEAD'
+  git -C "$nested" branch saved-local-work
+  git -C "$nested" checkout --quiet "origin/$base"
+  code=$(cd "$receiver" && run_expect_failure "$test_root/blocked" bash "$source_script" pull)
+  assert_nonzero "$code" 'pull accepted unpublished branch'
+  assert_contains "$(cat "$test_root/blocked")" 'holds unpublished commits' 'pull omitted unpublished diagnosis'
+  assert_rerun "$(cat "$test_root/blocked")" pull 'pull refusal omitted rerun'
+  assert_equal "$before" "$(git -C "$receiver" rev-parse HEAD)" 'refusal changed branch'
+  git -C "$nested" push --quiet origin saved-local-work
+  pass 'pull preserves file edits, nested untracked files, staged pins, and unpublished HEAD/branches'
+
+  git -C "$receiver" checkout --quiet --detach
+  code=$(cd "$receiver" && run_expect_failure "$test_root/blocked" bash "$source_script" pull)
+  assert_nonzero "$code" 'pull accepted detached HEAD'
+  git -C "$receiver" checkout --quiet -b feature
+  code=$(cd "$receiver" && run_expect_failure "$test_root/blocked" bash "$source_script" pull)
+  assert_nonzero "$code" 'pull guessed missing upstream'
+  git -C "$receiver" branch --set-upstream-to="origin/$base" >/dev/null
+  git -C "$receiver" symbolic-ref --delete refs/remotes/origin/HEAD
+  output=$(cd "$receiver" && bash "$source_script" pull)
+  assert_contains "$output" "pulled feature from origin/$base" 'pull did not follow configured upstream'
+  pass 'pull requires a branch/upstream and supports feature branches without origin/HEAD'
+
+  git -C "$receiver" commit --allow-empty -qm 'local divergence'
+  git -C "$test_root/repo" commit --allow-empty -qm 'remote divergence'
+  git -C "$test_root/repo" push --quiet origin "$base"
+  before=$(git -C "$receiver" rev-parse HEAD)
+  code=$(cd "$receiver" && run_expect_failure "$test_root/blocked" bash "$source_script" pull)
+  assert_nonzero "$code" 'pull accepted divergent histories'
+  assert_equal "$before" "$(git -C "$receiver" rev-parse HEAD)" 'pull rebased or merged divergence'
+  assert_contains "$(cat "$test_root/blocked")" 'Submodule alignment was not attempted' 'divergence report omitted effects'
+  pass 'pull refuses divergence even with pull.rebase enabled'
+
+  git -C "$receiver" checkout --quiet "$base"
+  # An unavailable nested remote makes checkout fail after the parent pull.
+  git -C "$test_root/library" -c protocol.file.allow=always submodule add "$test_root/leaf.git" unavailable >/dev/null 2>&1
+  git -C "$test_root/library" config -f .gitmodules submodule.unavailable.url "$test_root/missing.git"
+  git -C "$test_root/library" add .gitmodules unavailable
+  git -C "$test_root/library" commit -qm 'add unavailable nested module'
+  git -C "$test_root/library" push --quiet origin "$base"
+  git -C "$test_root/repo/libs/library module" fetch --quiet origin
+  git -C "$test_root/repo/libs/library module" checkout --quiet "origin/$base"
+  git -C "$test_root/repo" commit -qam 'pin unavailable module'
+  git -C "$test_root/repo" push --quiet origin "$base"
+  code=$(cd "$receiver" && run_expect_failure "$test_root/blocked" bash "$source_script" pull)
+  assert_nonzero "$code" 'pull concealed alignment failure'
+  assert_contains "$(cat "$test_root/blocked")" 'pull completed, but submodule alignment failed' 'partial failure report omitted completed pull'
+  assert_equal "$(git -C "$test_root/repo" rev-parse HEAD)" "$(git -C "$receiver" rev-parse HEAD)" 'partial failure rolled back pull'
+  git clone --quiet --bare "$test_root/leaf.git" "$test_root/missing.git"
+  output=$(cd "$receiver" && bash "$source_script" pull)
+  assert_equal '' "$(git -C "$receiver" status --porcelain)" 'retry did not complete alignment'
+  pass 'pull reports partial alignment failure and safely completes on retry'
+
+  finish_test_root
+  suite_label=""
+}
+
+run_pull_suite main
+run_pull_suite trunk
 run_fixture_suite main
 run_fixture_suite trunk
 

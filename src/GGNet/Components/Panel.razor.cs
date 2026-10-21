@@ -42,6 +42,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 
 	private IChildRenderModeHandler? renderModeHandler;
 	private IChildRenderModeHandler? areaRenderModeHandler;
+	private Data.Panel<T, TX, TY>? boundData;
 
 	private Position<TX> xscale = default!;
 	private Position<TY> yscale = default!;
@@ -96,24 +97,17 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	{
 		renderModeHandler = Plot.RenderModeHandler?.Child();
 		areaRenderModeHandler = Plot.RenderModeHandler?.Child();
-
-		Data.Register(this);
-
-		clip = Plot.Id + "-" + Data.Id;
-
-		xscale = Data.X;
-		yscale = Data.Y;
-
-		coord = Data.Data.MakeCoordinateSystem();
 	}
 
 	protected override void OnParametersSet()
 	{
-		if (Data.Registered)
+		if (ReferenceEquals(boundData, Data))
 		{
 			return;
 		}
 
+		boundData?.Unregister(this);
+		boundData = Data;
 		Data.Register(this);
 
 		clip = Plot.Id + "-" + Data.Id;
@@ -230,14 +224,14 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		return Data.OnClick(e);
 	}
 
-	/// <summary>Commits a wheel zoom: shrinks or grows the view window about the cursor and re-renders. Invoked from the collocated JS module, which converts pointer coordinates into svg units against the rendered size.</summary>
+	/// <summary>Commits a wheel zoom: shrinks or grows the view window about the cursor and re-renders. Invoked from the collocated JS module, which converts pointer coordinates into svg units using the capture element's inverse screen CTM.</summary>
 	/// <param name="px">Cursor x, in svg units.</param>
 	/// <param name="py">Cursor y, in svg units.</param>
 	/// <param name="deltaY">Wheel delta; negative zooms in.</param>
 	[JSInvokable]
 	public Task OnWheelAsync(double px, double py, double deltaY)
 	{
-		if (Plot.Interactivity is not { } options || deltaY == 0)
+		if (Volatile.Read(ref disposing) != 0 || Plot.Interactivity is not { } options || deltaY == 0)
 		{
 			return Task.CompletedTask;
 		}
@@ -272,10 +266,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	private static (double min, double max) Window<TKey>(Position<TKey> scale, double fraction, double factor)
 		where TKey : struct
 	{
-		var anchor = scale.Invert(fraction);
-		var (min, max) = scale.Range;
-
-		return (anchor - (anchor - min) * factor, anchor + (max - anchor) * factor);
+		return (scale.Invert(fraction * (1 - factor)), scale.Invert(1 + (1 - fraction) * (factor - 1)));
 	}
 
 	private Task OnResetViewAsync(MouseEventArgs e)
@@ -336,7 +327,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
-		if (!firstRender || Plot.Interactivity is not { } options || !coord.CarvesAxisBands)
+		if (Volatile.Read(ref disposing) != 0 || !firstRender || Plot.Interactivity is not { } options || !coord.CarvesAxisBands)
 		{
 			return;
 		}
@@ -354,11 +345,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			captureRef,
 			panRef,
 			dotNetRef,
-			new PanelInteropOptions(
-				Pan: options.Pan,
-				PanX: options.Zoom is ZoomAxis.X or ZoomAxis.Both,
-				PanY: !options.AutoFitY && options.Zoom is ZoomAxis.Y or ZoomAxis.Both,
-				Tooltip: options.CursorTooltip));
+			PanelInteropOptions.Create(options));
 	}
 
 	private async ValueTask GlueTooltipAsync(ElementReference element)
@@ -375,17 +362,15 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	[JSInvokable]
 	public async Task OnPanEndAsync(double dx, double dy)
 	{
-		if (Plot.Interactivity is not { Pan: true } options)
+		if (Volatile.Read(ref disposing) != 0 || Plot.Interactivity is not { Pan: true } options)
 		{
 			return;
 		}
 
 		if (dx != 0 && options.Zoom is ZoomAxis.X or ZoomAxis.Both)
 		{
-			var (min, max) = xscale.Range;
-			var shift = -dx / Area.Width * (max - min);
-
-			Plot.Context.Positions.X.SetView((min + shift, max + shift));
+			var shift = -dx / Area.Width;
+			Plot.Context.Positions.X.SetView((xscale.Invert(shift), xscale.Invert(1 + shift)));
 		}
 
 		if (options.AutoFitY)
@@ -394,10 +379,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		}
 		else if (dy != 0 && options.Zoom is ZoomAxis.Y or ZoomAxis.Both)
 		{
-			var (min, max) = yscale.Range;
-			var shift = dy / Area.Height * (max - min);
-
-			Plot.Context.Positions.Y.SetView((min + shift, max + shift));
+			var shift = dy / Area.Height;
+			Plot.Context.Positions.Y.SetView((yscale.Invert(shift), yscale.Invert(1 + shift)));
 		}
 
 		await Plot.RefreshAsync(RenderTarget.Render, CancellationToken.None);
@@ -414,6 +397,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			return;
 		}
 
+		boundData?.Unregister(this);
+
 		try
 		{
 			if (interop is not null)
@@ -421,10 +406,9 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 				await interop.DisposeAsync();
 			}
 		}
-		catch (Exception ex) when (ex is OperationCanceledException or ObjectDisposedException)
+		finally
 		{
+			dotNetRef?.Dispose();
 		}
-
-		dotNetRef?.Dispose();
 	}
 }

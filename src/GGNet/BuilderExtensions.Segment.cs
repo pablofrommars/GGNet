@@ -76,7 +76,7 @@ public static partial class BuilderExtensions
 	/// <param name="lineType">Dash pattern.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Segment<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
-	  Source<T2> source,
+	  IReadOnlyList<T2> source,
 	  Func<T2, TX1> x,
 	  Func<T2, TX1> xend,
 	  Func<T2, TY1> y,
@@ -124,7 +124,7 @@ public static partial class BuilderExtensions
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid)
 	  where TX1 : struct
 	  where TY1 : struct
-	  => context.Geom_Segment(new Source<T2>(source), x, xend, y, yend, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType);
+	  => context.Geom_Segment(source as IReadOnlyList<T2> ?? new Source<T2>(source), x, xend, y, yend, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType);
 
 	/// <summary>
 	/// Adds a segment layer: one line from (x, y) to (xend, yend) per item.

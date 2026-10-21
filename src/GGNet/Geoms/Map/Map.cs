@@ -9,7 +9,7 @@ internal sealed class Map<T> : Geom<T, double, double>
 	private readonly bool animated;
 
 	public Map(
-	  Source<T> source,
+	  IReadOnlyList<T> source,
 	  Func<T, Geospacial.Polygon[]> polygons,
 	  IAestheticMapping<T, string>? fill = null,
 	  Func<T, (Geospacial.Point point, RenderFragment content)>? tooltip = null,

@@ -1,4 +1,4 @@
-﻿namespace GGNet.Facets;
+namespace GGNet.Facets;
 
 internal abstract class Faceting<T>(bool freeX, bool freeY)
 {
@@ -19,6 +19,31 @@ internal abstract class Faceting<T>(bool freeX, bool freeY)
 	public abstract void Commit();
 
 	public abstract (int row, int column) Map(T item);
+
+	public void Index(IReadOnlyList<T>? source, (Facet<T> facet, bool showX, bool showY)[] facets)
+	{
+		if (source is null || NRows <= 0 || NColumns <= 0 || (long)NRows * NColumns < facets.Length)
+		{
+			return;
+		}
+
+		var buckets = new Dictionary<(int row, int column), List<int>>(facets.Length);
+
+		foreach (var (facet, _, _) in facets)
+		{
+			var indices = new List<int>();
+			facet.Indices = indices;
+			buckets.Add(facet.Coord, indices);
+		}
+
+		for (var i = 0; i < source.Count; i++)
+		{
+			if (buckets.TryGetValue(Map(source[i]), out var indices))
+			{
+				indices.Add(i);
+			}
+		}
+	}
 
 	public abstract void Clear();
 

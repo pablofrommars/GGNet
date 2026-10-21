@@ -44,15 +44,19 @@ internal sealed class Extended : Position<double>
 			return;
 		}
 
-		var breaks = Wilkinson.Extended(Range.min, Range.max) ?? Pretty.Run(Range.min, Range.max);
+		var simpleBreaks = PositionRange.NeedsSimpleBreaks(Range.min, Range.max);
+		var breaks = simpleBreaks
+			? PositionRange.Breaks(Range.min, Range.max)
+			: Wilkinson.Extended(Range.min, Range.max) ?? Pretty.Run(Range.min, Range.max);
 		if (breaks is null)
 		{
 			return;
 		}
 
 		Breaks = breaks;
+		MinorBreaks = [];
 
-		if (minorBreaks)
+		if (minorBreaks && !simpleBreaks)
 		{
 			var minorBreaks = Utils.MinorBreaks(breaks, Range.min, Range.max);
 
@@ -74,7 +78,16 @@ internal sealed class Extended : Position<double>
 		Labels = labels;
 	}
 
-	public override double Map(double key) => transformation.Apply(key);
+	public override double Map(double key)
+	{
+		var mapped = transformation.Apply(key);
+		if (double.IsInfinity(mapped))
+		{
+			PositionRange.Validate(mapped, mapped);
+		}
+
+		return mapped;
+	}
 
 	public override double? Unmap(double value) => transformation.Inverse(value);
 

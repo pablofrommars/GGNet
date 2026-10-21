@@ -1,4 +1,5 @@
 ﻿using GGNet.Buffers;
+using GGNet.Exceptions;
 
 namespace GGNet.Facets;
 
@@ -18,6 +19,11 @@ internal sealed class Faceting1D<T, TKey>(Func<T, TKey> selector, bool freeX, bo
 	public override void Commit()
 	{
 		N = buffer.Count;
+
+		if (nrows is { } rows && ncolumns is { } columns && (long)rows * columns < N)
+		{
+			throw new GGNetUserException(FormattableString.Invariant($"Facet_Wrap needs {N} panels, but nrows={rows} and ncolumns={columns} provide only {(long)rows * columns} slots. Increase either dimension or omit one to derive it automatically."));
+		}
 
 		var dim = FacetingUtils.DimWrap(N, nrows, ncolumns);
 

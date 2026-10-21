@@ -1,4 +1,4 @@
-﻿using GGNet.Data;
+using GGNet.Data;
 using GGNet.Facets;
 using GGNet.Scales;
 using GGNet.Shapes;
@@ -12,7 +12,10 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 	protected readonly IReadOnlyList<T> source = source;
 	protected readonly (bool x, bool y) scale = scale ?? (true, true);
 
+	private Facet<T>? candidateFacet;
+	private object? facetSource;
 	private Facet<T>? layerFacet;
+	private List<int>? facetIndices;
 	private Legends? legends;
 
 	public List<Shape> Layer { get; } = [];
@@ -23,10 +26,8 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 
 	public virtual void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
 	{
-		if (facet is not null && panel.Data.Source is not null && panel.Data.Source.Equals(source))
-		{
-			layerFacet = (facet as Facet<T>)!;
-		}
+		candidateFacet = facet as Facet<T>;
+		facetSource = panel.Data.Source;
 
 		legends = panel.Data.Legends;
 	}
@@ -35,11 +36,17 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 
 	public void Train()
 	{
-		for (var i = 0; i < source.Count; i++)
-		{
-			var item = source[i];
+		layerFacet = candidateFacet is not null && facetSource is not null && facetSource.Equals(source)
+			? candidateFacet
+			: null;
 
-			if (layerFacet is not null && !layerFacet.Include(item))
+		facetIndices = ReferenceEquals(facetSource, source) ? layerFacet?.Indices : null;
+
+		for (var i = 0; i < (facetIndices?.Count ?? source.Count); i++)
+		{
+			var item = source[facetIndices is null ? i : facetIndices[i]];
+
+			if (facetIndices is null && layerFacet is not null && !layerFacet.Include(item))
 			{
 				continue;
 			}
@@ -105,11 +112,11 @@ internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y
 
 	public void Shape()
 	{
-		for (var i = 0; i < source.Count; i++)
+		for (var i = 0; i < (facetIndices?.Count ?? source.Count); i++)
 		{
-			var item = source[i];
+			var item = source[facetIndices is null ? i : facetIndices[i]];
 
-			if (layerFacet is not null && !layerFacet.Include(item))
+			if (facetIndices is null && layerFacet is not null && !layerFacet.Include(item))
 			{
 				continue;
 			}

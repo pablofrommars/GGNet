@@ -24,7 +24,7 @@ PlotContext.Build(source, x, y)   // data + default selectors
 How it is wired (know this before editing the surface):
 
 - **`PlotContext`** is a non-generic `public partial class` holding the static `Build<…>` entry points; the generic `public partial class PlotContext<T, TX, TY> : IPlotContext` holds instance state. `Build` picks default scales by dispatching on the axis types `TX`/`TY` (including NodaTime `LocalDate`/`LocalDateTime`/`Instant` overloads).
-- **`Geom_*`, `Scale_*`, `Facet_*`, `Style`** are **static extension methods** in `public static partial class BuilderExtensions`, split across **22 partial files** — `BuilderExtensions.<Geom>.cs` (one per geom) plus the base `BuilderExtensions.cs` (holds `Scale_*` / `Style`).
+- **`Geom_*`, `Scale_*`, `Facet_*`, `Style`** are **static extension methods** in `public static partial class BuilderExtensions`, split across **23 partial files** — 21 `BuilderExtensions.<Geom>.cs` files (one per geom), the base `BuilderExtensions.cs` (holds `Scale_*` / `Style`), and `BuilderExtensions.Inheritance.cs` (private mapping resolver only).
 - `Geom_*` extends `PanelFactory<…>`, constructs the internal geom, and registers it via the internal `panel.AddTyped(() => new <Geom>(...))`. `Scale_*` / `Style` extend `PlotContext<T, TX, TY>` and **return it** for chaining.
 
 ---
@@ -40,7 +40,7 @@ How it is wired (know this before editing the surface):
 
 ## 3. Stats Are Sources, Not Layers
 
-`Stat.*` calls return a typed source (`public readonly record struct` — `Bin`, `DensityPoint`, `Count<TKey>`, `Summary`) that **any geom draws unchanged**, recomputed every render pass so streaming data stays current. There is no `Histogram` geom — a histogram is `Stat.Bin` + `Geom_Bar`.
+Stat factories return `StatSource<TOut>` containing typed output records (`public readonly record struct` — `Bin`, `DensityPoint`, `Count<TKey>`, `Summary`) that **any geom draws unchanged**. Initial items are computed eagerly; root and active-layer sources and their direct built-in dependencies refresh upstream first on every render pass. `Stat.Nrd0` is a bandwidth calculation returning `double`. There is no `Histogram` geom — a histogram is `Stat.Bin` + `Geom_Bar`.
 
 - Grouped variants add a `groupBy:` parameter and prepend `Group` to the output; **per-facet statistics are grouped statistics** — compute with `groupBy:` and facet the output on the same key (the key is stated twice by design; a mismatch is almost certainly a bug).
 

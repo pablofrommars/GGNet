@@ -21,10 +21,10 @@ public static partial class BuilderExtensions
 	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T1, double, double> Geom_Map<T1, T2>(
 	  this PanelFactory<T1, double, double> panel,
-	  Source<T2> source,
+	  IReadOnlyList<T2> source,
 	  Func<T2, Geospacial.Polygon[]> polygons,
 	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
@@ -35,6 +35,8 @@ public static partial class BuilderExtensions
 	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
+		fillBy = ResolveMapping(fillBy, panel.Context.Aesthetics.Fill, inherit, nameof(fillBy));
+
 		panel.AddTyped(() =>
 		{
 			var geom = new Map<T2>(source, polygons, fillBy, tooltip, animation, scale)
@@ -73,7 +75,7 @@ public static partial class BuilderExtensions
 	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T1, double, double> Geom_Map<T1, T2>(
 	  this PanelFactory<T1, double, double> panel,
 	  IEnumerable<T2> source,
@@ -87,7 +89,7 @@ public static partial class BuilderExtensions
 	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(panel, new Source<T2>(source), polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
+		return Geom_Map(panel, source as IReadOnlyList<T2> ?? new Source<T2>(source), polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale, inherit: inherit);
 	}
 
 	/// <summary>
@@ -105,7 +107,7 @@ public static partial class BuilderExtensions
 	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T, double, double> Geom_Map<T>(
 	  this PanelFactory<T, double, double> panel,
 	  Geospacial.Polygon[] polygons,
@@ -118,7 +120,7 @@ public static partial class BuilderExtensions
 	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(panel, [.. new[] { polygons }], o => o, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
+		return Geom_Map(panel, [.. new[] { polygons }], o => o, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale, inherit: inherit);
 	}
 
 	/// <summary>
@@ -137,10 +139,10 @@ public static partial class BuilderExtensions
 	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T1, double, double> Geom_Map<T1, T2>(
 	  this PlotContext<T1, double, double> context,
-	  Source<T2> source,
+	  IReadOnlyList<T2> source,
 	  Func<T2, Geospacial.Polygon[]> polygons,
 	  IAestheticMapping<T2, string>? fillBy = null,
 	  Func<T2, MouseEventArgs, Task>? onclick = null,
@@ -151,7 +153,7 @@ public static partial class BuilderExtensions
 	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		context.Default_Panel().Geom_Map(source, polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
+		context.Default_Panel().Geom_Map(source, polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale, inherit: inherit);
 
 		return context;
 	}
@@ -172,7 +174,7 @@ public static partial class BuilderExtensions
 	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T1, double, double> Geom_Map<T1, T2>(
 	  this PlotContext<T1, double, double> context,
 	  IEnumerable<T2> source,
@@ -186,7 +188,7 @@ public static partial class BuilderExtensions
 	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(context, new Source<T2>(source), polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
+		return Geom_Map(context, source as IReadOnlyList<T2> ?? new Source<T2>(source), polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale, inherit: inherit);
 	}
 
 	/// <summary>
@@ -204,7 +206,7 @@ public static partial class BuilderExtensions
 	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T, double, double> Geom_Map<T>(
 	  this PlotContext<T, double, double> context,
 	  Geospacial.Polygon[] polygons,
@@ -217,7 +219,7 @@ public static partial class BuilderExtensions
 	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(context, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
+		return Geom_Map(context, new Source<Geospacial.Polygon[]>(new[] { polygons }), o => o, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale, inherit: inherit);
 	}
 
 	/// <summary>
@@ -235,7 +237,7 @@ public static partial class BuilderExtensions
 	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PanelFactory<T, double, double> Geom_Map<T>(
 	  this PanelFactory<T, double, double> panel,
 	  Func<T, Geospacial.Polygon[]> polygons,
@@ -248,7 +250,7 @@ public static partial class BuilderExtensions
 	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		return Geom_Map(panel, panel.Context.RequireSource(), polygons, fillBy ?? (inherit ? panel.Context.Aesthetics.Fill : null), onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
+		return Geom_Map(panel, panel.Context.RequireSource(), polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale, inherit: inherit);
 	}
 
 	/// <summary>
@@ -266,7 +268,7 @@ public static partial class BuilderExtensions
 	/// <param name="strokeColor">Border color.</param>
 	/// <param name="strokeWidth">Border width in pixels; 0 draws no border.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
-	/// <param name="inherit">Inherit the plot's aesthetic mappings when none is given here.</param>
+	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	public static PlotContext<T, double, double> Geom_Map<T>(
 	  this PlotContext<T, double, double> context,
 	  Func<T, Geospacial.Polygon[]> polygons,
@@ -279,7 +281,7 @@ public static partial class BuilderExtensions
 	  string fill = "#23d0fc", double fillOpacity = 1.0, string strokeColor = "#000000", double strokeWidth = 0,
 	  (bool x, bool y)? scale = null, bool inherit = true)
 	{
-		context.Default_Panel().Geom_Map(polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale);
+		context.Default_Panel().Geom_Map(polygons, fillBy, onclick, onmouseover, onmouseout, tooltip, animation, fill, fillOpacity, strokeColor, strokeWidth, scale, inherit: inherit);
 
 		return context;
 	}

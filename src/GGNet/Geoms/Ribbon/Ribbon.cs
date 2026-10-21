@@ -13,7 +13,7 @@ internal sealed class Ribbon<T, TX, TY> : Geom<T, TX, TY>
 	private readonly Dictionary<object, Shapes.Area> areas = [];
 
 	public Ribbon(
-	  Source<T> source,
+	  IReadOnlyList<T> source,
 	  Func<T, TX>? x,
 	  Func<T, TY>? ymin,
 	  Func<T, TY>? ymax,

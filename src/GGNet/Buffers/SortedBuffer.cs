@@ -2,8 +2,7 @@ namespace GGNet.Buffers;
 
 internal sealed class SortedBuffer<T>(IComparer<T>? comparer = null)
 {
-	private readonly IComparer<T> comparer = comparer ?? Comparer<T>.Default;
-	private readonly List<T> items = [];
+	private readonly RankedTree<T> items = new(comparer);
 
 	public int Count => items.Count;
 
@@ -13,15 +12,7 @@ internal sealed class SortedBuffer<T>(IComparer<T>? comparer = null)
 		set => items[i] = value;
 	}
 
-	public void Add(T item)
-	{
-		var index = items.BinarySearch(item, comparer);
-
-		if (index < 0)
-		{
-			items.Insert(~index, item);
-		}
-	}
+	public void Add(T item) => items.Add(item, duplicates: false);
 
 	public void Add(IEnumerable<T> items)
 	{
@@ -31,12 +22,7 @@ internal sealed class SortedBuffer<T>(IComparer<T>? comparer = null)
 		}
 	}
 
-	public int IndexOf(T item)
-	{
-		var index = items.BinarySearch(item, comparer);
-
-		return index < 0 ? -1 : index;
-	}
+	public int IndexOf(T item) => items.IndexOf(item);
 
 	public void Clear() => items.Clear();
 }

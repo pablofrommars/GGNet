@@ -12,7 +12,7 @@ internal sealed class Hex<T, TX, TY> : Geom<T, TX, TY>
 	private readonly bool animated;
 
 	public Hex(
-	  Source<T> source,
+	  IReadOnlyList<T> source,
 	  Func<T, TX>? x,
 	  Func<T, TY>? y,
 	  Func<T, TX> Dx,

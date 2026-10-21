@@ -12,10 +12,17 @@ internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 
 	private volatile int render;
 
-	readonly Channel<RenderTarget> channel = Channel.CreateUnbounded<RenderTarget>(new()
+	private const int pendingRender = 1;
+
+	private const int pendingLoading = 2;
+
+	private int pending;
+
+	private readonly Channel<byte> channel = Channel.CreateBounded<byte>(new BoundedChannelOptions(1)
 	{
 		SingleReader = true,
-		SingleWriter = false
+		SingleWriter = false,
+		FullMode = BoundedChannelFullMode.Wait
 	});
 
 	private readonly Task background;
@@ -28,9 +35,21 @@ internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 		background = RunBackground();
 	}
 
-	public override async Task RefreshAsync(RenderTarget target, CancellationToken token)
+	public override Task RefreshAsync(RenderTarget target, CancellationToken token)
 	{
-		await channel.Writer.WriteAsync(target, token);
+		if (token.IsCancellationRequested)
+		{
+			return Task.FromCanceled(token);
+		}
+
+		if (disposing == 0)
+		{
+			// INVARIANT: Publishing after the wake can leave pending work with no signal.
+			Interlocked.Or(ref pending, target == RenderTarget.Render ? pendingRender : pendingLoading);
+			channel.Writer.TryWrite(0);
+		}
+
+		return Task.CompletedTask;
 	}
 
 	public override bool ShouldRender() => Interlocked.Exchange(ref render, 0) == 1;
@@ -64,27 +83,20 @@ internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 			{
 				try
 				{
-					var pendingRender = false;
-					var pendingLoading = false;
-
-					while (channel.Reader.TryRead(out var target))
-					{
-						if (target == RenderTarget.Render)
-						{
-							pendingRender = true;
-						}
-						else
-						{
-							pendingLoading = true;
-						}
-					}
-
-					if (!pendingRender && !pendingLoading)
+					// INVARIANT: Taking pending bits before the wake can consume a later producer's only signal.
+					if (!channel.Reader.TryRead(out _))
 					{
 						continue;
 					}
 
-					plot.Render(pendingRender ? RenderTarget.Render : RenderTarget.Loading);
+					var targets = Interlocked.Exchange(ref pending, 0);
+
+					if (targets == 0)
+					{
+						continue;
+					}
+
+					plot.Render((targets & pendingRender) != 0 ? RenderTarget.Render : RenderTarget.Loading);
 
 					Interlocked.Exchange(ref render, 1);
 
@@ -124,6 +136,7 @@ internal sealed partial class InteractiveRenderModeHandler : RenderModeHandler
 	{
 		if (Interlocked.CompareExchange(ref disposing, 1, 0) == 0)
 		{
+			channel.Writer.TryComplete();
 			cancellationTokenSource.Cancel();
 
 			if (background is not null)

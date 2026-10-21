@@ -148,7 +148,7 @@ public class ConcurrencyStressTests
 		// Act
 
 		// Dispose races the writers: it must cancel the loop, await it, and
-		// leave late writes harmless (they land in a channel nobody reads).
+		// leave late writes harmless after shutdown.
 		var dispose = async () => await sut.DisposeAsync();
 
 		// Assert

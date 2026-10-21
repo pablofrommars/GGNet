@@ -25,7 +25,7 @@ internal sealed class ErrorBar<T, TX, TY> : Geom<T, TX, TY>
 	private readonly bool animated;
 
 	public ErrorBar(
-	  Source<T> source,
+	  IReadOnlyList<T> source,
 	  Func<T, TX>? x,
 	  Func<T, TY>? y,
 	  Func<T, TY>? ymin,

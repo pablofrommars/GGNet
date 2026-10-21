@@ -43,7 +43,7 @@ task are identified as CLI-only.
 
 ## The base branch
 
-Every command takes its base from the branch the remote's default HEAD names,
+Commands that need a base take it from the branch the remote's default HEAD names,
 `refs/remotes/origin/HEAD`, read on each run; nothing configures it. In GGNet
 that branch is `main` (renamed from `master` on 2026-10-13), and this guide
 writes `origin/main` for the base. When `origin/HEAD` is unresolved, `doctor`
@@ -57,16 +57,21 @@ git remote set-head origin --auto
 The same command repairs a clone whose `origin/HEAD` still names a branch the
 remote has since renamed — a GGNet clone made before the rename still names
 `master`. Git never retargets an existing `origin/HEAD` on its own, so every
-command that contacts the remote compares it with the remote's own default
+command that fetches to use the base compares it with the remote's own default
 branch after fetching, and refuses a stale one with that repair. Pin
 publication checks each submodule's `origin/HEAD` the same way before pushing to
 it.
+
+`pull` uses the current branch's configured upstream instead; it works on both
+the base branch and a feature branch without requiring `origin/HEAD`.
 
 ## Workflow at a glance
 
 ```mermaid
 %%{init: {'theme':'dark'}}%%
 flowchart TD
+    pull["Fast-forward and align pins<br/><span style='color:#818cf8'>ggnet-git: pull and align submodules</span>"]
+    pull ==> status
     subgraph taskBoundary [Isolated task]
         status(["Local inspection<br/><span style='color:#818cf8'>ggnet-git: status</span>"])
         doctor["Workflow validation<br/><span style='color:#818cf8'>ggnet-git: doctor</span>"]
@@ -135,6 +140,36 @@ VS Code tasks: [`ggnet-git: status`](.vscode/tasks.json#L99) and
 provenance. `doctor` validates required tools, base refs, registrations, and
 workflow assumptions. Both are read-only and use local refs only: neither
 fetches nor calls GitHub.
+
+## Pull and align submodules
+
+```sh
+./.vscode/scripts/git-flow.sh pull
+```
+
+VS Code task:
+[`ggnet-git: pull and align submodules`](.vscode/tasks.json#L191).
+
+Use `pull` to update the current branch from its configured upstream, including
+the primary `main` checkout. It fast-forwards only, then runs
+`git submodule update --init --recursive --checkout` to populate and align all
+submodules to the exact commits recorded by the repository. It prints the final
+Git status. GGNet currently has no submodules of its own, so alignment
+is a no-op until one is added. A plain pull can update the recorded pins while
+leaving submodule checkouts behind, which Git displays as unstaged changes; this command completes
+both steps, even when the branch was already up to date.
+
+Local file changes (including untracked files), staged changes (including pins),
+and unpublished submodule commits at HEAD or on local branches block the command
+before fetching. The submodule checks include initialized nested modules and use
+local remote-tracking refs. Clean, published checkout mismatches are allowed and
+aligned. The command requires an attached branch with an upstream and disables
+rebasing and automatic stashing. It never pushes or selects newer dependency
+tips with `--remote`; `refresh` handles deliberate dependency advances.
+
+Pull and submodule checkout are separate operations. If alignment fails after
+the pull, the output reports the completed pull and possible partial alignment.
+Resolve the reported error and rerun `pull`; it does not roll back the branch.
 
 ## Start or resume a task
 

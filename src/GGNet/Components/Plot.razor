@@ -319,7 +319,8 @@
             var panel = Context.Panels[i];
             var zone = zones[i];
 
-            <Panel Data=@panel
+            <Panel @key=@((Context, i))
+                   Data=@panel
                    X=@zone.X
                    Y=@zone.Y
                    Width=@zone.Width

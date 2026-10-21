@@ -1,6 +1,37 @@
 # Geoms — the 21 layers
 
-All signatures extracted from source (GGNet 2.0). Canonical form shown: `PlotContext` receiver, inherited source. Every geom also has `PanelFactory` receivers and own-source overloads (`Source<T2>` / `IEnumerable<T2>` / `IReadOnlyList<T2>` prepend a `source` parameter and type the selectors on `T2`). Shared tail `(bool x, bool y)? scale = null, bool inherit = true` elided as `…`. Events block = `onclick`, `onmouseover`, `onmouseout` (`Func<T, MouseEventArgs, Task>?`) and `tooltip` (`Func<T, RenderFragment>?`).
+All signatures extracted from source (GGNet 2.0). Canonical form shown: `PlotContext` receiver, inherited source. Own-source overloads prepend a `source` parameter and type the selectors on `T2`; source parameter types vary by family and receiver. Shared tail `(bool x, bool y)? scale = null, bool inherit = true` elided as `…`. Events block = `onclick`, `onmouseover`, `onmouseout` (`Func<T, MouseEventArgs, Task>?`) and `tooltip` (`Func<T, RenderFragment>?`).
+
+## Source-preserving overloads
+
+The following parameter types are extracted from the current `BuilderExtensions.*.cs` members. `Source<T2>` and `StatSource<T2>` implement `IReadOnlyList<T2>` and bind to that overload.
+
+| Family | `PlotContext` source types | `PanelFactory` source types |
+|---|---|---|
+| `Geom_Point` | `IReadOnlyList<T2>`, `IEnumerable<T2>` | `IReadOnlyList<T2>`, `IEnumerable<T2>` |
+| `Geom_Tile` | `IReadOnlyList<T2>`, `IEnumerable<T2>` | `IReadOnlyList<T2>` |
+| `Geom_Segment` | `IReadOnlyList<T2>`, `IEnumerable<T2>` | `IReadOnlyList<T2>` |
+| `Geom_ABLine` | `IReadOnlyList<T2>`, `IEnumerable<T2>` | `IReadOnlyList<T2>`, `IEnumerable<T2>` |
+| `Geom_ErrorBar` | `IReadOnlyList<T2>`, `IEnumerable<T2>` | `IReadOnlyList<T2>`, `IEnumerable<T2>` |
+| `Geom_Hex` | `IReadOnlyList<T2>`, `IEnumerable<T2>` | `IReadOnlyList<T2>`, `IEnumerable<T2>` |
+| `Geom_Map` | `IReadOnlyList<T2>`, `IEnumerable<T2>` | `IReadOnlyList<T2>`, `IEnumerable<T2>` |
+| `Geom_Ribbon` | `IReadOnlyList<T2>`, `IEnumerable<T2>` | `IReadOnlyList<T2>`, `IEnumerable<T2>` |
+| `Geom_RidgeLine` | `IReadOnlyList<T2>`, `IEnumerable<T2>` | `IReadOnlyList<T2>`, `IEnumerable<T2>` |
+| `Geom_Violin` | `IReadOnlyList<T2>`, `IEnumerable<T2>` | `IReadOnlyList<T2>`, `IEnumerable<T2>` |
+
+These families retain `IReadOnlyList<T2>` objects through geom construction, including inherited root sources. An `IEnumerable<T2>` argument that implements `IReadOnlyList<T2>` at runtime is retained too; other enumerables are materialized once when the chain is constructed. List mutations remain visible on later renders. Creating `new Source<T2>(items)` still explicitly copies the items.
+
+Facet matching uses the existing `plotSource.Equals(layerSource)` check. For arrays and ordinary lists, passing the same object partitions the layer with the plot; a distinct `rows.ToList()` repeats its contents in every facet. Custom equality and boxed value-type lists retain their own `Equals` semantics.
+
+Candlestick, OHLC, and Volume retain their existing `Source<T2>` explicit-source context signatures; this change does not add adapters to those families. See [beta migration notes](../patterns/common-mistakes.md#source-identity-corrections-in-20-beta) for the binary compatibility break.
+
+## Explicit-source aesthetic inheritance
+
+For the fourteen families exposing `inherit` (Area, Bar, Boxplot, ErrorBar, Hex, Line, Map, Point, Radar, Ribbon, RidgeLine, Text, Tile and Violin), missing mappings resolve when the layer is added, including with an explicit source. Explicit mappings win per aesthetic; `inherit: false` disables all fallback. Only aesthetics used by that geom are considered.
+
+Inherited mappings must implement `IAestheticMapping<T2, TValue>` for the layer's row type. The interface is invariant: matching properties, a shared base class, or a shared interface do not make two row types interchangeable. An incompatible requested mapping throws `GGNetUserException` at the layer call, naming the aesthetic and row types; supply a layer mapping or opt out. A custom mapping implementing both required interfaces is compatible.
+
+Explicit sources still require their positional selectors; `inherit` governs aesthetics, not selectors. Sourceless overloads retain their existing default selectors, including when `inherit: false`. Configure scales before adding layers; replacing a plot mapping later does not replace a mapping already captured by a layer.
 
 ## Data marks (full events block)
 

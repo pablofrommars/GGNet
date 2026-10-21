@@ -188,6 +188,22 @@
 			"problemMatcher": []
 		},
 		{
+			"label": "ggnet-git: pull and align submodules",
+			"type": "shell",
+			"command": "${workspaceFolder}/.vscode/scripts/git-flow.sh",
+			"args": [
+				"pull"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated"
+			},
+			"problemMatcher": []
+		},
+		{
 			"label": "keep awake: toggle",
 			"type": "shell",
 			"command": "${workspaceFolder}/.vscode/scripts/keep-awake.sh",

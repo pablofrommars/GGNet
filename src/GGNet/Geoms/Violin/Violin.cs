@@ -23,7 +23,7 @@ internal sealed class Violin<T, TX, TY> : Geom<T, TX, TY>
 	private readonly PositionAdjustment adjustment;
 
 	public Violin(
-	  Source<T> source,
+	  IReadOnlyList<T> source,
 	  Func<T, TX>? x,
 	  Func<T, TY>? y,
 	  Func<T, double> width,

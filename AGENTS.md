@@ -38,7 +38,7 @@ GGNet is a **grammar-of-graphics charting library** for .NET / Blazor — ggplot
 
 ## Key Entry Points
 
-- DSL entry: [src/GGNet/PlotContext.Build.cs](src/GGNet/PlotContext.Build.cs) and [src/GGNet/BuilderExtensions.cs](src/GGNet/BuilderExtensions.cs) (+ 21 `BuilderExtensions.<Geom>.cs` partials)
+- DSL entry: [src/GGNet/PlotContext.Build.cs](src/GGNet/PlotContext.Build.cs) and [src/GGNet/BuilderExtensions.cs](src/GGNet/BuilderExtensions.cs) (+ 21 `BuilderExtensions.<Geom>.cs` partials and the private mapping resolver in `BuilderExtensions.Inheritance.cs`)
 - Component: [src/GGNet/Components/Plot.razor.cs](src/GGNet/Components/Plot.razor.cs)
 - Render pipeline: [src/GGNet/Scene/ShapeComposer.cs](src/GGNet/Scene/ShapeComposer.cs), invariant boundary [src/GGNet/Components/SvgFormat.cs](src/GGNet/Components/SvgFormat.cs)
 - Headless export: [src/GGNet.Headless/IPlotContextExtensions.cs](src/GGNet.Headless/IPlotContextExtensions.cs)
@@ -126,7 +126,7 @@ Use `rg` for text discovery such as literals, config, markup, comments, and file
 - Tests carry separate `// Arrange`, `// Act`, `// Assert` section comments; AwesomeAssertions exclusively; `Moq` is a global using.
 - Switches over the `union` types (`Shape`, `Element`, `ScreenPrimitive`) are exhaustive — no discard arm; a new variant must break the build.
 - Never interpolate a raw number into SVG — route it through `SvgFormat.Num`/`Attr`.
-- The 22 `BuilderExtensions.*.cs` overload partials are hand-synced; `OverloadConsistencyTests` + `BuilderForwardingTests` guard them — keep parameter names, defaults, order, and `<param>` docs consistent across a family.
+- The overload families in the 21 `BuilderExtensions.<Geom>.cs` partials and base `BuilderExtensions.cs` are hand-synced; the separate `BuilderExtensions.Inheritance.cs` contains only a private mapping resolver; `OverloadConsistencyTests` + `BuilderForwardingTests` guard them — keep parameter names, defaults, order, and `<param>` docs consistent across a family.
 
 ## The Skill & MCP Server
 

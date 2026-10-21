@@ -1,6 +1,7 @@
 ﻿using GGNet.Formats;
 using GGNet.Transformations;
 using GGNet.Scales.Common;
+using GGNet.Exceptions;
 
 namespace GGNet.Scales;
 
@@ -34,21 +35,34 @@ internal sealed class Log10 : Position<double>
 			return;
 		}
 
-		var breaks = Log10Utils.Breaks(Range.min, Range.max);
+		var min = Math.Max(Range.min, Math.Log10(double.Epsilon));
+		var max = Math.Min(Range.max, Math.Log10(double.MaxValue));
+		var breaks = min <= max ? Log10Utils.Breaks(min, max) : [];
+		MinorBreaks = [];
 		if (breaks.Length > 0)
 		{
 			Breaks = breaks;
-			MinorBreaks = Utils.MinorBreaks(breaks, Range.min, Range.max)!;
+			MinorBreaks = Utils.MinorBreaks(breaks, min, max) ?? [];
 		}
 		else
 		{
-			Breaks = Log10Utils.MinorBreaks(Range.max);
+			Breaks = min <= max ? Log10Utils.MinorBreaks(max) : [];
 		}
 
+		Breaks = [.. Breaks.Where(b => double.IsFinite(b) && double.IsFinite(transformation.Inverse(b)) && transformation.Inverse(b) > 0)];
+		MinorBreaks = [.. MinorBreaks.Where(double.IsFinite)];
 		Labels = [.. Breaks.Select(b => (b, labelFormatter.Format(transformation!.Inverse(b))))];
 	}
 
-	public override double Map(double key) => transformation!.Apply(key);
+	public override double Map(double key)
+	{
+		if (key <= 0 || double.IsInfinity(key))
+		{
+			throw new GGNetUserException("Log10 positions require positive finite values; filter nonpositive data or use a continuous scale.");
+		}
+
+		return transformation!.Apply(key);
+	}
 
 	public override double? Unmap(double value) => transformation!.Inverse(value);
 
@@ -59,9 +73,15 @@ internal sealed class Log10 : Position<double>
 
 internal static class Log10Utils
 {
+	private static readonly double[] minorMultipliers = [0.01, 0.03, 0.05, 0.1, 0.3, 0.5];
+
 	public static double[] MinorBreaks(double max)
 	{
 		var mult = Math.Pow(10.0, Math.Ceiling(max));
+		if (!double.IsFinite(mult) || mult == 0)
+		{
+			return [.. minorMultipliers.Select(v => Math.Log10(v) + Math.Ceiling(max))];
+		}
 
 		return [
 			Math.Log10(0.01 * mult), Math.Log10(0.03 * mult), Math.Log10(0.05 * mult),
@@ -71,17 +91,18 @@ internal static class Log10Utils
 
 	public static double[] Breaks(double min, double max, int n = 5)
 	{
+		PositionRange.Validate(min, max);
 		var bmin = Math.Floor(min);
 		var bmax = Math.Ceiling(max);
 
 		if (bmin == bmax)
 		{
-			return [Math.Pow(10.0, bmin)];
+			return [bmin];
 		}
 
 		var by = Math.Floor((bmax - bmin) / n) + 1.0;
 
-		while (by > 1)
+		for (var attempt = 0; by > 1 && attempt < n; attempt++)
 		{
 			var N = (int)((bmax - bmin) / by) + 1;
 			var breaks = new double[N];

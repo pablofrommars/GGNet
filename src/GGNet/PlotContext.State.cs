@@ -6,12 +6,12 @@ public partial class PlotContext<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	/// <summary>Windows the x axis to an explicit data-unit range on the next render. The window shows exactly this range (no expansion) and survives re-renders until <see cref="ResetView"/> clears it.</summary>
+	/// <summary>Windows the x axis to an explicit finite data-unit range on the next render. Distinct bounds show exactly this range (no expansion); equal mapped bounds receive singleton padding. The window survives re-renders until <see cref="ResetView"/> clears it.</summary>
 	/// <param name="min">Window start, in x data units.</param>
 	/// <param name="max">Window end, in x data units.</param>
 	public void SetXView(TX min, TX max) => Positions.X.SetView(MapView(Positions.X, min, max));
 
-	/// <summary>Windows the y axis to an explicit data-unit range on the next render. The window shows exactly this range (no expansion) and survives re-renders until <see cref="ResetView"/> clears it.</summary>
+	/// <summary>Windows the y axis to an explicit finite data-unit range on the next render. Distinct bounds show exactly this range (no expansion); equal mapped bounds receive singleton padding. The window survives re-renders until <see cref="ResetView"/> clears it.</summary>
 	/// <param name="min">Window start, in y data units.</param>
 	/// <param name="max">Window end, in y data units.</param>
 	public void SetYView(TY min, TY max) => Positions.Y.SetView(MapView(Positions.Y, min, max));
@@ -52,9 +52,7 @@ public partial class PlotContext<T, TX, TY>
 			return;
 		}
 
-		var pad = y.min == y.max ? 0.05 : 0.05 * (y.max - y.min);
-
-		Positions.Y.SetView((y.min - pad, y.max + pad));
+		Positions.Y.SetView(Scales.PositionRange.Expand(y.min, y.max, (0.05, 0, 0.05, 0)));
 	}
 
 	private (double min, double max) VisibleYFromSource((double min, double max) window)
@@ -117,7 +115,7 @@ public partial class PlotContext<T, TX, TY>
 
 		var view = (min: scale.Map(min), max: scale.Map(max));
 
-		if (double.IsNaN(view.min) || double.IsNaN(view.max))
+		if (!double.IsFinite(view.min) || !double.IsFinite(view.max))
 		{
 			throw new GGNetUserException("View bounds could not be mapped; on discrete axes render once before setting a view");
 		}

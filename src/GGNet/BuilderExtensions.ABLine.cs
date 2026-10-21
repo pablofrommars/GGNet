@@ -25,7 +25,7 @@ public static partial class BuilderExtensions
 	/// <param name="style">Label font style (<c>"normal"</c>, <c>"italic"</c>).</param>
 	public static PanelFactory<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
 	  this PanelFactory<T1, TX, TY> panel,
-	  Source<T2> source,
+	  IReadOnlyList<T2> source,
 	  Func<T2, double> a,
 	  Func<T2, double> b,
 	  Func<T2, string>? label = null,
@@ -91,7 +91,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return panel.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
+		return panel.Geom_ABLine(source as IReadOnlyList<T2> ?? new Source<T2>(source), a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 	}
 
 	/// <summary>
@@ -112,7 +112,7 @@ public static partial class BuilderExtensions
 	/// <param name="style">Label font style (<c>"normal"</c>, <c>"italic"</c>).</param>
 	public static PlotContext<T1, TX, TY> Geom_ABLine<T1, TX, TY, T2>(
 	  this PlotContext<T1, TX, TY> context,
-	  Source<T2> source,
+	  IReadOnlyList<T2> source,
 	  Func<T2, double> a,
 	  Func<T2, double> b,
 	  Func<T2, string>? label = null,
@@ -155,7 +155,7 @@ public static partial class BuilderExtensions
 	  where TX : struct
 	  where TY : struct
 	{
-		return context.Geom_ABLine(new Source<T2>(source), a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
+		return context.Geom_ABLine(source as IReadOnlyList<T2> ?? new Source<T2>(source), a, b, label, transformation, strokeWidth, color, opacity, lineType, size, anchor, weight, style);
 	}
 
 	/// <summary>

@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\GGNet\GGNet.csproj" />
+    <ProjectReference Include="..\..\src\GGNet.Headless\GGNet.Headless.csproj" />
   </ItemGroup>
 
 </Project>

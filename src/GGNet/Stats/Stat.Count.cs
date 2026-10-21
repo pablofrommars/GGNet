@@ -10,7 +10,7 @@ public static partial class Stat
 	/// <param name="selector">Key per item.</param>
 	public static StatSource<Count<TKey>> Count<T, TKey>(IReadOnlyList<T> source, Func<T, TKey> selector)
 		where TKey : notnull
-		=> new(() =>
+		=> new(source as IStatSource, () =>
 		{
 			var counts = new Dictionary<TKey, int>();
 
