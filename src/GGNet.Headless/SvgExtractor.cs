@@ -2,10 +2,8 @@ namespace GGNet.Headless;
 
 internal static class SvgExtractor
 {
-	private static readonly HashSet<string> selfClosingElements = new(StringComparer.OrdinalIgnoreCase)
-	{
-		"line", "circle", "rect", "path", "stop"
-	};
+	private static readonly HashSet<string> selfClosingElements =
+		[with(StringComparer.OrdinalIgnoreCase), "line", "circle", "rect", "path", "stop"];
 
 	public static void Write(string html, TextWriter writer)
 	{

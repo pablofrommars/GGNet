@@ -122,7 +122,7 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 
 			if (web)
 			{
-				var points = new List<(double x, double y)>(spokes.Count);
+				List<(double x, double y)> points = [with(spokes.Count)];
 
 				foreach (var spoke in spokes)
 				{

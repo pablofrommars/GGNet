@@ -36,6 +36,7 @@ That stack trace names the root cause for *all* of the above.
 |---|---|---|
 | `CA1305` (**error**) | Culture-sensitive formatting. Breaks SVG on comma-decimal locales. | `CultureInfo.InvariantCulture`, `FormattableString.Invariant($"…")`, `sb.Append(CultureInfo.InvariantCulture, $"…")`, or route through `IFormatter<T>`. In markup, `SvgFormat.Num`/`Attr`. |
 | `CS8509` (**error**) | A `switch` over a closed `union` (`Shape`, `Element`, `ScreenPrimitive`) is missing an arm. | Add the arm. **Do not** silence it with `_ =>` — that discard is exactly what this rule buys you. Enum→SVG-string switches are a different idiom and *do* keep a throwing discard arm. |
+| `CS9383` | A descendant of a `closed` generic root introduces a type parameter absent from its base type, e.g. `Text<T, TX, TY, TT> : Geom<T, TX, TY>`. | Keep the root abstract and leave closure review-required; do not redesign the generic contract for syntax adoption. `Faceting` has the same constraint. |
 | `IDE0130` | Namespace does not match folder. | Match the folder. The one sanctioned exception is `src/GGNet/Stats/*` in the root `GGNet` namespace, encoded in `.editorconfig`. |
 | `IDE0005` | Unused using. | Strip it; do not add a suppression. |
 
@@ -122,7 +123,7 @@ It needs a Playwright Chromium installed.
 ## 8. Test-infrastructure surprises
 
 - Test projects are **self-hosting MTP executables** (`OutputType=Exe`, `UseMicrosoftTestingPlatformRunner`). The entry point is generated — never write a `Main`.
-- Keep the **`-mtp-v2` suffix** on every xunit bump: plain `xunit.v3` pulls MTP v1. MTP v2 becomes the default only in xunit v4.
+- Keep the **`-mtp-v2` suffix** on every xunit bump so the runner choice stays explicit. Plain `xunit.v3` also selects MTP v2 on the 4.x package line; it selected MTP v1 on the 3.x package line. The 4.0.2 package still ships the xUnit.net v3 API.
 - Do **not** add `Microsoft.NET.Test.Sdk`, `xunit.runner.visualstudio`, or `coverlet.collector`. MTP is native to xunit v3 and needs no VSTest adapter; coverlet's collector is a VSTest data collector that does not run under MTP. For coverage use `Microsoft.Testing.Extensions.CodeCoverage`.
 - Mocking **internal** interfaces works because `GGNet.csproj` grants `InternalsVisibleTo("DynamicProxyGenAssembly2")`. If a mock fails to proxy, check that IVT before redesigning the seam.
 - `Moq` is a global using in `GGNet.Headless.Tests`, and `Moq.Match` collides with the globally-used `System.Text.RegularExpressions.Match`. The project's `GlobalUsings.cs` pins `global using Match = System.Text.RegularExpressions.Match;`; an ambiguous-`Match` error (`CS0104`) means that alias was lost, not that Moq must go back to a per-file using.
@@ -186,3 +187,30 @@ To exercise the real interactive component instead, run `dotnet run --project sr
 The scoped guides are hand-maintained prose and can lag the source. **The code wins.** When a guide's claim is load-bearing for what you are about to do, verify it against the source first — and when you find drift, fix the guide in the same change rather than working around it.
 
 Places drift is most likely, because they describe fast-moving areas: the interactivity/JS surface, the exported-type counts, and the test-suite totals. Counts and inventories in prose are stale by default; treat `PublicApiTests`' pinned manifest and the tests themselves as the real inventory.
+
+---
+
+## 15. RC3 upgrade exposes stale validation output or test-double JS diagnostics
+
+After changing SDKs, an incremental demo build can retain a generated global using for
+`Microsoft.Extensions.Validation.Embedded` even though the RC3 SDK only generates that embedded
+namespace for net10.0 compatibility. Regenerate outputs with
+`dotnet build GGNet.slnx -t:Rebuild -warnaserror`; do not hand-edit `obj/` or add a validation
+package to satisfy the stale using.
+
+RC3's `BL0016` analyzer also flags forwarding overloads in controlled `IJSRuntime`/
+`IJSObjectReference` test doubles. Those adapters must propagate injected failures so lifecycle
+tests can observe them. Keep any suppression scoped to the forwarding overload, with its reason;
+production interop retains the exception-handling requirements in the Blazor guide.
+
+---
+
+## 16. Verify 33 fails the build with SponsorCheck `SC021`
+
+Verify 33 requires a sponsorship/license declaration or a publisher-defined exemption. GGNet's
+non-revenue open-source status qualifies for `OpenSource`; `GGNet.Headless.Tests.csproj` declares
+that exemption and its end month in `Verify_SponsorshipExemptionUntil` (currently `2027-10`).
+Check both properties when the declaration is missing or expired, and recheck eligibility before
+renewing it. The declaration applies to the test project that consumes Verify. The publisher's
+[maintenance-fee documentation](https://github.com/VerifyTests/Verify/blob/main/docs/maintenance-fee.md)
+defines the criteria and renewal limits.

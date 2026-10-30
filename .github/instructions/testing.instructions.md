@@ -20,7 +20,9 @@ Scope: all test projects under `tests/`. Assumes [csharp.instructions.md](./csha
 
 Test projects are **self-hosting MTP executables**: `<OutputType>Exe</OutputType>` + `<UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>`. The entry point is generated — never write a `Main`. Runner selection lives in `global.json` (`"test": { "runner": "Microsoft.Testing.Platform" }`), which the SDK 10+ `dotnet test` honours.
 
-Keep the **`-mtp-v2` suffix** on every future xunit bump: plain `xunit.v3` pulls MTP v1. MTP v2 becomes the default only in xunit v4.
+Keep the **`-mtp-v2` suffix** on every future xunit bump to make the runner choice explicit. On the 4.x package line, plain `xunit.v3` also depends on `xunit.v3.mtp-v2`; the 3.x package line selected MTP v1 by default. Package version 4.0.2 still ships the xUnit.net v3 API and selects Microsoft.Testing.Platform 2.5.1.
+
+`GGNet.Headless.Tests.csproj` declares Verify's `OpenSource` sponsorship exemption through **October 2027**, based on GGNet being open source and generating no revenue. Verify 33 checks this declaration at build time. Recheck eligibility before renewing `Verify_SponsorshipExemptionUntil`; expired declarations fail the build. See [Verify's maintenance-fee documentation](https://github.com/VerifyTests/Verify/blob/main/docs/maintenance-fee.md).
 
 Do **not** reintroduce `Microsoft.NET.Test.Sdk`, `xunit.runner.visualstudio`, or `coverlet.collector` — MTP is native to xunit v3 and needs no VSTest adapter, and coverlet's collector is a VSTest data collector that does not run under MTP. For coverage, use `Microsoft.Testing.Extensions.CodeCoverage`.
 

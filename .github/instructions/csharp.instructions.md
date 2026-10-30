@@ -23,7 +23,7 @@ Scope: every `.cs` file in the solution. GGNet is a single-author, gate-enforced
 | `CS1591` / `CS1573` | **off** | XML docs are additive: the public builder surface is documented, everything else stays undocumented without warnings (§8) |
 | `IDE0130` + `dotnet_style_namespace_match_folder` | **warning / true** | Namespace must match folder — with one documented exception for `Stats/` (§3) |
 
-**Analyzer severities are tuned in `.editorconfig`, never per project.** A project-level `<NoWarn>` is not used. A one-off diagnostic that is genuinely wrong at one site is suppressed with a scoped `#pragma warning disable <id>` / `#pragma warning restore <id>` pair around that site, with a comment saying why — the only suppression in the tree today wraps the two `GalleryTests` facts whose inline `new[] { … }` arguments are pinned verbatim to the skill examples (CA1861).
+**Analyzer severities are tuned in `.editorconfig`, never per project.** A project-level `<NoWarn>` is not used. A one-off diagnostic that is genuinely wrong at one site is suppressed with a scoped `#pragma warning disable <id>` / `#pragma warning restore <id>` pair around that site, with a comment saying why. Existing examples include `GalleryTests` facts whose inline `new[] { … }` arguments are pinned verbatim to the skill examples (CA1861), and controlled JS test-double forwarding in `PanelLifecycleTests` that must propagate injected failures (BL0016).
 
 The local gates every change must pass — build, test, and both `dotnet format` checks (also in CI):
 
@@ -76,7 +76,7 @@ These are set once in `Directory.Build.props` and inherited by every project —
 
 It also holds the NuGet metadata shared by the two packable projects (`Version`, `Authors`, `Title`, `Copyright`, `Description`, `PackageTags`, `PackageLicenseExpression`) — so the shipped version is stated **once**. A `.csproj` declares only what is genuinely its own: `IsPackable=true` and its distinct `PackageDescription` on `GGNet`/`GGNet.Headless`, `OutputType`, `IsTestProject` — never a `NoWarn` (§1).
 
-`LangVersion=preview` is **required**, not optional — the codebase uses the preview `union` keyword (§6). The SDK is pinned in `global.json` (`11.0.100-preview.*`).
+`LangVersion=preview` remains the **required repository setting**; changing language policy is separate from the SDK update. The SDK is pinned to .NET 11 RC3 in `global.json`. C# 15 provides the `union` types used in §6.
 
 ---
 
@@ -88,16 +88,18 @@ It also holds the NuGet metadata shared by the two packable projects (`Version`,
 - **Shapes** (`Shapes/`) — `internal readonly record struct Circle : IShape`, with `{ get; init; }` properties and `required` on mandatory members.
 - **Elements** (`Elements/`) — `internal readonly record struct` with an explicit parameterless ctor supplying init defaults (`public Rectangle() {}` + `Fill { get; init; } = "inherit"`).
 - **Data carriers** (`Data/`) — `internal sealed class` with mutable `{ get; set; }` (e.g. `Selectors<T, TX, TY>`, `Aesthetics<T>`); some per-geom carriers are `internal sealed record`.
-- **Scales** — `internal abstract class` hierarchies (`Scale<TKey, TValue>` → `Continuous<TKey>` → concrete), each overriding `public abstract Guide Guide`.
+- **Scales** — `internal closed class` hierarchies (`Scale<TKey, TValue>` → `Continuous<TKey>` → `Position<TKey>` → concrete, plus `Discrete<TKey, TValue>`), retaining shared state and virtual behavior. `closed` is implicitly abstract; concrete scales override `public abstract Guide Guide`.
 - **Stats** — `public readonly record struct` with positional params (`public readonly record struct Bin(double Min, double Mid, double Max, int Count, double Density)`), plus a `Bin<TKey>` generic variant.
 
 Defaults: `sealed` on classes/records unless designed for inheritance; **primary constructors** for geoms, scales, exceptions, formatters.
 
+Collection expressions can retain BCL constructor arguments: `List<Zone> zones = [with(panels.Count)];` preserves layout capacity, and `HashSet<IStatSource> seen = [with(ReferenceEqualityComparer.Instance)];` preserves source identity. Keep the concrete target, comparer object, argument evaluation and element order. The custom `SortedBuffer<T>` / `SampleBuffer<T>` / `RankedTree<T>` types retain constructor syntax; they do not expose the enumeration protocol needed for collection expressions.
+
 ---
 
-## 6. Closed Unions & Exhaustive Switch (`CS8509` = error)
+## 6. Unions, Closed Hierarchies & Exhaustive Switch (`CS8509` = error)
 
-GGNet models closed sets with the **preview `union` keyword** — genuine discriminated unions over existing record-struct variants (not abstract-record + sealed subclasses, not enums):
+GGNet models finite value alternatives with the **C# 15 `union` keyword** over existing record-struct variants:
 
 ```csharp
 internal readonly union Shape(ABLine, Area, Circle, HLine, Line, MultiPolygon, Path, Polygon, Rectangle, Text, VLine);
@@ -108,6 +110,10 @@ internal readonly union ScreenPrimitive(ScreenCircle, ScreenLine, ScreenRect, Sc
 Switch over a union with **no discard arm** so adding a variant is a compile error until every switch handles it — this is exactly what `CS8509`-as-error buys (canonical example: `Scene/ShapeComposer.cs`). When you add a variant to a `union`, expect and fix the resulting build errors across every switch; do not paper over them with `_ =>`.
 
 Distinct idiom: **enum → SVG-string** render switches (`Anchor`, `LineType`, `Units`, `RenderMode`) keep a `_ => throw new NotImplementedException()` (or `GGNetInternalException`) discard arm. Those are not `CS8509` sites.
+
+`RenderModeHandler` is an `internal closed class` over the three sealed render handlers; the four scale roots in §5 also use `closed`. These hierarchies retain their shared members and virtual dispatch. Closure bounds direct inheritance in the owning assembly; it does not seal open descendants. `Geom<T, TX, TY>` and `Faceting<T>` remain abstract: their descendants introduce type parameters absent from the base type, which RC3 rejects on a closed root (CS9383). Changing their generic contracts requires separate review. Public extension contracts such as `TooltipBase` remain open.
+
+RC3 exposes `JsonPolymorphicAttribute.InferClosedTypePolymorphism`, but the render/scale roots and the three unions are not production JSON contracts. Current JSON uses DOM-based chart selection and flat interop payloads; closing an internal hierarchy does not justify a serializer-policy change. Before changing polymorphism configuration on a serialized type, prove exact discriminator output and independently fixed historical payload reads, including the actual source-generated path if one is used. Retain explicit registrations/converters unless that compatibility is established.
 
 ---
 

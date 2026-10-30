@@ -353,8 +353,10 @@ public class PanelLifecycleTests : BunitContext
 			return (TValue)(object)await Import.Task;
 		}
 
+#pragma warning disable BL0016 // Test-double forwarding must propagate controlled failures to the caller.
 		public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
 			=> InvokeAsync<TValue>(identifier, args);
+#pragma warning restore BL0016
 	}
 
 	private sealed class ControlledModule : IJSObjectReference
@@ -413,8 +415,10 @@ public class PanelLifecycleTests : BunitContext
 			return default!;
 		}
 
+#pragma warning disable BL0016 // Test-double forwarding must propagate controlled failures to the caller.
 		public ValueTask<TValue> InvokeAsync<TValue>(string identifier, CancellationToken cancellationToken, object?[]? args)
 			=> InvokeAsync<TValue>(identifier, args);
+#pragma warning restore BL0016
 
 		public ValueTask DisposeAsync()
 		{

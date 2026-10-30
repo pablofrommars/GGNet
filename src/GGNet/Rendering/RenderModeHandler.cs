@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace GGNet.Rendering;
 
-internal abstract class RenderModeHandler(IPlotRendering plot) : IRenderModeHandler
+internal closed class RenderModeHandler(IPlotRendering plot) : IRenderModeHandler
 {
 	protected readonly IPlotRendering plot = plot;
 

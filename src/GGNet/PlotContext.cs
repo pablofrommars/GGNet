@@ -304,7 +304,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			Init(showGrid);
 		}
 
-		var seen = new HashSet<IStatSource>(ReferenceEqualityComparer.Instance);
+		HashSet<IStatSource> seen = [with(ReferenceEqualityComparer.Instance)];
 		RecomputeStat(Source as IStatSource, seen);
 
 		Reset();

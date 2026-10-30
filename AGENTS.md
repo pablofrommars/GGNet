@@ -8,7 +8,7 @@ This is the host-neutral, canonical repository contract for AI coding assistants
 
 GGNet is a **grammar-of-graphics charting library** for .NET / Blazor — ggplot2-inspired, a single fluent C# chain, **SVG** output. `2.0.0-beta` is the current breaking window.
 
-- **Runtime**: C# on the **.NET 11 preview SDK** (pinned in `global.json`), `LangVersion=preview` (uses the preview `union` keyword)
+- **Runtime**: C# on the **.NET 11 RC3 SDK** (pinned in `global.json`), retaining the repository's `LangVersion=preview` setting and C# 15 `union` types
 - **Solution**: `GGNet.slnx` — five production projects + four test projects
 - **`src/GGNet`** (Razor class library) — the core: the DSL (`PlotContext`, `BuilderExtensions`), geoms, scales, stats, shapes, the render pipeline, the `Plot` component, themes
 - **`src/GGNet.Headless`** — pure-SVG headless export (`AsStringAsync`/`SaveAsync`)
@@ -125,6 +125,7 @@ Use `rg` for text discovery such as literals, config, markup, comments, and file
 - Production comments under `src/` carry one of four tags — `TODO: calibration`, `RUNBOOK`, `INVARIANT`, `DEVIATION` — and `CommentPolicyTests` enforces it (C# guide §12).
 - Tests carry separate `// Arrange`, `// Act`, `// Assert` section comments; AwesomeAssertions exclusively; `Moq` is a global using.
 - Switches over the `union` types (`Shape`, `Element`, `ScreenPrimitive`) are exhaustive — no discard arm; a new variant must break the build.
+- `RenderModeHandler` and the four scale roots (`Scale`, `Continuous`, `Discrete`, `Position`) use `closed` while retaining shared behavior. `Geom` / `Faceting` retain `abstract` because their descendants introduce extra type parameters (C# guide §6).
 - Never interpolate a raw number into SVG — route it through `SvgFormat.Num`/`Attr`.
 - The overload families in the 21 `BuilderExtensions.<Geom>.cs` partials and base `BuilderExtensions.cs` are hand-synced; the separate `BuilderExtensions.Inheritance.cs` contains only a private mapping resolver; `OverloadConsistencyTests` + `BuilderForwardingTests` guard them — keep parameter names, defaults, order, and `<param>` docs consistent across a family.
 

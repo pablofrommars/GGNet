@@ -27,7 +27,7 @@ internal abstract class Faceting<T>(bool freeX, bool freeY)
 			return;
 		}
 
-		var buckets = new Dictionary<(int row, int column), List<int>>(facets.Length);
+		Dictionary<(int row, int column), List<int>> buckets = [with(facets.Length)];
 
 		foreach (var (facet, _, _) in facets)
 		{

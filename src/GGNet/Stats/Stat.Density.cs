@@ -359,7 +359,7 @@ public static partial class Stat
 
 	private static List<double> Values<T>(IReadOnlyList<T> source, Func<T, double> selector)
 	{
-		var values = new List<double>(source.Count);
+		List<double> values = [with(source.Count)];
 
 		for (var i = 0; i < source.Count; i++)
 		{
