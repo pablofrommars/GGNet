@@ -26,6 +26,16 @@ That stack trace names the root cause for *all* of the above.
 - A scratch project created outside the repo is un-restored *and* outside `Directory.Build.props` / `global.json`, so it hangs on restore and has no `TargetFramework`. Put scratch projects **inside** the repo tree, declare only `OutputType` + `ProjectReference`, and delete them when done.
 - Stopping a backgrounded `dotnet run` kills the parent, not the app child — the port stays bound. Reclaim it with `lsof -ti:<port> | xargs kill`.
 
+If the host still denies IPC after an unsandboxed retry, an in-process build can provide partial verification without changing project settings:
+
+```
+dotnet build GGNet.slnx -warnaserror --disable-build-servers -m:1 -p:UseSharedCompilation=false
+dotnet tests/GGNet.Headless.Tests/bin/Debug/net11.0/GGNet.Headless.Tests.dll
+dotnet tests/GGNet.Components.Tests/bin/Debug/net11.0/GGNet.Components.Tests.dll
+```
+
+The test DLLs are the existing MTP executables; invoking them directly avoids `dotnet test`'s own named-pipe launcher. This does not unblock tests that spawn builds (`McpServerEvals` and `ValidatorScriptEvals`), the demo server, or Roslyn's solution workspace loader. `dotnet format whitespace . --folder --verify-no-changes --include <changed-files>` can check whitespace without loading MSBuild, but is not the solution style gate. Report these limits explicitly; do not claim that partial verification passed every local gate. For the separate stale generated validation-using failure, use §15's rebuild remedy.
+
 ---
 
 ## 2. `dotnet build -warnaserror` fails on something that looks cosmetic
@@ -36,7 +46,7 @@ That stack trace names the root cause for *all* of the above.
 |---|---|---|
 | `CA1305` (**error**) | Culture-sensitive formatting. Breaks SVG on comma-decimal locales. | `CultureInfo.InvariantCulture`, `FormattableString.Invariant($"…")`, `sb.Append(CultureInfo.InvariantCulture, $"…")`, or route through `IFormatter<T>`. In markup, `SvgFormat.Num`/`Attr`. |
 | `CS8509` (**error**) | A `switch` over a closed `union` (`Shape`, `Element`, `ScreenPrimitive`) is missing an arm. | Add the arm. **Do not** silence it with `_ =>` — that discard is exactly what this rule buys you. Enum→SVG-string switches are a different idiom and *do* keep a throwing discard arm. |
-| `CS9383` | A descendant of a `closed` generic root introduces a type parameter absent from its base type, e.g. `Text<T, TX, TY, TT> : Geom<T, TX, TY>`. | Keep the root abstract and leave closure review-required; do not redesign the generic contract for syntax adoption. `Faceting` has the same constraint. |
+| `CS9383` | A descendant of a `closed` generic root introduces a type parameter absent from its base type, e.g. `Faceting1D<T, TKey> : Faceting<T>`. | Keep the root abstract and leave closure review-required; do not redesign the generic contract for syntax adoption. Geom closure was reviewed separately: its public generic text selector is adapted lazily to an invariant string selector, preserving the public API and render-time evaluation. |
 | `IDE0130` | Namespace does not match folder. | Match the folder. The one sanctioned exception is `src/GGNet/Stats/*` in the root `GGNet` namespace, encoded in `.editorconfig`. |
 | `IDE0005` | Unused using. | Strip it; do not add a suppression. |
 
@@ -108,7 +118,7 @@ Note the split when editing the MCP server: **geoms/scales are reflected live** 
 
 ## 7. "All tests passed" but the browser layer never ran
 
-`tests/GGNet.E2ETests` **self-skips every test unless `GGNET_E2E=1`** (`Fixtures/DemoAppFixture.cs`), so the default gate stays browser-free. A green `dotnet test GGNet.slnx` therefore says nothing about the executed-JS layer.
+The browser tests in `tests/GGNet.E2ETests` **self-skip unless `GGNET_E2E=1`** (`Fixtures/DemoAppFixture.cs`), so the default gate stays browser-free. The process-output tests run independently and do not execute JS. A green `dotnet test GGNet.slnx` therefore says nothing about the executed-JS layer.
 
 If you touched `src/GGNet/Components/Panel.razor.js` or its C# wrapper, run the smoke explicitly:
 

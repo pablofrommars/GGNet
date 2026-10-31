@@ -1,6 +1,6 @@
 namespace GGNet.ChartSelection;
 
-public static class Selector
+public static partial class Selector
 {
 	private static readonly string[] axisFields =
 	[
@@ -24,17 +24,16 @@ public static class Selector
 	}
 
 	public static JsonObject Select(JsonObject cfg, JsonObject query, int topN = 3)
+		=> JsonSerializer.SerializeToNode(SelectCore(cfg, query, topN), SelectionJsonContext.Default.Selection)!.AsObject();
+
+	private static Selection SelectCore(JsonObject cfg, JsonObject query, int topN)
 	{
 		var q = NormalizeQuery(cfg, query);
 
 		var gate = Gate(cfg, q);
 		if (gate.Count > 0)
 		{
-			return new JsonObject
-			{
-				["error"] = "data_quality_insufficient",
-				["reasons"] = new JsonArray([.. gate.Select(r => (JsonNode)r)])
-			};
+			return new InsufficientData(gate);
 		}
 
 		var relaxed = new List<string>();
@@ -59,14 +58,7 @@ public static class Selector
 
 		if (candidates.Count == 0)
 		{
-			return new JsonObject
-			{
-				["error"] = "no_match",
-				["relaxed"] = ToArray(relaxed),
-				["structural_escapes"] = escapes,
-				["excluded"] = excluded,
-				["hint"] = "data shape fits no known chart; check axis extraction"
-			};
+			return new NoMatch(relaxed, escapes, excluded);
 		}
 
 		var ranked = candidates
@@ -75,14 +67,7 @@ public static class Selector
 			.ThenBy(c => c.LeafFunctionCount)
 			.ThenBy(c => c.ChartId, StringComparer.Ordinal);
 
-		return new JsonObject
-		{
-			["top_charts"] = new JsonArray([.. ranked.Take(topN).Select(ToResult)]),
-			["total_matches"] = candidates.Count,
-			["relaxed"] = ToArray(relaxed),
-			["structural_escapes"] = escapes,
-			["excluded"] = excluded,
-		};
+		return new Recommendations([.. ranked.Take(topN).Select(ToResult)], candidates.Count, relaxed, escapes, excluded);
 	}
 
 	private sealed record Candidate(
@@ -95,11 +80,11 @@ public static class Selector
 		List<string> Transforms,
 		int LeafFunctionCount);
 
-	private static (List<Candidate> Candidates, JsonArray Escapes, JsonArray Excluded) RunFilter(JsonObject cfg, JsonObject q)
+	private static (List<Candidate> Candidates, List<StructuralEscape> Escapes, List<ExcludedChart> Excluded) RunFilter(JsonObject cfg, JsonObject q)
 	{
 		var candidates = new List<Candidate>();
-		var escapes = new JsonArray();
-		var excluded = new JsonArray();
+		var escapes = new List<StructuralEscape>();
+		var excluded = new List<ExcludedChart>();
 		var functions = q["functions"]!.AsArray().Select(n => n!.GetValue<string>()).ToList();
 
 		foreach (var leaf in cfg["leaves"]!.AsArray().Select(n => n!.AsObject()))
@@ -126,19 +111,11 @@ public static class Selector
 			var (allowed, caveats, reason) = Constraints(leaf, q);
 			if (!allowed)
 			{
-				excluded.Add(new JsonObject
-				{
-					["chart_id"] = id,
-					["reason"] = reason
-				});
+				excluded.Add(new ExcludedChart(id, reason));
 
 				if (leaf["ggnet"]?["grouping"] is JsonNode grouping)
 				{
-					escapes.Add(new JsonObject
-					{
-						["chart_id"] = id,
-						["grouping"] = grouping.DeepClone()
-					});
+					escapes.Add(new StructuralEscape(id, grouping));
 				}
 
 				continue;
@@ -476,20 +453,8 @@ public static class Selector
 		}
 	}
 
-	private static JsonObject ToResult(Candidate c)
-		=> new()
-		{
-			["chart_id"] = c.ChartId,
-			["matched_fields"] = ToArray(c.Matched),
-			["functions_covered"] = ToArray(c.Covered),
-			["caveats"] = ToArray(c.Caveats),
-			["ggnet"] = c.GGNet?.DeepClone(),
-			["stat_bridge"] = c.StatBridge,
-			["transforms"] = ToArray(c.Transforms),
-		};
-
-	private static JsonArray ToArray(List<string> values)
-		=> new([.. values.Select(v => (JsonNode)v)]);
+	private static ChartResult ToResult(Candidate c)
+		=> new(c.ChartId, c.Matched, c.Covered, c.Caveats, c.GGNet, c.StatBridge, c.Transforms);
 
 	private static bool Contains(JsonArray values, JsonNode? value)
 		=> values.Any(v => JsonNode.DeepEquals(v, value));

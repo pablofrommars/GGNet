@@ -218,7 +218,7 @@ public class TextBoxplotMappingTests
 			.Scale_Color_Discrete(p => p.Group, ["red", "blue"])
 			.Geom_Text(text: p => p.Group);
 		await context.Style().AsStringAsync();
-		var geom = (Geoms.Text.Text<Datum, double, double, string>)context.Panels[0].Geoms[0];
+		var geom = (Geoms.Text.Text<Datum, double, double>)context.Panels[0].Geoms[0];
 		geom.Aesthetic = geom.Aesthetic with { Opacity = 0.35 };
 
 		// Act

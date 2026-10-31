@@ -7,7 +7,7 @@ namespace GGNet.E2ETests.Fixtures;
 
 // Hosts the demo app (real Kestrel, real circuit) and a Playwright Chromium
 // for the JS smoke layer. Deliberately opt-in: without GGNET_E2E=1 (or with
-// no browser installed) every test skips, so the default `dotnet test` gate
+// no browser installed) its browser tests skip, so the default `dotnet test` gate
 // needs neither a browser nor a port.
 public sealed class DemoAppFixture : IAsyncLifetime
 {
@@ -28,6 +28,9 @@ public sealed class DemoAppFixture : IAsyncLifetime
 	private IPlaywright? playwright;
 	private IBrowser? browser;
 	private Process? app;
+	private readonly ProcessOutputTail output = new();
+	private readonly CancellationTokenSource outputCancellation = new();
+	private Task outputDrain = Task.CompletedTask;
 
 	public async ValueTask InitializeAsync()
 	{
@@ -61,15 +64,29 @@ public sealed class DemoAppFixture : IAsyncLifetime
 		info.Environment["ASPNETCORE_URLS"] = BaseUrl;
 		info.Environment["ASPNETCORE_ENVIRONMENT"] = "Development";
 
-		app = Process.Start(info);
+		app = Process.Start(info) ?? throw new InvalidOperationException("The demo process did not start.");
+		outputDrain = output.DrainAsync(app, outputCancellation.Token);
 
 		using var client = new HttpClient();
 
 		for (var i = 0; i < 60; i++)
 		{
+			if (app.HasExited)
+			{
+				outputCancellation.CancelAfter(TimeSpan.FromSeconds(1));
+				await outputDrain;
+				Reason = $"The demo process exited before becoming ready.{Environment.NewLine}{output}";
+				return;
+			}
+
+			if (outputDrain.IsFaulted)
+			{
+				await outputDrain;
+			}
+
 			try
 			{
-				var response = await client.GetAsync(BaseUrl);
+				using var response = await client.GetAsync(BaseUrl);
 
 				if (response.IsSuccessStatusCode)
 				{
@@ -84,24 +101,61 @@ public sealed class DemoAppFixture : IAsyncLifetime
 			await Task.Delay(500);
 		}
 
-		Reason = "The demo app did not start within 30s (is the solution built?)";
+		Reason = $"The demo app did not start within 30s (is the solution built?){Environment.NewLine}{output}";
 	}
 
 	public async ValueTask DisposeAsync()
 	{
-		if (browser is not null)
+		try
 		{
-			await browser.DisposeAsync();
+			if (browser is not null)
+			{
+				await browser.DisposeAsync();
+			}
 		}
-
-		playwright?.Dispose();
-
-		if (app is not null && !app.HasExited)
+		finally
 		{
-			app.Kill(entireProcessTree: true);
+			try
+			{
+				playwright?.Dispose();
+			}
+			finally
+			{
+				await StopAppAsync();
+			}
 		}
+	}
 
-		app?.Dispose();
+	private async Task StopAppAsync()
+	{
+		try
+		{
+			if (app is not null && !app.HasExited)
+			{
+				try
+				{
+					app.Kill(entireProcessTree: true);
+				}
+				catch (InvalidOperationException) when (app.HasExited)
+				{
+				}
+
+				await app.WaitForExitAsync();
+			}
+		}
+		finally
+		{
+			await outputCancellation.CancelAsync();
+			try
+			{
+				await outputDrain;
+			}
+			finally
+			{
+				app?.Dispose();
+				outputCancellation.Dispose();
+			}
+		}
 	}
 
 	private static int FreePort()

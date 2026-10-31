@@ -5,7 +5,7 @@ using GGNet.Exceptions;
 
 namespace GGNet.Geoms.Text;
 
-internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
+internal sealed class Text<T, TX, TY> : Geom<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
@@ -14,7 +14,7 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 		Func<T, TX>? x,
 		Func<T, TY>? y,
 		Func<T, double>? angle,
-		Func<T, TT>? text,
+		Func<T, string?>? text,
 		IAestheticMapping<T, string>? color = null,
 		(bool x, bool y)? scale = null)
 		: base(source, scale)
@@ -33,7 +33,7 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 		};
 	}
 
-	public Selectors<T, TX, TY, TT> Selectors { get; }
+	public Selectors<T, TX, TY> Selectors { get; }
 
 	public Aesthetics<T> Aesthetics { get; }
 
@@ -84,7 +84,7 @@ internal sealed class Text<T, TX, TY, TT> : Geom<T, TX, TY>
 			return;
 		}
 
-		var value = Formats.InvariantText.Of(Selectors.Text(item));
+		var value = Selectors.Text(item);
 		if (string.IsNullOrEmpty(value))
 		{
 			return;

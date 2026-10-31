@@ -28,7 +28,9 @@ Do **not** reintroduce `Microsoft.NET.Test.Sdk`, `xunit.runner.visualstudio`, or
 
 Do **not** introduce: real FluentAssertions, NSubstitute, Shouldly, NUnit, MSTest, Bogus, AutoFixture, raw `Assert.*`. There is **no Aspire, no integration-DB fixture** — GGNet is a library; tests run in-process.
 
-Test projects: `GGNet.Components.Tests` (bUnit), `GGNet.Headless.Tests` (Verify goldens + pipeline), `GGNet.Evals` (deterministic evals), `GGNet.E2ETests` (Playwright smoke over the spawned `GGNet.Demo` app — every test self-skips unless `GGNET_E2E=1`, so the default gate stays browser-free). Each has a `GlobalUsings.cs` and pulls xUnit via `<Using Include="Xunit" />`.
+Test projects: `GGNet.Components.Tests` (bUnit), `GGNet.Headless.Tests` (Verify goldens + pipeline), `GGNet.Evals` (deterministic evals), `GGNet.E2ETests` (Playwright smoke over the spawned `GGNet.Demo` app — browser cases self-skip unless `GGNET_E2E=1`; `ProcessOutputTailTests` always runs without a browser). Each has a `GlobalUsings.cs` and pulls xUnit via `<Using Include="Xunit" />`.
+
+The demo fixture drains both output streams using `Process.ReadAllLinesAsync` and retains the last 50 lines, capped at 2048 characters per line, for startup diagnostics. Teardown stops the process tree, awaits the output reader and disposes the process even if browser cleanup fails. Keep that ownership explicit when changing the fixture.
 
 ---
 

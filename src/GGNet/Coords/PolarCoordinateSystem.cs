@@ -3,17 +3,17 @@ using GGNet.Exceptions;
 
 namespace GGNet.Coords;
 
-internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) : ICoordinateSystem
+internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) : CoordinateSystem
 {
 	private readonly PolarOptions options = options;
 	private readonly Style style = style;
 
-	public bool CarvesAxisBands => false;
+	public override bool CarvesAxisBands => false;
 
-	public (double minMult, double minAdd, double maxMult, double maxAdd)? XExpansion(bool discrete)
+	public override (double minMult, double minAdd, double maxMult, double maxAdd)? XExpansion(bool discrete)
 	  => discrete ? (0.0, 0.0, 0.0, 1.0) : (0.0, 0.0, 0.0, 0.0);
 
-	public (double minMult, double minAdd, double maxMult, double maxAdd)? YExpansion(bool discrete)
+	public override (double minMult, double minAdd, double maxMult, double maxAdd)? YExpansion(bool discrete)
 	  => discrete ? null : (0.0, 0.0, 0.05, 0.0);
 
 	public double CenterX { get; private set; }
@@ -22,7 +22,7 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 
 	public double Radius { get; private set; }
 
-	public void Measure(Zone area, bool hasXTitles)
+	public override void Measure(Zone area, bool hasXTitles)
 	{
 		var gutter = style.Axis.Text.X.FontSize.Height() + style.Polar.LabelMargin;
 
@@ -39,13 +39,13 @@ internal sealed class PolarCoordinateSystem(PolarOptions options, Style style) :
 	private double TitleOffset()
 	  => style.Axis.Title.X.FontSize.Height() + 0.25 * style.Axis.Text.X.FontSize.Height();
 
-	public (double x, double y) Project(double cx, double cy)
+	public override (double x, double y) Project(double cx, double cy)
 	  => Polar.Project(cx, cy, CenterX, CenterY, Radius, options.StartAngle, options.Clockwise);
 
-	public (double cx, double cy) Unproject(double px, double py)
+	public override (double cx, double cy) Unproject(double px, double py)
 	  => throw new GGNetUserException("Unproject is not supported with polar coordinates");
 
-	public GridComposition ComposeGrid(GridInputs inputs)
+	public override GridComposition ComposeGrid(GridInputs inputs)
 	{
 		var grid = new GridComposition();
 

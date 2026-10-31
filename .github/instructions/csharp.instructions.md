@@ -84,7 +84,7 @@ It also holds the NuGet metadata shared by the two packable projects (`Version`,
 
 `internal` is the **default** visibility; `public` is reserved for the deliberate DSL surface (`PlotContext`, `BuilderExtensions`, `Stat`, the DSL enums, `IFormatter<T>` and formatters, the `Stat.*` record structs). Sample patterns, all real:
 
-- **Geoms** — `internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>`, over an `internal abstract class Geom<T, TX, TY>`. Constraints `where TX : struct where TY : struct` are pervasive.
+- **Geoms** — `internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>`, over an `internal closed class Geom<T, TX, TY>`. Constraints `where TX : struct where TY : struct` are pervasive.
 - **Shapes** (`Shapes/`) — `internal readonly record struct Circle : IShape`, with `{ get; init; }` properties and `required` on mandatory members.
 - **Elements** (`Elements/`) — `internal readonly record struct` with an explicit parameterless ctor supplying init defaults (`public Rectangle() {}` + `Fill { get; init; } = "inherit"`).
 - **Data carriers** (`Data/`) — `internal sealed class` with mutable `{ get; set; }` (e.g. `Selectors<T, TX, TY>`, `Aesthetics<T>`); some per-geom carriers are `internal sealed record`.
@@ -93,13 +93,13 @@ It also holds the NuGet metadata shared by the two packable projects (`Version`,
 
 Defaults: `sealed` on classes/records unless designed for inheritance; **primary constructors** for geoms, scales, exceptions, formatters.
 
-Collection expressions can retain BCL constructor arguments: `List<Zone> zones = [with(panels.Count)];` preserves layout capacity, and `HashSet<IStatSource> seen = [with(ReferenceEqualityComparer.Instance)];` preserves source identity. Keep the concrete target, comparer object, argument evaluation and element order. The custom `SortedBuffer<T>` / `SampleBuffer<T>` / `RankedTree<T>` types retain constructor syntax; they do not expose the enumeration protocol needed for collection expressions.
+Collection expressions can retain constructor arguments: `List<Zone> zones = [with(panels.Count)];` preserves layout capacity, and `HashSet<IStatSource> seen = [with(ReferenceEqualityComparer.Instance)];` preserves source identity. Owned collection subclasses also qualify: `Legends = [with(Style)];` and `Items = [with(style)];` retain the style reference used when later populating the legend. Keep the concrete target, comparer object, argument evaluation and element order. The custom `SortedBuffer<T>` / `SampleBuffer<T>` / `RankedTree<T>` types retain constructor syntax; they do not expose the enumeration protocol needed for collection expressions.
 
 ---
 
 ## 6. Unions, Closed Hierarchies & Exhaustive Switch (`CS8509` = error)
 
-GGNet models finite value alternatives with the **C# 15 `union` keyword** over existing record-struct variants:
+GGNet models finite value alternatives with the **C# 15 `union` keyword** over record-struct or sealed record-class variants:
 
 ```csharp
 internal readonly union Shape(ABLine, Area, Circle, HLine, Line, MultiPolygon, Path, Polygon, Rectangle, Text, VLine);
@@ -111,9 +111,13 @@ Switch over a union with **no discard arm** so adding a variant is a compile err
 
 Distinct idiom: **enum → SVG-string** render switches (`Anchor`, `LineType`, `Units`, `RenderMode`) keep a `_ => throw new NotImplementedException()` (or `GGNetInternalException`) discard arm. Those are not `CS8509` sites.
 
-`RenderModeHandler` is an `internal closed class` over the three sealed render handlers; the four scale roots in §5 also use `closed`. These hierarchies retain their shared members and virtual dispatch. Closure bounds direct inheritance in the owning assembly; it does not seal open descendants. `Geom<T, TX, TY>` and `Faceting<T>` remain abstract: their descendants introduce type parameters absent from the base type, which RC3 rejects on a closed root (CS9383). Changing their generic contracts requires separate review. Public extension contracts such as `TooltipBase` remain open.
+The chart selector's private `Selection` union (`Selector.Selection.cs`) distinguishes recommendations, insufficient data and no match. Its typed cases own the response field sets; `SelectionJsonContext` generates their System.Text.Json contracts. The public `Select` method still returns `JsonObject` through `SerializeToNode`. These are selection outcomes, not a replacement for the exception policy in §8.
 
-RC3 exposes `JsonPolymorphicAttribute.InferClosedTypePolymorphism`, but the render/scale roots and the three unions are not production JSON contracts. Current JSON uses DOM-based chart selection and flat interop payloads; closing an internal hierarchy does not justify a serializer-policy change. Before changing polymorphism configuration on a serialized type, prove exact discriminator output and independently fixed historical payload reads, including the actual source-generated path if one is used. Retain explicit registrations/converters unless that compatibility is established.
+`RenderModeHandler` is an `internal closed class` over the three sealed render handlers; the four scale roots in §5 also use `closed`. `CoordinateSystem` closes the Cartesian/polar implementation boundary while retaining measured state and virtual projection, inverse projection and grid composition. It is internal; public `ICoord` remains an interface. `Geom<T, TX, TY>` is also closed: the public generic `Geom_Text` overloads adapt label selectors lazily through `Formats.InvariantText.Of`, so the internal `Text<T, TX, TY>` needs no extra label type parameter. Preserve evaluation once per included row per render, formatting culture and exception timing. These hierarchies retain reference semantics and virtual dispatch. Closure bounds direct inheritance in the owning assembly; it does not seal open descendants. `Faceting<T>` remains abstract: its descendants introduce type parameters absent from the base type, which RC3 rejects on a closed root (CS9383). Changing its generic contract requires separate review. Public extension contracts such as `TooltipBase` remain open.
+
+RC3 exposes `JsonPolymorphicAttribute.InferClosedTypePolymorphism`, but the coordinate/render/geom/scale roots and rendering unions are not production JSON contracts. The selector uses native union serialization with a source-generated context, snake-case field names and the built-in `JsonUnionTypeStructuralClassifier`; it preserves `error` values, missing fields and explicit nulls without adding a discriminator or union wrapper. Its public contract is an output DOM, not a union deserialization API. Blazor interop retains its flat payloads and framework-owned serialization. Closing an internal hierarchy does not justify a serializer-policy change. Before changing polymorphism configuration on a serialized type, prove exact discriminator output and independently fixed historical payload reads, including the actual source-generated path if one is used. Retain explicit registrations/converters unless that compatibility is established.
+
+Use labeled loop exits when they remove control-only bookkeeping. `Wilkinson.ExtendedBase` names its outer `search` loop so an inner pruning decision can exit directly; the loop counter remains a search parameter rather than doubling as an exit sentinel. Keep flags or counters that carry observable results, and preserve post-loop work.
 
 ---
 
@@ -158,10 +162,13 @@ Culture-sensitive formatting is a build error because it breaks SVG on comma-dec
 
 ---
 
-## 11. Async
+## 11. Async & Synchronization
 
 - Prefer `ValueTask` / `ValueTask<T>`; the interactive render loop and headless export are the async surfaces. `CancellationToken token` last, always forwarded.
 - No `.Result` / `.Wait()`. Marshal UI-thread work through `InvokeAsync` (see the Blazor guide) — never call `StateHasChanged` directly.
+- **Prefer `SemaphoreSlim` for new or redesigned mutual exclusion.** Avoid introducing `lock`, `System.Threading.Lock` or direct `Monitor` use. A justified exception needs a scoped `// DEVIATION:` explaining why a semaphore is unsuitable.
+- Use `new SemaphoreSlim(1, 1)` for a mutual-exclusion gate. In async code, acquire with `await gate.WaitAsync(token)`; enter `try` only after successful acquisition and always `Release()` in `finally`. Cancellation before acquisition must not release the gate. Do not block on asynchronous acquisition.
+- Keep protected work narrow. A semaphore is not reentrant: review nested acquisition, callbacks, acquisition order and disposal races when changing an existing gate. Dispose it only after all users and waiters have finished, and preserve the lifecycle guarantees pinned by the concurrency tests.
 
 ---
 

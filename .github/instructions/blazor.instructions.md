@@ -144,6 +144,6 @@ Rules:
 
 ## 8. Component Testing
 
-Component tests use **bUnit** (`tests/GGNet.Components.Tests/`, `BunitContext`), rendering the interactive `Plot` in-process (no browser). bUnit covers the circuit surface — tooltips, mouse events, gestures, the opt-in gate — but it cannot execute `Panel.razor.js`. **The only layer that runs the JS for real is `tests/GGNet.E2ETests`** (Playwright over the spawned demo app), and every test there self-skips unless `GGNET_E2E=1`, so a green default gate says nothing about the module. Touching the JS or its wrapper means running `GGNET_E2E=1 dotnet test tests/GGNet.E2ETests` explicitly.
+Component tests use **bUnit** (`tests/GGNet.Components.Tests/`, `BunitContext`), rendering the interactive `Plot` in-process (no browser). bUnit covers the circuit surface — tooltips, mouse events, gestures, the opt-in gate — but it cannot execute `Panel.razor.js`. **The only layer that runs the JS for real is the browser suite in `tests/GGNet.E2ETests`** (Playwright over the spawned demo app), and those tests self-skip unless `GGNET_E2E=1`, so a green default gate says nothing about the module. The process-output tests run without a browser. Touching the JS or its wrapper means running `GGNET_E2E=1 dotnet test tests/GGNet.E2ETests` explicitly.
 
 Headless SVG output and goldens are tested separately (rendering + testing guides). See [testing.instructions.md](./testing.instructions.md).

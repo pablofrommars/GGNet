@@ -74,6 +74,7 @@ internal static class Wilkinson
 		}
 
 		var j = 1;
+	search:
 		while (j < int.MaxValue)
 		{
 			foreach (var q in Q)
@@ -81,8 +82,7 @@ internal static class Wilkinson
 				var sm = MaxSimplicity(Q, q, j);
 				if (w[0] * sm + w[1] + w[2] + w[3] < bscore)
 				{
-					j = int.MaxValue - 1;
-					break;
+					break search;
 				}
 
 				var k = 2;
@@ -91,7 +91,9 @@ internal static class Wilkinson
 					var dm = MaxDensity(k, m);
 
 					if (w[0] * sm + w[1] + w[2] * dm + w[3] < bscore)
+					{
 						break;
+					}
 
 					var delta = (dmax - dmin) / (k + 1.0) / (j * q);
 					var z = (int)Ceiling(Log10(delta));
@@ -102,7 +104,9 @@ internal static class Wilkinson
 						var cm = MaxCoverage(dmin, dmax, step * (k - 1.0));
 
 						if (w[0] * sm + w[1] * cm + w[2] * dm + w[3] < bscore)
+						{
 							break;
+						}
 
 						for (int start = (int)(Floor(dmax / step - (k - 1)) * j); start <= (int)Ceiling(dmin / step) * j; start++)
 						{

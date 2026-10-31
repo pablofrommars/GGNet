@@ -6,7 +6,7 @@
         <OutputType>Exe</OutputType>
         <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
 
-        <!-- Every test here self-skips without GGNET_E2E=1. MTP treats a run in
+        <!-- Browser tests self-skip without GGNET_E2E=1. MTP treats a filtered run in
              which zero tests actually ran as a failure (exit 8); VSTest did not.
              Ignoring only that code keeps the browser-free gate green while a
              real E2E failure (exit 2) still fails the run. -->

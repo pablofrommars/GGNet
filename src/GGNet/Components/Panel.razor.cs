@@ -47,7 +47,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	private Position<TX> xscale = default!;
 	private Position<TY> yscale = default!;
 
-	private Coords.ICoordinateSystem coord = default!;
+	private Coords.CoordinateSystem coord = default!;
 	private Coords.GridComposition grid = new();
 
 	private Zone xStrip;

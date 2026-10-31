@@ -1,3 +1,5 @@
+using GGNet.Mcp;
+
 namespace GGNet.Evals;
 
 // The standalone validator script is the dependency-free twin of the MCP
@@ -25,25 +27,16 @@ public class ValidatorScriptEvals
 		{
 			// Act
 
-			var run = new Process
+			var result = await ProcessCapture.RunAsync(new ProcessStartInfo("dotnet",
+				["run", Path.Combine(root, "skills", "ggnet", "scripts", "validate.cs"), "--", snippet])
 			{
-				StartInfo = new ProcessStartInfo("dotnet",
-					["run", Path.Combine(root, "skills", "ggnet", "scripts", "validate.cs"), "--", snippet])
-				{
-					RedirectStandardOutput = true,
-					RedirectStandardError = true,
-				}
-			};
-
-			run.Start();
-
-			var stdout = await run.StandardOutput.ReadToEndAsync(TestContext.Current.CancellationToken);
-			var stderr = await run.StandardError.ReadToEndAsync(TestContext.Current.CancellationToken);
-			await run.WaitForExitAsync(TestContext.Current.CancellationToken);
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+			}, TestContext.Current.CancellationToken);
 
 			// Assert
 
-			run.ExitCode.Should().Be(0, $"stdout: {stdout}; stderr: {stderr}");
+			result.ExitStatus.ExitCode.Should().Be(0, $"stdout: {result.StandardOutput}; stderr: {result.StandardError}");
 		}
 		finally
 		{

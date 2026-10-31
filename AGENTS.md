@@ -15,7 +15,7 @@ GGNet is a **grammar-of-graphics charting library** for .NET / Blazor — ggplot
 - **`src/GGNet.Mcp`** — an MCP server exposing the chart-selection + composition surface (reflected from the live assembly); see [src/GGNet.Mcp/README.md](src/GGNet.Mcp/README.md)
 - **`src/GGNet.ChartSelection`** — data-shape → chart selection, driven by the embedded `chart_selection.json`
 - **`src/GGNet.Demo`** — Blazor Web App (Interactive Server, Tailwind v4) exercising the interactive surface; also the host `GGNet.E2ETests` drives
-- **Tests**: `tests/` — xUnit v3 on Microsoft.Testing.Platform v2 + AwesomeAssertions + Moq + bUnit + Verify.XunitV3. `GGNet.Headless.Tests` (goldens + pipeline), `GGNet.Components.Tests` (bUnit), `GGNet.Evals` (deterministic evals), `GGNet.E2ETests` (Playwright; self-skips unless `GGNET_E2E=1`)
+- **Tests**: `tests/` — xUnit v3 on Microsoft.Testing.Platform v2 + AwesomeAssertions + Moq + bUnit + Verify.XunitV3. `GGNet.Headless.Tests` (goldens + pipeline), `GGNet.Components.Tests` (bUnit), `GGNet.Evals` (deterministic evals), `GGNet.E2ETests` (Playwright browser cases self-skip unless `GGNET_E2E=1`; process-output tests always run)
 - **`skills/ggnet`** — the packaged, model-facing skill for authoring charts (examples pinned to the gallery), exposed via `plugin.json` and `.codex-plugin/plugin.json`
 - **Errors**: thrown exceptions via the `GGNetException` / `GGNetUserException` / `GGNetInternalException` hierarchy — **no `Result<TError>`**
 - **Time**: NodaTime is the temporal type system for axes/scales (`LocalDate`/`LocalDateTime`/`Instant`) — a charting concern, not a domain-time mandate
@@ -124,8 +124,9 @@ Use `rg` for text discovery such as literals, config, markup, comments, and file
 - Analyzer severities are tuned in `.editorconfig`; a one-off suppression is a scoped `#pragma` at the site, never a project-level `NoWarn`.
 - Production comments under `src/` carry one of four tags — `TODO: calibration`, `RUNBOOK`, `INVARIANT`, `DEVIATION` — and `CommentPolicyTests` enforces it (C# guide §12).
 - Tests carry separate `// Arrange`, `// Act`, `// Assert` section comments; AwesomeAssertions exclusively; `Moq` is a global using.
-- Switches over the `union` types (`Shape`, `Element`, `ScreenPrimitive`) are exhaustive — no discard arm; a new variant must break the build.
-- `RenderModeHandler` and the four scale roots (`Scale`, `Continuous`, `Discrete`, `Position`) use `closed` while retaining shared behavior. `Geom` / `Faceting` retain `abstract` because their descendants introduce extra type parameters (C# guide §6).
+- Switches over the `union` types (`Shape`, `Element`, `ScreenPrimitive`, and the selector's private `Selection`) are exhaustive — no discard arm; a new variant must break the build.
+- `CoordinateSystem`, `Geom`, `RenderModeHandler` and the four scale roots (`Scale`, `Continuous`, `Discrete`, `Position`) use `closed` while retaining state and virtual behavior. `Faceting` retains `abstract` because its descendants introduce extra type parameters (C# guide §6).
+- Synchronization follows the `SemaphoreSlim` preference and exception policy in [C# guide §11](.github/instructions/csharp.instructions.md#11-async--synchronization).
 - Never interpolate a raw number into SVG — route it through `SvgFormat.Num`/`Attr`.
 - The overload families in the 21 `BuilderExtensions.<Geom>.cs` partials and base `BuilderExtensions.cs` are hand-synced; the separate `BuilderExtensions.Inheritance.cs` contains only a private mapping resolver; `OverloadConsistencyTests` + `BuilderForwardingTests` guard them — keep parameter names, defaults, order, and `<param>` docs consistent across a family.
 

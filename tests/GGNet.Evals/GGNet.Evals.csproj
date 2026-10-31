@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\GGNet.ChartSelection\GGNet.ChartSelection.csproj" />
+    <ProjectReference Include="..\..\src\GGNet.Mcp\GGNet.Mcp.csproj" />
   </ItemGroup>
 
 </Project>

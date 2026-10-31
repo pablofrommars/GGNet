@@ -2,27 +2,27 @@ using GGNet.Components;
 
 namespace GGNet.Coords;
 
-internal sealed class CartesianCoordinateSystem(Style style) : ICoordinateSystem
+internal sealed class CartesianCoordinateSystem(Style style) : CoordinateSystem
 {
 	private readonly Style style = style;
 
 	private Zone panelArea;
 
-	public bool CarvesAxisBands => true;
+	public override bool CarvesAxisBands => true;
 
-	public (double minMult, double minAdd, double maxMult, double maxAdd)? XExpansion(bool discrete) => null;
+	public override (double minMult, double minAdd, double maxMult, double maxAdd)? XExpansion(bool discrete) => null;
 
-	public (double minMult, double minAdd, double maxMult, double maxAdd)? YExpansion(bool discrete) => null;
+	public override (double minMult, double minAdd, double maxMult, double maxAdd)? YExpansion(bool discrete) => null;
 
-	public void Measure(Zone area, bool hasXTitles) => panelArea = area;
+	public override void Measure(Zone area, bool hasXTitles) => panelArea = area;
 
-	public (double x, double y) Project(double cx, double cy)
+	public override (double x, double y) Project(double cx, double cy)
 	  => (panelArea.X + cx * panelArea.Width, panelArea.Y + (1.0 - cy) * panelArea.Height);
 
-	public (double cx, double cy) Unproject(double px, double py)
+	public override (double cx, double cy) Unproject(double px, double py)
 	  => ((px - panelArea.X) / panelArea.Width, 1.0 - (py - panelArea.Y) / panelArea.Height);
 
-	public GridComposition ComposeGrid(GridInputs inputs)
+	public override GridComposition ComposeGrid(GridInputs inputs)
 	{
 		var grid = new GridComposition();
 

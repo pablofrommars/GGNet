@@ -21,7 +21,7 @@ internal sealed class Legend
 			};
 		}
 
-		Items = new(style);
+		Items = [with(style)];
 	}
 
 	public IAestheticMapping Aes { get; }

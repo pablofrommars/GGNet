@@ -5,7 +5,7 @@ using GGNet.Shapes;
 
 namespace GGNet.Geoms;
 
-internal abstract class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y)? scale) : IGeom
+internal closed class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y)? scale) : IGeom
   where TX : struct
   where TY : struct
 {

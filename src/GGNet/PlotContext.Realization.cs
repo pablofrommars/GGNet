@@ -6,7 +6,7 @@ public partial class PlotContext<T, TX, TY>
 	where TX : struct
 	where TY : struct
 {
-	internal Coords.ICoordinateSystem Coord { get; private set; } = default!;
+	internal Coords.CoordinateSystem Coord { get; private set; } = default!;
 
 	internal List<Panel<T, TX, TY>> Panels { get; } = [];
 
