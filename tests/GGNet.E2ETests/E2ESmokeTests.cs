@@ -82,6 +82,8 @@ public class E2ESmokeTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtur
 		var before = await XLabelsAsync(page);
 		var panel = page.Locator("rect.panel").First;
 
+		// The mouse can only press what is inside the window.
+		await panel.ScrollIntoViewIfNeededAsync();
 		var box = await panel.BoundingBoxAsync();
 		var cx = (float)(box!.X + box.Width / 2);
 		var cy = (float)(box.Y + box.Height / 2);

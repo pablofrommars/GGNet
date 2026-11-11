@@ -2,7 +2,7 @@
 
 <div class="min-h-screen">
     <header class="border-b border-gray-200 bg-white">
-        <nav class="mx-auto flex max-w-5xl items-center gap-6 px-6 py-3">
+        <nav class="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-3">
             <span class="font-semibold">GGNet Demo</span>
             <NavLink href="/" Match=NavLinkMatch.All class="text-sm text-gray-600 hover:text-gray-900">Home</NavLink>
             <NavLink href="/external-controls" class="text-sm text-gray-600 hover:text-gray-900">External controls</NavLink>
@@ -11,8 +11,15 @@
             <NavLink href="/drag-pan" class="text-sm text-gray-600 hover:text-gray-900">Drag pan</NavLink>
             <NavLink href="/tooltips" class="text-sm text-gray-600 hover:text-gray-900">Tooltips</NavLink>
             <NavLink href="/combined" class="text-sm text-gray-600 hover:text-gray-900">Combined</NavLink>
+            <NavLink href="/touch" Match=NavLinkMatch.All class="text-sm text-gray-600 hover:text-gray-900">Touch</NavLink>
+            <NavLink href="/touch-layout" class="text-sm text-gray-600 hover:text-gray-900">Touch layout</NavLink>
             @* Feature pages register here as interactivity blocks land. *@
         </nav>
+        @* Identifies the deployed build during device QA: version plus source revision.
+           At the top, clear of the contact diagnostic fixed to the bottom of the touch pages. *@
+        <div data-qa="build" class="mx-auto max-w-5xl px-6 pb-2 font-mono text-xs text-gray-400">
+            GGNet.Demo @BuildInfo.Version
+        </div>
     </header>
 
     <main class="mx-auto max-w-5xl px-6 py-8">

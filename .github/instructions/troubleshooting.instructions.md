@@ -224,3 +224,13 @@ Check both properties when the declaration is missing or expired, and recheck el
 renewing it. The declaration applies to the test project that consumes Verify. The publisher's
 [maintenance-fee documentation](https://github.com/VerifyTests/Verify/blob/main/docs/maintenance-fee.md)
 defines the criteria and renewal limits.
+
+---
+
+## 17. `NU1902` fails `-warnaserror` after a fresh restore
+
+**Symptom.** An incremental build passes, but after any fresh NuGet restore (a new clone, `dotnet publish -r <rid>`, or a scratch project restored by `ValidatorScriptEvals` / `McpServerEvals`) the build fails with `error NU1902: Warning As Error: Package 'Microsoft.Extensions.Validation' 11.0.0-rc.3.26522.148 has a known moderate severity vulnerability` across six projects, and those two evals fail on the same message.
+
+**Cause.** NuGet's audit flags a transitive package of the RC3 SDK; `-warnaserror` promotes the advisory. It is independent of the change under test.
+
+**What to do.** Report it as a pre-existing gate failure (`plan/deferred.md` D-04) rather than repairing it inside unrelated work. `-p:NuGetAudit=false` on the command line can separate it from your own diagnostics for verification, but name it as such and never commit it as a fix; moving to a patched SDK or package, or changing audit policy, is a dependency decision.
