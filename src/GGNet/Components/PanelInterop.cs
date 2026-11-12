@@ -2,7 +2,7 @@ using Microsoft.JSInterop;
 
 namespace GGNet.Components;
 
-internal sealed record PanelInteropOptions(bool Pan, bool PanX, bool PanY, bool Tooltip, bool Crosshair)
+internal sealed record PanelInteropOptions(bool Pan, bool PanX, bool PanY, bool Tooltip, bool Crosshair, string? Group = null, bool SharedX = false, bool SharedY = false)
 {
 	public static PanelInteropOptions Create(InteractivityOptions options)
 		=> new(options.Pan,

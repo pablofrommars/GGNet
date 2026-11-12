@@ -37,6 +37,7 @@ GGNet.InteractivityOptions
 GGNet.LineType
 GGNet.NoData
 GGNet.Palettes.Discrete`2
+GGNet.PanelActivation
 GGNet.PanelFactory`3
 GGNet.PlotContext
 GGNet.PlotContext`3
@@ -69,6 +70,8 @@ GGNet.Summary
 GGNet.Summary`1
 GGNet.Transformations.ITransformation`1
 GGNet.Units
+GGNet.ViewChangeCause
+GGNet.ViewChange`2
 GGNet.ViewExtensions
 GGNet.ZoomAxis
 GGNet._Imports

@@ -154,6 +154,26 @@ and the documentation may state them.
 | OD-5 | Hidden-plot suspension | Measure first on the device; build only if refresh cost is noticeable |
 | OD-6 | Ordering against time-cursor inspection | Ship §1 and §3 independently; §2 follows the time-cursor feature |
 
+## Rulings at binding
+
+Ruled by the engineer on 2026-11-12, before `plan/overview-detail-focus` bound this spec. They
+settle the open decisions above and two points grounding found.
+
+- **OD-1, OD-2, OD-4, OD-5, OD-6.** The recommendations stand as written. Version 1 is §1 and §3;
+  §2 waits for the time-cursor feature; §4 is measured on the device and built only if the cost is
+  noticeable.
+- **OD-3, activation under `Interactivity`.** The reset gesture is a double click, which delivers
+  two clicks first.
+  - Without `Interactivity`, a click in the plot area activates at once.
+  - With `Interactivity` and neither `CursorTooltip` nor `Crosshair`, a click activates after the
+    double-click interval, unless a reset follows.
+  - With `CursorTooltip` or `Crosshair`, taps and clicks never activate. The consumer supplies its
+    own control; GGNet adds no hit area of its own.
+- **Discrete axes.** The data-unit read returns null on a discrete axis, and the documentation says
+  so, because a panned discrete window has no exact category bounds. The change notification still
+  fires there. In ACCEPTANCE-01, "the window read back" applies to axes that invert exactly:
+  numeric, log, `Instant` (to the millisecond) and `LocalDateTime`.
+
 ## Acceptance criteria
 
 | Criterion | Falsifiable condition |

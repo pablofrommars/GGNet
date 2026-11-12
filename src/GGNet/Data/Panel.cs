@@ -16,6 +16,8 @@ public sealed class Panel<T, TX, TY>((int row, int col) coord, PlotContext<T, TX
 
 	public Func<MouseEventArgs, Task>? OnClick { get; } = onClick;
 
+	internal Func<Task>? Activate { get; init; }
+
 	public string Id { get; } = $"{coord.row}_{coord.col}";
 
 	internal List<IGeom> Geoms { get; } = [];

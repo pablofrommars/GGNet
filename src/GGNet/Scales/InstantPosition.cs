@@ -71,5 +71,7 @@ internal class InstantPosition : Position<Instant>
 
 	public override Instant? Unmap(double value) => Instant.FromUnixTimeMilliseconds((long)value);
 
+	public override bool InvertsExactly => true;
+
 	public override string? Label(Instant value) => labelFormatter.Format(value);
 }

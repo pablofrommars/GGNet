@@ -72,20 +72,34 @@ else
                  viewBox=@Attr($"{Area.X} {Area.Y} {Area.Width} {Area.Height}")
                  preserveAspectRatio="none" overflow="visible" data-ggnet-viewport=""
                  style=@Attr($"display: block; touch-action: {touchAction}; x: {Area.X}px; y: {Area.Y}px; width: {Area.Width}px; height: {Area.Height}px;")>
-                @{ RenderBackground(__builder); }
-                @{ RenderGridContent(__builder, false); }
-                @{ RenderInteraction(__builder); }
+                @if (Activates)
+                {
+                    <g data-ggnet-activate="" @onclick=OnActivateAsync>
+                        @{ RenderPlotArea(__builder); }
+                    </g>
+                }
+                else
+                {
+                    RenderPlotArea(__builder);
+                }
             </svg>
 
-            foreach (var label in grid.XLabels)
-            {
-                RenderGridLabel(__builder, label);
-            }
+            RenderGridLabels(__builder);
 
-            foreach (var label in grid.YLabels)
-            {
-                RenderGridLabel(__builder, label);
-            }
+            return;
+        }
+
+        if (Activates)
+        {
+            @* Marks and grid lines are siblings of the background, so one
+               group around the plot area is what lets a click on any of
+               them reach the activation; labels stay outside it. *@
+            <g data-ggnet-activate="" @onclick=OnActivateAsync>
+                @{ RenderPlotArea(__builder); }
+            </g>
+
+            @renderStrip
+            RenderGridLabels(__builder);
 
             return;
         }
@@ -94,6 +108,26 @@ else
         @renderStrip
         @renderGrid
         RenderInteraction(__builder);
+    }
+
+    private void RenderPlotArea(RenderTreeBuilder __builder)
+    {
+        RenderBackground(__builder);
+        RenderGridContent(__builder, false);
+        RenderInteraction(__builder);
+    }
+
+    private void RenderGridLabels(RenderTreeBuilder __builder)
+    {
+        foreach (var label in grid.XLabels)
+        {
+            RenderGridLabel(__builder, label);
+        }
+
+        foreach (var label in grid.YLabels)
+        {
+            RenderGridLabel(__builder, label);
+        }
     }
 
     private void RenderBackground(RenderTreeBuilder __builder)

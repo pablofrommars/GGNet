@@ -74,7 +74,7 @@ Facet_Wrap(Func<T,TKey> selector, bool freeX = false, bool freeY = false, int? n
 Facet_Grid(Func<T,TRow> row, Func<T,TColumn> column, bool freeX = false, bool freeY = false)
 Flip()                              // swap axes; bar statistics follow the flip
 Coord_Polar(double startAngle = -Math.PI / 2.0, bool clockwise = true)
-Panel(factory, double width = 1.0, double height = 1.0, onClick?)   // explicit sub-panels (grid composition)
+Panel(factory, double width = 1.0, double height = 1.0, onClick?, onActivate?, object? key = null)   // explicit sub-panels (grid composition); onActivate: Func<PanelActivation, Task> fires for a click anywhere in the plot area and reports (Index, Key)
 Title("…") SubTitle("…") Caption("…") XLab("…") YLab("…")           // Markdown supported
 Style(Style? style = null, Position axisY = Left, Position legend = Right)   // terminal call
 ```

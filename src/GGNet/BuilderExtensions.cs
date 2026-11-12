@@ -439,12 +439,21 @@ public static partial class BuilderExtensions
 	/// <param name="factory">Configures the sub-panel: chain Geom_/Scale_ calls on the given factory.</param>
 	/// <param name="width">Panel share of the plot width, 0–1.</param>
 	/// <param name="height">Panel share of the plot height, 0–1.</param>
-	/// <param name="onClick">Panel-level click handler.</param>
-	public static PlotContext<T, TX, TY> Panel<T, TX, TY>(this PlotContext<T, TX, TY> context, Func<PanelFactory<T, TX, TY>, PanelFactory<T, TX, TY>> factory, double width = 1.0, double height = 1.0, Func<MouseEventArgs, Task>? onClick = null)
+	/// <param name="onClick">Panel-level click handler. Fires for clicks on the panel background only, not on marks or grid lines.</param>
+	/// <param name="onActivate">Panel activation handler: fires for a click or tap anywhere in the plot area, marks and grid lines included, and reports which sub-panel it was. On a plot with <c>Interactivity</c> it fires after a short wait, and not at all when a reset double click follows; under <c>CursorTooltip</c> or <c>Crosshair</c> it never fires, because taps inspect there.</param>
+	/// <param name="key">Host-chosen identity reported back in the activation, alongside the sub-panel's index.</param>
+	public static PlotContext<T, TX, TY> Panel<T, TX, TY>(this PlotContext<T, TX, TY> context, Func<PanelFactory<T, TX, TY>, PanelFactory<T, TX, TY>> factory, double width = 1.0, double height = 1.0, Func<MouseEventArgs, Task>? onClick = null, Func<PanelActivation, Task>? onActivate = null, object? key = null)
 	  where TX : struct
 	  where TY : struct
 	{
 		var panel = factory(new PanelFactory<T, TX, TY>(context, width, height, onClick));
+
+		if (onActivate is not null)
+		{
+			var activation = new PanelActivation(context.PanelFactories.Count, key);
+
+			panel.Activate = () => onActivate(activation);
+		}
 
 		context.PanelFactories.Add(panel);
 

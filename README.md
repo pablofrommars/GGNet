@@ -60,6 +60,35 @@ Automatic area ranges include their drawn baseline, which is zero in transformed
 
 In Blazor, changing `Context`, `Width`, or `Height` requests a refresh in both interactive modes and preserves view windows when resizing. `Static` retains its initial frame. A context may be reused sequentially after headless export; use separate contexts for concurrently mounted plots.
 
+### Overview and detail charts
+
+GGNet does not maximize a panel or switch between compositions. A page that shows an overview and opens a related detail chart builds two plots and owns which one is showing. Three primitives make the hand-over explicit:
+
+- `context.XView` / `context.YView` read the current view window in data units (null when no window is set, and on discrete and `LocalDateTime` axes).
+- `Plot.ViewChanged` fires once per committed window change with its cause: `Gesture`, `HostCommand` or `Reset`. Name `Plot`'s type arguments when binding it to a method.
+- `.Panel(…, onActivate:, key:)` fires for a click anywhere in a sub-panel's plot area and reports which sub-panel it was. On a plot with `Interactivity` it waits about 200 ms so a double-click reset wins (a double tap slower than that activates first and then resets); with `CursorTooltip` or `Crosshair` it never fires, because taps inspect there, so give the user a button.
+
+```razor
+<Plot T="Reading" TX="Instant" TY="double" @ref=overview Context=@overviewContext RenderMode=@RenderMode.Interactive ViewChanged=@OnOverviewViewChanged />
+```
+
+```csharp
+// open: carry the overview's window to the detail chart
+if (overviewContext.XView is { } window)
+{
+	await detail.ZoomToXAsync(window.min, window.max);
+}
+```
+
+Things to keep in mind when several plots share a page:
+
+- **Gaps.** A `double.NaN` reading draws a gap only with `Geom_Line(piecewise: true)`; otherwise the line joins across it.
+- **One mutable source behind several plots.** Interactive composition runs off the UI thread and reads the list you gave it. Append or update on the renderer's synchronization context (`InvokeAsync`) before refreshing, or a render can enumerate a half-updated list.
+- **Closing.** Closing a detail on any click of its wrapper competes with taps the chart uses. An explicit close button keeps navigation apart from inspection.
+- **Hidden plots.** A plot hidden with CSS and `pointer-events: none` ignores input, but with `Interactivity` its gesture module still runs and still hears window-level scroll and touch events.
+
+The demo's `/overview-detail` page is a working example.
+
 ### Stats
 
 Stats are sources, not layers: each `Stat.*` call returns a typed source that any geom draws unchanged, recomputed on every render pass so streaming data stays current.

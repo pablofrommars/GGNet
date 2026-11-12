@@ -16,6 +16,12 @@ public partial class PlotContext<T, TX, TY>
 	/// <param name="max">Window end, in y data units.</param>
 	public void SetYView(TY min, TY max) => Positions.Y.SetView(MapView(Positions.Y, min, max));
 
+	/// <summary>The current x window in data units, lower bound first, or null when no window is set. Also null on discrete and <c>LocalDateTime</c> axes, whose windows have no exact data-unit bounds; <c>Instant</c> bounds are exact to the millisecond.</summary>
+	public (TX min, TX max)? XView => ReadView(Positions.X);
+
+	/// <summary>The current y window in data units, lower bound first, or null when no window is set. Also null on discrete axes, whose windows have no exact data-unit bounds. Under <see cref="InteractivityOptions.AutoFitY"/> this is the fitted window.</summary>
+	public (TY min, TY max)? YView => ReadView(Positions.Y);
+
 	/// <summary>Clears both axis windows; the next render falls back to the authored limits or the trained data extent.</summary>
 	public void ResetView()
 	{
@@ -99,6 +105,33 @@ public partial class PlotContext<T, TX, TY>
 		}
 
 		return y;
+	}
+
+	private (TKey min, TKey max)? ReadView<TKey>(Data.Position<TKey> position)
+		where TKey : struct
+	{
+		if (position.View is not { } view)
+		{
+			return null;
+		}
+
+		if (position.Scales.Count == 0 && position.Factory is null)
+		{
+			Init();
+		}
+
+		var scale = position.Scales.Count > 0
+			? position.Scales[0]
+			: position.Factory!();
+
+		if (!scale.InvertsExactly
+			|| scale.Unmap(Math.Min(view.min, view.max)) is not { } min
+			|| scale.Unmap(Math.Max(view.min, view.max)) is not { } max)
+		{
+			return null;
+		}
+
+		return (min, max);
 	}
 
 	private (double min, double max) MapView<TKey>(Data.Position<TKey> position, TKey min, TKey max)

@@ -75,6 +75,8 @@ internal closed class Position<TKey>(ITransformation<TKey>? transformation, (dou
 
 	public virtual TKey? Unmap(double value) => null;
 
+	public virtual bool InvertsExactly => false;
+
 	public virtual string? Label(TKey value) => null;
 
 	public override void Clear()

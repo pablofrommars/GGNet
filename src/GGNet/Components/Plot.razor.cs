@@ -28,6 +28,10 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	[Parameter]
 	public InteractivityOptions? Interactivity { get; init; }
 
+	/// <summary>Raised once after each committed change of the view window: a wheel zoom, a finished drag pan, the reset gesture, or a host command. A drag preview raises nothing until it commits. The argument carries the cause and both windows in data units.</summary>
+	[Parameter]
+	public EventCallback<ViewChange<TX, TY>> ViewChanged { get; init; }
+
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
@@ -59,6 +63,7 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	private double renderedHeight;
 	private bool parametersAccepted;
 	private InteractivityOptions? initialInteractivity;
+	private ((double min, double max)? x, (double min, double max)? y) reportedView;
 
 	private readonly RenderFragment renderLegendGradients;
 	private readonly RenderFragment renderLegend;
@@ -115,6 +120,8 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 
 		Context.Init();
 
+		reportedView = (Context.Positions.X.View, Context.Positions.Y.View);
+
 		definitionsRenderModeHandler = RenderModeHandler?.Child();
 
 		Compose(RenderTarget.Render);
@@ -127,6 +134,11 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		if (!ReferenceEquals(renderedContext, Context) || renderedWidth != Width || renderedHeight != Height)
 		{
 			Context.Init();
+
+			if (!ReferenceEquals(renderedContext, Context))
+			{
+				reportedView = (Context.Positions.X.View, Context.Positions.Y.View);
+			}
 
 			await RefreshAsync(RenderTarget.Render, CancellationToken.None);
 		}
@@ -224,14 +236,33 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 
 	protected override void OnAfterRender(bool firstRender) => RenderModeHandler?.OnAfterRender(firstRender);
 
-	public Task RefreshAsync(RenderTarget target, CancellationToken token)
+	public Task RefreshAsync(RenderTarget target, CancellationToken token) => CommitViewAsync(ViewChangeCause.HostCommand, target, token);
+
+	internal async Task CommitViewAsync(ViewChangeCause cause, RenderTarget target, CancellationToken token)
 	{
-		if (RenderModeHandler is null)
+		if (RenderModeHandler is not null)
+		{
+			await RenderModeHandler.RefreshAsync(target, token);
+		}
+
+		if (ViewChanged.HasDelegate)
+		{
+			await InvokeAsync(() => ReportViewAsync(cause));
+		}
+	}
+
+	private Task ReportViewAsync(ViewChangeCause cause)
+	{
+		var view = (Context.Positions.X.View, Context.Positions.Y.View);
+
+		if (view.Equals(reportedView))
 		{
 			return Task.CompletedTask;
 		}
 
-		return RenderModeHandler.RefreshAsync(target, token);
+		reportedView = view;
+
+		return ViewChanged.InvokeAsync(new(cause, Context.XView, Context.YView));
 	}
 
 	private int disposing;

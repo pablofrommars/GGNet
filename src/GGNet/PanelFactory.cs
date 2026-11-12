@@ -20,6 +20,8 @@ public sealed class PanelFactory<T, TX, TY>(PlotContext<T, TX, TY> context, doub
 
 	internal string? YLab { get; set; }
 
+	internal Func<Task>? Activate { get; set; }
+
 	internal void Add(Func<Data.Panel<T, TX, TY>, Facet<T>?, IGeom> geom) => geoms.Add(geom);
 
 	internal Data.Panel<T, TX, TY> Build((int, int) coord, Facet<T>? facet = null, double? width = null, double? height = null)
@@ -29,7 +31,10 @@ public sealed class PanelFactory<T, TX, TY>(PlotContext<T, TX, TY> context, doub
 		  width ?? defaultWidth,
 		  height ?? defaultHeight,
 		  onClick
-		);
+		)
+		{
+			Activate = Activate
+		};
 
 		foreach (var geom in geoms)
 		{

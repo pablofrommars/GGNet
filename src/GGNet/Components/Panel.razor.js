@@ -29,6 +29,7 @@ class PanelInteractivity {
     #panStart = null;
     #panViewport = '';
     #panFrame = 0;
+    #linked = [];
     #suppressClickUntil = 0;
     #settling = null;
     #pointerX = 0;
@@ -153,6 +154,7 @@ class PanelInteractivity {
             const dragging = this.#dragging;
             const delta = dragging && this.#held() ? this.#delta(e) : null;
             const commit = delta && (delta.dx !== 0 || delta.dy !== 0);
+            const linked = this.#linked;
             this.#cancelPan(commit);
             if (!dragging) {
                 return;
@@ -164,12 +166,18 @@ class PanelInteractivity {
             }
 
             this.#settle(delta);
+            for (const link of linked) {
+                link.panel.#settle({ dx: delta.dx * link.sx, dy: delta.dy * link.sy });
+            }
 
             try {
                 await this.#dotNetRef.invokeMethodAsync(ON_PAN_END, delta.dx, delta.dy);
             } catch {
                 // Circuit disconnected: no committed frame will arrive.
                 this.#unsettle();
+                for (const link of linked) {
+                    link.panel.#unsettle();
+                }
             }
         }, early);
 
@@ -260,6 +268,7 @@ class PanelInteractivity {
             }
 
             this.#dragging = true;
+            this.#link();
             if (e.pointerType !== 'mouse') {
                 this.#dismissTooltip();
             }
@@ -271,7 +280,48 @@ class PanelInteractivity {
         const delta = this.#delta(e);
         if (delta) {
             this.#marks.setAttribute('transform', `translate(${delta.dx}, ${delta.dy})`);
+            for (const link of this.#linked) {
+                link.panel.#marks.setAttribute('transform', `translate(${delta.dx * link.sx}, ${delta.dy * link.sy})`);
+            }
         }
+    }
+
+    // The other panels of the same plot that share a panned axis preview the
+    // drag too, scaled to their own plot area: the committed window moves
+    // them all, so a preview on the dragged panel alone makes the rest jump
+    // at release. A panel with its own scale on that axis does not follow.
+    #link() {
+        this.#linked = [];
+
+        const group = this.#options.group;
+        const own = this.#area();
+        if (!group || !own) {
+            return;
+        }
+
+        for (const panel of panels.values()) {
+            if (panel === this || panel.#options.group !== group || panel.#pointerId !== null) {
+                continue;
+            }
+
+            const area = panel.#area();
+            if (!area || !panel.#marks.isConnected) {
+                continue;
+            }
+
+            const sx = this.#options.panX && this.#options.sharedX && own.width > 0 ? area.width / own.width : 0;
+            const sy = this.#options.panY && this.#options.sharedY && own.height > 0 ? area.height / own.height : 0;
+            if (sx === 0 && sy === 0) {
+                continue;
+            }
+
+            panel.#unsettle();
+            this.#linked.push({ panel, sx, sy });
+        }
+    }
+
+    #area() {
+        return this.#capture.querySelector('rect.panel')?.getBBox() ?? null;
     }
 
     // A capture released before the browser activated it fires no
@@ -653,6 +703,11 @@ class PanelInteractivity {
     // committed frame mutates the marks, and dropped in that same task.
     #settle(delta) {
         const target = this.#marks;
+        if (delta.dx === 0 && delta.dy === 0) {
+            target.removeAttribute('transform');
+            return;
+        }
+
         target.setAttribute('transform', `translate(${delta.dx}, ${delta.dy})`);
 
         const observer = new MutationObserver(records => {
@@ -691,8 +746,13 @@ class PanelInteractivity {
         this.#panStart = null;
         cancelAnimationFrame(this.#panFrame);
         this.#panFrame = 0;
+        const linked = this.#linked;
+        this.#linked = [];
         if (!keepPreview) {
             this.#marks.removeAttribute('transform');
+            for (const link of linked) {
+                link.panel.#marks.removeAttribute('transform');
+            }
         }
 
         if (pointerId !== null && this.#capture.hasPointerCapture(pointerId)) {

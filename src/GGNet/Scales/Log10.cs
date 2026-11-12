@@ -66,6 +66,8 @@ internal sealed class Log10 : Position<double>
 
 	public override double? Unmap(double value) => transformation!.Inverse(value);
 
+	public override bool InvertsExactly => true;
+
 	public override string? Label(double value) => labelFormatter.Format(value);
 
 	public override ITransformation<double> RangeTransformation => transformation!;

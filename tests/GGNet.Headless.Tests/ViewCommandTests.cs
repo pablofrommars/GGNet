@@ -186,4 +186,231 @@ public class ViewCommandTests
 		scale.Range.min.Should().Be((end - Duration.FromHours(48)).ToUnixTimeMilliseconds());
 		scale.Range.max.Should().Be(end.ToUnixTimeMilliseconds());
 	}
+
+	[Fact]
+	public void ViewsAreNullUntilAWindowIsSet()
+	{
+		// Arrange
+
+		var context = PointPlot();
+
+		// Act
+
+		var (x, y) = (context.XView, context.YView);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		x.Should().BeNull();
+		y.Should().BeNull();
+	}
+
+	[Fact]
+	public void ViewsReadBackInDataUnitsBeforeTheFirstRender()
+	{
+		// Arrange
+
+		var context = PointPlot();
+
+		// Act
+
+		context.SetXView(2.0, 3.0);
+		context.SetYView(2.5, 4.0);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		context.XView.Should().Be((2.0, 3.0));
+		context.YView.Should().Be((2.5, 4.0));
+	}
+
+	[Fact]
+	public void ReversedBoundsReadBackInAxisOrder()
+	{
+		// Arrange
+
+		var context = PointPlot();
+
+		// Act
+
+		context.SetXView(3.0, 2.0);
+
+		// Assert
+
+		context.XView.Should().Be((2.0, 3.0));
+	}
+
+	[Fact]
+	public async Task ResetViewClearsBothReadings()
+	{
+		// Arrange
+
+		var context = PointPlot();
+
+		context.SetXView(2.0, 3.0);
+		context.FitYToXView();
+
+		await context.AsStringAsync();
+
+		// Act
+
+		context.ResetView();
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		context.XView.Should().BeNull();
+		context.YView.Should().BeNull();
+	}
+
+	[Fact]
+	public async Task FittedYViewReadsTheWindowShown()
+	{
+		// Arrange
+
+		var context = PointPlot();
+
+		// Act
+
+		context.SetXView(2.0, 3.0);
+		context.FitYToXView();
+
+		await context.AsStringAsync();
+
+		// Assert
+
+		var shown = context.Positions.Y.Scales[0].Range;
+
+		context.YView.Should().Be(shown);
+	}
+
+	[Fact]
+	public async Task TransformedAxesReadBackInDataUnits()
+	{
+		// Arrange
+
+		var context = PlotContext.Build(data, i => i.X, i => i.Y)
+			.Scale_X_Log10()
+			.Scale_Y_Sqrt()
+			.Geom_Point()
+			.Style();
+
+		// Act
+
+		context.SetXView(1.0, 100.0);
+		context.SetYView(4.0, 9.0);
+
+		await context.AsStringAsync();
+
+		// Assert
+
+		var (x, y) = (context.XView, context.YView);
+
+		using var _ = new AssertionScope();
+
+		x.Should().NotBeNull();
+		x!.Value.min.Should().BeApproximately(1.0, 1e-9);
+		x.Value.max.Should().BeApproximately(100.0, 1e-9);
+		y.Should().NotBeNull();
+		y!.Value.min.Should().BeApproximately(4.0, 1e-9);
+		y.Value.max.Should().BeApproximately(9.0, 1e-9);
+	}
+
+	[Fact]
+	public void InstantViewReadsBackTheTrailingWindow()
+	{
+		// Arrange
+
+		var start = Instant.FromUtc(2026, 7, 1, 0, 0);
+
+		var timed = new Timed[8];
+
+		for (var i = 0; i < timed.Length; i++)
+		{
+			timed[i] = new(start + Duration.FromHours(12 * i), 1.0 + i);
+		}
+
+		var context = PlotContext.Build(timed, t => t.Ts, t => t.Value)
+			.Scale_X_Instant()
+			.Geom_Point()
+			.Style();
+
+		// Act
+
+		context.ShowLast(Duration.FromHours(48));
+
+		// Assert
+
+		var end = start + Duration.FromHours(12 * (timed.Length - 1));
+
+		context.XView.Should().Be((end - Duration.FromHours(48), end));
+	}
+
+	private enum Kind
+	{
+		A,
+		B,
+		C
+	}
+
+	private sealed record Counted(Kind Kind, double Value);
+
+	[Fact]
+	public async Task DiscreteViewHasNoDataUnitReading()
+	{
+		// Arrange
+
+		Counted[] counted = [new(Kind.A, 1.0), new(Kind.B, 2.0), new(Kind.C, 3.0)];
+
+		var context = PlotContext.Build(counted, c => c.Kind, c => c.Value)
+			.Geom_Point()
+			.Style();
+
+		// Discrete bounds map only after the categories are trained.
+		await context.AsStringAsync();
+
+		// Act
+
+		context.SetXView(Kind.A, Kind.B);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		context.Positions.X.View.Should().NotBeNull();
+		context.XView.Should().BeNull();
+	}
+
+	private sealed record Sampled(LocalDateTime Ts, double Value);
+
+	[Fact]
+	public async Task LocalDateTimeViewHasNoDataUnitReading()
+	{
+		// Arrange
+
+		var start = new LocalDateTime(2026, 7, 1, 9, 0);
+
+		Sampled[] sampled = [new(start, 1.0), new(start.PlusMinutes(30), 2.0), new(start.PlusMinutes(60), 3.0)];
+
+		var context = PlotContext.Build(sampled, s => s.Ts, s => s.Value)
+			.Geom_Point()
+			.Style();
+
+		// Sampled minutes map only after the axis is trained.
+		await context.AsStringAsync();
+
+		// Act
+
+		context.SetXView(start, start.PlusMinutes(30));
+
+		// Assert
+
+		using var _ = new AssertionScope();
+
+		context.Positions.X.View.Should().NotBeNull();
+		context.XView.Should().BeNull();
+	}
 }

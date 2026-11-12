@@ -224,6 +224,67 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		return Data.OnClick(e);
 	}
 
+	// TODO: calibration — the longest gap between the two clicks of a double click or double tap this still catches. 300 ms felt laggy in physical QA on the 10-inch panel; a slower double tap activates before it resets.
+	private static readonly TimeSpan activationDelay = TimeSpan.FromMilliseconds(200);
+
+	private CancellationTokenSource? pendingActivation;
+
+	private bool Activates => Data.Activate is not null && Plot.Interactivity is not ({ CursorTooltip: true } or { Crosshair: true });
+
+	private async Task OnActivateAsync(MouseEventArgs e)
+	{
+		if (Data.Activate is not { } activate)
+		{
+			return;
+		}
+
+		if (Plot.Interactivity is null)
+		{
+			await activate();
+
+			return;
+		}
+
+		CancelPendingActivation();
+
+		if (e.Detail > 1)
+		{
+			return;
+		}
+
+		using var pending = new CancellationTokenSource();
+
+		pendingActivation = pending;
+
+		try
+		{
+			await Task.Delay(activationDelay, pending.Token);
+		}
+		catch (OperationCanceledException)
+		{
+			return;
+		}
+
+		if (ReferenceEquals(pendingActivation, pending))
+		{
+			pendingActivation = null;
+		}
+
+		if (Volatile.Read(ref disposing) == 0)
+		{
+			await activate();
+		}
+	}
+
+	private void CancelPendingActivation()
+	{
+		var pending = pendingActivation;
+
+		pendingActivation = null;
+
+		pending?.Cancel();
+	}
+
 	/// <summary>Commits a wheel zoom: shrinks or grows the view window about the cursor and re-renders. Invoked from the collocated JS module, which converts pointer coordinates into svg units using the capture element's inverse screen CTM.</summary>
 	/// <param name="px">Cursor x, in svg units.</param>
 	/// <param name="py">Cursor y, in svg units.</param>
@@ -260,7 +321,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			Plot.Context.Positions.Y.SetView(Window(yscale, cy, factor));
 		}
 
-		return Plot.RefreshAsync(RenderTarget.Render, CancellationToken.None);
+		return Plot.CommitViewAsync(ViewChangeCause.Gesture, RenderTarget.Render, CancellationToken.None);
 	}
 
 	private static (double min, double max) Window<TKey>(Position<TKey> scale, double fraction, double factor)
@@ -276,9 +337,11 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			return Task.CompletedTask;
 		}
 
+		CancelPendingActivation();
+
 		Plot.Context.ResetView();
 
-		return Plot.RefreshAsync(RenderTarget.Render, CancellationToken.None);
+		return Plot.CommitViewAsync(ViewChangeCause.Reset, RenderTarget.Render, CancellationToken.None);
 	}
 
 	private (double x, string? label)? crosshair;
@@ -345,7 +408,12 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			captureRef,
 			panRef,
 			dotNetRef,
-			PanelInteropOptions.Create(options));
+			PanelInteropOptions.Create(options) with
+			{
+				Group = Plot.Id,
+				SharedX = Plot.Context.Positions.X.Scales.Count == 1,
+				SharedY = Plot.Context.Positions.Y.Scales.Count == 1
+			});
 	}
 
 	private async ValueTask GlueTooltipAsync(ElementReference element)
@@ -383,7 +451,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			Plot.Context.Positions.Y.SetView((yscale.Invert(shift), yscale.Invert(1 + shift)));
 		}
 
-		await Plot.RefreshAsync(RenderTarget.Render, CancellationToken.None);
+		await Plot.CommitViewAsync(ViewChangeCause.Gesture, RenderTarget.Render, CancellationToken.None);
 	}
 
 	private int disposing;
@@ -398,6 +466,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		}
 
 		boundData?.Unregister(this);
+
+		CancelPendingActivation();
 
 		try
 		{

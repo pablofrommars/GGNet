@@ -169,6 +169,73 @@ public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppF
 		(await page.Locator("#target").GetAttributeAsync("transform")).Should().BeNull();
 	}
 
+	[Theory]
+	[InlineData(true, false, "translate(15, 0)")]
+	[InlineData(false, true, "translate(0, 1)")]
+	[InlineData(true, true, "translate(15, 1)")]
+	[InlineData(false, false, null)]
+	public async Task ADragPreviewsOnEveryPanelOfThePlotSharingThePannedAxis(bool sharedX, bool sharedY, string? expected)
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context);
+		await LinkAsync(page, sharedX, sharedY);
+		var cdp = await context.NewCDPSessionAsync(page);
+
+		// Act
+
+		await TouchAsync(cdp, "touchStart", Point(250, 400));
+		await TouchAsync(cdp, "touchMove", Point(280, 440));
+		var dragged = await page.Locator("#target").GetAttributeAsync("transform");
+		var sibling = await page.Locator("#sibling-target").GetAttributeAsync("transform");
+		var stranger = await page.Locator("#stranger-target").GetAttributeAsync("transform");
+		await TouchAsync(cdp, "touchCancel");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		dragged.Should().Be("translate(30, 40)");
+		sibling.Should().Be(expected);
+		stranger.Should().BeNull();
+		(await page.Locator("#target").GetAttributeAsync("transform")).Should().BeNull();
+		(await page.Locator("#sibling-target").GetAttributeAsync("transform")).Should().BeNull();
+		(await CallsAsync(page)).GetArrayLength().Should().Be(0);
+	}
+
+	[Fact]
+	public async Task ASiblingPreviewIsHeldAfterReleaseUntilItsOwnCommittedFrame()
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context);
+		await LinkAsync(page, sharedX: true, sharedY: false);
+		await page.EvaluateAsync("() => { window.holdFrames = true; }");
+		var cdp = await context.NewCDPSessionAsync(page);
+
+		// Act
+
+		await TouchAsync(cdp, "touchStart", Point(250, 400));
+		await TouchAsync(cdp, "touchMove", Point(280, 400));
+		await TouchAsync(cdp, "touchEnd");
+		var draggedHeld = await page.Locator("#target").GetAttributeAsync("transform");
+		var siblingHeld = await page.Locator("#sibling-target").GetAttributeAsync("transform");
+		await page.EvaluateAsync("() => window.frame()");
+		await page.WaitForFunctionAsync("() => !document.querySelector('#target').hasAttribute('transform')");
+		var siblingAfterOtherFrame = await page.Locator("#sibling-target").GetAttributeAsync("transform");
+		await page.EvaluateAsync("() => document.querySelector('#sibling-mark').setAttribute('data-frame', '1')");
+		await page.WaitForFunctionAsync("() => !document.querySelector('#sibling-target').hasAttribute('transform')");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		draggedHeld.Should().Be("translate(30, 0)");
+		siblingHeld.Should().Be("translate(15, 0)");
+		siblingAfterOtherFrame.Should().Be("translate(15, 0)");
+		(await CallsAsync(page)).GetArrayLength().Should().Be(1);
+	}
+
 	[Fact]
 	public async Task OwnerCancellationAndDisposalClearActivePreviewsWithoutCommitting()
 	{
@@ -678,6 +745,22 @@ public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppF
 			""", new { source, panX, panY, tooltip });
 		return page;
 	}
+
+	// A second panel of the same plot at half the width and a fortieth of the height, and a
+	// panel of another plot; every panel is told which axes its plot shares.
+	private static async Task LinkAsync(IPage page, bool sharedX, bool sharedY)
+		=> await page.EvaluateAsync("""
+			o => {
+			    const plot=document.querySelector('#plot');
+			    plot.insertAdjacentHTML('beforeend','<g id="sibling"><rect class="panel" x="100" y="505" width="250" height="10" fill="white"/><g id="sibling-target"><circle id="sibling-mark" cx="200" cy="510" r="3"/></g></g><g id="stranger"><rect class="panel" x="360" y="505" width="240" height="10" fill="white"/><g id="stranger-target"><circle cx="400" cy="510" r="3"/></g></g>');
+			    const ref={invokeMethodAsync:async(...a)=>{window.otherCalls.push(a);}};
+			    const shared={sharedX:o.sharedX,sharedY:o.sharedY};
+			    window.options={...window.options,...shared,group:'plot'};
+			    window.initialize();
+			    window.module.initialize('sibling',document.querySelector('#sibling'),document.querySelector('#sibling-target'),ref,{...window.options});
+			    window.module.initialize('stranger',document.querySelector('#stranger'),document.querySelector('#stranger-target'),ref,{...window.options,group:'other'});
+			}
+			""", new { sharedX, sharedY });
 
 	private static Task<string[]> ShowTooltipAsync(IPage page)
 		=> page.EvaluateAsync<string[]>("() => { const tip=document.querySelector('#tip');window.module.showTooltip('panel',tip);return [tip.style.left,tip.style.top]; }");
