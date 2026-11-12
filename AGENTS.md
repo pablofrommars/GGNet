@@ -8,7 +8,7 @@ This is the host-neutral, canonical repository contract for AI coding assistants
 
 GGNet is a **grammar-of-graphics charting library** for .NET / Blazor — ggplot2-inspired, a single fluent C# chain, **SVG** output. `2.0.0-beta` is the current breaking window.
 
-- **Runtime**: C# on the **.NET 11 RC3 SDK** (pinned in `global.json`), retaining the repository's `LangVersion=preview` setting and C# 15 `union` types
+- **Runtime**: C# on the **.NET 11 SDK** (`11.0.100`, pinned in `global.json`, `rollForward: latestMinor`), retaining the repository's `LangVersion=preview` setting and C# 15 `union` types
 - **Solution**: `GGNet.slnx` — five production projects + four test projects
 - **`src/GGNet`** (Razor class library) — the core: the DSL (`PlotContext`, `BuilderExtensions`), geoms, scales, stats, shapes, the render pipeline, the `Plot` component, themes
 - **`src/GGNet.Headless`** — pure-SVG headless export (`AsStringAsync`/`SaveAsync`)

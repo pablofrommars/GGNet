@@ -133,7 +133,7 @@ It needs a Playwright Chromium installed.
 ## 8. Test-infrastructure surprises
 
 - Test projects are **self-hosting MTP executables** (`OutputType=Exe`, `UseMicrosoftTestingPlatformRunner`). The entry point is generated — never write a `Main`.
-- Keep the **`-mtp-v2` suffix** on every xunit bump so the runner choice stays explicit. Plain `xunit.v3` also selects MTP v2 on the 4.x package line; it selected MTP v1 on the 3.x package line. The 4.0.2 package still ships the xUnit.net v3 API.
+- Keep the **`-mtp-v2` suffix** on every xunit bump so the runner choice stays explicit. Plain `xunit.v3` also selects MTP v2 on the 4.x package line; it selected MTP v1 on the 3.x package line. The 4.0.3 package still ships the xUnit.net v3 API.
 - Do **not** add `Microsoft.NET.Test.Sdk`, `xunit.runner.visualstudio`, or `coverlet.collector`. MTP is native to xunit v3 and needs no VSTest adapter; coverlet's collector is a VSTest data collector that does not run under MTP. For coverage use `Microsoft.Testing.Extensions.CodeCoverage`.
 - Mocking **internal** interfaces works because `GGNet.csproj` grants `InternalsVisibleTo("DynamicProxyGenAssembly2")`. If a mock fails to proxy, check that IVT before redesigning the seam.
 - `Moq` is a global using in `GGNet.Headless.Tests`, and `Moq.Match` collides with the globally-used `System.Text.RegularExpressions.Match`. The project's `GlobalUsings.cs` pins `global using Match = System.Text.RegularExpressions.Match;`; an ambiguous-`Match` error (`CS0104`) means that alias was lost, not that Moq must go back to a per-file using.
@@ -227,10 +227,10 @@ defines the criteria and renewal limits.
 
 ---
 
-## 17. `NU1902` fails `-warnaserror` after a fresh restore
+## 17. `NU190x` fails `-warnaserror` after a fresh restore
 
-**Symptom.** An incremental build passes, but after any fresh NuGet restore (a new clone, `dotnet publish -r <rid>`, or a scratch project restored by `ValidatorScriptEvals` / `McpServerEvals`) the build fails with `error NU1902: Warning As Error: Package 'Microsoft.Extensions.Validation' 11.0.0-rc.3.26522.148 has a known moderate severity vulnerability` across six projects, and those two evals fail on the same message.
+**Symptom.** An incremental build passes, but a fresh restore (a new clone, `dotnet restore --force`, or a scratch project restored by `ValidatorScriptEvals` / `McpServerEvals`) fails with `error NU190x: Package '…' … has a known … severity vulnerability`.
 
-**Cause.** NuGet's audit flags a transitive package of the RC3 SDK; `-warnaserror` promotes the advisory. It is independent of the change under test.
+**Cause.** NuGet audit runs on restore, and `-warnaserror` promotes its findings; a no-op incremental restore hides them. The evals' `Snippet.csproj` is written to `$TMPDIR`, outside `Directory.*.props`, with `TreatWarningsAsErrors`; it inherits GGNet's package graph through its `ProjectReference`, so only a change to GGNet's own pins reaches it. `GGNet.Demo` is usually clean because its shared-framework reference prunes the ASP.NET packages.
 
-**What to do.** Report it as a pre-existing gate failure (`plan/deferred.md` D-04) rather than repairing it inside unrelated work. `-p:NuGetAudit=false` on the command line can separate it from your own diagnostics for verification, but name it as such and never commit it as a fix; moving to a patched SDK or package, or changing audit policy, is a dependency decision.
+**What to do.** Find the path with `dotnet nuget why <project> <package>` and move the owning direct pin in `Directory.Packages.props` to the patched version — a dependency decision. `-p:NuGetAudit=false` only isolates the failure for diagnosis; suppressing the audit is a policy decision, not a fix. Precedent: GHSA-m28h-pj36-4364 reached GGNet as `Microsoft.AspNetCore.Components.Web` → `Microsoft.AspNetCore.Components.Forms` → `Microsoft.Extensions.Validation`, and was fixed by moving to 11.0.0.

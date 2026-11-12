@@ -164,5 +164,5 @@ and the documentation may state them.
 | ACCEPTANCE-04 | Activation fires for taps on marks, grid lines and background inside the plot area, and never after a recognized drag, for a discarded click, for an inspecting tap, or for a reset gesture. |
 | ACCEPTANCE-05 | The activation payload identifies the activated sub-panel. |
 | ACCEPTANCE-06 | Without the new parameters, plots behave and render exactly as before: goldens unchanged, existing browser suite green. |
-| ACCEPTANCE-07 | Gates: build `-warnaserror` (subject to `plan/deferred.md` D-04), `dotnet test`, both `dotnet format` checks, `GGNET_E2E=1 dotnet test tests/GGNet.E2ETests` with every browser case executed. |
+| ACCEPTANCE-07 | Gates: build `-warnaserror`, `dotnet test`, both `dotnet format` checks, `GGNET_E2E=1 dotnet test tests/GGNet.E2ETests` with every browser case executed. |
 | ACCEPTANCE-08 | Physical touch QA with the engineer on the device: open, close, window carry-over, activation against inspection, and a drag started during the open transition, observed and recorded. |

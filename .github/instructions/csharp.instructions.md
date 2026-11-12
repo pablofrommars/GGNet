@@ -76,7 +76,7 @@ These are set once in `Directory.Build.props` and inherited by every project —
 
 It also holds the NuGet metadata shared by the two packable projects (`Version`, `Authors`, `Title`, `Copyright`, `Description`, `PackageTags`, `PackageLicenseExpression`) — so the shipped version is stated **once**. A `.csproj` declares only what is genuinely its own: `IsPackable=true` and its distinct `PackageDescription` on `GGNet`/`GGNet.Headless`, `OutputType`, `IsTestProject` — never a `NoWarn` (§1).
 
-`LangVersion=preview` remains the **required repository setting**; changing language policy is separate from the SDK update. The SDK is pinned to .NET 11 RC3 in `global.json`. C# 15 provides the `union` types used in §6.
+`LangVersion=preview` remains the **required repository setting**; changing language policy is separate from the SDK update. The SDK is pinned to .NET 11 (`11.0.100`) in `global.json`. C# 15 provides the `union` types used in §6.
 
 ---
 

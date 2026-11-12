@@ -163,8 +163,7 @@ Ambient      No nearby reading
 - Touch-policy changes stay scoped to the panel viewport (`svg[data-ggnet-viewport]`). There is no
   root or global `touch-action: none`, no blanket `preventDefault`, and browser zoom is not disabled
   globally.
-- No change to dependency versions without a separate decision (see `plan/deferred.md` D-04 for the
-  current `NU1902` gate failure).
+- No change to dependency versions without a separate decision.
 - Physical acceptance on a real touchscreen is required. Chromium emulation is supporting evidence.
 
 ## Verified premises
@@ -260,5 +259,5 @@ PlotContext.Build(temperature, r => r.Ts, r => r.Value)
 | ACCEPTANCE-09 | Clear and lifetime: only the clear control clears; leaving the page and returning, and replacing `Context`, give predictable state with no duplicate or stale handlers. |
 | ACCEPTANCE-10 | Mouse and keyboard reach the same inspection (hover, click to pin, arrows, Escape). |
 | ACCEPTANCE-11 | With the option unset, static and headless output is byte-identical (goldens unchanged) and existing touch behaviour is unchanged (existing E2E suite green). |
-| ACCEPTANCE-12 | Gates: build `-warnaserror` (subject to D-04), `dotnet test`, both `dotnet format` checks, and `GGNET_E2E=1 dotnet test tests/GGNet.E2ETests` with every browser case executed. |
+| ACCEPTANCE-12 | Gates: build `-warnaserror`, `dotnet test`, both `dotnet format` checks, and `GGNET_E2E=1 dotnet test tests/GGNet.E2ETests` with every browser case executed. |
 | ACCEPTANCE-13 | Physical QA on the touchscreen with the engineer: every item above that has a touch component is observed and recorded, including readability (no finger covers the information needed). |
