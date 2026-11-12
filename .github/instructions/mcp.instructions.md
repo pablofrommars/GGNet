@@ -75,6 +75,8 @@ Given a plot snippet, it: writes a temp `Snippet.csproj` (`OutputType=Exe`, `Tre
 
 This is the same contract the standalone `skills/ggnet/scripts/validate.cs` implements ([skill.instructions.md](./skill.instructions.md)) — keep the two mechanically aligned: warnings-as-errors compile + render, same provided global usings.
 
+`ProcessCapture` starts both redirected stream reads before awaiting them together, then observes .NET 11's `ProcessExitStatus`. Retaining the process's `StreamReader`s preserves BOM detection and configured encodings; RC3's native text-capture helper does not detect BOMs. The helper retains process ownership so cancellation or capture failure can terminate the running process tree and await the parent before temporary files are removed. Do not replace it with sequential pipe reads or assume the one-shot capture helper terminates descendants. Preserve the response's trimming and stdout-then-stderr error composition; child output must never be forwarded to the MCP server's stdout transport.
+
 ---
 
 ## 5. Conventions

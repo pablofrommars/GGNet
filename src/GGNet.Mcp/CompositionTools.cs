@@ -61,26 +61,17 @@ public static class CompositionTools
 
 			await File.WriteAllTextAsync(Path.Combine(scratch.FullName, "Program.cs"), snippet, cancellationToken);
 
-			var run = new Process
+			var result = await ProcessCapture.RunAsync(new ProcessStartInfo("dotnet", ["run", "--project", scratch.FullName, "-v", "q"])
 			{
-				StartInfo = new ProcessStartInfo("dotnet", ["run", "--project", scratch.FullName, "-v", "q"])
-				{
-					RedirectStandardOutput = true,
-					RedirectStandardError = true,
-				}
-			};
-
-			run.Start();
-
-			var stdout = await run.StandardOutput.ReadToEndAsync(cancellationToken);
-			var stderr = await run.StandardError.ReadToEndAsync(cancellationToken);
-			await run.WaitForExitAsync(cancellationToken);
+				RedirectStandardOutput = true,
+				RedirectStandardError = true,
+			}, cancellationToken);
 
 			return new JsonObject
 			{
-				["ok"] = run.ExitCode == 0,
-				["output"] = stdout.Trim(),
-				["errors"] = run.ExitCode == 0 ? null : (stdout + stderr).Trim(),
+				["ok"] = result.ExitStatus.ExitCode == 0,
+				["output"] = result.StandardOutput.Trim(),
+				["errors"] = result.ExitStatus.ExitCode == 0 ? null : (result.StandardOutput + result.StandardError).Trim(),
 			}.ToJsonString();
 		}
 		finally

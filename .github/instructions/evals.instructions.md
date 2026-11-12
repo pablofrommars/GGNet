@@ -26,12 +26,15 @@ How `Selector` reads the config — the grammar a config edit must respect (norm
 
 ---
 
-## 2. The Five Eval Files
+## 2. Eval Surfaces
+
+- **`ChartSelectionWireEvals`** — fixed pre-refactor JSON responses for recommendations, insufficient data and no match, including exclusions, structural escapes and explicit nulls. Checks repeated calls and input immutability, plus the distinction between no matches and a nonpositive recommendation limit. The public `Selector.Select` path serializes its private union through `SelectionJsonContext`, using native System.Text.Json source generation and structural classification with no added discriminator.
 
 - **`ChartSelectionEvals`** — the core selection behavior pin (~22 realistic queries ported from a retired Python suite). A `sealed record Case(...)` carries `ExpectAny` / `Forbid` / `ExpectError` / `CaveatOn` / `CaveatNotOn` / `AlternativesOn` / `EscapeOn` / `BridgeOn` / `TransformOn` / `ExcludedOn`; cases live in a `Dictionary<string, Case>` keyed by a natural-language scenario. Driven by `[Theory] [MemberData(nameof(CaseNames))]`, asserted inside an `AssertionScope` against `Selector.Select(...)` output (`top_charts`, `caveats`, `alternatives`, `structural_escapes`, `stat_bridge`, `excluded[].reason`, `transforms`). Structural `[Fact]`s also pin the config's integrity: `EveryLeafReachable`, `RecipesResolveToExampleFiles` (every recipe id resolves to a `skills/ggnet/examples/*.md`), `SupportedLeavesCarryGuidance`, `ConfigLoadsAndValidates` (pins the leaf count).
 - **`McpServerEvals`** — end-to-end over the **real spawned stdio server**. `McpServerFixture : IAsyncLifetime` launches it via `StdioClientTransport { Command = "dotnet", Arguments = ["run", "--project", <src/GGNet.Mcp>] }` + `McpClient.CreateAsync`, consumed via `IClassFixture`. `ListsExpectedTools` is the authoritative tool-name pin (`select_chart`, `list_charts`, `explain_axes`, `list_geoms`, `list_scales`, `validate_plot`); `IntrospectionIsLive` asserts reflected geoms/scales include real members (`Geom_Point`, `Geom_Candlestick`, `Scale_Y_Log10`, `Facet_Wrap`); plus `MeasuredCardinalityBeatsSuppliedOne`, `StatBridgeSurfacesOverTheWire`, `ValidatePlotCompilesAndRenders`.
 - **`ProfilerEvals`** — pins the measurement / anti-gaming half (`SkewedSampleIsDetected`, `SymmetricSampleClaimsNoShape`, `MissingValuesLowerCompleteness`, `[Theory]` `CardinalityBuckets`, `MeasuredFieldsOverrideSuppliedOnes`).
 - **`ValidatorScriptEvals`** — CI smoke of the standalone `skills/ggnet/scripts/validate.cs` (the "dependency-free twin of the MCP `validate_plot` tool"): runs it over a snippet and asserts exit 0.
+- **`ProcessCaptureEvals`** — exercises the MCP-owned capture helper with real child processes: output beyond pipe capacity, zero/nonzero exit codes, BOM-aware decoding, cancellation before launch and POSIX child-tree cleanup. The eval project references the MCP project and has friend access to this helper; no server or snippet compilation is needed for these checks.
 - **`SkillDocDriftEvals`** — `ChartTableAgreesWithConfig` parses `skills/ggnet/reference/chart-selection.md`, asserting its row count equals the leaf count, every function term is a real function/alias, and the `❌` markers agree with `ggnet.supported` in the config.
 
 ---

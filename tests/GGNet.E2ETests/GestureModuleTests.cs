@@ -1,6 +1,8 @@
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 
+using static GGNet.E2ETests.Fixtures.TouchInput;
+
 namespace GGNet.E2ETests;
 
 public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixture>
@@ -134,7 +136,7 @@ public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppF
 
 		using var _ = new AssertionScope();
 		(await page.Locator("#target").GetAttributeAsync("transform")).Should().BeNull();
-		(await CallsAsync(page)).GetArrayLength().Should().Be(0);
+		(await CallsAsync(page)).GetArrayLength().Should().Be(0, await page.EvaluateAsync<string>("() => JSON.stringify({events:window.events,calls:window.calls})"));
 	}
 
 	[Fact]
@@ -218,6 +220,284 @@ public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppF
 		(await CallsAsync(page)).GetArrayLength().Should().Be(0);
 		(await page.EvaluateAsync<JsonElement>("() => window.otherCalls")).GetArrayLength().Should().Be(1);
 		(await page.EvaluateAsync<int>("() => window.reinitializedCount")).Should().Be(1);
+	}
+
+	[Theory]
+	[InlineData(0)]
+	[InlineData(2)]
+	[InlineData(6)]
+	public async Task TapWithFingerJitterClicksTheMarkWithoutPanning(int jitter)
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context, true, false);
+		var cdp = await context.NewCDPSessionAsync(page);
+
+		// Act
+
+		await TouchAsync(cdp, "touchStart", Point(300, 400));
+		await TouchAsync(cdp, "touchMove", Point(300 + jitter, 400));
+		var preview = await page.Locator("#target").GetAttributeAsync("transform");
+		await TouchAsync(cdp, "touchEnd");
+		await page.WaitForTimeoutAsync(400);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		preview.Should().BeNull();
+		(await CallsAsync(page)).GetArrayLength().Should().Be(0);
+		(await page.EvaluateAsync<string[]>("() => window.clicks")).Should().Equal("mark");
+	}
+
+	[Fact]
+	public async Task StationaryTapsPositionTheCursorTooltipAtEachContact()
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context, true, false, true);
+		var cdp = await context.NewCDPSessionAsync(page);
+
+		// Act
+
+		await TouchAsync(cdp, "touchStart", Point(300, 400));
+		await TouchAsync(cdp, "touchEnd");
+		var first = await ShowTooltipAsync(page);
+		await TouchAsync(cdp, "touchStart", Point(420, 250));
+		await TouchAsync(cdp, "touchEnd");
+		var second = await ShowTooltipAsync(page);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		first.Should().Equal("312px", "412px");
+		second.Should().Equal("432px", "262px");
+	}
+
+	[Theory]
+	[InlineData(false, 40)]
+	[InlineData(true, 12)]
+	[InlineData(true, 40)]
+	public async Task RecognizedDragCommitsOnceAndSuppressesTheTrailingClick(bool touch, int distance)
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(touch);
+		var page = await HarnessAsync(context, true, false);
+		var cdp = await context.NewCDPSessionAsync(page);
+
+		// Act
+
+		await PressDragReleaseAsync(page, cdp, touch, 300, 400, distance);
+		var afterDrag = await page.EvaluateAsync<string[]>("() => window.clicks");
+		await PressDragReleaseAsync(page, cdp, touch, 300, 400, 0);
+		var calls = await CallsAsync(page);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		calls.GetArrayLength().Should().Be(1);
+		calls[0][1].GetDouble().Should().Be(distance);
+		afterDrag.Should().BeEmpty("the click that trails a drag reaches neither the mark nor an ancestor");
+		(await page.EvaluateAsync<string[]>("() => window.clicks")).Should().Equal(["mark"], "the next ordinary press still clicks");
+	}
+
+	[Fact]
+	public async Task ReleasedPreviewIsHeldUntilTheCommittedFrameArrives()
+	{
+		// Arrange
+
+		await using var context = await ContextAsync();
+		var page = await HarnessAsync(context, true, false);
+		var cdp = await context.NewCDPSessionAsync(page);
+		await page.EvaluateAsync("() => { window.holdFrames=true; }");
+
+		// Act
+
+		await PressDragReleaseAsync(page, cdp, false, 300, 400, 40);
+		var released = await page.Locator("#target").GetAttributeAsync("transform");
+		await page.EvaluateAsync("() => window.frame()");
+		await FramesAsync(page);
+		var committed = await page.Locator("#target").GetAttributeAsync("transform");
+		await PressDragReleaseAsync(page, cdp, false, 300, 400, 40);
+		await page.WaitForTimeoutAsync(1500);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		released.Should().Be("translate(40, 0)", "clearing at release would flash the marks at their old position");
+		committed.Should().BeNull();
+		(await page.Locator("#target").GetAttributeAsync("transform")).Should().BeNull("a frame that never arrives must not strand the preview");
+	}
+
+	[Fact]
+	public async Task MouseJitterBelowTheThresholdIsAClickNotAPan()
+	{
+		// Arrange
+
+		await using var context = await ContextAsync();
+		var page = await HarnessAsync(context, true, false);
+		var cdp = await context.NewCDPSessionAsync(page);
+
+		// Act
+
+		await PressDragReleaseAsync(page, cdp, false, 300, 400, 2);
+		var clicks = await page.EvaluateAsync<string[]>("() => window.clicks");
+		await PressDragReleaseAsync(page, cdp, false, 300, 400, 40);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		clicks.Should().Equal("mark");
+		(await CallsAsync(page)).GetArrayLength().Should().Be(1, "an unrecognized press must not block the next pan");
+	}
+
+	[Fact]
+	public async Task SecondFingerJoiningAnActivePanHandsTheGestureToNativePinch()
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context, true, false);
+		var cdp = await context.NewCDPSessionAsync(page);
+
+		// Act
+
+		await TouchAsync(cdp, "touchStart", Point(250, 400, 1));
+		await TouchAsync(cdp, "touchMove", Point(280, 400, 1));
+		var preview = await page.Locator("#target").GetAttributeAsync("transform");
+		await TouchAsync(cdp, "touchStart", Point(280, 400, 1), Point(480, 400, 2));
+		for (var i = 1; i <= 10; i++)
+		{
+			await TouchAsync(cdp, "touchMove", Point(280 - i * 10, 400, 1), Point(480 + i * 10, 400, 2));
+			await page.WaitForTimeoutAsync(30);
+		}
+		await TouchAsync(cdp, "touchEnd");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		preview.Should().Be("translate(30, 0)");
+		(await page.EvaluateAsync<double>("() => visualViewport.scale")).Should().BeGreaterThan(1.1);
+		(await CallsAsync(page)).GetArrayLength().Should().Be(0, await page.EvaluateAsync<string>("() => JSON.stringify(window.events)"));
+		(await page.Locator("#target").GetAttributeAsync("transform")).Should().BeNull();
+	}
+
+	[Fact]
+	public async Task OwningFingerLiftingFirstCommitsAndTheRemainingFingerCannotPan()
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context);
+		// Isolate pointer ownership from native pinch, which has separate real-input coverage.
+		await page.Locator("#viewport").EvaluateAsync("el => el.style.touchAction='none'");
+		var cdp = await context.NewCDPSessionAsync(page);
+
+		// Act
+
+		await TouchAsync(cdp, "touchStart", Point(250, 400, 1));
+		await TouchAsync(cdp, "touchStart", Point(250, 400, 1), Point(450, 400, 2));
+		await TouchAsync(cdp, "touchMove", Point(280, 400, 1), Point(450, 400, 2));
+		await TouchAsync(cdp, "touchEnd", Point(280, 400, 1));
+		var committed = (await CallsAsync(page)).GetArrayLength();
+		await TouchAsync(cdp, "touchMove", Point(500, 400, 2));
+		var preview = await page.Locator("#target").GetAttributeAsync("transform");
+		await TouchAsync(cdp, "touchEnd");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		committed.Should().Be(1);
+		preview.Should().BeNull();
+		(await CallsAsync(page)).GetArrayLength().Should().Be(1, await page.EvaluateAsync<string>("() => JSON.stringify(window.events)"));
+	}
+
+	[Fact]
+	public async Task TouchTooltipIsDismissedByScrollingAndReturnsOnTheNextPress()
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context, true, false, true);
+		var cdp = await context.NewCDPSessionAsync(page);
+		await TouchAsync(cdp, "touchStart", Point(300, 400));
+		await TouchAsync(cdp, "touchEnd");
+		await ShowTooltipAsync(page);
+		var shown = await TooltipOpenAsync(page);
+
+		// Act
+
+		await page.EvaluateAsync("() => window.scrollBy(0, 60)");
+		await FramesAsync(page);
+		var scrolled = await TooltipOpenAsync(page);
+		await ShowTooltipAsync(page);
+		var rerendered = await TooltipOpenAsync(page);
+		await TouchAsync(cdp, "touchStart", Point(300, 340));
+		await TouchAsync(cdp, "touchEnd");
+		await ShowTooltipAsync(page);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		shown.Should().BeTrue();
+		scrolled.Should().BeFalse();
+		rerendered.Should().BeFalse("a re-render must not resurrect a dismissed tooltip");
+		(await TooltipOpenAsync(page)).Should().BeTrue();
+	}
+
+	[Fact]
+	public async Task TouchPanDismissesTheTooltipWhileAMouseDragKeepsIt()
+	{
+		// Arrange
+
+		await using var touchContext = await ContextAsync(true);
+		var touchPage = await HarnessAsync(touchContext, true, false, true);
+		var cdp = await touchContext.NewCDPSessionAsync(touchPage);
+		await using var mouseContext = await ContextAsync();
+		var mousePage = await HarnessAsync(mouseContext, true, false, true);
+
+		// Act
+
+		await TouchAsync(cdp, "touchStart", Point(300, 400));
+		await TouchAsync(cdp, "touchEnd");
+		await ShowTooltipAsync(touchPage);
+		await PressDragReleaseAsync(touchPage, cdp, true, 300, 400, 40);
+		await mousePage.Mouse.MoveAsync(300, 400);
+		await ShowTooltipAsync(mousePage);
+		await PressDragReleaseAsync(mousePage, cdp, false, 300, 400, 40);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		(await TooltipOpenAsync(touchPage)).Should().BeFalse();
+		(await TooltipOpenAsync(mousePage)).Should().BeTrue();
+	}
+
+	[Theory]
+	[InlineData(60, "518px", "558px")]
+	[InlineData(580, "4px", "558px")]
+	public async Task TooltipFlipsAndClampsInsideTheViewportAtTheEdges(int width, string left, string top)
+	{
+		// Arrange
+
+		// Mobile emulation widens the layout viewport to the harness page; a desktop
+		// context keeps it at the window size the flip is measured against.
+		await using var context = await ContextAsync();
+		var page = await HarnessAsync(context, true, false, true);
+		await page.SetViewportSizeAsync(610, 610);
+		await page.Locator("#tip .bubble").EvaluateAsync("(el, width) => el.style.width=width+'px'", width);
+		var edge = await page.EvaluateAsync<int[]>("() => [innerWidth, innerHeight]");
+
+		// Act
+
+		await page.Mouse.MoveAsync(590, 590);
+		var position = await ShowTooltipAsync(page);
+
+		// Assert
+
+		position.Should().Equal([left, top], $"the viewport is {edge[0]}x{edge[1]}");
 	}
 
 	[Theory]
@@ -365,7 +645,7 @@ public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppF
 		return await fixture.Browser.NewContextAsync(new() { ViewportSize = new() { Width = 900, Height = 700 }, HasTouch = touch, IsMobile = touch });
 	}
 
-	private static async Task<IPage> HarnessAsync(IBrowserContext context, bool panX = true, bool panY = true)
+	private static async Task<IPage> HarnessAsync(IBrowserContext context, bool panX = true, bool panY = true, bool tooltip = false)
 	{
 		var page = await context.NewPageAsync();
 		await page.SetContentAsync("""
@@ -376,45 +656,61 @@ public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppF
 			<rect id="legend" x="630" y="0" width="90" height="576" fill="silver"/>
 			<g id="capture"><svg id="viewport" x="100" y="100" width="500" height="400" viewBox="100 100 500 400" overflow="visible">
 			<rect class="panel" x="100" y="100" width="500" height="400" fill="white"/>
-			<g id="target"><circle cx="300" cy="300" r="10"/></g></svg>
+			<g id="target"><circle id="mark" cx="300" cy="300" r="10"/></g></svg>
 			<rect id="axis" x="100" y="520" width="500" height="40" fill="silver"/></g></svg>
+			<div id="tip" popover="manual" style="position:fixed;inset:auto;margin:0;border:0;padding:0"><div class="bubble" style="width:60px;height:20px"></div></div>
 			""");
 		var source = await File.ReadAllTextAsync(Path.Combine(RepoRoot(), "src/GGNet/Components/Panel.razor.js"), TestContext.Current.CancellationToken);
 		await page.EvaluateAsync("""
 			async o => {
 			    window.module=await import('data:text/javascript;base64,'+btoa(o.source));
-			    window.calls=[];window.otherCalls=[];window.events=[];
-			    for(const type of ['pointerdown','pointermove','pointerup','pointercancel'])document.addEventListener(type,e=>window.events.push({type,x:e.clientX,y:e.clientY,target:e.target.id,primary:e.isPrimary}),true);
-			    window.options={pan:true,panX:o.panX,panY:o.panY,tooltip:false};
+			    window.calls=[];window.otherCalls=[];window.events=[];window.clicks=[];
+			    document.addEventListener('click',e=>window.clicks.push(e.target.id));
+			    for(const type of ['pointerdown','pointermove','pointerup','pointercancel','gotpointercapture','lostpointercapture'])document.addEventListener(type,e=>window.events.push({type,x:e.clientX,y:e.clientY,target:e.target.id,primary:e.isPrimary}),true);
+			    window.options={pan:true,panX:o.panX,panY:o.panY,tooltip:o.tooltip};
 			    document.querySelector('#viewport').style.display='block';
 			    document.querySelector('#viewport').style.touchAction=o.panX?(o.panY?'pinch-zoom':'pan-y pinch-zoom'):(o.panY?'pan-x pinch-zoom':'auto');
-			    window.initialize=()=>window.module.initialize('panel',document.querySelector('#capture'),document.querySelector('#target'),{invokeMethodAsync:async(...a)=>window.calls.push(a)},window.options);
+			    window.frame=()=>document.querySelector('#mark').setAttribute('data-frame',String(window.calls.length));
+			    window.holdFrames=false;
+			    window.initialize=()=>window.module.initialize('panel',document.querySelector('#capture'),document.querySelector('#target'),{invokeMethodAsync:async(...a)=>{window.calls.push(a);if(a[0]==='OnPanEndAsync'&&!window.holdFrames)window.frame();}},window.options);
 			    window.initialize();
 			}
-			""", new { source, panX, panY });
+			""", new { source, panX, panY, tooltip });
 		return page;
+	}
+
+	private static Task<string[]> ShowTooltipAsync(IPage page)
+		=> page.EvaluateAsync<string[]>("() => { const tip=document.querySelector('#tip');window.module.showTooltip('panel',tip);return [tip.style.left,tip.style.top]; }");
+
+	private static Task<bool> TooltipOpenAsync(IPage page)
+		=> page.EvaluateAsync<bool>("() => document.querySelector('#tip').matches(':popover-open')");
+
+	private static async Task PressDragReleaseAsync(IPage page, ICDPSession cdp, bool touch, int x, int y, int distance)
+	{
+		if (touch)
+		{
+			await TouchAsync(cdp, "touchStart", Point(x, y));
+			if (distance != 0)
+			{
+				await TouchAsync(cdp, "touchMove", Point(x + distance, y));
+			}
+			await TouchAsync(cdp, "touchEnd");
+		}
+		else
+		{
+			await page.Mouse.MoveAsync(x, y);
+			await page.Mouse.DownAsync();
+			await page.Mouse.MoveAsync(x + distance, y);
+			await page.Mouse.UpAsync();
+		}
+
+		// A tap's click is dispatched after the gesture recognizer's delay.
+		await page.WaitForTimeoutAsync(400);
 	}
 
 	private static Task<JsonElement> CallsAsync(IPage page) => page.EvaluateAsync<JsonElement>("() => window.calls");
 
 	private static Task<JsonElement?> FramesAsync(IPage page) => page.EvaluateAsync("() => new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))");
-
-	private static object Point(int x, int y, int id = 1) => new { x, y, id };
-
-	private static Task<JsonElement?> TouchAsync(ICDPSession cdp, string type, params object[] points)
-		=> cdp.SendAsync("Input.dispatchTouchEvent", new() { ["type"] = type, ["touchPoints"] = points });
-
-	private static async Task SwipeAsync(IPage page, ICDPSession cdp, int x, int y, int dx, int dy)
-	{
-		await TouchAsync(cdp, "touchStart", Point(x, y));
-		for (var i = 1; i <= 10; i++)
-		{
-			await TouchAsync(cdp, "touchMove", Point(x + i * dx / 10, y + i * dy / 10));
-			await page.WaitForTimeoutAsync(30);
-		}
-		await TouchAsync(cdp, "touchEnd");
-		await page.WaitForTimeoutAsync(200);
-	}
 
 	private static string RepoRoot([CallerFilePath] string path = "")
 	{

@@ -2,13 +2,14 @@ using Microsoft.JSInterop;
 
 namespace GGNet.Components;
 
-internal sealed record PanelInteropOptions(bool Pan, bool PanX, bool PanY, bool Tooltip)
+internal sealed record PanelInteropOptions(bool Pan, bool PanX, bool PanY, bool Tooltip, bool Crosshair)
 {
 	public static PanelInteropOptions Create(InteractivityOptions options)
 		=> new(options.Pan,
 			options.Zoom is ZoomAxis.X or ZoomAxis.Both,
 			!options.AutoFitY && options.Zoom is ZoomAxis.Y or ZoomAxis.Both,
-			options.CursorTooltip);
+			options.CursorTooltip,
+			options.Crosshair);
 
 	public string? TouchAction => (Pan, PanX, PanY) switch
 	{

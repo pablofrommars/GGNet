@@ -1,6 +1,6 @@
 namespace GGNet.Geoms.Text;
 
-internal sealed class Selectors<T, TX, TY, TT>
+internal sealed class Selectors<T, TX, TY>
 {
 	public Func<T, TX>? X { get; set; }
 
@@ -8,5 +8,5 @@ internal sealed class Selectors<T, TX, TY, TT>
 
 	public Func<T, double>? Angle { get; set; }
 
-	public Func<T, TT>? Text { get; set; }
+	public Func<T, string?>? Text { get; set; }
 }

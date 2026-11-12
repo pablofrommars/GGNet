@@ -26,6 +26,16 @@ That stack trace names the root cause for *all* of the above.
 - A scratch project created outside the repo is un-restored *and* outside `Directory.Build.props` / `global.json`, so it hangs on restore and has no `TargetFramework`. Put scratch projects **inside** the repo tree, declare only `OutputType` + `ProjectReference`, and delete them when done.
 - Stopping a backgrounded `dotnet run` kills the parent, not the app child — the port stays bound. Reclaim it with `lsof -ti:<port> | xargs kill`.
 
+If the host still denies IPC after an unsandboxed retry, an in-process build can provide partial verification without changing project settings:
+
+```
+dotnet build GGNet.slnx -warnaserror --disable-build-servers -m:1 -p:UseSharedCompilation=false
+dotnet tests/GGNet.Headless.Tests/bin/Debug/net11.0/GGNet.Headless.Tests.dll
+dotnet tests/GGNet.Components.Tests/bin/Debug/net11.0/GGNet.Components.Tests.dll
+```
+
+The test DLLs are the existing MTP executables; invoking them directly avoids `dotnet test`'s own named-pipe launcher. This does not unblock tests that spawn builds (`McpServerEvals` and `ValidatorScriptEvals`), the demo server, or Roslyn's solution workspace loader. `dotnet format whitespace . --folder --verify-no-changes --include <changed-files>` can check whitespace without loading MSBuild, but is not the solution style gate. Report these limits explicitly; do not claim that partial verification passed every local gate. For the separate stale generated validation-using failure, use §15's rebuild remedy.
+
 ---
 
 ## 2. `dotnet build -warnaserror` fails on something that looks cosmetic
@@ -36,6 +46,7 @@ That stack trace names the root cause for *all* of the above.
 |---|---|---|
 | `CA1305` (**error**) | Culture-sensitive formatting. Breaks SVG on comma-decimal locales. | `CultureInfo.InvariantCulture`, `FormattableString.Invariant($"…")`, `sb.Append(CultureInfo.InvariantCulture, $"…")`, or route through `IFormatter<T>`. In markup, `SvgFormat.Num`/`Attr`. |
 | `CS8509` (**error**) | A `switch` over a closed `union` (`Shape`, `Element`, `ScreenPrimitive`) is missing an arm. | Add the arm. **Do not** silence it with `_ =>` — that discard is exactly what this rule buys you. Enum→SVG-string switches are a different idiom and *do* keep a throwing discard arm. |
+| `CS9383` | A descendant of a `closed` generic root introduces a type parameter absent from its base type, e.g. `Faceting1D<T, TKey> : Faceting<T>`. | Keep the root abstract and leave closure review-required; do not redesign the generic contract for syntax adoption. Geom closure was reviewed separately: its public generic text selector is adapted lazily to an invariant string selector, preserving the public API and render-time evaluation. |
 | `IDE0130` | Namespace does not match folder. | Match the folder. The one sanctioned exception is `src/GGNet/Stats/*` in the root `GGNet` namespace, encoded in `.editorconfig`. |
 | `IDE0005` | Unused using. | Strip it; do not add a suppression. |
 
@@ -107,7 +118,7 @@ Note the split when editing the MCP server: **geoms/scales are reflected live** 
 
 ## 7. "All tests passed" but the browser layer never ran
 
-`tests/GGNet.E2ETests` **self-skips every test unless `GGNET_E2E=1`** (`Fixtures/DemoAppFixture.cs`), so the default gate stays browser-free. A green `dotnet test GGNet.slnx` therefore says nothing about the executed-JS layer.
+The browser tests in `tests/GGNet.E2ETests` **self-skip unless `GGNET_E2E=1`** (`Fixtures/DemoAppFixture.cs`), so the default gate stays browser-free. The process-output tests run independently and do not execute JS. A green `dotnet test GGNet.slnx` therefore says nothing about the executed-JS layer.
 
 If you touched `src/GGNet/Components/Panel.razor.js` or its C# wrapper, run the smoke explicitly:
 
@@ -122,7 +133,7 @@ It needs a Playwright Chromium installed.
 ## 8. Test-infrastructure surprises
 
 - Test projects are **self-hosting MTP executables** (`OutputType=Exe`, `UseMicrosoftTestingPlatformRunner`). The entry point is generated — never write a `Main`.
-- Keep the **`-mtp-v2` suffix** on every xunit bump: plain `xunit.v3` pulls MTP v1. MTP v2 becomes the default only in xunit v4.
+- Keep the **`-mtp-v2` suffix** on every xunit bump so the runner choice stays explicit. Plain `xunit.v3` also selects MTP v2 on the 4.x package line; it selected MTP v1 on the 3.x package line. The 4.0.3 package still ships the xUnit.net v3 API.
 - Do **not** add `Microsoft.NET.Test.Sdk`, `xunit.runner.visualstudio`, or `coverlet.collector`. MTP is native to xunit v3 and needs no VSTest adapter; coverlet's collector is a VSTest data collector that does not run under MTP. For coverage use `Microsoft.Testing.Extensions.CodeCoverage`.
 - Mocking **internal** interfaces works because `GGNet.csproj` grants `InternalsVisibleTo("DynamicProxyGenAssembly2")`. If a mock fails to proxy, check that IVT before redesigning the seam.
 - `Moq` is a global using in `GGNet.Headless.Tests`, and `Moq.Match` collides with the globally-used `System.Text.RegularExpressions.Match`. The project's `GlobalUsings.cs` pins `global using Match = System.Text.RegularExpressions.Match;`; an ambiguous-`Match` error (`CS0104`) means that alias was lost, not that Moq must go back to a per-file using.
@@ -186,3 +197,40 @@ To exercise the real interactive component instead, run `dotnet run --project sr
 The scoped guides are hand-maintained prose and can lag the source. **The code wins.** When a guide's claim is load-bearing for what you are about to do, verify it against the source first — and when you find drift, fix the guide in the same change rather than working around it.
 
 Places drift is most likely, because they describe fast-moving areas: the interactivity/JS surface, the exported-type counts, and the test-suite totals. Counts and inventories in prose are stale by default; treat `PublicApiTests`' pinned manifest and the tests themselves as the real inventory.
+
+---
+
+## 15. RC3 upgrade exposes stale validation output or test-double JS diagnostics
+
+After changing SDKs, an incremental demo build can retain a generated global using for
+`Microsoft.Extensions.Validation.Embedded` even though the RC3 SDK only generates that embedded
+namespace for net10.0 compatibility. Regenerate outputs with
+`dotnet build GGNet.slnx -t:Rebuild -warnaserror`; do not hand-edit `obj/` or add a validation
+package to satisfy the stale using.
+
+RC3's `BL0016` analyzer also flags forwarding overloads in controlled `IJSRuntime`/
+`IJSObjectReference` test doubles. Those adapters must propagate injected failures so lifecycle
+tests can observe them. Keep any suppression scoped to the forwarding overload, with its reason;
+production interop retains the exception-handling requirements in the Blazor guide.
+
+---
+
+## 16. Verify 33 fails the build with SponsorCheck `SC021`
+
+Verify 33 requires a sponsorship/license declaration or a publisher-defined exemption. GGNet's
+non-revenue open-source status qualifies for `OpenSource`; `GGNet.Headless.Tests.csproj` declares
+that exemption and its end month in `Verify_SponsorshipExemptionUntil` (currently `2027-10`).
+Check both properties when the declaration is missing or expired, and recheck eligibility before
+renewing it. The declaration applies to the test project that consumes Verify. The publisher's
+[maintenance-fee documentation](https://github.com/VerifyTests/Verify/blob/main/docs/maintenance-fee.md)
+defines the criteria and renewal limits.
+
+---
+
+## 17. `NU190x` fails `-warnaserror` after a fresh restore
+
+**Symptom.** An incremental build passes, but a fresh restore (a new clone, `dotnet restore --force`, or a scratch project restored by `ValidatorScriptEvals` / `McpServerEvals`) fails with `error NU190x: Package '…' … has a known … severity vulnerability`.
+
+**Cause.** NuGet audit runs on restore, and `-warnaserror` promotes its findings; a no-op incremental restore hides them. The evals' `Snippet.csproj` is written to `$TMPDIR`, outside `Directory.*.props`, with `TreatWarningsAsErrors`; it inherits GGNet's package graph through its `ProjectReference`, so only a change to GGNet's own pins reaches it. `GGNet.Demo` is usually clean because its shared-framework reference prunes the ASP.NET packages.
+
+**What to do.** Find the path with `dotnet nuget why <project> <package>` and move the owning direct pin in `Directory.Packages.props` to the patched version — a dependency decision. `-p:NuGetAudit=false` only isolates the failure for diagnosis; suppressing the audit is a policy decision, not a fix. Precedent: GHSA-m28h-pj36-4364 reached GGNet as `Microsoft.AspNetCore.Components.Web` → `Microsoft.AspNetCore.Components.Forms` → `Microsoft.Extensions.Validation`, and was fixed by moving to 11.0.0.

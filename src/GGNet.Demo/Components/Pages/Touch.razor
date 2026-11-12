@@ -1,0 +1,79 @@
+@page "/touch"
+@rendermode InteractiveServer
+
+<PageTitle>Touch — GGNet Demo</PageTitle>
+
+<h1 class="text-2xl font-semibold">Touch: taps, pans and tooltips</h1>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    A press that travels less than the drag threshold stays a tap: the mark
+    callback fires once and the view does not move. Past the threshold the
+    press becomes a pan, and the click that trails it is discarded. The bar at
+    the bottom shows the raw contacts the browser delivers.
+</p>
+
+<h2 class="mt-6 text-xl font-semibold">Taps and callbacks</h2>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    Tap a mark: both counters rise by one. Tap the background: only the
+    ancestor counter rises. Drag: the axis shifts and neither counter moves.
+</p>
+
+<div class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+    <span>Mark callbacks <b data-qa="mark-clicks" class="text-lg">@markClicks</b></span>
+    <span>Last mark <b data-qa="last-mark">@lastMark</b></span>
+    <span>Ancestor clicks <b data-qa="ancestor-clicks" class="text-lg">@ancestorClicks</b></span>
+    <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" @onclick=ResetCounters @onclick:stopPropagation>Clear counters</button>
+    <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" data-qa="reset-view" @onclick=ResetViewAsync @onclick:stopPropagation>Reset view</button>
+</div>
+
+<div data-qa="tap" class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm" @onclick=OnAncestorClick>
+    <Plot @ref=tapPlot Context=@tapContext RenderMode=@renderMode Interactivity=@panX />
+</div>
+
+<h2 class="mt-8 text-xl font-semibold">Pan axes</h2>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    Each chart owns only the axes it pans; the other direction still scrolls
+    the page. Two fingers always pinch the page, never the chart. Double-tap
+    restores the authored view.
+</p>
+
+<h3 class="mt-4 font-semibold">X only — vertical swipes scroll the page</h3>
+
+<div data-qa="pan-x" class="mt-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@panXContext RenderMode=@renderMode Interactivity=@panX />
+</div>
+
+<h3 class="mt-6 font-semibold">Y only — horizontal swipes scroll the page</h3>
+
+<div data-qa="pan-y" class="mt-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@panYContext RenderMode=@renderMode Interactivity=@panY />
+</div>
+
+<h3 class="mt-6 font-semibold">Both — the chart owns every one-finger drag</h3>
+
+<div data-qa="pan-both" class="mt-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@panBothContext RenderMode=@renderMode Interactivity=@panBoth />
+</div>
+
+<h2 class="mt-8 text-xl font-semibold">Tooltip and crosshair</h2>
+
+<p class="mt-2 max-w-prose text-gray-600">
+    Tap a mark: the cursor-glued tooltip opens at the contact and the crosshair
+    snaps to it. Tap elsewhere, pan, or scroll to dismiss the tooltip.
+</p>
+
+<div data-qa="tooltip" class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@tooltipContext RenderMode=@renderMode Interactivity=@inspect />
+</div>
+
+<h3 class="mt-6 font-semibold">Mark-anchored tooltip, no gestures</h3>
+
+<div data-qa="classic" class="mt-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <Plot Context=@classicContext RenderMode=@renderMode />
+</div>
+
+<div class="h-40"></div>
+
+<ContactDiagnostics />

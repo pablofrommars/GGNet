@@ -38,10 +38,11 @@ public static partial class BuilderExtensions
 	  where TY1 : struct
 	{
 		colorBy = ResolveMapping(colorBy, panel.Context.Aesthetics.Color, inherit, nameof(colorBy));
+		Func<T2, string?>? label = text is null ? null : item => Formats.InvariantText.Of(text(item));
 
 		panel.AddTyped(() =>
 		{
-			var geom = new Text<T2, TX1, TY1, TT>(source, x, y, angleBy, text, colorBy, scale)
+			var geom = new Text<T2, TX1, TY1>(source, x, y, angleBy, label, colorBy, scale)
 			{
 				Aesthetic = new()
 				{

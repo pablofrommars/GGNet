@@ -17,9 +17,9 @@ public partial class PlotContext<T, TX, TY>
 
 	internal Selectors<T, TX, TY> Selectors { get; } = new();
 
-	internal Action<Coords.ICoordinateSystem>? XScaleDefault { get; set; }
+	internal Action<Coords.CoordinateSystem>? XScaleDefault { get; set; }
 
-	internal Action<Coords.ICoordinateSystem>? YScaleDefault { get; set; }
+	internal Action<Coords.CoordinateSystem>? YScaleDefault { get; set; }
 
 	internal Positions<TX, TY> Positions { get; } = new();
 

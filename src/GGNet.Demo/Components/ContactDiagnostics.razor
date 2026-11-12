@@ -1,0 +1,84 @@
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@* Fixed to the viewport and transparent to input, so it never takes a touch
+   meant for a chart. The module owns every value below; Blazor renders the
+   shell once. *@
+<div @ref=root data-contact-diagnostics
+     class="pointer-events-none fixed inset-x-0 bottom-0 z-40 bg-gray-900/90 px-3 py-2 font-mono text-xs text-white">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <span>touches <b data-touches class="text-base">0</b></span>
+        <span>touch max <b data-touch-max>0</b></span>
+        <span>pointers <b data-contacts class="text-base">0</b></span>
+        <span>pointer max <b data-max>0</b></span>
+        <span>down <b data-down>0</b></span>
+        <span>up <b data-up>0</b></span>
+        <span>cancel <b data-cancel>0</b></span>
+        <span>page scale <b data-scale>1.00</b></span>
+        <span>scroll <b data-scroll>0,0</b></span>
+        <button data-reset type="button" class="pointer-events-auto rounded border border-gray-500 px-2 py-0.5">Reset</button>
+    </div>
+    <div data-pointers class="mt-1 whitespace-pre-wrap text-gray-300">no active contacts</div>
+</div>
+
+@code {
+    private ElementReference root;
+
+    private IJSObjectReference? module;
+
+    private IJSObjectReference? session;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        try
+        {
+            module = await JS.InvokeAsync<IJSObjectReference>("import", "./Components/ContactDiagnostics.razor.js");
+            session = await module.InvokeAsync<IJSObjectReference>("start", root);
+        }
+        catch (Exception e) when (e is JSDisconnectedException or ObjectDisposedException or TaskCanceledException)
+        {
+        }
+    }
+
+    public async ValueTask ShowModalAsync(ElementReference dialog)
+    {
+        if (module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await module.InvokeVoidAsync("showModal", dialog);
+        }
+        catch (Exception e) when (e is JSDisconnectedException or ObjectDisposedException or TaskCanceledException)
+        {
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (session is not null)
+            {
+                await session.InvokeVoidAsync("stop");
+                await session.DisposeAsync();
+            }
+
+            if (module is not null)
+            {
+                await module.DisposeAsync();
+            }
+        }
+        catch (Exception e) when (e is JSDisconnectedException or ObjectDisposedException or TaskCanceledException)
+        {
+        }
+    }
+}

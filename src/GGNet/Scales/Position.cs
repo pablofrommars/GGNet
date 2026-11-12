@@ -13,7 +13,7 @@ internal interface IPosition : IScale
 	double Invert(double coord);
 }
 
-internal abstract class Position<TKey>(ITransformation<TKey>? transformation, (double minMult, double minAdd, double maxMult, double maxAdd) expand) : Continuous<TKey>(transformation), IPosition
+internal closed class Position<TKey>(ITransformation<TKey>? transformation, (double minMult, double minAdd, double maxMult, double maxAdd) expand) : Continuous<TKey>(transformation), IPosition
 	where TKey : struct
 {
 	protected readonly (double minMult, double minAdd, double maxMult, double maxAdd) expand = expand;

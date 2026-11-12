@@ -20,13 +20,17 @@ Scope: all test projects under `tests/`. Assumes [csharp.instructions.md](./csha
 
 Test projects are **self-hosting MTP executables**: `<OutputType>Exe</OutputType>` + `<UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>`. The entry point is generated — never write a `Main`. Runner selection lives in `global.json` (`"test": { "runner": "Microsoft.Testing.Platform" }`), which the SDK 10+ `dotnet test` honours.
 
-Keep the **`-mtp-v2` suffix** on every future xunit bump: plain `xunit.v3` pulls MTP v1. MTP v2 becomes the default only in xunit v4.
+Keep the **`-mtp-v2` suffix** on every future xunit bump to make the runner choice explicit. On the 4.x package line, plain `xunit.v3` also depends on `xunit.v3.mtp-v2`; the 3.x package line selected MTP v1 by default. Package version 4.0.3 still ships the xUnit.net v3 API and selects Microsoft.Testing.Platform 2.5.2.
+
+`GGNet.Headless.Tests.csproj` declares Verify's `OpenSource` sponsorship exemption through **October 2027**, based on GGNet being open source and generating no revenue. Verify 33 checks this declaration at build time. Recheck eligibility before renewing `Verify_SponsorshipExemptionUntil`; expired declarations fail the build. See [Verify's maintenance-fee documentation](https://github.com/VerifyTests/Verify/blob/main/docs/maintenance-fee.md).
 
 Do **not** reintroduce `Microsoft.NET.Test.Sdk`, `xunit.runner.visualstudio`, or `coverlet.collector` — MTP is native to xunit v3 and needs no VSTest adapter, and coverlet's collector is a VSTest data collector that does not run under MTP. For coverage, use `Microsoft.Testing.Extensions.CodeCoverage`.
 
 Do **not** introduce: real FluentAssertions, NSubstitute, Shouldly, NUnit, MSTest, Bogus, AutoFixture, raw `Assert.*`. There is **no Aspire, no integration-DB fixture** — GGNet is a library; tests run in-process.
 
-Test projects: `GGNet.Components.Tests` (bUnit), `GGNet.Headless.Tests` (Verify goldens + pipeline), `GGNet.Evals` (deterministic evals), `GGNet.E2ETests` (Playwright smoke over the spawned `GGNet.Demo` app — every test self-skips unless `GGNET_E2E=1`, so the default gate stays browser-free). Each has a `GlobalUsings.cs` and pulls xUnit via `<Using Include="Xunit" />`.
+Test projects: `GGNet.Components.Tests` (bUnit), `GGNet.Headless.Tests` (Verify goldens + pipeline), `GGNet.Evals` (deterministic evals), `GGNet.E2ETests` (Playwright smoke over the spawned `GGNet.Demo` app — browser cases self-skip unless `GGNET_E2E=1`; `ProcessOutputTailTests` always runs without a browser). Each has a `GlobalUsings.cs` and pulls xUnit via `<Using Include="Xunit" />`.
+
+The demo fixture drains both output streams using `Process.ReadAllLinesAsync` and retains the last 50 lines, capped at 2048 characters per line, for startup diagnostics. Teardown stops the process tree, awaits the output reader and disposes the process even if browser cleanup fails. Keep that ownership explicit when changing the fixture.
 
 ---
 

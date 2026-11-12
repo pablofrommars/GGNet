@@ -26,7 +26,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 
 	public Type PlotType => typeof(Components.Plot<T, TX, TY>);
 
-	internal Coords.ICoordinateSystem MakeCoordinateSystem()
+	internal Coords.CoordinateSystem MakeCoordinateSystem()
 	{
 		if (CoordSystem == CoordSystem.Polar)
 		{
@@ -74,7 +74,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			YScaleDefault(Coord);
 		}
 
-		Legends = new(Style);
+		Legends = [with(Style)];
 
 		Initialized = true;
 	}
@@ -304,7 +304,7 @@ public partial class PlotContext<T, TX, TY> : IPlotContext
 			Init(showGrid);
 		}
 
-		var seen = new HashSet<IStatSource>(ReferenceEqualityComparer.Instance);
+		HashSet<IStatSource> seen = [with(ReferenceEqualityComparer.Instance)];
 		RecomputeStat(Source as IStatSource, seen);
 
 		Reset();

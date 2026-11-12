@@ -7,6 +7,11 @@
     <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Verify_SponsorshipExemption>OpenSource</Verify_SponsorshipExemption>
+    <Verify_SponsorshipExemptionUntil>2027-10</Verify_SponsorshipExemptionUntil>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="AwesomeAssertions" />
     <PackageReference Include="Moq" />

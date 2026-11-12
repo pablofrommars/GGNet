@@ -14,4 +14,8 @@
     <PackageReference Include="ModelContextProtocol" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="GGNet.Evals" />
+  </ItemGroup>
+
 </Project>

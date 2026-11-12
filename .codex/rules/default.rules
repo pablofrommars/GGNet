@@ -1,5 +1,7 @@
+# Unmatched commands stay sandboxed. npm/node/curl and routine file operations use
+# the project permission profile instead of blanket prompts or unsandboxed allow rules.
 prefix_rule(
-    pattern = ["dotnet", ["build", "test", "restore", "clean", "format", "list", "sln"]],
+    pattern = ["dotnet", ["build", "test", "restore", "clean", "format", "list", "sln", "msbuild"]],
     decision = "allow",
     justification = "Routine .NET solution inspection, build, and test commands are allowed for this repository.",
     match = [
@@ -7,10 +9,24 @@ prefix_rule(
         "dotnet test",
         "dotnet restore GGNet.slnx",
         "dotnet format",
+        "dotnet msbuild GGNet.slnx -getProperty:TargetFramework",
     ],
     not_match = [
         "dotnet publish",
         "dotnet nuget push package.nupkg",
+    ],
+)
+
+prefix_rule(
+    pattern = ["dotnet", "package", ["list", "search"]],
+    decision = "allow",
+    justification = "Package inspection uses the same permissions as the pre-approved dotnet list command.",
+    match = [
+        "dotnet package list --outdated",
+        "dotnet package search NodaTime",
+    ],
+    not_match = [
+        "dotnet package add NodaTime",
     ],
 )
 
@@ -165,13 +181,14 @@ prefix_rule(
 )
 
 prefix_rule(
-    pattern = [["ls", "cat", "rg", "grep", "find", "tree", "head", "tail", "wc", "pwd", "which", "diff"]],
+    pattern = [["ls", "cat", "rg", "grep", "find", "tree", "head", "tail", "wc", "pwd", "which", "diff", "ps"]],
     decision = "allow",
     justification = "Local read-only inspection commands are allowed.",
     match = [
         "rg Codex src",
         "find src -name '*.cs'",
         "wc -l README.md",
+        "ps -eo pid,ppid,args",
     ],
 )
 
@@ -186,53 +203,12 @@ prefix_rule(
 )
 
 prefix_rule(
-    pattern = [["mkdir", "touch", "cp", "mv"]],
-    decision = "prompt",
-    justification = "Filesystem mutation commands should be confirmed unless handled by Codex file-edit tools.",
-    match = [
-        "mkdir generated",
-        "cp a b",
-        "mv old new",
-    ],
-)
-
-prefix_rule(
-    pattern = ["rm"],
-    decision = "prompt",
-    justification = "Removing files should be confirmed.",
-    match = [
-        "rm temp.txt",
-    ],
-)
-
-prefix_rule(
     pattern = ["rm", "-rf"],
     decision = "forbidden",
     justification = "Recursive force removal is destructive; do it manually outside Codex.",
     match = [
         "rm -rf out",
         "rm -rf /tmp/example",
-    ],
-)
-
-prefix_rule(
-    pattern = [["npm", "npx", "pnpm", "node"]],
-    decision = "prompt",
-    justification = "Node tooling can execute package scripts or download code and should be confirmed.",
-    match = [
-        "npm install",
-        "npm run build",
-        "npx playwright install",
-    ],
-)
-
-prefix_rule(
-    pattern = [["curl", "http"]],
-    decision = "prompt",
-    justification = "Network calls should be confirmed unless they are already allowed by the active permission profile.",
-    match = [
-        "curl https://learn.microsoft.com",
-        "http GET https://api.github.com",
     ],
 )
 
@@ -254,5 +230,14 @@ prefix_rule(
     justification = "Do not run elevated commands from Codex.",
     match = [
         "sudo dotnet workload install wasm-tools",
+    ],
+)
+
+prefix_rule(
+    pattern = ["rm", "-fr"],
+    decision = "forbidden",
+    justification = "Recursive force removal is destructive; do it manually outside Codex.",
+    match = [
+        "rm -fr out",
     ],
 )

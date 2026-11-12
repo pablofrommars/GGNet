@@ -1,4 +1,66 @@
-sandbox_mode = "workspace-write"
+# Mirrors .claude/settings.json; automatic review matches the user's Claude auto mode.
+# Legacy sandbox_mode/sandbox_workspace_write settings in any loaded layer override this profile.
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+default_permissions = "ggnet"
+
+[features]
+network_proxy = true
+
+[permissions.ggnet]
+description = "Claude-equivalent GGNet development access."
+extends = ":workspace"
+
+[permissions.ggnet.filesystem]
+"~/.nuget" = "write"
+"~/.dotnet" = "write"
+"~/.npm" = "write"
+"~/.local/share/NuGet" = "write"
+"~/Library/Caches/ms-playwright" = "write"
+"~/.cache/ms-playwright" = "write"
+"~/.ssh" = "deny"
+"~/.aws" = "deny"
+"~/.azure" = "deny"
+"~/.gnupg" = "deny"
+"~/.config/gh" = "deny"
+
+[permissions.ggnet.filesystem.":workspace_roots"]
+".env" = "deny"
+".env.*" = "deny"
+"**/secrets.json" = "deny"
+"**/.aws/credentials" = "deny"
+"**/.azure/**" = "deny"
+"**/id_rsa" = "deny"
+"**/id_ed25519" = "deny"
+"**/*.pfx" = "deny"
+"**/*.pem" = "deny"
+"**/*.key" = "deny"
+
+[permissions.ggnet.network]
+enabled = true
+allow_local_binding = true
+
+[permissions.ggnet.network.domains]
+"github.com" = "allow"
+"api.github.com" = "allow"
+"codeload.github.com" = "allow"
+"raw.githubusercontent.com" = "allow"
+"objects.githubusercontent.com" = "allow"
+"*.nuget.org" = "allow"
+"api.nuget.org" = "allow"
+"www.nuget.org" = "allow"
+"dotnet.microsoft.com" = "allow"
+"learn.microsoft.com" = "allow"
+"builds.dotnet.microsoft.com" = "allow"
+"aka.ms" = "allow"
+"*.azureedge.net" = "allow"
+"pkgs.dev.azure.com" = "allow"
+"registry.npmjs.org" = "allow"
+"*.npmjs.org" = "allow"
+"www.data-to-viz.com" = "allow"
+"localhost" = "allow"
+"127.0.0.1" = "allow"
+"::1" = "allow"
 
 [tui]
 vim_mode_default = true

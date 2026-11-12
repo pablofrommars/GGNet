@@ -36,7 +36,9 @@ else
        the opt-in — non-interactive plots keep today's flat structure. *@
     @* Continuous gestures use the capture group's screen transform; discrete
        events stay Blazor's. *@
-    <g @ref=captureRef @ondblclick=OnResetViewAsync @onmouseleave=OnCrosshairLeave>
+    @* INVARIANT: a touch long-press otherwise selects nearby chart text, an axis
+       label in practice; mouse drags here are already kept from selecting. *@
+    <g @ref=captureRef style="user-select: none; -webkit-user-select: none;" @ondblclick=OnResetViewAsync @onmouseleave=OnCrosshairLeave>
         @renderContent
     </g>
 }
@@ -128,6 +130,7 @@ else
                           height=@Num(Area.Height)
                           fill="none"
                           pointer-events="all"
+                          data-ggnet-strip=""
                           @onmouseover=@(() => OnCrosshairOver(center)) />
                 }
             }

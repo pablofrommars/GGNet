@@ -17,6 +17,8 @@ Keep the split: never compute coordinates in a component, never emit SVG from th
 
 Both `Shape` (data) and `ScreenPrimitive` (screen) are closed **`union`** types — the walker's `switch` has no discard arm, so adding a primitive is a compile error until every walker handles it (`CS8509` = error; see the C# guide §6).
 
+`Coords/CoordinateSystem.cs` is the closed reference hierarchy for Cartesian and polar projection. A panel owns its measured instance: `Measure` updates the state subsequently used by `Project`, `Unproject` and `ComposeGrid`. Retain that lifetime and reference behavior when changing coordinate dispatch; the public `ICoord` component contract remains separate.
+
 ---
 
 ## 2. The Invariant-Culture Choke Point

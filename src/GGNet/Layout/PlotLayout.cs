@@ -149,7 +149,7 @@ internal static class PlotLayout
 		var style = inputs.Style;
 		var wrapper = inputs.Wrapper;
 
-		var zones = new List<Zone>(panels.Count);
+		List<Zone> zones = [with(panels.Count)];
 
 		var width = wrapper.Width - inputs.Strip - (inputs.N.cols - 1.0) * style.Panel.Spacing.X;
 
