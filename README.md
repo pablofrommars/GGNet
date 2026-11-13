@@ -89,6 +89,42 @@ Things to keep in mind when several plots share a page:
 
 The demo's `/overview-detail` page is a working example.
 
+### Crosshair and readout
+
+`Interactivity = new() { Crosshair = true }` gives an interactive plot one inspected x position, drawn as a line with its x label in every panel that shares the x scale. A mouse moves it by hovering and pins it with a click; a finger pins it with a tap and scrubs it with a sideways drag, and a vertical drag still scrolls the page. Left and Right step between sample times and Escape clears. A pin is a data value: it survives new data, resizing, view changes and a new `Context`, and only Escape, `ClearInspectionAsync` or the host end it.
+
+A layer joins the readout with `inspect:`. Each series finds its own reading at the inspected position, under a policy you choose per series, and says which sample it used:
+
+```csharp
+PlotContext.Build(temperature, r => r.At, r => r.Value)
+	.Scale_X_Instant()
+	.Panel(p => p
+		.Geom_Line(inspect: new("Temperature", r => FormattableString.Invariant($"{r.Value:0.0} °C")) { MaxDuration = Duration.FromMinutes(10) })
+		.Geom_Line(target, r => r.At, r => r.Value, inspect: new("Target", r => FormattableString.Invariant($"{r.Value:0.0} °C"), InspectPolicy.Step)))
+	.Panel(p => p
+		.Geom_Point(gravity, r => r.At, r => r.Value, inspect: new("Gravity", r => FormattableString.Invariant($"{r.Value:0.000}"), InspectPolicy.Previous) { MaxDuration = Duration.FromHours(3) }))
+	.Style();
+```
+
+```razor
+<Plot T="Sample" TX="Instant" TY="double" @ref=plot Context=@context RenderMode=@RenderMode.Interactive
+      Interactivity=@(new() { Crosshair = true, Pan = true })
+      @bind-Inspection=inspection ReadingsChanged=@OnReadingsChanged />
+```
+
+- **Policies.** `Nearest` takes the closest sample on either side, `Previous` the last one at or before the position, both within `MaxDuration` (`Instant` x) or `MaxDistance` (numeric x). `Step` takes the last one however old: a value in effect. `Containing`, on `Geom_Bar` only, takes the bar whose x extent holds the position. Nothing is interpolated. A series with no qualifying sample reports `ReadingKind.Missing` with its `Missing` text, never a distant value.
+- **The readout is yours.** `ReadingsChanged` hands you `InspectionReadings<TX>`: the position, one `Reading<TX>` per series (name, group, the sample's own x, how it was obtained, the formatted value) and whether the position lies outside the visible window. GGNet draws the line, its label and a marker on each sample that was read; it renders no readout and no clear button.
+- **Two notifications.** `InspectionChanged` fires when the position or its pinned state changes through a gesture, a key or a clear. `ReadingsChanged` fires when the readout changes, which includes live data arriving under a pin that did not move.
+- **Navigation.** With `Pan` as well, a mouse drag pans, and two fingers pan and pinch the x window; one finger never pans there. The plot area then stops pinch-zooming the page. Without `Pan`, two fingers keep pinch-zooming the page.
+- **Where readings exist.** On `Instant` and numeric x, for `Geom_Line`, `Geom_Point`, `Geom_Area` and `Geom_Bar`. Other geoms are not read. An inspected layer on a `LocalDateTime` or discrete x axis throws when the plot mounts with `Crosshair`; the line itself works there, snapped. Facets with `freeX` and flipped plots get a line local to one panel, with no pin and no readout. Separate plots are not synchronized: carry `Inspection` between them yourself.
+
+Four cautions for a page that uses it:
+
+- Give the readout a fixed height and put it where no finger covers it. A readout that grows when a reading arrives moves the chart under a resting pointer, and a pointer that leaves the plot area ends an unpinned crosshair.
+- Under a shared crosshair a touch tap pins and goes no further: it does not reach a mark's `onclick` or a click handler around the chart. A mouse click reaches both.
+- A marker sits at the row's own value. In a stacked area or bar it is not on the stacked outline.
+- Name `Plot`'s type arguments when binding `ReadingsChanged` or `ViewChanged` to a method.
+
 ### Stats
 
 Stats are sources, not layers: each `Stat.*` call returns a typed source that any geom draws unchanged, recomputed on every render pass so streaming data stays current.

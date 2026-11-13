@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace GGNet.Components;
 
+using Readings;
 using Rendering;
 
 public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAsyncDisposable
@@ -31,6 +32,18 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	/// <summary>Raised once after each committed change of the view window: a wheel zoom, a finished drag pan, the reset gesture, or a host command. A drag preview raises nothing until it commits. The argument carries the cause and both windows in data units.</summary>
 	[Parameter]
 	public EventCallback<ViewChange<TX, TY>> ViewChanged { get; init; }
+
+	/// <summary>The crosshair's position, for <c>@bind-Inspection</c>. Null is no inspection. Setting it from the host moves, pins or clears the crosshair; it survives a new <c>Context</c>. Needs <c>Interactivity</c> with <c>Crosshair</c>.</summary>
+	[Parameter]
+	public Inspection<TX>? Inspection { get; init; }
+
+	/// <summary>Raised when the crosshair's position or pinned state changes through a gesture or <c>ClearInspectionAsync</c>. Not raised when only the readings change.</summary>
+	[Parameter]
+	public EventCallback<Inspection<TX>?> InspectionChanged { get; init; }
+
+	/// <summary>Raised whenever the readout changes: after the crosshair moves, and when data changes under a position that stays where it is.</summary>
+	[Parameter]
+	public EventCallback<InspectionReadings<TX>> ReadingsChanged { get; init; }
 
 	[Parameter(CaptureUnmatchedValues = true)]
 	public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
@@ -64,6 +77,10 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	private bool parametersAccepted;
 	private InteractivityOptions? initialInteractivity;
 	private ((double min, double max)? x, (double min, double max)? y) reportedView;
+	private bool inspectionSupplied;
+	private Inspection<TX>? inspection;
+	private Inspection<TX>? pinned;
+	private InspectionReadings<TX>? readings;
 
 	private readonly RenderFragment renderLegendGradients;
 	private readonly RenderFragment renderLegend;
@@ -85,6 +102,10 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 			if (string.Equals(parameter.Name, nameof(Interactivity), StringComparison.OrdinalIgnoreCase))
 			{
 				requested = (InteractivityOptions?)parameter.Value;
+			}
+			else if (string.Equals(parameter.Name, nameof(Inspection), StringComparison.OrdinalIgnoreCase))
+			{
+				inspectionSupplied = true;
 			}
 		}
 
@@ -125,6 +146,8 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		definitionsRenderModeHandler = RenderModeHandler?.Child();
 
 		Compose(RenderTarget.Render);
+
+		RequireReadableAxis();
 	}
 
 	protected override async Task OnParametersSetAsync()
@@ -138,9 +161,216 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 			if (!ReferenceEquals(renderedContext, Context))
 			{
 				reportedView = (Context.Positions.X.View, Context.Positions.Y.View);
+
+				if (Interactivity is { Crosshair: true })
+				{
+					Context.Render();
+
+					RequireReadableAxis();
+				}
 			}
 
 			await RefreshAsync(RenderTarget.Render, CancellationToken.None);
+		}
+
+		if (inspectionSupplied)
+		{
+			inspectionSupplied = false;
+
+			await InspectAsync(Inspection, notify: false);
+		}
+	}
+
+	/// <summary>The current readout: the inspected position and one reading per inspected series. Null until something is inspected.</summary>
+	public InspectionReadings<TX>? Readings => readings;
+
+	/// <summary>Clears the crosshair and its readout, and reports the change through <c>InspectionChanged</c> and <c>ReadingsChanged</c>. This and the Escape key are the only ways an inspection ends.</summary>
+	public Task ClearInspectionAsync() => InvokeAsync(() => InspectAsync(null, notify: true));
+
+	internal bool InspectsSharedX => Interactivity is { Crosshair: true }
+		&& !Context.Flip
+		&& Context.Faceting is not { FreeX: true }
+		&& Context.Positions.X.Scales.Count == 1;
+
+	internal Inspection<TX>? CurrentInspection => inspection;
+
+	internal Task RestoreInspectionAsync() => InspectAsync(pinned, notify: true);
+
+	internal async Task InspectAsync(Inspection<TX>? value, bool notify)
+	{
+		if (Interactivity is not { Crosshair: true } || EqualityComparer<Inspection<TX>?>.Default.Equals(inspection, value))
+		{
+			return;
+		}
+
+		inspection = value;
+
+		if (value is null or { Pinned: true })
+		{
+			pinned = value;
+		}
+
+		for (var i = 0; i < Context.Panels.Count; i++)
+		{
+			Context.Panels[i].Component?.RefreshCursor();
+		}
+
+		if (notify && InspectionChanged.HasDelegate)
+		{
+			await InspectionChanged.InvokeAsync(value);
+		}
+
+		await ReportReadingsAsync();
+	}
+
+	private IReadOnlyDictionary<string, object>? keyboard;
+
+	private IReadOnlyDictionary<string, object>? Keyboard => Interactivity is { Crosshair: true }
+		? keyboard ??= new Dictionary<string, object>
+		{
+			["tabindex"] = "0",
+			["onkeydown"] = EventCallback.Factory.Create<KeyboardEventArgs>(this, OnKeyDownAsync)
+		}
+		: null;
+
+	private Task OnKeyDownAsync(KeyboardEventArgs e) => e.Key switch
+	{
+		"Escape" => InspectAsync(null, notify: true),
+		"ArrowRight" => StepAsync(forward: true),
+		"ArrowLeft" => StepAsync(forward: false),
+		_ => Task.CompletedTask
+	};
+
+	private Task StepAsync(bool forward)
+	{
+		if (!InspectsSharedX || !InspectAxis.Supports<TX>())
+		{
+			return Task.CompletedTask;
+		}
+
+		var scale = Context.Positions.X.Scales[0];
+		var from = inspection is { } current
+			? InspectAxis.Coordinate(current.X)
+			: scale.Unmap(forward ? scale.Range.min : scale.Range.max) is { } edge
+				? InspectAxis.Coordinate(edge)
+				: double.NaN;
+
+		if (double.IsNaN(from))
+		{
+			return Task.CompletedTask;
+		}
+
+		double? best = null;
+
+		for (var i = 0; i < Context.Panels.Count; i++)
+		{
+			var geoms = Context.Panels[i].Geoms;
+
+			for (var j = 0; j < geoms.Count; j++)
+			{
+				var series = geoms[j].StepSeries();
+
+				for (var k = 0; k < series.Count; k++)
+				{
+					var candidate = forward ? series[k].After(from) : series[k].Before(from);
+
+					if (candidate is { } value && (best is not { } held || (forward ? value < held : value > held)))
+					{
+						best = value;
+					}
+				}
+			}
+		}
+
+		return best is { } next ? InspectAsync(new(InspectAxis.Value<TX>(next)), notify: true) : Task.CompletedTask;
+	}
+
+	private void RequireReadableAxis()
+	{
+		if (Interactivity is not { Crosshair: true })
+		{
+			return;
+		}
+
+		for (var i = 0; i < Context.Panels.Count; i++)
+		{
+			var geoms = Context.Panels[i].Geoms;
+
+			for (var j = 0; j < geoms.Count; j++)
+			{
+				if (!geoms[j].Inspected)
+				{
+					continue;
+				}
+
+				if (!InspectAxis.Supports<TX>())
+				{
+					throw InspectAxis.Unsupported<TX>();
+				}
+
+				geoms[j].InspectSeries();
+			}
+		}
+	}
+
+	private Task ReportReadingsAsync()
+	{
+		var next = Read();
+
+		if (next is null ? readings is null : next.Equals(readings))
+		{
+			return Task.CompletedTask;
+		}
+
+		readings = next ?? new(null, [], false);
+
+		return ReadingsChanged.HasDelegate ? ReadingsChanged.InvokeAsync(readings) : Task.CompletedTask;
+	}
+
+	private InspectionReadings<TX>? Read()
+	{
+		if (inspection is not { } current)
+		{
+			return readings is null ? null : new(null, [], false);
+		}
+
+		var scale = Context.Positions.X.Scales[0];
+		var mapped = scale.Map(current.X);
+		var outside = !(mapped >= scale.Range.min && mapped <= scale.Range.max);
+
+		List<Reading<TX>> values = [];
+
+		if (InspectsSharedX && InspectAxis.Supports<TX>())
+		{
+			var cursor = InspectAxis.Coordinate(current.X);
+
+			for (var i = 0; i < Context.Panels.Count; i++)
+			{
+				var geoms = Context.Panels[i].Geoms;
+
+				for (var j = 0; j < geoms.Count; j++)
+				{
+					var series = geoms[j].InspectSeries();
+
+					for (var k = 0; k < series.Count; k++)
+					{
+						values.Add(InspectAxis.Reading<TX>(series[k].Read(cursor), cursor));
+					}
+				}
+			}
+		}
+
+		return new(current, values, outside);
+	}
+
+	private async Task ReportReadingsSafelyAsync()
+	{
+		try
+		{
+			await InvokeAsync(ReportReadingsAsync);
+		}
+		catch (ObjectDisposedException)
+		{
 		}
 	}
 
@@ -187,6 +417,11 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		}
 
 		definitionsRenderModeHandler?.Refresh();
+
+		if (inspection is not null)
+		{
+			_ = ReportReadingsSafelyAsync();
+		}
 
 		for (var i = 0; i < Context.Panels.Count; i++)
 		{

@@ -17,7 +17,7 @@ with `npm ci && npm run tailwind:build` from this directory.
 | Page | Exercises |
 |---|---|
 | `/touch` | Tap versus drag, mark callbacks, an ancestor click handler, each pan axis, pinch ownership, double-tap reset, cursor-glued and mark-anchored tooltips, crosshair. |
-| `/touch-layout` | A chart in a two-way scroll container, in a modal `<dialog>`, at three container widths, and across unmount, remount and navigation. |
+| `/touch-layout` | A chart in a two-way scroll container, in a modal `<dialog>`, at three container widths, and across unmount, remount and navigation. Only the width chart has the crosshair; the others pan with one finger and keep the click that follows an inspected mark. |
 
 Both pages carry the **contact diagnostic**, a bar fixed to the bottom of the viewport. It reads
 input on the window, ahead of GGNet's gesture module, at two layers:
@@ -50,6 +50,22 @@ The header prints the build identity (`Version+SourceRevisionId`) under the navi
 On the overview and detail charts a tap activates about 200 ms after it lands, so that a double-tap
 reset is not mistaken for it. A double tap slower than that opens the detail and then resets; 300 ms
 avoided this but felt laggy in physical QA.
+
+## Time cursor page
+
+`/time-cursor` exercises the shared crosshair and its readout on 24 generated hours in which no two
+series are sampled at the same instant.
+
+| Section | Exercises |
+|---|---|
+| Time cursor | Four time-aligned panels with `Crosshair` and `Pan`: temperature (nearest within 10 minutes) with a stepped target (value in effect) and an ambient probe that stops reporting after nine hours (missing), gravity sampled irregularly (previous within 3 hours), pressure, and cooling intervals drawn as bars (the bar containing the time, `off` between bars). The readout above the chart has a fixed height. **Clear** ends the inspection, **Reset view** restores the window, **Append readings** adds samples at the end of temperature and pressure, **New context** rebuilds the plot context. The counters under the readout show position changes, readout changes, view changes, the window and its length, and clicks that reached a gravity mark or the chart's container. |
+| Crosshair without navigation | The crosshair with no readout and no `Pan`: two fingers still pinch the page. |
+| Snapped axes | A discrete x axis: the line snaps to the category under the pointer. |
+| Independent x axes | `freeX` facets: the line stays in the panel under the pointer and does not pin. |
+
+On a touchscreen: tap to pin, drag sideways to scrub, drag vertically to scroll, and use two fingers
+on the first chart to pan and pinch the time window. A tap on a gravity mark must leave both click
+counters at zero.
 
 ## Standalone deployment to a touch device
 

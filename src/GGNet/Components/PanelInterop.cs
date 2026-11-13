@@ -2,7 +2,7 @@ using Microsoft.JSInterop;
 
 namespace GGNet.Components;
 
-internal sealed record PanelInteropOptions(bool Pan, bool PanX, bool PanY, bool Tooltip, bool Crosshair, string? Group = null, bool SharedX = false, bool SharedY = false)
+internal sealed record PanelInteropOptions(bool Pan, bool PanX, bool PanY, bool Tooltip, bool Crosshair, string? Group = null, bool SharedX = false, bool SharedY = false, string? Cursor = null, bool CursorContinuous = false)
 {
 	public static PanelInteropOptions Create(InteractivityOptions options)
 		=> new(options.Pan,
@@ -11,7 +11,11 @@ internal sealed record PanelInteropOptions(bool Pan, bool PanX, bool PanY, bool 
 			options.CursorTooltip,
 			options.Crosshair);
 
-	public string? TouchAction => (Pan, PanX, PanY) switch
+	public bool TwoFingerX => Cursor == PanelInterop.SharedCursor && Pan && PanX;
+
+	public string? TouchAction => Cursor != PanelInterop.SharedCursor ? PanTouchAction : TwoFingerX ? "pan-y" : "pan-y pinch-zoom";
+
+	private string? PanTouchAction => (Pan, PanX, PanY) switch
 	{
 		(true, true, true) => "pinch-zoom",
 		(true, true, false) => "pan-y pinch-zoom",
@@ -25,6 +29,8 @@ internal sealed class PanelInterop(IJSRuntime runtime) : IAsyncDisposable
 	internal const string ModulePath = "./_content/GGNet/Components/Panel.razor.js";
 	internal const string InitializeMethod = "initialize";
 	internal const string ShowTooltipMethod = "showTooltip";
+	internal const string SharedCursor = "shared";
+	internal const string LocalCursor = "local";
 	internal const string DisposeMethod = "dispose";
 
 	private IJSObjectReference? module;

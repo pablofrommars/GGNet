@@ -25,6 +25,7 @@ public static partial class BuilderExtensions
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	/// <param name="piecewise">Break the path at NaN y values (pen lift) instead of skipping them.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IReadOnlyList<T2> source,
@@ -37,10 +38,12 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, RenderFragment>? tooltip = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-	  (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false)
+	  (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false, Inspect<T2>? inspect = null)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
+		inspect?.RequireSampled(nameof(Geom_Line));
+
 		colorBy = ResolveMapping(colorBy, panel.Context.Aesthetics.Color, inherit, nameof(colorBy));
 		lineTypeBy = ResolveMapping(lineTypeBy, panel.Context.Aesthetics.LineType, inherit, nameof(lineTypeBy));
 
@@ -57,6 +60,7 @@ public static partial class BuilderExtensions
 				},
 				OnClick = onclick,
 				OnMouseOver = onmouseover,
+				Inspect = inspect,
 				OnMouseOut = onmouseout
 			};
 
@@ -85,6 +89,7 @@ public static partial class BuilderExtensions
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	/// <param name="piecewise">Break the path at NaN y values (pen lift) instead of skipping them.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Line<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IReadOnlyList<T2> source,
@@ -97,11 +102,11 @@ public static partial class BuilderExtensions
 	  Func<T2, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T2, RenderFragment>? tooltip = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-	  (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false)
+	  (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false, Inspect<T2>? inspect = null)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Line(source, x, y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, inherit: inherit, piecewise: piecewise);
+		context.Default_Panel().Geom_Line(source, x, y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, inherit: inherit, piecewise: piecewise, inspect: inspect);
 
 		return context;
 	}
@@ -124,6 +129,7 @@ public static partial class BuilderExtensions
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	/// <param name="piecewise">Break the path at NaN y values (pen lift) instead of skipping them.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PanelFactory<T, TX, TY> Geom_Line<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
@@ -135,11 +141,11 @@ public static partial class BuilderExtensions
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T, RenderFragment>? tooltip = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-	  (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false)
+	  (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false, Inspect<T>? inspect = null)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Line(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, inherit: inherit, piecewise: piecewise);
+		return Geom_Line(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, inherit: inherit, piecewise: piecewise, inspect: inspect);
 	}
 
 	/// <summary>
@@ -160,6 +166,7 @@ public static partial class BuilderExtensions
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
 	/// <param name="piecewise">Break the path at NaN y values (pen lift) instead of skipping them.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PlotContext<T, TX, TY> Geom_Line<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
@@ -171,11 +178,11 @@ public static partial class BuilderExtensions
 	  Func<T, MouseEventArgs, Task>? onmouseout = null,
 	  Func<T, RenderFragment>? tooltip = null,
 	  double strokeWidth = 1.07, string color = "#23d0fc", double opacity = 1.0, LineType lineType = Solid,
-	  (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false)
+	  (bool x, bool y)? scale = null, bool inherit = true, bool piecewise = false, Inspect<T>? inspect = null)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Line(x, y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, inherit: inherit, piecewise: piecewise);
+		context.Default_Panel().Geom_Line(x, y, colorBy, lineTypeBy, onclick, onmouseover, onmouseout, tooltip, strokeWidth, color, opacity, lineType, scale, inherit: inherit, piecewise: piecewise, inspect: inspect);
 
 		return context;
 	}

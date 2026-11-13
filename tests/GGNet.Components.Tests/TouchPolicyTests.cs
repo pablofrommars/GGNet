@@ -120,4 +120,32 @@ public class TouchPolicyTests : BunitContext
 		cut.Markup.Should().NotContain("touch-action");
 		JSInterop.Invocations.Should().BeEmpty();
 	}
+
+	// Under a shared crosshair one finger scrubs sideways and scrolls the page
+	// vertically. Page pinch is given up only where two fingers navigate the
+	// chart: with Pan, along an x axis the gestures drive.
+	[Theory]
+	[InlineData(false, ZoomAxis.X, "pan-y pinch-zoom")]
+	[InlineData(true, ZoomAxis.X, "pan-y")]
+	[InlineData(true, ZoomAxis.Both, "pan-y")]
+	[InlineData(true, ZoomAxis.Y, "pan-y pinch-zoom")]
+	public void ASharedCrosshairGivesUpPagePinchOnlyForTwoFingerNavigation(bool pan, ZoomAxis zoom, string touchAction)
+	{
+		// Arrange
+
+		JSInterop.Mode = JSRuntimeMode.Loose;
+		var context = Context();
+
+		// Act
+
+		var cut = Render<Plot<P, double, double>>(parameters => parameters
+			.Add(p => p.Context, context)
+			.Add(p => p.RenderMode, RenderMode.InteractiveAuto)
+			.Add(p => p.Interactivity, new InteractivityOptions { Crosshair = true, Pan = pan, Zoom = zoom }));
+
+		// Assert
+
+		cut.FindAll("svg[data-ggnet-viewport]").Should().ContainSingle()
+			.Which.GetAttribute("style").Should().Contain($"touch-action: {touchAction};");
+	}
 }

@@ -21,6 +21,7 @@ public static partial class BuilderExtensions
 	/// <param name="position"><c>Stack</c> piles series on a common baseline; <c>Identity</c> overlays them.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IReadOnlyList<T2> source,
@@ -33,10 +34,12 @@ public static partial class BuilderExtensions
 	  Func<T2, RenderFragment>? tooltip = null,
 	  string fill = "#23d0fc", double fillOpacity = 1.0,
 	  PositionAdjustment position = PositionAdjustment.Identity,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T2>? inspect = null)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
+		inspect?.RequireSampled(nameof(Geom_Area));
+
 		fillBy = ResolveMapping(fillBy, panel.Context.Aesthetics.Fill, inherit, nameof(fillBy));
 
 		panel.AddTyped(() =>
@@ -45,6 +48,7 @@ public static partial class BuilderExtensions
 			{
 				OnClick = onclick,
 				OnMouseOver = onmouseover,
+				Inspect = inspect,
 				OnMouseOut = onmouseout,
 				Aesthetic = new()
 				{
@@ -75,6 +79,7 @@ public static partial class BuilderExtensions
 	/// <param name="position"><c>Stack</c> piles series on a common baseline; <c>Identity</c> overlays them.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Area<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IReadOnlyList<T2> source,
@@ -87,11 +92,11 @@ public static partial class BuilderExtensions
 	  Func<T2, RenderFragment>? tooltip = null,
 	  string fill = "#23d0fc", double fillOpacity = 1.0,
 	  PositionAdjustment position = PositionAdjustment.Identity,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T2>? inspect = null)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Area(source, x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit: inherit);
+		context.Default_Panel().Geom_Area(source, x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit: inherit, inspect: inspect);
 
 		return context;
 	}
@@ -111,6 +116,7 @@ public static partial class BuilderExtensions
 	/// <param name="position"><c>Stack</c> piles series on a common baseline; <c>Identity</c> overlays them.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PanelFactory<T, TX, TY> Geom_Area<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
@@ -122,11 +128,11 @@ public static partial class BuilderExtensions
 	  Func<T, RenderFragment>? tooltip = null,
 	  string fill = "#23d0fc", double fillOpacity = 1.0,
 	  PositionAdjustment position = PositionAdjustment.Identity,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T>? inspect = null)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Area(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit: inherit);
+		return Geom_Area(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit: inherit, inspect: inspect);
 	}
 
 	/// <summary>
@@ -144,6 +150,7 @@ public static partial class BuilderExtensions
 	/// <param name="position"><c>Stack</c> piles series on a common baseline; <c>Identity</c> overlays them.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PlotContext<T, TX, TY> Geom_Area<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
@@ -155,11 +162,11 @@ public static partial class BuilderExtensions
 	  Func<T, RenderFragment>? tooltip = null,
 	  string fill = "#23d0fc", double fillOpacity = 1.0,
 	  PositionAdjustment position = PositionAdjustment.Identity,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T>? inspect = null)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Area(x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit: inherit);
+		context.Default_Panel().Geom_Area(x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, position, scale, inherit: inherit, inspect: inspect);
 
 		return context;
 	}

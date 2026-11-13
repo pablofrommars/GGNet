@@ -1,6 +1,7 @@
 ﻿using GGNet.Buffers;
 using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Readings;
 using GGNet.Scales;
 using GGNet.Shapes;
 using GGNet.Exceptions;
@@ -26,6 +27,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 	private readonly bool animated;
 
 	private bool flip;
+	private Scales.Position<TX>? xPosition;
 
 	public Bar(
 	  IReadOnlyList<T> source,
@@ -88,6 +90,7 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 		}
 
 		flip = panel.Data.Flip;
+		xPosition = flip ? null : panel.X as Scales.Position<TX>;
 
 		if (flip)
 		{
@@ -334,6 +337,31 @@ internal sealed class Bar<T, TX, TY> : Geom<T, TX, TY>
 		else
 		{
 			throw new NotImplementedException();
+		}
+	}
+
+	protected override IReadOnlyList<ISeriesIndex> InspectSeries(Inspect<T> inspect)
+		=> SeriesIndex<T>.Build(
+			inspect,
+			Included(),
+			InspectAxis.Coordinate(Selectors.X!),
+			InspectAxis.HasValue(Selectors.Y!),
+			InspectGroup.Of(Aesthetics.Fill),
+			item => (Positions.X.Map(item), Positions.Y.Map(item)),
+			InspectAxis.Limit<T, TX>(inspect),
+			barWidth,
+			xPosition is null ? null : item => Positions.X.Map(item),
+			xPosition is { } position ? cursor => Mapped(position, cursor) : null);
+
+	private static double Mapped(Scales.Position<TX> position, double cursor)
+	{
+		try
+		{
+			return position.Map(InspectAxis.Value<TX>(cursor));
+		}
+		catch (GGNetUserException)
+		{
+			return double.NaN;
 		}
 	}
 

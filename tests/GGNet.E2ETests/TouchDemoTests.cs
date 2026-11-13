@@ -79,7 +79,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 	[InlineData(14, 0)]
 	[InlineData(0, -14)]
 	[InlineData(10, 10)]
-	public async Task TapNearAMarkInspectsThatMarkWithTooltipAndCrosshairTogether(int dx, int dy)
+	public async Task TapNearAMarkOpensItsTooltipAndPinsTheCrosshairUnderTheFinger(int dx, int dy)
 	{
 		// Arrange — 14 px misses an 8 px mark by a finger's width but stays within reach.
 
@@ -102,7 +102,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		using var _ = new AssertionScope();
 		text.Should().Be(await session.MarkTextAsync("tooltip"));
 		crosshair.Should().NotBeNull();
-		crosshair!.Value.Should().BeApproximately(x, 6, "the crosshair follows the inspected mark, not the previous miss");
+		crosshair!.Value.Should().BeApproximately(x + dx, 1.5, "the crosshair is the tapped position; only the tooltip belongs to the mark");
 		session.Errors.Should().BeEmpty();
 	}
 
@@ -158,7 +158,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 	}
 
 	[Fact]
-	public async Task InspectingAnotherChartReleasesTheFirst()
+	public async Task InspectingAnotherChartReleasesTheFirstTooltipAndKeepsItsPin()
 	{
 		// Arrange
 
@@ -180,7 +180,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 
 		using var _ = new AssertionScope();
 		before.Should().NotBeNull();
-		(await session.CrosshairXAsync("responsive")).Should().BeNull();
+		(await session.CrosshairXAsync("responsive")).Should().Be(before, "a pin ends only when it is cleared");
 		(await session.Page.Locator("[data-qa=responsive] div.container[popover]").CountAsync()).Should().Be(0);
 		(await session.Page.Locator("[data-qa=mount] div.container[popover]").CountAsync()).Should().Be(1);
 	}
@@ -319,10 +319,10 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 	}
 
 	[Theory]
-	[InlineData("/touch", "tooltip", null)]
-	[InlineData("/touch-layout", "responsive", "width-45")]
-	[InlineData("/touch-layout", "nested", null)]
-	public async Task TapOpensTheTooltipAtTheContactAndTappingElsewhereDismissesIt(string path, string chart, string? before)
+	[InlineData("/touch", "tooltip", null, true)]
+	[InlineData("/touch-layout", "responsive", "width-45", true)]
+	[InlineData("/touch-layout", "nested", null, false)]
+	public async Task TapOpensTheTooltipAtTheContactAndTappingElsewhereDismissesIt(string path, string chart, string? before, bool crosshair)
 	{
 		// Arrange
 
@@ -343,7 +343,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		var (ex, ey) = await session.EmptyPointAsync(chart);
 		await TapAsync(session.Page, session.Cdp, ex, ey);
 		await popover.WaitForAsync(new() { State = WaitForSelectorState.Detached, Timeout = 10_000 });
-		var crosshairs = await session.Page.Locator($"[data-qa={chart}] line.crosshair").CountAsync();
+		var pinned = await session.CrosshairXAsync(chart);
 
 		// Assert
 
@@ -351,7 +351,14 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		position[0].Should().BeApproximately(x + position[3], 1);
 		position[1].Should().BeApproximately(y + position[3], 1);
 		position[2].Should().Be(1);
-		crosshairs.Should().Be(1, "a background tap hovers the crosshair strip under it");
+		if (crosshair)
+		{
+			pinned!.Value.Should().BeApproximately(ex, 1.5, "a background tap pins the crosshair under it");
+		}
+		else
+		{
+			pinned.Should().BeNull();
+		}
 		(await popover.CountAsync()).Should().Be(0);
 		session.Errors.Should().BeEmpty();
 	}
@@ -656,7 +663,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		public async Task<double?> CrosshairXAsync(string chart)
 		{
 			var line = Page.Locator($"[data-qa={chart}] line.crosshair");
-			if (await line.CountAsync() == 0)
+			if (await line.CountAsync() == 0 || !await line.EvaluateAsync<bool>("line => getComputedStyle(line).visibility === 'visible'"))
 			{
 				return null;
 			}

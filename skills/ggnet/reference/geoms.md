@@ -75,6 +75,15 @@ Geom_Map(source, Func<T2, Geospacial.Polygon[]> polygons, fillBy?, events…,
     // Geospacial.Polygon { Longitude, Latitude, Hole } — Hole = true rings render as cut-outs, any winding
 ```
 
+`Geom_Point`, `Geom_Line`, `Geom_Area` and `Geom_Bar` end with `Inspect<T>? inspect = null`. It joins the layer to the crosshair readout of an interactive Blazor `Plot` (`Interactivity` with `Crosshair`) and changes nothing that is drawn, so leave it out of static and exported charts:
+
+```csharp
+new Inspect<T>(string Name, Func<T, string> Value, InspectPolicy Policy = InspectPolicy.Nearest)
+{ Duration? MaxDuration, double? MaxDistance, string Missing = "No nearby reading", Func<string, string>? GroupName }
+// InspectPolicy: Nearest | Previous | Step | Containing (Geom_Bar only)
+// MaxDuration on an Instant x axis, MaxDistance on a numeric one; readings exist on those two axis types only
+```
+
 ## Finance (events, no tooltip)
 
 ```csharp

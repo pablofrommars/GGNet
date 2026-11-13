@@ -35,6 +35,7 @@ svg {
     --ggnet-spinner-accent: var(--color-primary, #23d0fc);
     --ggnet-tooltip-bg: #f1f5f9;
     --ggnet-crosshair: #9ca3af;
+    --ggnet-crosshair-pinned: #374151;
     --ggnet-crosshair-label: #111827;
 
     position: relative;
@@ -110,6 +111,18 @@ svg .crosshair {
     stroke: var(--ggnet-crosshair);
     stroke-width: 1;
     stroke-dasharray: 4 3;
+}
+
+svg .crosshair.pinned {
+    stroke: var(--ggnet-crosshair-pinned);
+    stroke-width: 1.5;
+    stroke-dasharray: none;
+}
+
+svg .crosshair-marker {
+    fill: var(--ggnet-bg);
+    stroke: var(--ggnet-crosshair-pinned);
+    stroke-width: 1.5;
 }
 
 svg .crosshair-label {

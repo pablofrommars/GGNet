@@ -17,4 +17,10 @@ internal interface IGeom
 	void Shape();
 
 	void Clear();
+
+	bool Inspected => false;
+
+	IReadOnlyList<Readings.ISeriesIndex> InspectSeries() => [];
+
+	IReadOnlyList<Readings.ISeriesIndex> StepSeries() => [];
 }

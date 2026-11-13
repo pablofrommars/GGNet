@@ -1,5 +1,6 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Readings;
 using GGNet.Scales;
 using GGNet.Shapes;
 using GGNet.Exceptions;
@@ -202,4 +203,14 @@ internal sealed class Point<T, TX, TY> : Geom<T, TX, TY>
 			Positions.Y.Position.Shape(y, y);
 		}
 	}
+
+	protected override IReadOnlyList<ISeriesIndex> InspectSeries(Inspect<T> inspect)
+		=> SeriesIndex<T>.Build(
+			inspect,
+			Included(),
+			InspectAxis.Coordinate(Selectors.X!),
+			InspectAxis.HasValue(Selectors.Y!),
+			InspectGroup.Of(Aesthetics.Color),
+			item => (Positions.X.Map(item), Positions.Y.Map(item)),
+			InspectAxis.Limit<T, TX>(inspect));
 }

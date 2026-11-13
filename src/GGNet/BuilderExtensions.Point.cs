@@ -23,6 +23,7 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IReadOnlyList<T2> source,
@@ -36,10 +37,12 @@ public static partial class BuilderExtensions
 	  Func<T2, RenderFragment>? tooltip = null,
 	  bool animation = false,
 	  double size = 5, string color = "#23d0fc", double opacity = 1.0,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T2>? inspect = null)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
+		inspect?.RequireSampled(nameof(Geom_Point));
+
 		sizeBy = ResolveMapping(sizeBy, panel.Context.Aesthetics.Size, inherit, nameof(sizeBy));
 		colorBy = ResolveMapping(colorBy, panel.Context.Aesthetics.Color, inherit, nameof(colorBy));
 
@@ -49,6 +52,7 @@ public static partial class BuilderExtensions
 			{
 				OnClick = onclick,
 				OnMouseOver = onmouseover,
+				Inspect = inspect,
 				OnMouseOut = onmouseout,
 				Aesthetic = new()
 				{
@@ -82,6 +86,7 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IEnumerable<T2> source,
@@ -95,11 +100,11 @@ public static partial class BuilderExtensions
 	  Func<T2, RenderFragment>? tooltip = null,
 	  bool animation = false,
 	  double size = 5, string color = "#23d0fc", double opacity = 1.0,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T2>? inspect = null)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return panel.Geom_Point(source as IReadOnlyList<T2> ?? new Source<T2>(source), x, y, sizeBy, colorBy, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit: inherit);
+		return panel.Geom_Point(source as IReadOnlyList<T2> ?? new Source<T2>(source), x, y, sizeBy, colorBy, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit: inherit, inspect: inspect);
 	}
 
 	/// <summary>
@@ -120,6 +125,7 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IReadOnlyList<T2> source,
@@ -133,11 +139,11 @@ public static partial class BuilderExtensions
 	  Func<T2, RenderFragment>? tooltip = null,
 	  bool animation = false,
 	  double size = 5, string color = "#23d0fc", double opacity = 1.0,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T2>? inspect = null)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Point(source, x, y, sizeBy, colorBy, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit: inherit);
+		context.Default_Panel().Geom_Point(source, x, y, sizeBy, colorBy, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit: inherit, inspect: inspect);
 
 		return context;
 	}
@@ -160,6 +166,7 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Point<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IEnumerable<T2> source,
@@ -173,11 +180,11 @@ public static partial class BuilderExtensions
 	  Func<T2, RenderFragment>? tooltip = null,
 	  bool animation = false,
 	  double size = 5, string color = "#23d0fc", double opacity = 1.0,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T2>? inspect = null)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		return context.Geom_Point(source as IReadOnlyList<T2> ?? new Source<T2>(source), x, y, sizeBy, colorBy, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit: inherit);
+		return context.Geom_Point(source as IReadOnlyList<T2> ?? new Source<T2>(source), x, y, sizeBy, colorBy, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit: inherit, inspect: inspect);
 	}
 
 	/// <summary>
@@ -197,6 +204,7 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PanelFactory<T, TX, TY> Geom_Point<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
@@ -209,11 +217,11 @@ public static partial class BuilderExtensions
 	  Func<T, RenderFragment>? tooltip = null,
 	  bool animation = false,
 	  double size = 5, string color = "#23d0fc", double opacity = 1.0,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T>? inspect = null)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Point(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, sizeBy, colorBy, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit: inherit);
+		return Geom_Point(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, sizeBy, colorBy, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit: inherit, inspect: inspect);
 	}
 
 	/// <summary>
@@ -233,6 +241,7 @@ public static partial class BuilderExtensions
 	/// <param name="opacity">Stroke and fill opacity, 0–1.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PlotContext<T, TX, TY> Geom_Point<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
@@ -245,11 +254,11 @@ public static partial class BuilderExtensions
 	  Func<T, RenderFragment>? tooltip = null,
 	  bool animation = false,
 	  double size = 5, string color = "#23d0fc", double opacity = 1.0,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T>? inspect = null)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Point(x, y, sizeBy, colorBy, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit: inherit);
+		context.Default_Panel().Geom_Point(x, y, sizeBy, colorBy, onclick, onmouseover, onmouseout, tooltip, animation, size, color, opacity, scale, inherit: inherit, inspect: inspect);
 
 		return context;
 	}

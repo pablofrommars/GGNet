@@ -38,7 +38,7 @@ else
        events stay Blazor's. *@
     @* INVARIANT: a touch long-press otherwise selects nearby chart text, an axis
        label in practice; mouse drags here are already kept from selecting. *@
-    <g @ref=captureRef style="user-select: none; -webkit-user-select: none;" @ondblclick=OnResetViewAsync @onmouseleave=OnCrosshairLeave>
+    <g @ref=captureRef style="user-select: none; -webkit-user-select: none;" @ondblclick=OnResetViewAsync>
         @renderContent
     </g>
 }
@@ -58,7 +58,7 @@ else
     private void RenderContent(RenderTreeBuilder __builder)
     {
         var touchAction = coord.CarvesAxisBands && Plot.Interactivity is { } options
-            ? PanelInteropOptions.Create(options).TouchAction
+            ? InteropOptions(options).TouchAction
             : null;
 
         if (touchAction is not null)
@@ -143,33 +143,6 @@ else
 
     private void RenderInteraction(RenderTreeBuilder __builder)
     {
-        @if (Plot.Interactivity is { Crosshair: true } && coord.CarvesAxisBands)
-        {
-            @* Invisible hover strips under the marks: the Tier-0 crosshair
-               samples the pointer without continuous mousemove tracking.
-               Cartesian only — polar has no invertible x band. *@
-            var count = (int)(Area.Width / 8.0);
-
-            if (count > 0)
-            {
-                var stride = Area.Width / count;
-
-                for (var i = 0; i < count; i++)
-                {
-                    var center = Area.X + (i + 0.5) * stride;
-
-                    <rect x=@Num(Area.X + i * stride)
-                          y=@Num(Area.Y)
-                          width=@Num(stride)
-                          height=@Num(Area.Height)
-                          fill="none"
-                          pointer-events="all"
-                          data-ggnet-strip=""
-                          @onmouseover=@(() => OnCrosshairOver(center)) />
-                }
-            }
-        }
-
         @if (Plot.Interactivity is null)
         {
             <Area T=T TX=TX TY=TY Panel=@Data Coord=@this Zone=@Area Clip=@(clip + "-area") RenderModeHandler=@areaRenderModeHandler />
@@ -185,27 +158,15 @@ else
             </g>
         }
 
-        @if (crosshair is { } cross)
+        @if (Plot.Interactivity is { Crosshair: true } && coord.CarvesAxisBands)
         {
-            <line class="crosshair pointer-events-none"
-                  x1=@Num(cross.x)
-                  x2=@Num(cross.x)
-                  y1=@Num(Area.Y)
-                  y2=@Num(Area.Y + Area.Height)
-                  clip-path="url(#@(clip)-area)" />
-
-            @if (cross.label is not null)
-            {
-                <text><text
-                          class="crosshair-label pointer-events-none"
-                          x=@Num(cross.x)
-                          y=@Num(Area.Y + 14.0)
-                          text-anchor="middle"
-                          font-size=@(Plot.Style.Axis.Text.X.FontSize)
-                          clip-path="url(#@(clip)-area)">
-                        @cross.label
-                    </text></text>
-            }
+            @* The cursor is an internal component, which Razor markup cannot name. *@
+            __builder.OpenComponent<CrosshairCursor>(9000);
+            __builder.AddComponentParameter(9001, nameof(CrosshairCursor.Source), cursorSource);
+            __builder.AddComponentParameter(9002, nameof(CrosshairCursor.Clip), clip + "-area");
+            __builder.AddComponentParameter(9003, nameof(CrosshairCursor.FontSize), (object)Plot.Style.Axis.Text.X.FontSize);
+            __builder.AddComponentReferenceCapture(9004, component => cursorComponent = (CrosshairCursor)component);
+            __builder.CloseComponent();
         }
     }
 

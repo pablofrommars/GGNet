@@ -5,6 +5,7 @@ using Microsoft.JSInterop;
 
 namespace GGNet.Components;
 
+using Readings;
 using Rendering;
 
 public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDisposable
@@ -81,6 +82,10 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	// trims, so a published app is the first place it would fail.
 	[DynamicDependency(nameof(OnPanEndAsync))]
 	[DynamicDependency(nameof(OnWheelAsync))]
+	[DynamicDependency(nameof(OnCursorAsync))]
+	[DynamicDependency(nameof(OnCursorLeaveAsync))]
+	[DynamicDependency(nameof(OnCursorRestoreAsync))]
+	[DynamicDependency(nameof(OnNavigateEndAsync))]
 	public Panel()
 	{
 		renderTitle = RenderTitle;
@@ -91,6 +96,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		renderXLab = RenderXLab;
 		renderYLab = RenderYLab;
 		renderContent = RenderContent;
+		cursorSource = Cursor;
 	}
 
 	protected override void OnInitialized()
@@ -344,42 +350,127 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		return Plot.CommitViewAsync(ViewChangeCause.Reset, RenderTarget.Render, CancellationToken.None);
 	}
 
-	private (double x, string? label)? crosshair;
+	private CrosshairCursor? cursorComponent;
+	private Func<CursorFrame> cursorSource = default!;
+	private TX? localCursor;
 
-	private void OnCrosshairOver(double px)
+	private bool SharesCursor => Plot.InspectsSharedX;
+
+	public void RefreshCursor() => cursorComponent?.Refresh();
+
+	/// <summary>Moves the crosshair to a pointer position, or pins it there. Invoked from the collocated JS module, latest position wins: at most one call is in flight per plot.</summary>
+	/// <param name="px">Pointer x, in svg units.</param>
+	/// <param name="pinned">True for a tap, a click or the end of a drag; false while a hover or a drag is previewing.</param>
+	[JSInvokable]
+	public Task OnCursorAsync(double px, bool pinned)
 	{
-		if (Plot.Interactivity is not { Crosshair: true })
+		if (Volatile.Read(ref disposing) != 0 || Plot.Interactivity is not { Crosshair: true })
 		{
-			return;
+			return Task.CompletedTask;
+		}
+
+		if (px < Area.X || px > (Area.X + Area.Width))
+		{
+			return Task.CompletedTask;
 		}
 
 		var (cx, _) = coord.Unproject(px, Area.Y);
-		var mapped = xscale.Invert(cx);
 
-		var (x, label) = xscale.Unmap(mapped) is { } key
-			? (ToX(xscale.Map(key)), xscale.Label(key))
-			: (px, null);
-
-		if (crosshair is { } current && current.x == x)
+		if (xscale.Unmap(xscale.Invert(cx)) is not { } key)
 		{
-			return;
+			return Task.CompletedTask;
 		}
 
-		crosshair = (x, label);
+		if (SharesCursor)
+		{
+			return Plot.InspectAsync(new(key, pinned), notify: true);
+		}
 
-		Refresh();
+		localCursor = key;
+
+		RefreshCursor();
+
+		return Task.CompletedTask;
 	}
 
-	private void OnCrosshairLeave()
+	/// <summary>Ends an unpinned crosshair when the pointer leaves the plot area. A pinned one stays. Invoked from the collocated JS module.</summary>
+	[JSInvokable]
+	public Task OnCursorLeaveAsync()
 	{
-		if (crosshair is null)
+		if (Volatile.Read(ref disposing) != 0 || Plot.Interactivity is not { Crosshair: true })
 		{
-			return;
+			return Task.CompletedTask;
 		}
 
-		crosshair = null;
+		if (SharesCursor)
+		{
+			return Plot.CurrentInspection is { Pinned: false } ? Plot.InspectAsync(null, notify: true) : Task.CompletedTask;
+		}
 
-		Refresh();
+		localCursor = null;
+
+		RefreshCursor();
+
+		return Task.CompletedTask;
+	}
+
+	/// <summary>Puts the crosshair back where it was last pinned, or clears it when nothing was pinned: a drag that was abandoned must leave no trace. Invoked from the collocated JS module.</summary>
+	[JSInvokable]
+	public Task OnCursorRestoreAsync()
+	{
+		if (Volatile.Read(ref disposing) != 0 || Plot.Interactivity is not { Crosshair: true } || !SharesCursor)
+		{
+			return Task.CompletedTask;
+		}
+
+		return Plot.RestoreInspectionAsync();
+	}
+
+	private CursorFrame Cursor()
+	{
+		var top = Area.Y;
+		var bottom = Area.Y + Area.Height;
+
+		var (key, pinned) = SharesCursor
+			? (Plot.CurrentInspection?.X, Plot.CurrentInspection?.Pinned ?? false)
+			: (localCursor, false);
+
+		if (key is not { } value || xscale.Map(value) is var mapped && double.IsNaN(mapped))
+		{
+			return new(Area.X, top, bottom, null, false, false, []);
+		}
+
+		var x = ToX(mapped);
+		var visible = x >= Area.X - 0.5 && x <= Area.X + Area.Width + 0.5;
+
+		List<(double x, double y)> markers = [];
+
+		if (visible && SharesCursor && InspectAxis.Supports<TX>())
+		{
+			var cursor = InspectAxis.Coordinate(value);
+
+			for (var i = 0; i < Data.Geoms.Count; i++)
+			{
+				var series = Data.Geoms[i].InspectSeries();
+
+				for (var j = 0; j < series.Count; j++)
+				{
+					if (series[j].Read(cursor) is not { Row: >= 0 } reading)
+					{
+						continue;
+					}
+
+					var (mx, my) = series[j].Position(reading.Row);
+
+					if (!double.IsNaN(mx) && !double.IsNaN(my))
+					{
+						markers.Add((ToX(mx), ToY(my)));
+					}
+				}
+			}
+		}
+
+		return new(x, top, bottom, xscale.Label(value), pinned, visible, markers);
 	}
 
 	private ElementReference captureRef;
@@ -403,18 +494,18 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		interop = new PanelInterop(runtime);
 		dotNetRef = DotNetObjectReference.Create(this);
 
-		await interop.InitializeAsync(
-			clip,
-			captureRef,
-			panRef,
-			dotNetRef,
-			PanelInteropOptions.Create(options) with
-			{
-				Group = Plot.Id,
-				SharedX = Plot.Context.Positions.X.Scales.Count == 1,
-				SharedY = Plot.Context.Positions.Y.Scales.Count == 1
-			});
+		await interop.InitializeAsync(clip, captureRef, panRef, dotNetRef, InteropOptions(options));
 	}
+
+	private PanelInteropOptions InteropOptions(InteractivityOptions options)
+		=> PanelInteropOptions.Create(options) with
+		{
+			Group = Plot.Id,
+			SharedX = Plot.Context.Positions.X.Scales.Count == 1,
+			SharedY = Plot.Context.Positions.Y.Scales.Count == 1,
+			Cursor = !options.Crosshair ? null : SharesCursor ? PanelInterop.SharedCursor : PanelInterop.LocalCursor,
+			CursorContinuous = options.Crosshair && SharesCursor && xscale.InvertsExactly
+		};
 
 	private async ValueTask GlueTooltipAsync(ElementReference element)
 	{
@@ -453,6 +544,41 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 
 		await Plot.CommitViewAsync(ViewChangeCause.Gesture, RenderTarget.Render, CancellationToken.None);
 	}
+
+	/// <summary>Commits a finished two-finger gesture under the crosshair: the x value that was under the fingers' midpoint at the start ends under their midpoint at the end, with the window narrowed or widened by the pinch. Invoked from the collocated JS module.</summary>
+	/// <param name="from">Midpoint of the two fingers when the gesture began, in svg units.</param>
+	/// <param name="to">Midpoint of the two fingers when it ended, in svg units.</param>
+	/// <param name="scale">Finger distance at the end over the distance at the start; above 1 zooms in.</param>
+	[JSInvokable]
+	public async Task OnNavigateEndAsync(double from, double to, double scale)
+	{
+		if (Volatile.Read(ref disposing) != 0
+			|| Plot.Interactivity is not { Pan: true, Crosshair: true, Zoom: ZoomAxis.X or ZoomAxis.Both } options
+			|| !SharesCursor
+			|| !double.IsFinite(from) || !double.IsFinite(to) || !double.IsFinite(scale) || scale <= 0
+			|| Area.Width <= 0)
+		{
+			return;
+		}
+
+		scale = Math.Clamp(scale, minPinch, maxPinch);
+
+		var start = (from - Area.X) / Area.Width;
+		var end = (to - Area.X) / Area.Width;
+
+		Plot.Context.Positions.X.SetView((xscale.Invert(start - end / scale), xscale.Invert(start + (1 - end) / scale)));
+
+		if (options.AutoFitY)
+		{
+			Plot.Context.FitYToXView();
+		}
+
+		await Plot.CommitViewAsync(ViewChangeCause.Gesture, RenderTarget.Render, CancellationToken.None);
+	}
+
+	// TODO: calibration — how far one pinch may narrow or widen the window; physical QA on a touchscreen settles whether a single gesture needs more.
+	private const double minPinch = 0.1;
+	private const double maxPinch = 10.0;
 
 	private int disposing;
 

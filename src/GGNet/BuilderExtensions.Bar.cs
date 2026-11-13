@@ -26,6 +26,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-bar</c> css class to each bar.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PanelFactory<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2>(
 	  this PanelFactory<T1, TX1, TY1> panel,
 	  IReadOnlyList<T2> source,
@@ -41,7 +42,7 @@ public static partial class BuilderExtensions
 	  PositionAdjustment position = PositionAdjustment.Stack,
 	  double width = 0.9,
 	  bool animation = false,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T2>? inspect = null)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
@@ -53,6 +54,7 @@ public static partial class BuilderExtensions
 			{
 				OnClick = onclick,
 				OnMouseOver = onmouseover,
+				Inspect = inspect,
 				OnMouseOut = onmouseout,
 				Aesthetic = new()
 				{
@@ -91,6 +93,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-bar</c> css class to each bar.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PlotContext<T1, TX1, TY1> Geom_Bar<T1, TX1, TY1, T2>(
 	  this PlotContext<T1, TX1, TY1> context,
 	  IReadOnlyList<T2> source,
@@ -106,11 +109,11 @@ public static partial class BuilderExtensions
 	  PositionAdjustment position = PositionAdjustment.Stack,
 	  double width = 0.9,
 	  bool animation = false,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T2>? inspect = null)
 	  where TX1 : struct
 	  where TY1 : struct
 	{
-		context.Default_Panel().Geom_Bar(source, x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit: inherit);
+		context.Default_Panel().Geom_Bar(source, x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit: inherit, inspect: inspect);
 
 		return context;
 	}
@@ -135,6 +138,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-bar</c> css class to each bar.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PanelFactory<T, TX, TY> Geom_Bar<T, TX, TY>(
 	  this PanelFactory<T, TX, TY> panel,
 	  Func<T, TX>? x = null,
@@ -149,11 +153,11 @@ public static partial class BuilderExtensions
 	  PositionAdjustment position = PositionAdjustment.Stack,
 	  double width = 0.9,
 	  bool animation = false,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T>? inspect = null)
 	  where TX : struct
 	  where TY : struct
 	{
-		return Geom_Bar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit: inherit);
+		return Geom_Bar(panel, panel.Context.RequireSource(), x ?? panel.Context.Selectors.X, y ?? panel.Context.Selectors.Y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit: inherit, inspect: inspect);
 	}
 
 	/// <summary>
@@ -176,6 +180,7 @@ public static partial class BuilderExtensions
 	/// <param name="animation">Adds the <c>animate-bar</c> css class to each bar.</param>
 	/// <param name="scale">Whether this layer trains the (x, y) position scales; default trains both.</param>
 	/// <param name="inherit">Resolve missing aesthetic mappings from the plot when this layer is added. Explicit mappings win. With an explicit source, an incompatible inherited row type throws; supply an explicit mapping or set <c>inherit: false</c>. Does not inherit selectors for an explicit source.</param>
+	/// <param name="inspect">Joins this layer to the crosshair readout of an interactive plot: the series name, its value text and how a reading is looked up at the cursor. Changes nothing that is drawn, and has no effect without <c>Crosshair</c>.</param>
 	public static PlotContext<T, TX, TY> Geom_Bar<T, TX, TY>(
 	  this PlotContext<T, TX, TY> context,
 	  Func<T, TX>? x = null,
@@ -190,11 +195,11 @@ public static partial class BuilderExtensions
 	  PositionAdjustment position = PositionAdjustment.Stack,
 	  double width = 0.9,
 	  bool animation = false,
-	  (bool x, bool y)? scale = null, bool inherit = true)
+	  (bool x, bool y)? scale = null, bool inherit = true, Inspect<T>? inspect = null)
 	  where TX : struct
 	  where TY : struct
 	{
-		context.Default_Panel().Geom_Bar(x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit: inherit);
+		context.Default_Panel().Geom_Bar(x, y, fillBy, onclick, onmouseover, onmouseout, tooltip, fill, fillOpacity, strokeColor, strokeOpacity, strokeWidth, position, width, animation, scale, inherit: inherit, inspect: inspect);
 
 		return context;
 	}

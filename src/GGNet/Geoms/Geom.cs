@@ -22,6 +22,39 @@ internal closed class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y)?
 
 	public IStatSource? StatSource { get; } = source as IStatSource;
 
+	public Inspect<T>? Inspect { get; init; }
+
+	public bool Inspected => Inspect is not null;
+
+	private volatile IReadOnlyList<Readings.ISeriesIndex>? inspectSeries;
+
+	public IReadOnlyList<Readings.ISeriesIndex> InspectSeries()
+		=> inspectSeries ??= Inspect is null ? [] : InspectSeries(Inspect);
+
+	private static readonly Inspect<T> stepping = new("step", _ => string.Empty, InspectPolicy.Step);
+
+	private volatile IReadOnlyList<Readings.ISeriesIndex>? stepSeries;
+
+	public IReadOnlyList<Readings.ISeriesIndex> StepSeries()
+		=> Inspect is not null ? InspectSeries() : stepSeries ??= InspectSeries(stepping);
+
+	protected virtual IReadOnlyList<Readings.ISeriesIndex> InspectSeries(Inspect<T> inspect) => [];
+
+	protected IEnumerable<T> Included()
+	{
+		for (var i = 0; i < (facetIndices?.Count ?? source.Count); i++)
+		{
+			var item = source[facetIndices is null ? i : facetIndices[i]];
+
+			if (facetIndices is null && layerFacet is not null && !layerFacet.Include(item))
+			{
+				continue;
+			}
+
+			yield return item;
+		}
+	}
+
 	public virtual CoordSystem SupportedCoordSystems => CoordSystem.Cartesian | CoordSystem.Polar;
 
 	public virtual void Init<T1>(Panel<T1, TX, TY> panel, Facet<T1>? facet)
@@ -125,6 +158,16 @@ internal closed class Geom<T, TX, TY>(IReadOnlyList<T> source, (bool x, bool y)?
 		}
 
 		Set();
+
+		if (inspectSeries is not null && Inspect is not null)
+		{
+			inspectSeries = InspectSeries(Inspect);
+		}
+
+		if (stepSeries is not null)
+		{
+			stepSeries = InspectSeries(stepping);
+		}
 	}
 
 	public virtual void Clear() => Layer?.Clear();

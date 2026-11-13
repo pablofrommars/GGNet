@@ -9,7 +9,9 @@ public partial class TouchLayout
 
 	private readonly RenderMode renderMode = RenderMode.Interactive;
 
-	private readonly InteractivityOptions inspect = new() { Pan = true, Crosshair = true, CursorTooltip = true };
+	private readonly InteractivityOptions inspect = new() { Pan = true, CursorTooltip = true };
+
+	private readonly InteractivityOptions inspectWithCrosshair = new() { Pan = true, Crosshair = true, CursorTooltip = true };
 
 	private PlotContext<Reading, double, double> nestedContext = default!;
 

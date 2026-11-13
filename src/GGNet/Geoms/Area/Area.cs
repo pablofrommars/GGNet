@@ -1,6 +1,7 @@
 ﻿using GGNet.Buffers;
 using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Readings;
 using GGNet.Scales;
 using GGNet.Shapes;
 using GGNet.Exceptions;
@@ -413,4 +414,14 @@ internal sealed class Area<T, TX, TY> : Geom<T, TX, TY>
 
 		series.Clear();
 	}
+
+	protected override IReadOnlyList<ISeriesIndex> InspectSeries(Inspect<T> inspect)
+		=> SeriesIndex<T>.Build(
+			inspect,
+			Included(),
+			InspectAxis.Coordinate(Selectors.X!),
+			InspectAxis.HasValue(Selectors.Y!),
+			InspectGroup.Of(Aesthetics.Fill),
+			item => (Positions.X.Map(item), Positions.Y.Map(item)),
+			InspectAxis.Limit<T, TX>(inspect));
 }

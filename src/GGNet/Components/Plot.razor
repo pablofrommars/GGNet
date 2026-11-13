@@ -6,7 +6,7 @@
 @using GGNet.Elements
 @using static GGNet.Components.SvgFormat
 
-<div class=@(CssClass()) theme=@Theme>
+<div class=@(CssClass()) theme=@Theme @attributes=Keyboard>
     <svg id=@Id xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox=@Attr($"0 0 {Width} {Height}")>
 
         <defs>

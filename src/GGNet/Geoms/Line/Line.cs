@@ -1,5 +1,6 @@
 ﻿using GGNet.Data;
 using GGNet.Facets;
+using GGNet.Readings;
 using GGNet.Scales;
 using GGNet.Shapes;
 using GGNet.Exceptions;
@@ -217,6 +218,16 @@ internal sealed partial class Line<T, TX, TY> : Geom<T, TX, TY>
 			}
 		}
 	}
+
+	protected override IReadOnlyList<ISeriesIndex> InspectSeries(Inspect<T> inspect)
+		=> SeriesIndex<T>.Build(
+			inspect,
+			Included(),
+			InspectAxis.Coordinate(Selectors.X!),
+			InspectAxis.HasValue(Selectors.Y!),
+			InspectGroup.Of(InspectGroup.Of(Aesthetics.Color), InspectGroup.Of(Aesthetics.LineType)),
+			item => (Positions.X.Map(item), Positions.Y.Map(item)),
+			InspectAxis.Limit<T, TX>(inspect));
 
 	public override void Clear()
 	{

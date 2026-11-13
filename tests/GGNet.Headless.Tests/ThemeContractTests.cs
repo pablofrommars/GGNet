@@ -17,7 +17,7 @@ public class ThemeContractTests
 		"x-break-label", "y-break-label", "x-break-title",
 		"x-title", "y-title",
 		"legend-title", "legend-label",
-		"crosshair", "crosshair-label",
+		"crosshair", "crosshair-label", "crosshair-marker",
 		"spinner"
 	];
 

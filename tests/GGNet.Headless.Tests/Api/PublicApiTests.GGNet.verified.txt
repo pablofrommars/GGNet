@@ -33,6 +33,10 @@ GGNet.Geospacial.Polygon
 GGNet.Guide
 GGNet.IPlotContext
 GGNet.IStatSource
+GGNet.InspectPolicy
+GGNet.Inspect`1
+GGNet.InspectionReadings`1
+GGNet.Inspection`1
 GGNet.InteractivityOptions
 GGNet.LineType
 GGNet.NoData
@@ -45,6 +49,8 @@ GGNet.PolarOptions
 GGNet.PolarRingType
 GGNet.Position
 GGNet.PositionAdjustment
+GGNet.ReadingKind
+GGNet.Reading`1
 GGNet.RenderMode
 GGNet.RenderTarget
 GGNet.Rendering.IChildRenderModeHandler
