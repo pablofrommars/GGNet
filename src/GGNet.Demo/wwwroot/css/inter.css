@@ -1,0 +1,10 @@
+/* Inter 4.1 (rsms.me/inter), variable upright and italic, served locally.
+   Licensed under the SIL Open Font License 1.1: ../fonts/inter/LICENSE.txt.
+   "Inter var" is the name GGNet's default theme measures against; InterVariable and
+   Inter are the names the upstream stylesheet also defines. */
+@font-face { font-family: InterVariable; font-style: normal; font-weight: 100 900; font-display: swap; src: url("../fonts/inter/InterVariable.woff2") format("woff2"); }
+@font-face { font-family: InterVariable; font-style: italic; font-weight: 100 900; font-display: swap; src: url("../fonts/inter/InterVariable-Italic.woff2") format("woff2"); }
+@font-face { font-family: "Inter var"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("../fonts/inter/InterVariable.woff2") format("woff2"); }
+@font-face { font-family: "Inter var"; font-style: italic; font-weight: 100 900; font-display: swap; src: url("../fonts/inter/InterVariable-Italic.woff2") format("woff2"); }
+@font-face { font-family: Inter; font-style: normal; font-weight: 100 900; font-display: swap; src: url("../fonts/inter/InterVariable.woff2") format("woff2"); }
+@font-face { font-family: Inter; font-style: italic; font-weight: 100 900; font-display: swap; src: url("../fonts/inter/InterVariable-Italic.woff2") format("woff2"); }

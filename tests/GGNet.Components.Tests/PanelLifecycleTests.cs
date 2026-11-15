@@ -25,12 +25,12 @@ public class PanelLifecycleTests : BunitContext
 
 	[Theory]
 	[InlineData(false, ZoomAxis.X, false, true, false, null)]
-	[InlineData(true, ZoomAxis.X, false, true, false, "pan-y pinch-zoom")]
-	[InlineData(true, ZoomAxis.Y, false, false, true, "pan-x pinch-zoom")]
-	[InlineData(true, ZoomAxis.Both, false, true, true, "pinch-zoom")]
-	[InlineData(true, ZoomAxis.Both, true, true, false, "pan-y pinch-zoom")]
+	[InlineData(true, ZoomAxis.X, false, true, false, "none")]
+	[InlineData(true, ZoomAxis.Y, false, false, true, null)]
+	[InlineData(true, ZoomAxis.Both, false, true, true, "none")]
+	[InlineData(true, ZoomAxis.Both, true, true, false, "none")]
 	[InlineData(true, ZoomAxis.Y, true, false, false, null)]
-	public void GestureFlagsAndTouchPolicyUseTheSameEffectiveAxes(bool pan, ZoomAxis zoom, bool autoFitY, bool panX, bool panY, string? touchAction)
+	public void MouseAxesRemainIndependentOfInferredTouchPolicy(bool pan, ZoomAxis zoom, bool autoFitY, bool panX, bool panY, string? touchAction)
 	{
 		// Arrange
 

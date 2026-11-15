@@ -2,6 +2,86 @@ namespace GGNet.Components.Tests;
 
 public class TouchPolicyTests : BunitContext
 {
+	[Theory]
+	[InlineData(TouchNavigation.None, true, "pan-y pinch-zoom")]
+	[InlineData(TouchNavigation.TwoFingerX, false, "pan-y")]
+	[InlineData(TouchNavigation.PanAndPinchX, false, "pan-y")]
+	public void ExplicitScrollPolicyIsIndependentOfCrosshairAndMousePan(TouchNavigation navigation, bool inspect, string expected)
+	{
+		// Arrange
+
+		JSInterop.Mode = JSRuntimeMode.Loose;
+		var options = new InteractivityOptions { Touch = new() { Navigation = navigation, Inspect = inspect, Ownership = TouchOwnership.ScrollY } };
+
+		// Act
+
+		var cut = Render<Plot<P, double, double>>(p => p.Add(x => x.Context, Context())
+			.Add(x => x.RenderMode, RenderMode.InteractiveAuto).Add(x => x.Interactivity, options));
+
+		// Assert
+
+		cut.Find("svg[data-ggnet-viewport]").GetAttribute("style").Should().Contain($"touch-action: {expected};");
+	}
+
+	[Fact]
+	public void EmptyTouchOptionsDisableTouchEvenWithMousePanAndCrosshair()
+	{
+		// Arrange
+
+		JSInterop.Mode = JSRuntimeMode.Loose;
+
+		// Act
+
+		var cut = Render<Plot<P, double, double>>(p => p.Add(x => x.Context, Context())
+			.Add(x => x.RenderMode, RenderMode.InteractiveAuto)
+			.Add(x => x.Interactivity, new() { Pan = true, Crosshair = true, Touch = new() }));
+
+		// Assert
+
+		cut.FindAll("svg[data-ggnet-viewport]").Should().BeEmpty();
+	}
+
+	[Fact]
+	public void ExplicitInspectionAcceptsHostSelectionWithoutCrosshair()
+	{
+		// Arrange
+
+		JSInterop.Mode = JSRuntimeMode.Loose;
+		var selected = new Inspection<double>(2);
+
+		// Act
+
+		var cut = Render<Plot<P, double, double>>(p => p.Add(x => x.Context, Context())
+			.Add(x => x.RenderMode, RenderMode.InteractiveAuto)
+			.Add(x => x.Interactivity, new() { Touch = new() { Inspect = true } })
+			.Add(x => x.Inspection, selected));
+
+		// Assert
+
+		cut.Instance.Readings!.Inspection.Should().Be(selected);
+		cut.FindAll("[data-ggnet-cursor]").Should().BeEmpty();
+	}
+
+	[Theory]
+	[InlineData(false)]
+	[InlineData(true)]
+	public void ExplicitSharedTouchRejectsUnsupportedCoordinates(bool polar)
+	{
+		// Arrange
+
+		var context = polar ? Context().Coord_Polar() : Context().Flip();
+
+		// Act
+
+		var mount = () => Render<Plot<P, double, double>>(p => p.Add(x => x.Context, context)
+			.Add(x => x.RenderMode, RenderMode.InteractiveAuto)
+			.Add(x => x.Interactivity, new() { Touch = new() { Navigation = TouchNavigation.TwoFingerX } }));
+
+		// Assert
+
+		mount.Should().Throw<Exceptions.GGNetUserException>().WithMessage("*shared x scale*");
+	}
+
 	private sealed record P(double X, double Y);
 
 	private static PlotContext<P, double, double> Context()
@@ -10,11 +90,10 @@ public class TouchPolicyTests : BunitContext
 			.Style();
 
 	[Theory]
-	[InlineData(ZoomAxis.X, false, "pan-y pinch-zoom")]
-	[InlineData(ZoomAxis.Y, false, "pan-x pinch-zoom")]
-	[InlineData(ZoomAxis.Both, false, "pinch-zoom")]
-	[InlineData(ZoomAxis.Both, true, "pan-y pinch-zoom")]
-	public void EffectivePanAxesEmitTheirInlineTouchPolicy(ZoomAxis zoom, bool autoFitY, string touchAction)
+	[InlineData(ZoomAxis.X, false, "none")]
+	[InlineData(ZoomAxis.Both, false, "none")]
+	[InlineData(ZoomAxis.Both, true, "none")]
+	public void InferredXNavigationOwnsTouchBeforeContact(ZoomAxis zoom, bool autoFitY, string touchAction)
 	{
 		// Arrange
 
@@ -50,6 +129,7 @@ public class TouchPolicyTests : BunitContext
 	[InlineData(false, ZoomAxis.Y, false)]
 	[InlineData(false, ZoomAxis.Both, false)]
 	[InlineData(true, ZoomAxis.Y, true)]
+	[InlineData(true, ZoomAxis.Y, false)]
 	public void WithoutEffectivePanAxesThePlotKeepsNativeTouchBehavior(bool pan, ZoomAxis zoom, bool autoFitY)
 	{
 		// Arrange
@@ -121,15 +201,12 @@ public class TouchPolicyTests : BunitContext
 		JSInterop.Invocations.Should().BeEmpty();
 	}
 
-	// Under a shared crosshair one finger scrubs sideways and scrolls the page
-	// vertically. Page pinch is given up only where two fingers navigate the
-	// chart: with Pan, along an x axis the gestures drive.
 	[Theory]
-	[InlineData(false, ZoomAxis.X, "pan-y pinch-zoom")]
-	[InlineData(true, ZoomAxis.X, "pan-y")]
-	[InlineData(true, ZoomAxis.Both, "pan-y")]
-	[InlineData(true, ZoomAxis.Y, "pan-y pinch-zoom")]
-	public void ASharedCrosshairGivesUpPagePinchOnlyForTwoFingerNavigation(bool pan, ZoomAxis zoom, string touchAction)
+	[InlineData(false, ZoomAxis.X, "none")]
+	[InlineData(true, ZoomAxis.X, "none")]
+	[InlineData(true, ZoomAxis.Both, "none")]
+	[InlineData(true, ZoomAxis.Y, "none")]
+	public void InferredInspectionOwnsTouchBeforeContact(bool pan, ZoomAxis zoom, string touchAction)
 	{
 		// Arrange
 

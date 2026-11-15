@@ -81,6 +81,42 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	private Inspection<TX>? inspection;
 	private Inspection<TX>? pinned;
 	private InspectionReadings<TX>? readings;
+	private bool publishingReadings;
+	private bool readingsPending;
+	internal string TouchSession { get; } = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
+	private long touchEpoch;
+	private (double min, double max)? touchXView;
+	private long touchRevision;
+	private long touchNavigationRevision;
+	private long touchInspectionRevision;
+	private long publishedTouchEpoch;
+	private long publishedInspectionRevision;
+	internal string? TouchInspectionStamp => !publishingReadings && publishedTouchEpoch == touchEpoch && publishedInspectionRevision == touchInspectionRevision
+		? string.Create(CultureInfo.InvariantCulture, $"{TouchSession} {touchEpoch} {touchInspectionRevision}") : null;
+	internal Inspection<TX>? PinnedInspection => pinned;
+	internal long RenderedTouchEpoch { get; private set; }
+	internal long RenderedTouchRevision { get; private set; }
+	private long panCommit;
+	internal long RenderedPanCommit { get; private set; }
+
+	internal bool AcceptTouch(string session, long epoch, long revision, bool navigation)
+	{
+		if (session != TouchSession || epoch != touchEpoch || revision <= touchRevision || Volatile.Read(ref disposing) != 0)
+		{
+			return false;
+		}
+
+		touchRevision = revision;
+		if (navigation)
+		{
+			touchNavigationRevision = revision;
+		}
+		else
+		{
+			touchInspectionRevision = revision;
+		}
+		return true;
+	}
 
 	private readonly RenderFragment renderLegendGradients;
 	private readonly RenderFragment renderLegend;
@@ -142,6 +178,7 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		Context.Init();
 
 		reportedView = (Context.Positions.X.View, Context.Positions.Y.View);
+		touchXView = Context.Positions.X.View;
 
 		definitionsRenderModeHandler = RenderModeHandler?.Child();
 
@@ -162,7 +199,7 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 			{
 				reportedView = (Context.Positions.X.View, Context.Positions.Y.View);
 
-				if (Interactivity is { Crosshair: true })
+				if (InspectionEnabled)
 				{
 					Context.Render();
 
@@ -177,6 +214,10 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		{
 			inspectionSupplied = false;
 
+			if (StampsInspection && !EqualityComparer<Inspection<TX>?>.Default.Equals(inspection, Inspection))
+			{
+				touchEpoch++;
+			}
 			await InspectAsync(Inspection, notify: false);
 		}
 	}
@@ -185,21 +226,41 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	public InspectionReadings<TX>? Readings => readings;
 
 	/// <summary>Clears the crosshair and its readout, and reports the change through <c>InspectionChanged</c> and <c>ReadingsChanged</c>. This and the Escape key are the only ways an inspection ends.</summary>
-	public Task ClearInspectionAsync() => InvokeAsync(() => InspectAsync(null, notify: true));
+	public Task ClearInspectionAsync() => InvokeAsync(async () =>
+	{
+		if (StampsInspection)
+		{
+			touchEpoch++;
+		}
+		await InspectAsync(null, notify: true, forceFrame: true);
+	});
 
-	internal bool InspectsSharedX => Interactivity is { Crosshair: true }
-		&& !Context.Flip
+	internal bool SupportsSharedTouch => Context.CoordSystem == CoordSystem.Cartesian && !Context.Flip
 		&& Context.Faceting is not { FreeX: true }
 		&& Context.Positions.X.Scales.Count == 1;
 
+	internal TouchInteractionOptions? TouchOptions => Interactivity?.ResolveTouch(SupportsSharedTouch);
+
+	internal bool InspectionEnabled => Interactivity is { Crosshair: true } || TouchOptions is { Inspect: true };
+
+	internal bool StampsInspection => TouchOptions is { Inspect: true };
+
+	internal bool StampsFrames => Interactivity is { Pan: true } || TouchOptions is { Enabled: true };
+
+	internal bool InspectsSharedX => InspectionEnabled && SupportsSharedTouch;
+
 	internal Inspection<TX>? CurrentInspection => inspection;
 
-	internal Task RestoreInspectionAsync() => InspectAsync(pinned, notify: true);
+	internal Task RestoreInspectionAsync(bool forceFrame = false) => InspectAsync(pinned, notify: true, forceFrame);
 
-	internal async Task InspectAsync(Inspection<TX>? value, bool notify)
+	internal async Task InspectAsync(Inspection<TX>? value, bool notify, bool forceFrame = false)
 	{
-		if (Interactivity is not { Crosshair: true } || EqualityComparer<Inspection<TX>?>.Default.Equals(inspection, value))
+		if (!InspectionEnabled || EqualityComparer<Inspection<TX>?>.Default.Equals(inspection, value))
 		{
+			if (forceFrame)
+			{
+				AcknowledgeInspection();
+			}
 			return;
 		}
 
@@ -210,10 +271,7 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 			pinned = value;
 		}
 
-		for (var i = 0; i < Context.Panels.Count; i++)
-		{
-			Context.Panels[i].Component?.RefreshCursor();
-		}
+		RefreshInspection();
 
 		if (notify && InspectionChanged.HasDelegate)
 		{
@@ -221,6 +279,28 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		}
 
 		await ReportReadingsAsync();
+		AcknowledgeInspection();
+	}
+
+	private void AcknowledgeInspection()
+	{
+		var current = Read();
+		if (publishingReadings || !(current is null ? readings is null : current.Equals(readings)))
+		{
+			return;
+		}
+
+		publishedTouchEpoch = touchEpoch;
+		publishedInspectionRevision = touchInspectionRevision;
+		RefreshInspection();
+	}
+
+	private void RefreshInspection()
+	{
+		for (var i = 0; i < Context.Panels.Count; i++)
+		{
+			Context.Panels[i].Component?.RefreshCursor();
+		}
 	}
 
 	private IReadOnlyDictionary<string, object>? keyboard;
@@ -235,7 +315,7 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 
 	private Task OnKeyDownAsync(KeyboardEventArgs e) => e.Key switch
 	{
-		"Escape" => InspectAsync(null, notify: true),
+		"Escape" => ClearInspectionAsync(),
 		"ArrowRight" => StepAsync(forward: true),
 		"ArrowLeft" => StepAsync(forward: false),
 		_ => Task.CompletedTask
@@ -287,7 +367,9 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 
 	private void RequireReadableAxis()
 	{
-		if (Interactivity is not { Crosshair: true })
+		_ = TouchOptions;
+
+		if (!InspectionEnabled)
 		{
 			return;
 		}
@@ -324,7 +406,32 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 
 		readings = next ?? new(null, [], false);
 
-		return ReadingsChanged.HasDelegate ? ReadingsChanged.InvokeAsync(readings) : Task.CompletedTask;
+		if (!ReadingsChanged.HasDelegate)
+		{
+			return Task.CompletedTask;
+		}
+
+		readingsPending = true;
+		return publishingReadings ? Task.CompletedTask : PublishReadingsAsync();
+	}
+
+	private async Task PublishReadingsAsync()
+	{
+		publishingReadings = true;
+		try
+		{
+			do
+			{
+				readingsPending = false;
+				await ReadingsChanged.InvokeAsync(readings!);
+			}
+			while (readingsPending);
+		}
+		finally
+		{
+			publishingReadings = false;
+		}
+		AcknowledgeInspection();
 	}
 
 	private InspectionReadings<TX>? Read()
@@ -368,6 +475,7 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		try
 		{
 			await InvokeAsync(ReportReadingsAsync);
+			await InvokeAsync(AcknowledgeInspection);
 		}
 		catch (ObjectDisposedException)
 		{
@@ -384,7 +492,13 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 
 		loading = false;
 
+		var epoch = touchEpoch;
+		var revision = touchNavigationRevision;
+		var commit = panCommit;
 		Context.Render();
+		RenderedTouchEpoch = epoch;
+		RenderedTouchRevision = revision;
+		RenderedPanCommit = commit;
 
 		var zones = Layout.PlotLayout.Compute(new(
 			Width: Width,
@@ -422,6 +536,10 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		{
 			_ = ReportReadingsSafelyAsync();
 		}
+		else
+		{
+			_ = InvokeAsync(AcknowledgeInspection);
+		}
 
 		for (var i = 0; i < Context.Panels.Count; i++)
 		{
@@ -442,7 +560,7 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 			Context.FitYToXView();
 		}
 
-		return RefreshAsync(RenderTarget.Render, token);
+		return CommandViewAsync(token);
 	}
 
 	/// <summary>Zooms the y axis to an explicit data-unit window and re-renders. Last writer wins; the render is coalesced by the interactive channel.</summary>
@@ -453,7 +571,7 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	{
 		Context.SetYView(min, max);
 
-		return RefreshAsync(RenderTarget.Render, token);
+		return CommandViewAsync(token);
 	}
 
 	/// <summary>Clears the view windows on both axes and re-renders at the authored limits or the data extent.</summary>
@@ -462,8 +580,10 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	{
 		Context.ResetView();
 
-		return RefreshAsync(RenderTarget.Render, token);
+		return CommandViewAsync(token);
 	}
+
+	private Task<long> CommandViewAsync(CancellationToken token) => CommitViewAsync(ViewChangeCause.HostCommand, RenderTarget.Render, token, command: true);
 
 	public Task StateHasChangedAsync() => InvokeAsync(StateHasChanged);
 
@@ -473,17 +593,60 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 
 	public Task RefreshAsync(RenderTarget target, CancellationToken token) => CommitViewAsync(ViewChangeCause.HostCommand, target, token);
 
-	internal async Task CommitViewAsync(ViewChangeCause cause, RenderTarget target, CancellationToken token)
+	internal async Task<long> CommitViewAsync(ViewChangeCause cause, RenderTarget target, CancellationToken token, bool touch = false, bool command = false)
 	{
-		if (RenderModeHandler is not null)
-		{
-			await RenderModeHandler.RefreshAsync(target, token);
-		}
+		var epoch = await RenderViewAsync(cause, target, token, touch, command);
 
+		await ReportViewChangeAsync(cause);
+
+		return epoch;
+	}
+
+	internal async Task ReportViewChangeAsync(ViewChangeCause cause)
+	{
 		if (ViewChanged.HasDelegate)
 		{
 			await InvokeAsync(() => ReportViewAsync(cause));
 		}
+	}
+
+	internal async Task<long> RenderViewAsync(ViewChangeCause cause, RenderTarget target, CancellationToken token, bool touch = false, bool command = false, long pan = 0)
+	{
+		if (token.IsCancellationRequested)
+		{
+			await Task.FromCanceled(token);
+		}
+
+		var xView = Context.Positions.X.View;
+		var supersedes = cause switch
+		{
+			ViewChangeCause.Gesture => !touch,
+			ViewChangeCause.HostCommand => command || xView != touchXView,
+			_ => true
+		};
+		if (target == RenderTarget.Render)
+		{
+			if (supersedes)
+			{
+				touchEpoch++;
+			}
+			touchXView = xView;
+		}
+
+		if (pan != 0)
+		{
+			panCommit = pan;
+		}
+
+		var epoch = touchEpoch;
+
+		if (RenderModeHandler is not null)
+		{
+			// DEVIATION: forward the token (C# guide §11) — it was honoured above; a second check in the handler could refuse a hand-off whose epoch already advanced.
+			await RenderModeHandler.RefreshAsync(target, CancellationToken.None);
+		}
+
+		return epoch;
 	}
 
 	private Task ReportViewAsync(ViewChangeCause cause)

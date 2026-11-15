@@ -66,7 +66,7 @@ GGNet does not maximize a panel or switch between compositions. A page that show
 
 - `context.XView` / `context.YView` read the current view window in data units (null when no window is set, and on discrete and `LocalDateTime` axes).
 - `Plot.ViewChanged` fires once per committed window change with its cause: `Gesture`, `HostCommand` or `Reset`. Name `Plot`'s type arguments when binding it to a method.
-- `.Panel(…, onActivate:, key:)` fires for a click anywhere in a sub-panel's plot area and reports which sub-panel it was. On a plot with `Interactivity` it waits about 200 ms so a double-click reset wins (a double tap slower than that activates first and then resets); with `CursorTooltip` or `Crosshair` it never fires, because taps inspect there, so give the user a button.
+- `.Panel(…, onActivate:, key:)` fires for a click anywhere in a sub-panel's plot area and reports which sub-panel it was. Mouse clicks on a plot with `Interactivity` wait about 200 ms so double-click reset wins. Enabled chart touch gestures consume touch clicks without that delay. With `CursorTooltip` or `Crosshair` the activation wrapper is absent; use an explicit Expand button.
 
 ```razor
 <Plot T="Reading" TX="Instant" TY="double" @ref=overview Context=@overviewContext RenderMode=@RenderMode.Interactive ViewChanged=@OnOverviewViewChanged />
@@ -91,7 +91,7 @@ The demo's `/overview-detail` page is a working example.
 
 ### Crosshair and readout
 
-`Interactivity = new() { Crosshair = true }` gives an interactive plot one inspected x position, drawn as a line with its x label in every panel that shares the x scale. A mouse moves it by hovering and pins it with a click; a finger pins it with a tap and scrubs it with a sideways drag, and a vertical drag still scrolls the page. Left and Right step between sample times and Escape clears. A pin is a data value: it survives new data, resizing, view changes and a new `Context`, and only Escape, `ClearInspectionAsync` or the host end it.
+`Interactivity = new() { Crosshair = true }` gives an interactive plot one inspected x position, drawn as a line with its x label in every panel that shares the x scale. A mouse moves it by hovering and pins it with a click; a finger pins it with a tap and enters inspection after holding for 400 ms within 10 screen pixels, then scrubs and pins on release. Active touch interaction owns the plot area by default; `TouchOwnership.ScrollY` permits native vertical scrolling. Left and Right step between sample times and Escape clears. A pin is a data value: it survives new data, resizing, view changes and a new `Context`, and only Escape, `ClearInspectionAsync` or the host end it.
 
 A layer joins the readout with `inspect:`. Each series finds its own reading at the inspected position, under a policy you choose per series, and says which sample it used:
 
@@ -115,7 +115,7 @@ PlotContext.Build(temperature, r => r.At, r => r.Value)
 - **Policies.** `Nearest` takes the closest sample on either side, `Previous` the last one at or before the position, both within `MaxDuration` (`Instant` x) or `MaxDistance` (numeric x). `Step` takes the last one however old: a value in effect. `Containing`, on `Geom_Bar` only, takes the bar whose x extent holds the position. Nothing is interpolated. A series with no qualifying sample reports `ReadingKind.Missing` with its `Missing` text, never a distant value.
 - **The readout is yours.** `ReadingsChanged` hands you `InspectionReadings<TX>`: the position, one `Reading<TX>` per series (name, group, the sample's own x, how it was obtained, the formatted value) and whether the position lies outside the visible window. GGNet draws the line, its label and a marker on each sample that was read; it renders no readout and no clear button.
 - **Two notifications.** `InspectionChanged` fires when the position or its pinned state changes through a gesture, a key or a clear. `ReadingsChanged` fires when the readout changes, which includes live data arriving under a pin that did not move.
-- **Navigation.** With `Pan` as well, a mouse drag pans, and two fingers pan and pinch the x window; one finger never pans there. The plot area then stops pinch-zooming the page. Without `Pan`, two fingers keep pinch-zooming the page.
+- **Navigation.** With `Pan` and an X wheel axis, an immediate one-finger horizontal drag pans and two fingers pan/pinch X, whether or not a crosshair is visible. A hold enters inspection instead. Explicit `Touch` options control navigation independently of mouse `Pan` and `Zoom`. There is no touch double-tap reset; provide an All button.
 - **Where readings exist.** On `Instant` and numeric x, for `Geom_Line`, `Geom_Point`, `Geom_Area` and `Geom_Bar`. Other geoms are not read. An inspected layer on a `LocalDateTime` or discrete x axis throws when the plot mounts with `Crosshair`; the line itself works there, snapped. Facets with `freeX` and flipped plots get a line local to one panel, with no pin and no readout. Separate plots are not synchronized: carry `Inspection` between them yourself.
 
 Four cautions for a page that uses it:
@@ -124,6 +124,104 @@ Four cautions for a page that uses it:
 - Under a shared crosshair a touch tap pins and goes no further: it does not reach a mark's `onclick` or a click handler around the chart. A mouse click reaches both.
 - A marker sits at the row's own value. In a stacked area or bar it is not on the stacked outline.
 - Name `Plot`'s type arguments when binding `ReadingsChanged` or `ViewChanged` to a method.
+
+### Touch policy and beta migration
+
+The beta touch contract replaces immediate drag-to-scrub with hold-to-scrub. A second contact
+abandons a provisional scrub and restores the committed pin before navigating; a third contact
+cancels. After two fingers become one, the remaining finger cannot start another gesture until
+all contacts lift. Pinch distance remains Euclidean, so fingers may sit on different linked panels.
+
+Use one explicit policy when the inferred `Pan`/`Crosshair` settings do not describe your host:
+
+```csharp
+new InteractivityOptions
+{
+    Crosshair = true,
+    Pan = true,
+    Touch = new()
+    {
+        Navigation = TouchNavigation.PanAndPinchX,
+        Inspect = true,
+        Ownership = TouchOwnership.ScrollY
+    }
+}
+```
+
+`TouchNavigation.TwoFingerX` reserves navigation for two fingers. `None` disables navigation.
+`Inspect` enables tap/hold inspection independently, including a host readout without a visible
+crosshair. `Touch = new()` disables chart touch gestures entirely while retaining mouse/pen
+configuration. Options remain initialization-only: remount with a new `@key` to change them.
+
+While a touch policy is on, the chart owns its touch taps: they reach no mark `onclick`, panel
+activation or surrounding click handler, and `CursorTooltip` stays a mouse feature. Only a chart
+with touch off keeps the browser's tap-as-click, and its tap standing in for hover on a cursor
+tooltip; it then inspects no position by touch. Give touch users visible controls for what a tap
+used to do.
+
+A touch gesture still in flight when the host commands the viewport (`ZoomToXAsync`,
+`ZoomToYAsync`, `ResetViewAsync`, `ShowLastAsync`, a window set before `RefreshAsync`, or a new
+`Context` whose x window differs from the one it replaces) is discarded: the host wins. So is one in flight when the host clears or sets the selection on a
+plot with touch inspection; without touch inspection a selection change leaves touch navigation
+alone. A wheel, mouse or pen view change made while a touch gesture is still in flight wins the
+same way. A mouse or pen pan keeps its preview until the frame of its own commit, or of a
+later host viewport command, is rendered; a frame that only brings new data does not end it. If no
+such frame arrives within ten seconds the preview is dropped and the chart stays usable. A `RefreshAsync` that only brings new data keeps the gesture and the pin. Replacing the `Context` discards an in-flight touch gesture in the browser whatever its window: the plot's panels are keyed by context, so their touch state is disposed with them. Only the server's acceptance rule tells a same-window replacement apart, and no browser client can use it. A dropped circuit is noticed only when the ten-second watchdog
+fires, since Blazor neither completes nor rejects a call in flight across a disconnect.
+
+Beta change: `ZoomToXAsync`, `ZoomToYAsync`, `ResetViewAsync` and `RefreshAsync` given an
+already-cancelled token now render nothing and throw `TaskCanceledException` under both
+`RenderMode.Interactive` and `RenderMode.InteractiveAuto`. `InteractiveAuto` previously ignored
+the token and rendered anyway. A cancelled command still leaves its window on the context, and
+the next refresh renders it.
+
+`Owned` (the default) installs `touch-action: none` on the plot-area viewport. `ScrollY` permits
+vertical page scrolling and may cancel a hold or scrub; it permits page pinch only when chart
+pinch is disabled. Neither policy changes the surrounding page. There is no touch Y navigation
+in this contract; `ZoomAxis.Y` remains meaningful for mouse/pen, and AutoFitY follows committed X
+changes. Explicit enabled touch requires unflipped Cartesian shared-X charts without free-X facets;
+unsupported default configurations leave those touch capabilities disabled.
+
+Overview and detail should use the same policy, with separate Expand, Close, All and Clear controls.
+Carry `Inspection` and the viewport between them. Clear changes selection only; All resets the
+viewport only. An offscreen selection stays a data coordinate rather than being clamped to an edge.
+
+Touch feedback is local: the plot root carries `data-ggnet-interaction` with `inspecting`,
+`navigating`, `pending` or `unavailable`, and removes it when settled. Provisional lines do not
+carry old timestamps or sample markers. Navigation hides stale ticks/grid until matching rendered
+frames arrive. A mouse or pen pan gives the same feedback: `navigating` from the moment the drag
+is recognized, then `pending` from release until its frame is rendered, with stale ticks, cursor
+label and markers hidden and a pinned line travelling with the marks. Its ten-second bound only
+drops the preview and the feedback; it never makes the chart `unavailable`. A wheel step, a key
+and a double-click reset set no feedback. A ten-second unresolved touch operation enters
+`unavailable`; remount the plot to resume.
+So does a touch commit whose call fails: an exception escaping `ViewChanged`, `InspectionChanged`
+or `ReadingsChanged` during a touch commit puts the chart in `unavailable` until remount, although
+the server has already committed the change. An exception escaping `ViewChanged` during a mouse or
+pen pan is not surfaced: the pan stays committed and the chart stays usable.
+In `unavailable` the last acknowledged cursor label, markers and frame stay visible beside the
+indication, since they are the last state the server confirmed. A mouse or pen pan still works
+there, and for the length of its preview the label and markers are hidden with the ticks.
+
+Place the plot and its readout inside a common wrapper to hide stale host values immediately,
+without waiting for a server callback, and to keep the last acknowledged values on show once the
+plot is `unavailable`. For example, give that wrapper `class="chart-inspection"`
+and wrap the values inside `.readout-values`:
+
+```css
+.chart-inspection:has([data-ggnet-interaction]:not([data-ggnet-interaction="unavailable"])) .readout-values {
+    visibility: hidden;
+}
+.chart-inspection:has([data-ggnet-interaction]:not([data-ggnet-interaction="unavailable"])) .readout::after {
+    content: "Updating readings…";
+}
+.chart-inspection:has([data-ggnet-interaction="unavailable"]) .readout::after {
+    content: "Last readings — reload to reconnect";
+}
+```
+
+Keep the readout's dimensions stable so feedback does not move the chart under a held pointer.
+`ReadingsChanged` continues to report the actual selection belonging to its values.
 
 ### Stats
 

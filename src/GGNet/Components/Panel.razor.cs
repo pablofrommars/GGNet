@@ -44,6 +44,14 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	private IChildRenderModeHandler? renderModeHandler;
 	private IChildRenderModeHandler? areaRenderModeHandler;
 	private Data.Panel<T, TX, TY>? boundData;
+	private readonly string renderSession = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
+	private long renderSequence;
+	internal string? TouchFrame { get; private set; }
+	internal string? TouchView { get; private set; }
+	internal string? TouchCommit { get; private set; }
+	private string? CurrentTouchView => Plot.StampsFrames
+		? string.Create(CultureInfo.InvariantCulture, $"{Plot.TouchSession} {Plot.RenderedTouchEpoch} {Plot.RenderedTouchRevision} {xscale.Range.min:R} {xscale.Range.max:R}")
+		: null;
 
 	private Position<TX> xscale = default!;
 	private Position<TY> yscale = default!;
@@ -85,7 +93,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	[DynamicDependency(nameof(OnCursorAsync))]
 	[DynamicDependency(nameof(OnCursorLeaveAsync))]
 	[DynamicDependency(nameof(OnCursorRestoreAsync))]
-	[DynamicDependency(nameof(OnNavigateEndAsync))]
+	[DynamicDependency(nameof(OnTouchNavigateAsync))]
+	[DynamicDependency(nameof(OnTouchInspectAsync))]
 	public Panel()
 	{
 		renderTitle = RenderTitle;
@@ -128,6 +137,14 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 
 	protected void Render(bool firstRender)
 	{
+		TouchFrame = Plot.StampsFrames
+			? string.Create(CultureInfo.InvariantCulture, $"{renderSession}:{++renderSequence}")
+			: null;
+		TouchView = CurrentTouchView;
+		TouchCommit = Plot.StampsFrames && Plot.RenderedPanCommit != 0
+			? Plot.RenderedPanCommit.ToString(CultureInfo.InvariantCulture)
+			: null;
+
 		var zones = Layout.PanelLayout.Compute(new(
 			Outer: new Zone { X = X, Y = Y, Width = Width, Height = Height },
 			XStripText: Data.Strip.x,
@@ -364,7 +381,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	[JSInvokable]
 	public Task OnCursorAsync(double px, bool pinned)
 	{
-		if (Volatile.Read(ref disposing) != 0 || Plot.Interactivity is not { Crosshair: true })
+		if (Volatile.Read(ref disposing) != 0 || !Plot.InspectionEnabled)
 		{
 			return Task.CompletedTask;
 		}
@@ -418,7 +435,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	[JSInvokable]
 	public Task OnCursorRestoreAsync()
 	{
-		if (Volatile.Read(ref disposing) != 0 || Plot.Interactivity is not { Crosshair: true } || !SharesCursor)
+		if (Volatile.Read(ref disposing) != 0 || !Plot.InspectionEnabled || !SharesCursor)
 		{
 			return Task.CompletedTask;
 		}
@@ -426,7 +443,15 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		return Plot.RestoreInspectionAsync();
 	}
 
-	private CursorFrame Cursor()
+	private CursorFrame Cursor() => CursorGeometry() with
+	{
+		InspectionStamp = Plot.StampsInspection ? Plot.TouchInspectionStamp : null,
+		Selection = Plot.CurrentInspection is { } selected ? xscale.Map(selected.X) : null,
+		CommittedSelection = Plot.PinnedInspection is { } committed ? xscale.Map(committed.X) : null,
+		Draw = Plot.Interactivity is { Crosshair: true }
+	};
+
+	private CursorFrame CursorGeometry()
 	{
 		var top = Area.Y;
 		var bottom = Area.Y + Area.Height;
@@ -437,7 +462,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 
 		if (key is not { } value || xscale.Map(value) is var mapped && double.IsNaN(mapped))
 		{
-			return new(Area.X, top, bottom, null, false, false, []);
+			return new(Area.X, top, bottom, null, false, false, [], CurrentTouchView);
 		}
 
 		var x = ToX(mapped);
@@ -470,7 +495,7 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			}
 		}
 
-		return new(x, top, bottom, xscale.Label(value), pinned, visible, markers);
+		return new(x, top, bottom, xscale.Label(value), pinned, visible, markers, CurrentTouchView);
 	}
 
 	private ElementReference captureRef;
@@ -500,9 +525,10 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	private PanelInteropOptions InteropOptions(InteractivityOptions options)
 		=> PanelInteropOptions.Create(options) with
 		{
-			Group = Plot.Id,
+			Group = Plot.TouchSession,
 			SharedX = Plot.Context.Positions.X.Scales.Count == 1,
 			SharedY = Plot.Context.Positions.Y.Scales.Count == 1,
+			Touch = Plot.TouchOptions,
 			Cursor = !options.Crosshair ? null : SharesCursor ? PanelInterop.SharedCursor : PanelInterop.LocalCursor,
 			CursorContinuous = options.Crosshair && SharesCursor && xscale.InvertsExactly
 		};
@@ -518,12 +544,14 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	/// <summary>Commits a finished drag-pan: converts the net pixel delta into a view-window shift and re-renders. Invoked from the collocated JS module.</summary>
 	/// <param name="dx">Net horizontal drag, in svg units (positive right).</param>
 	/// <param name="dy">Net vertical drag, in svg units (positive down).</param>
+	/// <param name="commit">The module's own number for this commit, which the frame that renders it carries; zero carries none.</param>
+	/// <returns>The epoch this commit advanced the plot to, which the frame that renders it carries; zero when nothing was committed.</returns>
 	[JSInvokable]
-	public async Task OnPanEndAsync(double dx, double dy)
+	public async Task<long> OnPanEndAsync(double dx, double dy, long commit = 0)
 	{
 		if (Volatile.Read(ref disposing) != 0 || Plot.Interactivity is not { Pan: true } options)
 		{
-			return;
+			return 0;
 		}
 
 		if (dx != 0 && options.Zoom is ZoomAxis.X or ZoomAxis.Both)
@@ -542,43 +570,56 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			Plot.Context.Positions.Y.SetView((yscale.Invert(shift), yscale.Invert(1 + shift)));
 		}
 
-		await Plot.CommitViewAsync(ViewChangeCause.Gesture, RenderTarget.Render, CancellationToken.None);
+		var epoch = await Plot.RenderViewAsync(ViewChangeCause.Gesture, RenderTarget.Render, CancellationToken.None, pan: commit);
+
+		await Plot.ReportViewChangeAsync(ViewChangeCause.Gesture).ConfigureAwait(ConfigureAwaitOptions.ContinueOnCapturedContext | ConfigureAwaitOptions.SuppressThrowing);
+
+		return epoch;
 	}
 
-	/// <summary>Commits a finished two-finger gesture under the crosshair: the x value that was under the fingers' midpoint at the start ends under their midpoint at the end, with the window narrowed or widened by the pinch. Invoked from the collocated JS module.</summary>
-	/// <param name="from">Midpoint of the two fingers when the gesture began, in svg units.</param>
-	/// <param name="to">Midpoint of the two fingers when it ended, in svg units.</param>
-	/// <param name="scale">Finger distance at the end over the distance at the start; above 1 zooms in.</param>
 	[JSInvokable]
-	public async Task OnNavigateEndAsync(double from, double to, double scale)
+	public async Task OnTouchNavigateAsync(string session, long epoch, long revision, double min, double max)
 	{
 		if (Volatile.Read(ref disposing) != 0
-			|| Plot.Interactivity is not { Pan: true, Crosshair: true, Zoom: ZoomAxis.X or ZoomAxis.Both } options
-			|| !SharesCursor
-			|| !double.IsFinite(from) || !double.IsFinite(to) || !double.IsFinite(scale) || scale <= 0
-			|| Area.Width <= 0)
+			|| Plot.Interactivity is not { } options
+			|| Plot.TouchOptions is not { Navigation: not TouchNavigation.None }
+			|| !double.IsFinite(min) || !double.IsFinite(max) || max <= min
+			|| !Plot.AcceptTouch(session, epoch, revision, navigation: true))
 		{
 			return;
 		}
 
-		scale = Math.Clamp(scale, minPinch, maxPinch);
-
-		var start = (from - Area.X) / Area.Width;
-		var end = (to - Area.X) / Area.Width;
-
-		Plot.Context.Positions.X.SetView((xscale.Invert(start - end / scale), xscale.Invert(start + (1 - end) / scale)));
-
+		Plot.Context.Positions.X.SetView((min, max));
 		if (options.AutoFitY)
 		{
 			Plot.Context.FitYToXView();
 		}
 
-		await Plot.CommitViewAsync(ViewChangeCause.Gesture, RenderTarget.Render, CancellationToken.None);
+		await Plot.CommitViewAsync(ViewChangeCause.Gesture, RenderTarget.Render, CancellationToken.None, touch: true);
 	}
 
-	// TODO: calibration — how far one pinch may narrow or widen the window; physical QA on a touchscreen settles whether a single gesture needs more.
-	private const double minPinch = 0.1;
-	private const double maxPinch = 10.0;
+	[JSInvokable]
+	public Task OnTouchInspectAsync(string session, long epoch, long revision, double mapped, bool pinned, bool restore)
+	{
+		if (Volatile.Read(ref disposing) != 0 || Plot.TouchOptions is not { Inspect: true }
+			|| !double.IsFinite(mapped))
+		{
+			return Task.CompletedTask;
+		}
+
+		var key = xscale.Unmap(mapped);
+		if (!Plot.AcceptTouch(session, epoch, revision, navigation: false))
+		{
+			return Task.CompletedTask;
+		}
+
+		if (restore || (key is null && pinned))
+		{
+			return Plot.RestoreInspectionAsync(forceFrame: true);
+		}
+
+		return Plot.InspectAsync(key is { } value ? new(value, pinned) : Plot.CurrentInspection, notify: true, forceFrame: true);
+	}
 
 	private int disposing;
 

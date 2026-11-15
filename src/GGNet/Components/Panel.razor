@@ -38,7 +38,7 @@ else
        events stay Blazor's. *@
     @* INVARIANT: a touch long-press otherwise selects nearby chart text, an axis
        label in practice; mouse drags here are already kept from selecting. *@
-    <g @ref=captureRef style="user-select: none; -webkit-user-select: none;" @ondblclick=OnResetViewAsync>
+    <g @ref=captureRef data-ggnet-frame=@TouchFrame style="user-select: none; -webkit-user-select: none;" @ondblclick=OnResetViewAsync>
         @renderContent
     </g>
 }
@@ -158,7 +158,7 @@ else
             </g>
         }
 
-        @if (Plot.Interactivity is { Crosshair: true } && coord.CarvesAxisBands)
+        @if (Plot.InspectionEnabled && coord.CarvesAxisBands)
         {
             @* The cursor is an internal component, which Razor markup cannot name. *@
             __builder.OpenComponent<CrosshairCursor>(9000);

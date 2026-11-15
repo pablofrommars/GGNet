@@ -33,10 +33,10 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 	}
 
 	[Theory]
-	[InlineData(0, "0 temperature", "detail")]
-	[InlineData(1, "1 gravity", "overview")]
-	[InlineData(2, "2 pressure", "overview")]
-	public async Task ATapOnASubPanelReportsThatSubPanelAndOnlyTemperatureOpensItsDetail(int panel, string activation, string state)
+	[InlineData(0)]
+	[InlineData(1)]
+	[InlineData(2)]
+	public async Task ATapOnASubPanelPinsWithoutOpeningDetail(int panel)
 	{
 		// Arrange
 
@@ -46,15 +46,15 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 		// Act
 
 		await TapAsync(session.Page, session.Cdp, x, y);
-		await session.WaitForTextAsync("activations", "1");
+		await session.Page.WaitForFunctionAsync("() => document.querySelector('[data-qa=selection-time]').textContent !== 'none'");
 		await session.Page.WaitForTimeoutAsync(Settled);
 
 		// Assert
 
 		using var _ = new AssertionScope();
-		(await session.TextAsync("activations")).Should().Be("1");
-		(await session.TextAsync("last-activation")).Should().Be(activation);
-		(await session.TextAsync("state")).Should().Be(state);
+		(await session.TextAsync("activations")).Should().Be("0");
+		(await session.TextAsync("selection-time")).Should().NotBe("none");
+		(await session.TextAsync("state")).Should().Be("overview");
 		session.Errors.Should().BeEmpty();
 	}
 
@@ -122,7 +122,7 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 	[Theory]
 	[InlineData(false)]
 	[InlineData(true)]
-	public async Task TheResetGestureResetsTheWindowWithoutActivating(bool touch)
+	public async Task MouseResetAndTheAllControlResetWithoutActivating(bool touch)
 	{
 		// Arrange
 
@@ -135,24 +135,20 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 
 		if (touch)
 		{
-			await TouchAsync(session.Cdp, "touchStart", Point(x, y));
-			await TouchAsync(session.Cdp, "touchEnd");
-			await session.Page.WaitForTimeoutAsync(80);
-			await TouchAsync(session.Cdp, "touchStart", Point(x, y));
-			await TouchAsync(session.Cdp, "touchEnd");
+			await session.Page.Locator("[data-qa=all]").TapAsync();
 		}
 		else
 		{
 			await session.Page.Mouse.DblClickAsync((float)x, (float)y);
 		}
 
-		await session.WaitForTextAsync("overview-cause", "Reset");
+		await session.WaitForTextAsync("overview-cause", touch ? "HostCommand" : "Reset");
 		await session.Page.WaitForTimeoutAsync(Settled);
 
 		// Assert
 
 		using var _ = new AssertionScope();
-		(await session.TextAsync("overview-cause")).Should().Be("Reset");
+		(await session.TextAsync("overview-cause")).Should().Be(touch ? "HostCommand" : "Reset");
 		(await session.TextAsync("overview-window")).Should().Be("none");
 		(await session.TextAsync("overview-changes")).Should().Be("2");
 		(await session.TextAsync("activations")).Should().Be("0");
@@ -173,7 +169,7 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 
 		// Act
 
-		await TapAsync(session.Page, session.Cdp, x, y);
+		await session.Page.Locator("[data-qa=expand]").TapAsync();
 		await session.WaitForTextAsync("state", "detail");
 		await session.WaitForTextAsync("detail-window", panned);
 		var opened = await session.TextAsync("detail-window");
@@ -204,6 +200,135 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 	}
 
 	[Fact]
+	public async Task SelectionTravelsAcrossExpandAndCloseWhileAllAndClearStaySeparate()
+	{
+		// Arrange
+
+		await using var session = await OpenAsync();
+		var (x, y) = await session.PanelCentreAsync("overview", 0);
+		await TapAsync(session.Page, session.Cdp, x, y);
+		var selected = await session.TextAsync("selection-time");
+		await SwipeAsync(session.Page, session.Cdp, x, y, -100, 0);
+		await session.WaitForTextAsync("overview-changes", "1");
+
+		// Act
+
+		await session.Page.Locator("[data-qa=expand]").TapAsync();
+		await session.WaitForTextAsync("state", "detail");
+		var inDetail = await session.TextAsync("selection-time");
+		await session.Page.Locator("[data-qa=all]").TapAsync();
+		await session.WaitForTextAsync("detail-window", "none");
+		var afterAll = await session.TextAsync("selection-time");
+		await session.Page.Locator("[data-qa=clear]").TapAsync();
+		await session.WaitForTextAsync("selection-time", "none");
+		await session.Page.Locator("[data-qa=close]").TapAsync();
+		await session.WaitForTextAsync("state", "overview");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		selected.Should().NotBe("none");
+		inDetail.Should().Be(selected);
+		afterAll.Should().Be(selected);
+		(await session.TextAsync("selection-time")).Should().Be("none");
+		(await session.TextAsync("overview-window")).Should().Be("none");
+		session.Errors.Should().BeEmpty();
+	}
+
+	[Fact]
+	public async Task NavigationOnlyAcceptsContactsInDifferentPanelsWithoutACrosshair()
+	{
+		// Arrange
+
+		await using var session = await OpenAsync();
+		await session.Page.Locator("[data-qa=navigation-only]").TapAsync();
+		await session.Page.WaitForTimeoutAsync(500);
+		var (ax, ay) = await session.PanelCentreAsync("overview", 0);
+		var (bx, by) = await session.PanelCentreAsync("overview", 1);
+
+		// Act
+
+		await TouchAsync(session.Cdp, "touchStart", Point(ax, ay), Point(bx, by, 2));
+		await TouchAsync(session.Cdp, "touchMove", Point(ax - 80, ay), Point(bx - 80, by, 2));
+		await TouchAsync(session.Cdp, "touchEnd");
+		await session.WaitForTextAsync("overview-changes", "1");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		(await session.TextAsync("overview-window")).Should().NotBe("none");
+		(await session.TextAsync("selection-time")).Should().Be("none");
+		(await session.Page.Locator("[data-qa=overview] [data-ggnet-cursor]").CountAsync()).Should().Be(0);
+		session.Errors.Should().BeEmpty();
+	}
+
+	[Theory]
+	[InlineData(false)]
+	[InlineData(true)]
+	public async Task NavigationOnlyCommitsAPanAfterClearOrWithARetainedSelection(bool retained)
+	{
+		// Arrange — the page shares one selection with both plots, in every mode.
+
+		await using var session = await OpenAsync();
+		var (x, y) = await session.PanelCentreAsync("overview", 0);
+		if (retained)
+		{
+			await TapAsync(session.Page, session.Cdp, x, y);
+			await session.Page.WaitForFunctionAsync("() => document.querySelector('[data-qa=selection-time]').textContent !== 'none'");
+		}
+		await session.Page.Locator("[data-qa=navigation-only]").TapAsync();
+		await session.Page.WaitForTimeoutAsync(500);
+		if (!retained)
+		{
+			await session.Page.Locator("[data-qa=clear]").TapAsync();
+			await session.Page.WaitForTimeoutAsync(300);
+		}
+		(x, y) = await session.PanelCentreAsync("overview", 0);
+
+		// Act
+
+		await SwipeAsync(session.Page, session.Cdp, x, y, -160, 0);
+		await session.WaitForTextAsync("overview-changes", "1");
+		await session.Page.WaitForTimeoutAsync(300);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		(await session.TextAsync("overview-changes")).Should().Be("1");
+		(await session.TextAsync("overview-cause")).Should().Be("Gesture");
+		(await session.TextAsync("selection-time") != "none").Should().Be(retained);
+		(await session.Page.Locator("[data-qa=overview] .ggnet").GetAttributeAsync("data-ggnet-interaction")).Should().BeNull();
+		(await session.Page.Locator("[data-qa=overview] [data-ggnet-pan][transform]").CountAsync()).Should().Be(0);
+		session.Errors.Should().BeEmpty();
+	}
+
+	[Fact]
+	public async Task ScrollYModeAllowsNativeVerticalScrolling()
+	{
+		// Arrange
+
+		await using var session = await OpenAsync();
+		await session.Page.SetViewportSizeAsync(1185, 900);
+		await session.Page.Locator("[data-qa=scroll-y]").TapAsync();
+		await session.Page.WaitForTimeoutAsync(500);
+		var (x, y) = await session.PanelCentreAsync("overview", 0);
+		var before = await session.Page.EvaluateAsync<double>("() => scrollY");
+
+		// Act
+
+		await SwipeAsync(session.Page, session.Cdp, x, y, 0, -180);
+		await session.Page.WaitForTimeoutAsync(500);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		(await session.Page.EvaluateAsync<double>("() => scrollY")).Should().BeGreaterThan(before);
+		(await session.TextAsync("selection-time")).Should().Be("none");
+		(await session.TextAsync("overview-changes")).Should().Be("0");
+		session.Errors.Should().BeEmpty();
+	}
+
+	[Fact]
 	public async Task TheHiddenDetailReceivesNoTaps()
 	{
 		// Arrange
@@ -222,18 +347,18 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 	}
 
 	[Fact]
-	public async Task AnInspectingTapShowsItsTooltipAndNeverActivates()
+	public async Task AnInspectingTapPinsWithoutActivating()
 	{
 		// Arrange
 
 		await using var session = await OpenAsync();
 		var (x, y) = await session.PointOnAsync("inspect", "[data-ggnet-pan] g[transform] > circle");
-		var bubble = session.Page.Locator("div.container[popover] .bubble");
+		var pin = session.Page.Locator("[data-qa=inspect] [data-ggnet-cursor][data-ggnet-pinned]");
 
 		// Act
 
 		await TapAsync(session.Page, session.Cdp, x, y);
-		await bubble.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10_000 });
+		await pin.WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10_000 });
 		await session.Page.WaitForTimeoutAsync(Settled);
 		var afterTap = await session.TextAsync("inspect-activations");
 
@@ -275,7 +400,7 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 		// The QA device's shape: a portrait touchscreen at device scale 1 on a desktop browser.
 		var context = await fixture.Browser.NewContextAsync(new() { ViewportSize = new() { Width = 1185, Height = 1920 }, HasTouch = true });
 		var page = await context.NewPageAsync();
-		var session = new Session(context, page, await context.NewCDPSessionAsync(page));
+		var session = new Session(context, page, await context.NewCDPSessionAsync(page), fixture.AttachServerOutputOnCircuitError(page));
 
 		page.PageError += (_, error) => session.Errors.Add(error);
 		page.Console += (_, message) =>
@@ -294,7 +419,7 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 		return session;
 	}
 
-	private sealed record Session(IBrowserContext Context, IPage Page, ICDPSession Cdp) : IAsyncDisposable
+	private sealed record Session(IBrowserContext Context, IPage Page, ICDPSession Cdp, IAsyncDisposable ServerOutput) : IAsyncDisposable
 	{
 		public List<string> Errors { get; } = [];
 
@@ -352,6 +477,17 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 			}
 		}
 
-		public ValueTask DisposeAsync() => Context.DisposeAsync();
+		// The attachment is flushed first: it writes to the test's output, which closes when the test ends.
+		public async ValueTask DisposeAsync()
+		{
+			try
+			{
+				await ServerOutput.DisposeAsync();
+			}
+			finally
+			{
+				await Context.DisposeAsync();
+			}
+		}
 	}
 }

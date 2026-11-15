@@ -18,11 +18,38 @@ public sealed record InteractivityOptions
 	/// <summary>Window shrink factor per wheel notch toward the cursor; the inverse widens on scroll-out. Between 0 and 1, closer to 1 is gentler.</summary>
 	public double ZoomStep { get; init; } = 0.8;
 
-	/// <summary>Shows a vertical crosshair with an x-value label at one x position shared by every panel of the plot. A mouse moves it by hovering and pins it with a click; a finger pins it with a tap and scrubs it with a sideways drag, while a vertical drag still scrolls the page. Layers given <c>inspect:</c> report their reading there through <c>Plot.ReadingsChanged</c>, and <c>@bind-Inspection</c> exposes the position. A pin stays until Escape or <c>ClearInspectionAsync</c>. The line is continuous on <c>Instant</c> and numeric x, and snaps to samples or categories on <c>LocalDateTime</c> and discrete x. Facets with <c>freeX</c> and flipped plots keep a line local to the panel under the pointer, with no pin.</summary>
+	/// <summary>Shows a vertical crosshair with an x-value label shared across linked panels. A mouse hovers and clicks to pin. By default touch taps pin and a 400 ms hold enters inspection; immediate horizontal drag pans when Pan enables x navigation. Layers with <c>inspect:</c> report readings through <c>Plot.ReadingsChanged</c>; <c>@bind-Inspection</c> exposes the data-coordinate pin. Instant and numeric cursors are continuous; LocalDateTime and discrete cursors snap. Free-x and flipped plots retain a local mouse/pen cursor without a shared pin.</summary>
 	public bool Crosshair { get; init; }
 
-	/// <summary>Drag to pan along the <see cref="Zoom"/> axes. The drag previews as a client-side transform at frame rate and commits as a view-window shift on release. Together with <see cref="Crosshair"/>, one finger scrubs the crosshair instead, and two fingers pan and pinch the x window; the plot area then no longer pinch-zooms the page. A mouse drag still pans.</summary>
+	/// <summary>Mouse and pen drag to pan along the <see cref="Zoom"/> axes. With an x zoom axis, also enables one-finger x pan and two-finger x pan/pinch by default. Crosshair does not change that navigation. Explicit <see cref="Touch"/> overrides the inferred touch policy.</summary>
 	public bool Pan { get; init; }
+
+	/// <summary>Explicit touch policy. When omitted, Pan with an x zoom axis enables pan/pinch, Crosshair enables tap/hold inspection, and active gestures own the plot area. Unsupported layouts disable inferred shared touch; explicit enabled requests require shared Cartesian x axes. Use ScrollY to permit native vertical scrolling, or an empty value to disable chart touch gestures.</summary>
+	public TouchInteractionOptions? Touch { get; init; }
+
+	internal TouchInteractionOptions ResolveTouch(bool supported)
+	{
+		if (Touch is { } requested)
+		{
+			if (!Enum.IsDefined(requested.Navigation) || !Enum.IsDefined(requested.Ownership))
+			{
+				throw new Exceptions.GGNetUserException("Touch navigation and ownership must be defined values.");
+			}
+
+			if (requested.Enabled && !supported)
+			{
+				throw new Exceptions.GGNetUserException("Explicit touch interaction requires an unflipped Cartesian plot with one shared x scale and no free-x facets.");
+			}
+
+			return requested;
+		}
+
+		return new()
+		{
+			Navigation = supported && Pan && Zoom is ZoomAxis.X or ZoomAxis.Both ? TouchNavigation.PanAndPinchX : TouchNavigation.None,
+			Inspect = supported && Crosshair
+		};
+	}
 
 	/// <summary>Y follows the x window: every x view change (wheel, pan, host commands) refits the y axis to the data visible inside the window, with a small margin. Y becomes derived state — y gestures are disabled and manual y windows are overwritten on the next x change.</summary>
 	public bool AutoFitY { get; init; }

@@ -36,19 +36,19 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 	[Theory]
 	[InlineData(false)]
 	[InlineData(true)]
-	public async Task PreviewStillFollowsTheFingerAfterTheHostResetsTheView(bool panFirst)
+	public async Task PreviewStillFollowsTheMouseAfterTheHostResetsTheView(bool panFirst)
 	{
-		// Arrange
+		// Arrange — touch is off on the tap chart, so its pan is the mouse's.
 
 		await using var session = await OpenAsync("/touch");
 		var (x, y) = await session.MarkAsync("tap");
 		if (panFirst)
 		{
 			var before = await session.XLabelsAsync("tap");
-			await SwipeAsync(session.Page, session.Cdp, x, y, 120, 0);
+			await MouseDragAsync(session.Page, x, y, 120);
 			await session.WaitForLabelsAsync("tap", before);
 		}
-		await session.Page.Locator("[data-qa=reset-view]").TapAsync();
+		await session.Page.Locator("[data-qa=reset-view]").ClickAsync();
 		await session.Page.WaitForTimeoutAsync(1000);
 		var panel = await session.PanelAsync("tap");
 		x = panel.X + panel.Width * 0.5;
@@ -56,15 +56,16 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 
 		// Act
 
-		await TouchAsync(session.Cdp, "touchStart", Point(x, y));
+		await session.Page.Mouse.MoveAsync((float)x, (float)y);
+		await session.Page.Mouse.DownAsync();
 		for (var i = 1; i <= 5; i++)
 		{
-			await TouchAsync(session.Cdp, "touchMove", Point(x + i * 16, y));
+			await session.Page.Mouse.MoveAsync((float)(x + i * 16), (float)y);
 			await session.Page.WaitForTimeoutAsync(30);
 		}
 		var preview = await session.Page.Locator("[data-qa=tap] [data-ggnet-pan]").GetAttributeAsync("transform");
 		var count = await session.Page.Locator("[data-qa=tap] [data-ggnet-pan]").CountAsync();
-		await TouchAsync(session.Cdp, "touchEnd");
+		await session.Page.Mouse.UpAsync();
 
 		// Assert
 
@@ -79,9 +80,10 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 	[InlineData(14, 0)]
 	[InlineData(0, -14)]
 	[InlineData(10, 10)]
-	public async Task TapNearAMarkOpensItsTooltipAndPinsTheCrosshairUnderTheFinger(int dx, int dy)
+	public async Task TapNearAMarkOpensItsTooltipWithoutTouchInspection(int dx, int dy)
 	{
-		// Arrange — 14 px misses an 8 px mark by a finger's width but stays within reach.
+		// Arrange — 14 px misses an 8 px mark by a finger's width but stays within reach. Touch is
+		// off on this chart, so the tap stands in for hover and inspects no position.
 
 		await using var session = await OpenAsync("/touch");
 		var (x, y) = await session.MarkAsync("tooltip");
@@ -101,13 +103,12 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 
 		using var _ = new AssertionScope();
 		text.Should().Be(await session.MarkTextAsync("tooltip"));
-		crosshair.Should().NotBeNull();
-		crosshair!.Value.Should().BeApproximately(x + dx, 1.5, "the crosshair is the tapped position; only the tooltip belongs to the mark");
+		crosshair.Should().BeNull();
 		session.Errors.Should().BeEmpty();
 	}
 
 	[Fact]
-	public async Task TapFarFromEveryMarkClosesTheTooltipAndMovesTheCrosshairToTheFinger()
+	public async Task TapFarFromEveryMarkClosesTheTooltip()
 	{
 		// Arrange
 
@@ -129,13 +130,13 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 
 		using var _ = new AssertionScope();
 		(await popover.CountAsync()).Should().Be(0);
-		(await session.CrosshairXAsync("tooltip"))!.Value.Should().BeApproximately(bx, 6);
+		(await session.CrosshairXAsync("tooltip")).Should().BeNull();
 	}
 
 	[Fact]
-	public async Task SameMarkReopensAfterAPanDismissedItsTooltip()
+	public async Task SameMarkReopensAfterAScrollDismissedItsTooltip()
 	{
-		// Arrange
+		// Arrange — touch is off on the tooltip chart, so a vertical swipe on it scrolls the page.
 
 		await using var session = await OpenAsync("/touch");
 		var popover = session.Page.Locator("div.container[popover]");
@@ -143,7 +144,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		await TapAsync(session.Page, session.Cdp, x, y);
 		await popover.Locator(".bubble").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10_000 });
 		var panel = await session.PanelAsync("tooltip");
-		await SwipeAsync(session.Page, session.Cdp, panel.X + panel.Width * 0.9, panel.Y + panel.Height * 0.1, -60, 0);
+		await SwipeAsync(session.Page, session.Cdp, panel.X + panel.Width * 0.9, panel.Y + panel.Height * 0.5, 0, -80);
 		await popover.WaitForAsync(new() { State = WaitForSelectorState.Detached, Timeout = 10_000 });
 		(x, y) = await session.MarkAsync("tooltip");
 
@@ -295,7 +296,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 	}
 
 	[Fact]
-	public async Task DragStartingOnAMarkPansWithoutAnyClick()
+	public async Task MouseDragStartingOnAMarkPansWithoutAnyClick()
 	{
 		// Arrange
 
@@ -305,7 +306,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 
 		// Act
 
-		await SwipeAsync(session.Page, session.Cdp, x, y, 120, 0);
+		await MouseDragAsync(session.Page, x, y, 120);
 		await session.WaitForLabelsAsync("tap", before);
 		await session.Page.WaitForTimeoutAsync(500);
 
@@ -319,19 +320,13 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 	}
 
 	[Theory]
-	[InlineData("/touch", "tooltip", null, true)]
-	[InlineData("/touch-layout", "responsive", "width-45", true)]
-	[InlineData("/touch-layout", "nested", null, false)]
-	public async Task TapOpensTheTooltipAtTheContactAndTappingElsewhereDismissesIt(string path, string chart, string? before, bool crosshair)
+	[InlineData("/touch", "tooltip")]
+	[InlineData("/touch-layout", "mount")]
+	public async Task TapOpensTheTooltipAtTheContactAndTappingElsewhereDismissesIt(string path, string chart)
 	{
 		// Arrange
 
 		await using var session = await OpenAsync(path);
-		if (before is not null)
-		{
-			await session.Page.Locator($"[data-qa={before}]").TapAsync();
-			await session.Page.WaitForTimeoutAsync(300);
-		}
 		var (x, y) = await session.MarkAsync(chart);
 		var popover = session.Page.Locator("div.container[popover]");
 
@@ -351,14 +346,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		position[0].Should().BeApproximately(x + position[3], 1);
 		position[1].Should().BeApproximately(y + position[3], 1);
 		position[2].Should().Be(1);
-		if (crosshair)
-		{
-			pinned!.Value.Should().BeApproximately(ex, 1.5, "a background tap pins the crosshair under it");
-		}
-		else
-		{
-			pinned.Should().BeNull();
-		}
+		pinned.Should().BeNull("touch is off on these charts, so a tap inspects no position");
 		(await popover.CountAsync()).Should().Be(0);
 		session.Errors.Should().BeEmpty();
 	}
@@ -370,9 +358,11 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 
 		await using var session = await OpenAsync("/touch-layout");
 		var scroller = session.Page.Locator("[data-qa=scroller]");
+		await session.Page.Locator("[data-qa=nested] rect.panel").EvaluateAsync("el => el.scrollIntoView({ block: 'center', inline: 'center' })");
 		var panel = await session.PanelAsync("nested");
 		var x = panel.X + panel.Width * 0.5;
 		var y = panel.Y + panel.Height * 0.5;
+		var onPlot = await session.Page.EvaluateAsync<bool>("([x, y]) => !!document.elementFromPoint(x, y)?.closest('[data-qa=nested] [data-ggnet-viewport]')", new object[] { x, y });
 		var before = await session.XLabelsAsync("nested");
 
 		// Act
@@ -388,16 +378,18 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		// Assert
 
 		using var _ = new AssertionScope();
-		scrolled[1].Should().BeGreaterThan(50, "a vertical swipe starting on an x-pan chart scrolls the container");
+		onPlot.Should().BeTrue("the swipes must start inside the plot area");
+		(await session.Page.Locator("[data-qa=nested] svg[data-ggnet-viewport]").EvaluateAsync<string>("el => getComputedStyle(el).touchAction")).Should().Be("pan-y");
+		scrolled[1].Should().BeGreaterThan(50, "a vertical swipe starting on a ScrollY chart scrolls the container");
 		afterScroll.Should().Be(before);
 		(await session.XLabelsAsync("nested")).Should().NotBe(before);
 		panned[0].Should().Be(scrolled[0], "a horizontal drag on the chart belongs to the chart");
 	}
 
 	[Fact]
-	public async Task DialogChartPansShowsItsTooltipAboveTheDialogAndSurvivesReopening()
+	public async Task DialogChartShowsItsTooltipAboveTheDialogATouchPanDismissesItAndReopeningRemounts()
 	{
-		// Arrange
+		// Arrange — the dialog chart's touch policy owns taps, so its tooltip is a mouse feature.
 
 		await using var session = await OpenAsync("/touch-layout");
 		var popover = session.Page.Locator("div.container[popover]");
@@ -406,25 +398,26 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 
 		await session.Page.Locator("[data-qa=open-dialog]").TapAsync();
 		var (x, y) = await session.MarkAsync("dialog-chart");
-		await TapAsync(session.Page, session.Cdp, x, y);
+		await session.Page.Mouse.MoveAsync((float)x, (float)y);
 		await popover.Locator(".bubble").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10_000 });
 		var open = await popover.EvaluateAsync<bool>("el => el.matches(':popover-open')");
 		var before = await session.XLabelsAsync("dialog-chart");
 		await SwipeAsync(session.Page, session.Cdp, x, y, 100, 0);
 		await session.WaitForLabelsAsync("dialog-chart", before);
 		var panned = await session.XLabelsAsync("dialog-chart");
+		var dismissed = await popover.CountAsync();
 		await session.Page.Locator("[data-qa=close-dialog]").TapAsync();
 		await session.Page.Locator("[data-qa=dialog-chart]").WaitForAsync(new() { State = WaitForSelectorState.Detached });
 		await session.Page.Locator("[data-qa=open-dialog]").TapAsync();
-		(x, y) = await session.MarkAsync("dialog-chart");
-		await TapAsync(session.Page, session.Cdp, x, y);
-		await popover.Locator(".bubble").WaitForAsync(new() { State = WaitForSelectorState.Visible, Timeout = 10_000 });
+		await session.Page.Locator("[data-qa=dialog-chart] rect.panel").WaitForAsync();
+		await session.Page.WaitForTimeoutAsync(500);
 
 		// Assert
 
 		using var _ = new AssertionScope();
 		open.Should().BeTrue();
 		panned.Should().NotBe(before);
+		dismissed.Should().Be(0, "no tooltip survives a touch pan; here the browser's own mouseout already removes it, so the module's dismissal is pinned by the module harness instead");
 		(await session.XLabelsAsync("dialog-chart")).Should().Be(before, "a reopened dialog mounts a fresh chart");
 		session.Errors.Should().BeEmpty();
 	}
@@ -481,7 +474,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		await session.WaitForTextAsync("mount-clicks", "1");
 		var afterReturn = await session.TextAsync("mount-clicks");
 		var panel = await session.PanelAsync("mount");
-		await SwipeAsync(session.Page, session.Cdp, x, y, panel.Width * 0.3, 0);
+		await MouseDragAsync(session.Page, x, y, panel.Width * 0.3);
 		await session.WaitForLabelsAsync("mount", before);
 
 		// Assert
@@ -495,7 +488,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 	}
 
 	[Fact]
-	public async Task DoubleTapRestoresTheAuthoredView()
+	public async Task ADoubleTapDoesNotResetThePannedView()
 	{
 		// Arrange
 
@@ -515,17 +508,48 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		await session.Page.WaitForTimeoutAsync(80);
 		await TouchAsync(session.Cdp, "touchStart", Point(x, y));
 		await TouchAsync(session.Cdp, "touchEnd");
-		await session.WaitForLabelsAsync("pan-x", panned);
+		await session.Page.WaitForTimeoutAsync(800);
 
 		// Assert
 
 		using var _ = new AssertionScope();
 		panned.Should().NotBe(before);
-		(await session.XLabelsAsync("pan-x")).Should().Be(before);
+		(await session.XLabelsAsync("pan-x")).Should().Be(panned);
+		session.Errors.Should().BeEmpty();
 	}
 
 	[Fact]
-	public async Task PinchOnAChartScalesThePageAndLeavesTheDomainAlone()
+	public async Task PinchOnAChartWithoutTouchNavigationScalesThePageAndLeavesTheDomainAlone()
+	{
+		// Arrange — touch has no y navigation, so the y-only chart leaves touch to the page.
+
+		await using var session = await OpenAsync("/touch");
+		var panel = await session.PanelAsync("pan-y");
+		var x = panel.X + panel.Width * 0.5;
+		var y = panel.Y + panel.Height * 0.5;
+		var before = await session.XLabelsAsync("pan-y");
+
+		// Act
+
+		await TouchAsync(session.Cdp, "touchStart", Point(x - 40, y, 1), Point(x + 40, y, 2));
+		for (var i = 1; i <= 10; i++)
+		{
+			await TouchAsync(session.Cdp, "touchMove", Point(x - 40 - i * 10, y, 1), Point(x + 40 + i * 10, y, 2));
+			await session.Page.WaitForTimeoutAsync(30);
+		}
+		await TouchAsync(session.Cdp, "touchEnd");
+		await session.Page.WaitForTimeoutAsync(500);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		(await session.Page.EvaluateAsync<double>("() => visualViewport.scale")).Should().BeGreaterThan(1.1);
+		(await session.XLabelsAsync("pan-y")).Should().Be(before);
+		(await session.Page.Locator("[data-qa=pan-y] [data-ggnet-pan]").GetAttributeAsync("transform")).Should().BeNull();
+	}
+
+	[Fact]
+	public async Task PinchOnAnOwnedChartZoomsTimeAndLeavesThePageAlone()
 	{
 		// Arrange
 
@@ -544,14 +568,14 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 			await session.Page.WaitForTimeoutAsync(30);
 		}
 		await TouchAsync(session.Cdp, "touchEnd");
-		await session.Page.WaitForTimeoutAsync(500);
+		await session.WaitForLabelsAsync("pan-both", before);
 
 		// Assert
 
 		using var _ = new AssertionScope();
-		(await session.Page.EvaluateAsync<double>("() => visualViewport.scale")).Should().BeGreaterThan(1.1);
-		(await session.XLabelsAsync("pan-both")).Should().Be(before);
-		(await session.Page.Locator("[data-qa=pan-both] [data-ggnet-pan]").GetAttributeAsync("transform")).Should().BeNull();
+		(await session.Page.EvaluateAsync<double>("() => visualViewport.scale")).Should().Be(1);
+		(await session.XLabelsAsync("pan-both")).Should().NotBe(before);
+		session.Errors.Should().BeEmpty();
 	}
 
 	[Fact]
@@ -582,6 +606,15 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		(await session.Page.Locator("[data-contact-diagnostics] [data-touches]").InnerTextAsync()).Should().Be("0");
 	}
 
+	private static async Task MouseDragAsync(IPage page, double x, double y, double dx)
+	{
+		await page.Mouse.MoveAsync((float)x, (float)y);
+		await page.Mouse.DownAsync();
+		await page.Mouse.MoveAsync((float)(x + dx), (float)y, new() { Steps = 8 });
+		await page.Mouse.UpAsync();
+		await page.WaitForTimeoutAsync(200);
+	}
+
 	private async Task<Session> OpenAsync(string path)
 	{
 		Assert.SkipUnless(fixture.Available, fixture.Reason);
@@ -590,7 +623,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		// browser, not a mobile one; 1185 CSS px is its measured width beside the scrollbar.
 		var context = await fixture.Browser.NewContextAsync(new() { ViewportSize = new() { Width = 1185, Height = 1920 }, HasTouch = true });
 		var page = await context.NewPageAsync();
-		var session = new Session(context, page, await context.NewCDPSessionAsync(page));
+		var session = new Session(context, page, await context.NewCDPSessionAsync(page), fixture.AttachServerOutputOnCircuitError(page));
 
 		page.PageError += (_, error) => session.Errors.Add(error);
 		page.Console += (_, message) =>
@@ -609,7 +642,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 		return session;
 	}
 
-	private sealed record Session(IBrowserContext Context, IPage Page, ICDPSession Cdp) : IAsyncDisposable
+	private sealed record Session(IBrowserContext Context, IPage Page, ICDPSession Cdp, IAsyncDisposable ServerOutput) : IAsyncDisposable
 	{
 		public List<string> Errors { get; } = [];
 
@@ -648,7 +681,7 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 				            const x = panel.x + panel.width * i / 10, y = panel.y + panel.height * j / 10;
 				            if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight - 80) continue;
 				            const e = document.elementFromPoint(x, y);
-				            if (!e || !e.closest('[data-ggnet-viewport]') || !root.contains(e) || e.closest('[data-ggnet-pan]')) continue;
+				            if (!e || !root.contains(e) || e.closest('[data-ggnet-pan]')) continue;
 				            const d = Math.min(...marks.map(([mx, my]) => Math.hypot(mx - x, my - y)));
 				            if (d > score) { score = d; best = [x, y]; }
 				        }
@@ -705,6 +738,17 @@ public class TouchDemoTests(DemoAppFixture fixture) : IClassFixture<DemoAppFixtu
 			}
 		}
 
-		public ValueTask DisposeAsync() => Context.DisposeAsync();
+		// The attachment is flushed first: it writes to the test's output, which closes when the test ends.
+		public async ValueTask DisposeAsync()
+		{
+			try
+			{
+				await ServerOutput.DisposeAsync();
+			}
+			finally
+			{
+				await Context.DisposeAsync();
+			}
+		}
 	}
 }

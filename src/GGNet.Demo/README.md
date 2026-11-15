@@ -16,8 +16,8 @@ with `npm ci && npm run tailwind:build` from this directory.
 
 | Page | Exercises |
 |---|---|
-| `/touch` | Tap versus drag, mark callbacks, an ancestor click handler, each pan axis, pinch ownership, double-tap reset, cursor-glued and mark-anchored tooltips, crosshair. |
-| `/touch-layout` | A chart in a two-way scroll container, in a modal `<dialog>`, at three container widths, and across unmount, remount and navigation. Only the width chart has the crosshair; the others pan with one finger and keep the click that follows an inspected mark. |
+| `/touch` | Charts with the touch policy off (`Touch = new()`): taps as ordinary clicks on marks and an ancestor, a tap standing in for hover on a cursor-glued tooltip, mouse pans. Charts with it on: immediate one-finger pan and two-finger time pan/pinch with `ScrollY` (x) and `Owned` (both), no touch navigation for a y-only chart (the page keeps swipes and pinches), and no double-tap reset. A mark-anchored tooltip without `Interactivity`. |
+| `/touch-layout` | A `ScrollY` chart in a two-way scroll container, an `Owned` chart in a modal `<dialog>` (mouse tooltip above the dialog, dismissed by a touch pan), a crosshair chart at three container widths, and a touch-off chart whose taps stay clicks across unmount, remount and navigation. |
 
 Both pages carry the **contact diagnostic**, a bar fixed to the bottom of the viewport. It reads
 input on the window, ahead of GGNet's gesture module, at two layers:
@@ -42,14 +42,14 @@ The header prints the build identity (`Version+SourceRevisionId`) under the navi
 
 | Section | Exercises |
 |---|---|
-| Overview and detail | Three stacked sub-panels with `onActivate` and a key each. Tapping temperature opens a separately composed detail chart that adds an equipment-activity panel; both plots stay mounted and overlap, toggled by opacity, scale and `pointer-events`. The x window is carried to the detail on open and back on close; only the Close button closes. The readouts show each plot's window (Unix seconds), its change count and the last cause. |
+| Overview and detail | Three stacked sub-panels with `onActivate` and a key each, and a separately composed detail chart that adds an equipment-activity panel; both plots stay mounted and overlap, toggled by opacity, scale and `pointer-events`. **Expand** and **Close detail** switch between them and carry the x window and the shared selection; **All** resets the viewport only and **Clear** removes the selection only. A mouse click on temperature also opens the detail; a touch tap pins instead. **Owned inspection**, **ScrollY inspection** and **Navigation only** remount both plots under another touch policy. The readouts show the selected time, each plot's window (Unix seconds), its change count and the last cause. |
 | Cost of the hidden chart | **Measure refresh** changes the last reading twenty times refreshing only the overview, then twenty times refreshing the hidden detail too, and prints the mean and maximum time per refresh, request to painted frame, and the difference. |
 | Activation without gestures | A plot with no `Interactivity`: a tap on a mark, a grid line or the background activates at once. |
 | Activation against inspection | A plot with crosshair and cursor tooltip: taps inspect and the activation counter stays at zero; the button is the explicit control. |
 
-On the overview and detail charts a tap activates about 200 ms after it lands, so that a double-tap
-reset is not mistaken for it. A double tap slower than that opens the detail and then resets; 300 ms
-avoided this but felt laggy in physical QA.
+On the overview and detail charts a mouse click activates about 200 ms after it lands, so that a
+double-click reset is not mistaken for it. A double click slower than that opens the detail and then
+resets; 300 ms avoided this but felt laggy in physical QA. Touch has no double-tap reset.
 
 ## Time cursor page
 
@@ -59,13 +59,14 @@ series are sampled at the same instant.
 | Section | Exercises |
 |---|---|
 | Time cursor | Four time-aligned panels with `Crosshair` and `Pan`: temperature (nearest within 10 minutes) with a stepped target (value in effect) and an ambient probe that stops reporting after nine hours (missing), gravity sampled irregularly (previous within 3 hours), pressure, and cooling intervals drawn as bars (the bar containing the time, `off` between bars). The readout above the chart has a fixed height. **Clear** ends the inspection, **Reset view** restores the window, **Append readings** adds samples at the end of temperature and pressure, **New context** rebuilds the plot context. The counters under the readout show position changes, readout changes, view changes, the window and its length, and clicks that reached a gravity mark or the chart's container. |
-| Crosshair without navigation | The crosshair with no readout and no `Pan`: two fingers still pinch the page. |
+| Crosshair without navigation | The crosshair with no readout and no `Pan`: its inferred `Owned` policy reserves the plot area for inspection, so neither one nor two fingers move the page from inside it. |
 | Snapped axes | A discrete x axis: the line snaps to the category under the pointer. |
 | Independent x axes | `freeX` facets: the line stays in the panel under the pointer and does not pin. |
 
-On a touchscreen: tap to pin, drag sideways to scrub, drag vertically to scroll, and use two fingers
-on the first chart to pan and pinch the time window. A tap on a gravity mark must leave both click
-counters at zero.
+On a touchscreen: tap to pin, drag sideways to pan at once, hold for 400 ms and then drag to scrub,
+and use two fingers on the first chart to pan and pinch the time window; a third finger cancels. A
+vertical drag inside the plot does nothing under the default `Owned` policy. A tap on a gravity mark
+must leave both click counters at zero.
 
 ## Standalone deployment to a touch device
 

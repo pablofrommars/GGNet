@@ -17,7 +17,8 @@
            per-circle clip-path would shift with each mark — the group clips
            them in panel space. A no-op for the other primitives, which already
            clip to the same region individually. *@
-        <g clip-path="url(#@(Clip))">
+        <g clip-path="url(#@(Clip))" data-ggnet-marks-frame=@((Coord as Panel<T, TX, TY>)?.TouchFrame)
+           data-ggnet-view=@((Coord as Panel<T, TX, TY>)?.TouchView) data-ggnet-commit=@((Coord as Panel<T, TX, TY>)?.TouchCommit)>
             @{ RenderScene(__builder, scene); }
         </g>
     }

@@ -1,0 +1,27 @@
+/* DEVIATION: Browser-only interaction paint is bundled separately from Default.css
+ * so self-contained static exports retain their exact stylesheet bytes. */
+
+.ggnet[data-ggnet-navigation] :is(.x-break, .x-minor-break, .x-break-label, .x-break-title, .y-break, .y-minor-break, .y-break-label, .crosshair-label, .crosshair-marker),
+.ggnet[data-ggnet-interaction]:not([data-ggnet-interaction="unavailable"]) :is(.crosshair-label, .crosshair-marker) {
+    visibility: hidden;
+}
+
+.ggnet[data-ggnet-interaction]::after {
+    content: "Updating chart…";
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.2em 0.5em;
+    background: var(--ggnet-bg);
+    color: var(--ggnet-caption);
+    font-family: var(--ggnet-font);
+    pointer-events: none;
+}
+
+.ggnet[data-ggnet-interaction="inspecting"]::after {
+    content: "Selecting…";
+}
+
+.ggnet[data-ggnet-interaction="unavailable"]::after {
+    content: "Chart unavailable — reload to reconnect";
+}

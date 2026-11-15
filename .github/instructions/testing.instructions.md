@@ -30,7 +30,7 @@ Do **not** introduce: real FluentAssertions, NSubstitute, Shouldly, NUnit, MSTes
 
 Test projects: `GGNet.Components.Tests` (bUnit), `GGNet.Headless.Tests` (Verify goldens + pipeline), `GGNet.Evals` (deterministic evals), `GGNet.E2ETests` (Playwright smoke over the spawned `GGNet.Demo` app — browser cases self-skip unless `GGNET_E2E=1`; `ProcessOutputTailTests` always runs without a browser). Each has a `GlobalUsings.cs` and pulls xUnit via `<Using Include="Xunit" />`.
 
-The demo fixture drains both output streams using `Process.ReadAllLinesAsync` and retains the last 50 lines, capped at 2048 characters per line, for startup diagnostics. Teardown stops the process tree, awaits the output reader and disposes the process even if browser cleanup fails. Keep that ownership explicit when changing the fixture.
+The demo fixture drains both output streams using `Process.ReadAllLinesAsync` and retains the last 2000 lines, capped at 2048 characters per line, with Debug logging for Blazor circuits, SignalR and HTTP connections. They serve startup diagnostics and, through `AttachServerOutputOnCircuitError(page)`, which each browser class calls in its `OpenAsync`, a circuit error that a page reports: the server lines since that page opened, timestamped, are written to the test's output one second after the error. The call returns the attachment, and each `Session` disposes it before its browser context, so a case that ends sooner still waits for that write. Teardown stops the process tree, awaits the output reader and disposes the process even if browser cleanup fails. Keep that ownership explicit when changing the fixture.
 
 ---
 

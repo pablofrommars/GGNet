@@ -51,16 +51,18 @@ public class ThemeContractTests
 		unpainted.Should().BeEmpty();
 	}
 
-	[Fact]
-	public void BaseThemeDefinesEveryVariableItReferences()
+	[Theory]
+	[InlineData("Default")]
+	[InlineData("Interaction")]
+	public void BrowserStylesReferenceDefinedThemeVariables(string name)
 	{
 		// Arrange
 
-		var css = Load("Default");
+		var css = Load(name);
 
 		// Act
 
-		var undefined = Referenced(css).Except(Defined(css)).ToList();
+		var undefined = Referenced(css).Except(Defined(Load("Default"))).ToList();
 
 		// Assert
 

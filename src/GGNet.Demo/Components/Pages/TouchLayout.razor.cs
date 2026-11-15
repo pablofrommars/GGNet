@@ -9,9 +9,13 @@ public partial class TouchLayout
 
 	private readonly RenderMode renderMode = RenderMode.Interactive;
 
-	private readonly InteractivityOptions inspect = new() { Pan = true, CursorTooltip = true };
+	private readonly InteractivityOptions scrolling = new() { Pan = true, CursorTooltip = true, Touch = new() { Navigation = TouchNavigation.PanAndPinchX, Ownership = TouchOwnership.ScrollY } };
+
+	private readonly InteractivityOptions owned = new() { Pan = true, CursorTooltip = true };
 
 	private readonly InteractivityOptions inspectWithCrosshair = new() { Pan = true, Crosshair = true, CursorTooltip = true };
+
+	private readonly InteractivityOptions tapToHover = new() { Pan = true, CursorTooltip = true, Touch = new() };
 
 	private PlotContext<Reading, double, double> nestedContext = default!;
 

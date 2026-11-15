@@ -1,0 +1,31 @@
+.cursor-example [data-qa=readout] {
+    position: relative;
+}
+
+.cursor-example:has([data-ggnet-interaction]:not([data-ggnet-interaction="unavailable"])) [data-qa=readout] > * {
+    visibility: hidden;
+}
+
+.cursor-example:has([data-ggnet-interaction]:not([data-ggnet-interaction="unavailable"])) [data-qa=readout]::after {
+    content: "Updating readings…";
+    position: absolute;
+    inset: 1rem;
+}
+
+.cursor-example:has([data-ggnet-interaction="unavailable"]) [data-qa=readout]::after {
+    content: "Last readings — reload to reconnect";
+    position: absolute;
+    inset: 1rem 1rem auto auto;
+}
+
+.overview-detail-demo:has([data-ggnet-interaction]:not([data-ggnet-interaction="unavailable"])) [data-qa=selection-readout] > * {
+    visibility: hidden;
+}
+
+.overview-detail-demo:has([data-ggnet-interaction]:not([data-ggnet-interaction="unavailable"])) [data-qa=selection-readout]::after {
+    content: "Updating selection…";
+}
+
+.overview-detail-demo:has([data-ggnet-interaction="unavailable"]) [data-qa=selection-readout]::after {
+    content: " · last selection — reload to reconnect";
+}

@@ -8,7 +8,9 @@ public partial class OverviewDetail
 {
 	private readonly RenderMode renderMode = RenderMode.Interactive;
 
-	private readonly InteractivityOptions navigate = new() { Pan = true };
+	private InteractivityOptions navigate = new() { Pan = true, Crosshair = true, Touch = new() { Inspect = true, Navigation = TouchNavigation.PanAndPinchX } };
+	private int policyVersion;
+	private Inspection<Instant>? inspection;
 
 	private readonly InteractivityOptions inspect = new() { Crosshair = true, CursorTooltip = true };
 
@@ -208,6 +210,34 @@ public partial class OverviewDetail
 		await CarryAsync(detailContext, overview);
 
 		open = false;
+	}
+
+	private async Task ExpandAsync()
+	{
+		await CarryAsync(overviewContext, detail);
+		open = true;
+	}
+
+	private Task AllAsync() => (open ? detail : overview).ResetViewAsync();
+
+	private async Task ClearAsync()
+	{
+		inspection = null;
+		await overview.ClearInspectionAsync();
+		await detail.ClearInspectionAsync();
+	}
+
+	private void OnInspectionChanged(Inspection<Instant>? value) => inspection = value;
+
+	private void SetPolicy(bool inspecting, TouchOwnership ownership)
+	{
+		navigate = new()
+		{
+			Pan = true,
+			Crosshair = inspecting,
+			Touch = new() { Inspect = inspecting, Navigation = TouchNavigation.PanAndPinchX, Ownership = ownership }
+		};
+		policyVersion++;
 	}
 
 	private static Task CarryAsync(PlotContext<TelemetryReading, Instant, double> from, Plot<TelemetryReading, Instant, double> to)

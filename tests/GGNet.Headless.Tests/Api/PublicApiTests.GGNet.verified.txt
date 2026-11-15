@@ -74,6 +74,9 @@ GGNet.Style+StyleStrip
 GGNet.Style+StyleStripText
 GGNet.Summary
 GGNet.Summary`1
+GGNet.TouchInteractionOptions
+GGNet.TouchNavigation
+GGNet.TouchOwnership
 GGNet.Transformations.ITransformation`1
 GGNet.Units
 GGNet.ViewChangeCause

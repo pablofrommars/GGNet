@@ -2,11 +2,55 @@ using static GGNet.E2ETests.Fixtures.TouchInput;
 
 namespace GGNet.E2ETests;
 
-// The crosshair under real touch input: one finger taps to pin and drags
-// sideways to scrub, the page keeps its vertical scroll, and a tap stays
-// inspection input all the way.
+// Real touch distinguishes immediate navigation from hold-to-inspect.
 public partial class TimeCursorTests
 {
+	[Fact]
+	public async Task ImmediateHorizontalDragPansWithoutInspecting()
+	{
+		// Arrange
+
+		await using var session = await OpenAsync();
+		var (x, y) = await session.PointAsync("cursor", 0, 0.6);
+
+		// Act
+
+		await SwipeAsync(session.Page, session.Cdp, x, y, -120, 0);
+		await session.WaitForTextAsync("view-changes", "1");
+
+		// Assert
+
+		(await session.TextAsync("position-changes")).Should().Be("0");
+		(await session.TextAsync("ancestor-clicks")).Should().Be("0");
+		session.Errors.Should().BeEmpty();
+	}
+
+	[Fact]
+	public async Task ThirdContactCancelsNavigationAndDrainsRemainingFingers()
+	{
+		// Arrange
+
+		await using var session = await OpenAsync();
+		var (x, y) = await session.PointAsync("cursor", 0, 0.5);
+
+		// Act
+
+		await TouchAsync(session.Cdp, "touchStart", Point(x, y), Point(x + 70, y, 2));
+		await TouchAsync(session.Cdp, "touchMove", Point(x - 50, y), Point(x + 20, y, 2));
+		await TouchAsync(session.Cdp, "touchStart", Point(x - 50, y), Point(x + 20, y, 2), Point(x + 100, y, 3));
+		await TouchAsync(session.Cdp, "touchEnd", Point(x - 50, y));
+		await TouchAsync(session.Cdp, "touchMove", Point(x - 80, y));
+		await TouchAsync(session.Cdp, "touchEnd");
+		await session.Page.WaitForTimeoutAsync(600);
+
+		// Assert
+
+		(await session.TextAsync("view-changes")).Should().Be("0");
+		(await session.TextAsync("position-changes")).Should().Be("0");
+		(await session.PreviewsAsync("cursor")).Should().OnlyContain(value => value == string.Empty);
+		session.Errors.Should().BeEmpty();
+	}
+
 	[Theory]
 	[InlineData(0, 0)]
 	[InlineData(2, 6)]
@@ -37,7 +81,7 @@ public partial class TimeCursorTests
 	}
 
 	[Fact]
-	public async Task AHorizontalDragScrubsEveryPanelAndPinsWhereItEnds()
+	public async Task AHoldThenDragScrubsEveryPanelAndPinsWhereItEnds()
 	{
 		// Arrange
 
@@ -51,6 +95,7 @@ public partial class TimeCursorTests
 		// Act
 
 		await TouchAsync(session.Cdp, "touchStart", Point(x, y));
+		await session.Page.WaitForTimeoutAsync(450);
 		for (var i = 1; i <= 10; i++)
 		{
 			await TouchAsync(session.Cdp, "touchMove", Point(x + i * travel / 10, y + i));
@@ -89,6 +134,7 @@ public partial class TimeCursorTests
 		// Act — the tap follows the scrub at once, well inside half a second.
 
 		await TouchAsync(session.Cdp, "touchStart", Point(x, y));
+		await session.Page.WaitForTimeoutAsync(450);
 		for (var i = 1; i <= 5; i++)
 		{
 			await TouchAsync(session.Cdp, "touchMove", Point(x + i * 24, y));
@@ -106,7 +152,7 @@ public partial class TimeCursorTests
 	}
 
 	[Fact]
-	public async Task AVerticalDragScrollsThePageAndSelectsNothing()
+	public async Task OwnedVerticalDragNeitherScrollsNorSelects()
 	{
 		// Arrange
 
@@ -123,7 +169,7 @@ public partial class TimeCursorTests
 		// Assert
 
 		using var _ = new AssertionScope();
-		(await session.ScrollAsync()).Should().BeGreaterThan(scroll + 100);
+		(await session.ScrollAsync()).Should().Be(scroll);
 		(await session.TextAsync("position-changes")).Should().Be("0");
 		(await session.CursorsAsync("cursor")).Should().OnlyContain(cursor => !cursor.Visible);
 		session.Errors.Should().BeEmpty();
@@ -151,6 +197,7 @@ public partial class TimeCursorTests
 		// Act
 
 		await TouchAsync(session.Cdp, "touchStart", Point(x, y));
+		await session.Page.WaitForTimeoutAsync(450);
 		for (var i = 1; i <= 6; i++)
 		{
 			await TouchAsync(session.Cdp, "touchMove", Point(x + i * 20, y));
@@ -246,7 +293,40 @@ public partial class TimeCursorTests
 	}
 
 	[Fact]
-	public async Task WithoutPanThePlotAreaStillAllowsPagePinch()
+	public async Task ATapBesideTheCategoriesSettlesAndKeepsThePin()
+	{
+		// Arrange — the snapped chart pads its axis, so its outer edge maps to no category.
+
+		await using var session = await OpenAsync();
+		var panel = await session.PanelAsync("snap", 0);
+		var y = panel.Y + panel.Height / 3;
+		await TapAsync(session.Page, session.Cdp, panel.X + panel.Width * 0.4, y);
+		await session.WaitForCursorAsync("snap", cursor => cursor.Visible && cursor.Pinned);
+		var pinned = (await session.CursorsAsync("snap"))[0];
+
+		// Act
+
+		await TapAsync(session.Page, session.Cdp, panel.X + 2, y);
+		await session.Page.WaitForTimeoutAsync(600);
+		var state = await session.Page.Locator("[data-qa=snap] .ggnet").GetAttributeAsync("data-ggnet-interaction");
+		var provisional = await session.Page.Locator("[data-qa=snap] [data-ggnet-provisional]").CountAsync();
+		var kept = (await session.CursorsAsync("snap"))[0];
+		await TapAsync(session.Page, session.Cdp, panel.X + panel.Width * 0.8, y);
+		await session.WaitForCursorAsync("snap", cursor => cursor.Pinned && cursor.Label != pinned.Label);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		state.Should().BeNull();
+		provisional.Should().Be(0);
+		kept.Should().BeEquivalentTo(pinned);
+		(await session.CursorsAsync("snap"))[0].Label.Should().NotBe(pinned.Label);
+		(await session.Page.Locator("[data-qa=snap] .ggnet").GetAttributeAsync("data-ggnet-interaction")).Should().BeNull();
+		session.Errors.Should().BeEmpty();
+	}
+
+	[Fact]
+	public async Task InferredInspectionOwnsTouchEvenWithoutNavigation()
 	{
 		// Arrange
 
@@ -260,7 +340,7 @@ public partial class TimeCursorTests
 		// Assert
 
 		using var _ = new AssertionScope();
-		plain.Should().Be("pan-y pinch-zoom");
+		plain.Should().Be("none");
 		free.Should().Be(0, "a panel with its own x scale keeps the browser's default touch behaviour");
 	}
 }

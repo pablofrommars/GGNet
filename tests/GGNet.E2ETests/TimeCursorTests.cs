@@ -373,7 +373,7 @@ public partial class TimeCursorTests(DemoAppFixture fixture) : IClassFixture<Dem
 		public string Note { get; set; } = string.Empty;
 	}
 
-	private async Task<Session> OpenAsync(string path = "/time-cursor")
+	private async Task<Session> OpenAsync(string path = "/time-cursor", CircuitGate? frames = null)
 	{
 		Assert.SkipUnless(fixture.Available, fixture.Reason);
 
@@ -381,7 +381,12 @@ public partial class TimeCursorTests(DemoAppFixture fixture) : IClassFixture<Dem
 		// browser, not a mobile one; 1185 CSS px is its measured width beside the scrollbar.
 		var context = await fixture.Browser.NewContextAsync(new() { ViewportSize = new() { Width = 1185, Height = 1920 }, HasTouch = true });
 		var page = await context.NewPageAsync();
-		var session = new Session(context, page, await context.NewCDPSessionAsync(page));
+		var session = new Session(context, page, await context.NewCDPSessionAsync(page), fixture.AttachServerOutputOnCircuitError(page));
+
+		if (frames is not null)
+		{
+			await frames.InstallAsync(page);
+		}
 
 		page.PageError += (_, error) => session.Errors.Add(error);
 		page.Console += (_, message) =>
@@ -400,7 +405,7 @@ public partial class TimeCursorTests(DemoAppFixture fixture) : IClassFixture<Dem
 		return session;
 	}
 
-	private sealed record Session(IBrowserContext Context, IPage Page, ICDPSession Cdp) : IAsyncDisposable
+	private sealed record Session(IBrowserContext Context, IPage Page, ICDPSession Cdp, IAsyncDisposable ServerOutput) : IAsyncDisposable
 	{
 		public List<string> Errors { get; } = [];
 
@@ -462,7 +467,8 @@ public partial class TimeCursorTests(DemoAppFixture fixture) : IClassFixture<Dem
 				    let owner = cursor.parentElement;
 				    while (owner && !owner.querySelector(':scope > rect.panel')) owner = owner.parentElement;
 				    const panel = owner.querySelector(':scope > rect.panel').getBoundingClientRect();
-				    const element = cursor.querySelector('line');
+				    const provisional = cursor.closest('[data-ggnet-frame]')?.querySelector('[data-ggnet-provisional]');
+				    const element = provisional ?? cursor.querySelector('line');
 				    const line = element.getBoundingClientRect();
 				    return {
 				        x: line.x,
@@ -472,7 +478,7 @@ public partial class TimeCursorTests(DemoAppFixture fixture) : IClassFixture<Dem
 				        panelTop: panel.y,
 				        panelBottom: panel.bottom,
 				        visible: getComputedStyle(element).visibility === 'visible',
-				        pinned: cursor.hasAttribute('data-ggnet-pinned'),
+				        pinned: !provisional && cursor.hasAttribute('data-ggnet-pinned'),
 				        label: cursor.querySelector('text.crosshair-label').textContent.trim(),
 				        labelWidth: cursor.querySelector('text.crosshair-label').getBoundingClientRect().width
 				    };
@@ -493,7 +499,9 @@ public partial class TimeCursorTests(DemoAppFixture fixture) : IClassFixture<Dem
 		{
 			var locator = Page.Locator($"[data-qa={name}]");
 
-			return await locator.CountAsync() == 0 ? string.Empty : await locator.InnerTextAsync();
+			// Read reported server state even when pending feedback hides it; delay cases
+			// separately assert computed visibility so stale values cannot pass as visible.
+			return await locator.CountAsync() == 0 ? string.Empty : (await locator.TextContentAsync())?.Trim() ?? string.Empty;
 		}
 
 		// Assertions report the final state; these only give the circuit time to reach it.
@@ -513,6 +521,17 @@ public partial class TimeCursorTests(DemoAppFixture fixture) : IClassFixture<Dem
 			}
 		}
 
-		public ValueTask DisposeAsync() => Context.DisposeAsync();
+		// The attachment is flushed first: it writes to the test's output, which closes when the test ends.
+		public async ValueTask DisposeAsync()
+		{
+			try
+			{
+				await ServerOutput.DisposeAsync();
+			}
+			finally
+			{
+				await Context.DisposeAsync();
+			}
+		}
 	}
 }

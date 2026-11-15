@@ -8,13 +8,15 @@ public partial class Touch
 {
 	private readonly RenderMode renderMode = RenderMode.Interactive;
 
-	private readonly InteractivityOptions panX = new() { Pan = true };
+	private readonly InteractivityOptions tap = new() { Pan = true, Touch = new() };
+
+	private readonly InteractivityOptions panX = new() { Pan = true, Touch = new() { Navigation = TouchNavigation.PanAndPinchX, Ownership = TouchOwnership.ScrollY } };
 
 	private readonly InteractivityOptions panY = new() { Pan = true, Zoom = ZoomAxis.Y };
 
 	private readonly InteractivityOptions panBoth = new() { Pan = true, Zoom = ZoomAxis.Both };
 
-	private readonly InteractivityOptions inspect = new() { Pan = true, Crosshair = true, CursorTooltip = true };
+	private readonly InteractivityOptions inspect = new() { Pan = true, Crosshair = true, CursorTooltip = true, Touch = new() };
 
 	private PlotContext<Reading, double, double> tapContext = default!;
 
@@ -38,7 +40,7 @@ public partial class Touch
 
 	protected override void OnInitialized()
 	{
-		tapContext = TouchCharts.Points("Tap a mark, tap the background, then drag", onclick: OnMarkClickAsync);
+		tapContext = TouchCharts.Points("Tap a mark, tap the background, then drag with a mouse", onclick: OnMarkClickAsync);
 		panXContext = TouchCharts.Points("Pan x");
 		panYContext = TouchCharts.Points("Pan y");
 		panBothContext = TouchCharts.Points("Pan x and y");

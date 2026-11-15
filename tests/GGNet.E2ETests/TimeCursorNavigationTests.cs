@@ -139,6 +139,6 @@ public partial class TimeCursorTests
 
 		// Assert
 
-		navigating.Should().Be("pan-y");
+		navigating.Should().Be("none");
 	}
 }

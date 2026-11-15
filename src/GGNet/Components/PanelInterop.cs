@@ -2,24 +2,22 @@ using Microsoft.JSInterop;
 
 namespace GGNet.Components;
 
-internal sealed record PanelInteropOptions(bool Pan, bool PanX, bool PanY, bool Tooltip, bool Crosshair, string? Group = null, bool SharedX = false, bool SharedY = false, string? Cursor = null, bool CursorContinuous = false)
+internal sealed record PanelInteropOptions(bool Pan, bool PanX, bool PanY, bool Tooltip, bool Crosshair, string? Group = null, bool SharedX = false, bool SharedY = false, string? Cursor = null, bool CursorContinuous = false, TouchInteractionOptions? Touch = null)
 {
 	public static PanelInteropOptions Create(InteractivityOptions options)
 		=> new(options.Pan,
 			options.Zoom is ZoomAxis.X or ZoomAxis.Both,
 			!options.AutoFitY && options.Zoom is ZoomAxis.Y or ZoomAxis.Both,
 			options.CursorTooltip,
-			options.Crosshair);
+			options.Crosshair,
+			Touch: options.ResolveTouch(supported: true));
 
-	public bool TwoFingerX => Cursor == PanelInterop.SharedCursor && Pan && PanX;
+	public bool TwoFingerX => Touch is { Navigation: not TouchNavigation.None };
 
-	public string? TouchAction => Cursor != PanelInterop.SharedCursor ? PanTouchAction : TwoFingerX ? "pan-y" : "pan-y pinch-zoom";
-
-	private string? PanTouchAction => (Pan, PanX, PanY) switch
+	public string? TouchAction => Touch switch
 	{
-		(true, true, true) => "pinch-zoom",
-		(true, true, false) => "pan-y pinch-zoom",
-		(true, false, true) => "pan-x pinch-zoom",
+		{ Enabled: true, Ownership: TouchOwnership.Owned } => "none",
+		{ Enabled: true } => TwoFingerX ? "pan-y" : "pan-y pinch-zoom",
 		_ => null
 	};
 }

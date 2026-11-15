@@ -28,7 +28,8 @@ public sealed class DemoAppFixture : IAsyncLifetime
 	private IPlaywright? playwright;
 	private IBrowser? browser;
 	private Process? app;
-	private readonly ProcessOutputTail output = new();
+	// Large enough to hold the demo's circuit and connection logging for one test page.
+	private readonly ProcessOutputTail output = new(2000);
 	private readonly CancellationTokenSource outputCancellation = new();
 	private Task outputDrain = Task.CompletedTask;
 
@@ -63,6 +64,10 @@ public sealed class DemoAppFixture : IAsyncLifetime
 
 		info.Environment["ASPNETCORE_URLS"] = BaseUrl;
 		info.Environment["ASPNETCORE_ENVIRONMENT"] = "Development";
+		info.Environment["DetailedErrors"] = "true";
+		info.Environment["Logging__LogLevel__Microsoft.AspNetCore.Components.Server.Circuits"] = "Debug";
+		info.Environment["Logging__LogLevel__Microsoft.AspNetCore.SignalR"] = "Debug";
+		info.Environment["Logging__LogLevel__Microsoft.AspNetCore.Http.Connections"] = "Debug";
 
 		app = Process.Start(info) ?? throw new InvalidOperationException("The demo process did not start.");
 		outputDrain = output.DrainAsync(app, outputCancellation.Token);
@@ -103,6 +108,67 @@ public sealed class DemoAppFixture : IAsyncLifetime
 
 		Reason = $"The demo app did not start within 30s (is the solution built?){Environment.NewLine}{output}";
 	}
+
+	// Writes the demo's server output since this call to the current test's output when the page
+	// reports a Blazor circuit error, so a failing case shows what the server saw. Dispose the
+	// returned attachment inside the test: the output helper rejects writes once the test has ended.
+	public IAsyncDisposable AttachServerOutputOnCircuitError(IPage page)
+	{
+		var attachment = new ServerOutputAttachment(output, TestContext.Current.TestOutputHelper);
+		page.Console += (_, message) =>
+		{
+			if (message.Type == "error" && IsCircuitError(message.Text))
+			{
+				attachment.Report(message.Text);
+			}
+		};
+
+		return attachment;
+	}
+
+	private sealed class ServerOutputAttachment : IAsyncDisposable
+	{
+		private readonly TaskCompletionSource<string> error = new(TaskCreationOptions.RunContinuationsAsynchronously);
+		private readonly Task written;
+
+		public ServerOutputAttachment(ProcessOutputTail output, ITestOutputHelper? test)
+		{
+			written = WriteAsync(output, output.Mark, test);
+		}
+
+		public void Report(string text) => error.TrySetResult(text);
+
+		private async Task WriteAsync(ProcessOutputTail output, long mark, ITestOutputHelper? test)
+		{
+			var text = await error.Task;
+			if (test is null)
+			{
+				return;
+			}
+
+			// The server logs its side of a drop shortly after the browser reports it.
+			await Task.Delay(TimeSpan.FromSeconds(1));
+			test.WriteLine($"Circuit error in the browser: {text}{Environment.NewLine}Demo server output since the page opened:{Environment.NewLine}{output.Since(mark)}");
+		}
+
+		// Waits for a reported error's write; without one, nothing is pending and a later report is ignored.
+		public async ValueTask DisposeAsync()
+		{
+			error.TrySetCanceled();
+			try
+			{
+				await written;
+			}
+			catch (OperationCanceledException)
+			{
+			}
+		}
+	}
+
+	internal static bool IsCircuitError(string text)
+		=> text.Contains("Connection disconnected", StringComparison.OrdinalIgnoreCase)
+			|| text.Contains("WebSocket closed", StringComparison.OrdinalIgnoreCase)
+			|| text.Contains("circuit", StringComparison.OrdinalIgnoreCase);
 
 	public async ValueTask DisposeAsync()
 	{

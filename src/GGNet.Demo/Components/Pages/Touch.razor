@@ -6,17 +6,21 @@
 <h1 class="text-2xl font-semibold">Touch: taps, pans and tooltips</h1>
 
 <p class="mt-2 max-w-prose text-gray-600">
-    A press that travels less than the drag threshold stays a tap: the mark
-    callback fires once and the view does not move. Past the threshold the
-    press becomes a pan, and the click that trails it is discarded. The bar at
-    the bottom shows the raw contacts the browser delivers.
+    A chart whose touch policy is on, inferred from Pan or Crosshair or set
+    through <code>Touch</code>, owns its taps and drags: a horizontal drag pans
+    at once, two fingers pan and pinch the time axis, and there is no touch
+    double-tap reset. With the policy off (<code>Touch = new()</code>), touch
+    stays the browser's: a tap is an ordinary click, or stands in for hover.
+    The bar at the bottom shows the raw contacts the browser delivers.
 </p>
 
 <h2 class="mt-6 text-xl font-semibold">Taps and callbacks</h2>
 
 <p class="mt-2 max-w-prose text-gray-600">
-    Tap a mark: both counters rise by one. Tap the background: only the
-    ancestor counter rises. Drag: the axis shifts and neither counter moves.
+    Touch is off on this chart, so a tap is an ordinary click. Tap a mark: both
+    counters rise by one. Tap the background: only the ancestor counter rises.
+    A touch drag stays the page's. A mouse drag pans the chart, and the click
+    that trails it is discarded.
 </p>
 
 <div class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
@@ -28,30 +32,31 @@
 </div>
 
 <div data-qa="tap" class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm" @onclick=OnAncestorClick>
-    <Plot @ref=tapPlot Context=@tapContext RenderMode=@renderMode Interactivity=@panX />
+    <Plot @ref=tapPlot Context=@tapContext RenderMode=@renderMode Interactivity=@tap />
 </div>
 
 <h2 class="mt-8 text-xl font-semibold">Pan axes</h2>
 
 <p class="mt-2 max-w-prose text-gray-600">
-    Each chart owns only the axes it pans; the other direction still scrolls
-    the page. Two fingers always pinch the page, never the chart. Double-tap
-    restores the authored view.
+    Touch navigates time only. Owned, the default, keeps every one-finger drag
+    that starts inside the plot; ScrollY hands vertical swipes back to the
+    page. A double tap does not reset the view; a host offers a visible
+    control instead.
 </p>
 
-<h3 class="mt-4 font-semibold">X only — vertical swipes scroll the page</h3>
+<h3 class="mt-4 font-semibold">X with ScrollY — one finger pans, two fingers pan and pinch, vertical swipes scroll the page</h3>
 
 <div data-qa="pan-x" class="mt-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
     <Plot Context=@panXContext RenderMode=@renderMode Interactivity=@panX />
 </div>
 
-<h3 class="mt-6 font-semibold">Y only — horizontal swipes scroll the page</h3>
+<h3 class="mt-6 font-semibold">Y only — no touch navigation: the page keeps every swipe and pinch, a mouse drags the chart</h3>
 
 <div data-qa="pan-y" class="mt-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
     <Plot Context=@panYContext RenderMode=@renderMode Interactivity=@panY />
 </div>
 
-<h3 class="mt-6 font-semibold">Both — the chart owns every one-finger drag</h3>
+<h3 class="mt-6 font-semibold">Both, Owned — the chart owns every one-finger drag, and touch still navigates only time</h3>
 
 <div data-qa="pan-both" class="mt-2 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
     <Plot Context=@panBothContext RenderMode=@renderMode Interactivity=@panBoth />
@@ -60,8 +65,11 @@
 <h2 class="mt-8 text-xl font-semibold">Tooltip and crosshair</h2>
 
 <p class="mt-2 max-w-prose text-gray-600">
-    Tap a mark: the cursor-glued tooltip opens at the contact and the crosshair
-    snaps to it. Tap elsewhere, pan, or scroll to dismiss the tooltip.
+    Touch is off on this chart too, so a tap stands in for hover: the
+    cursor-glued tooltip opens at the nearest mark. Tap elsewhere or scroll to
+    dismiss it. The crosshair stays a mouse and keyboard feature here, because
+    touch inspection is off; with a touch policy on, a tap pins the crosshair
+    instead and tooltips stay a mouse feature.
 </p>
 
 <div data-qa="tooltip" class="mt-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
