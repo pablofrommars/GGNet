@@ -843,6 +843,170 @@ public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppF
 		(await page.Locator(".ggnet > svg").First.EvaluateAsync<string>("el => getComputedStyle(el).touchAction")).Should().Be("auto");
 	}
 
+	[Theory]
+	[InlineData(false, false)]
+	[InlineData(true, false)]
+	[InlineData(false, true)]
+	[InlineData(true, true)]
+	public async Task NativeTapsResolveToExactlyOneActionWithoutClickSynthesis(bool doubleTap, bool changeFocus)
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context, touchInspect: true, nativeActions: true);
+		var cdp = await context.NewCDPSessionAsync(page);
+
+		// Act
+
+		await TouchAsync(cdp, "touchStart", Point(300, 400));
+		await TouchAsync(cdp, "touchEnd");
+		var immediate = await CallsAsync(page);
+		if (changeFocus)
+		{
+			await page.EvaluateAsync("""
+				() => {
+				    const button = document.createElement('button');
+				    document.body.append(button);
+				    button.focus({preventScroll: true});
+				    button.blur();
+				    button.remove();
+				}
+				""");
+		}
+		if (doubleTap)
+		{
+			await page.WaitForTimeoutAsync(80);
+			await TouchAsync(cdp, "touchStart", Point(300, 400));
+			await TouchAsync(cdp, "touchEnd");
+		}
+		await page.WaitForTimeoutAsync(600);
+		var calls = await CallsAsync(page);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		immediate.GetArrayLength().Should().Be(0);
+		calls.GetArrayLength().Should().Be(1);
+		calls[0][0].GetString().Should().Be("OnTouchActionAsync");
+		calls[0][4].GetBoolean().Should().Be(doubleTap);
+		(await page.EvaluateAsync<string[]>("() => window.clicks")).Should().BeEmpty();
+	}
+
+	[Theory]
+	[InlineData("epoch")]
+	[InlineData("dispose")]
+	[InlineData("outside")]
+	[InlineData("resize")]
+	[InlineData("blur")]
+	[InlineData("hidden")]
+	public async Task PendingNativeTapIsCancelledBeforeItCanActivate(string change)
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context, touchInspect: true, nativeActions: true);
+		var cdp = await context.NewCDPSessionAsync(page);
+		await TouchAsync(cdp, "touchStart", Point(300, 400));
+		await TouchAsync(cdp, "touchEnd");
+
+		// Act
+
+		switch (change)
+		{
+			case "epoch": await page.EvaluateAsync("() => window.frame()"); break;
+			case "dispose": await page.EvaluateAsync("() => window.module.dispose('panel')"); break;
+			case "outside": await TouchAsync(cdp, "touchStart", Point(680, 150)); await TouchAsync(cdp, "touchEnd"); break;
+			case "resize": await page.EvaluateAsync("() => window.dispatchEvent(new Event('resize'))"); break;
+			case "blur": await page.EvaluateAsync("() => window.dispatchEvent(new Event('blur'))"); break;
+			case "hidden": await page.EvaluateAsync("() => document.querySelector('#plot').style.pointerEvents='none'"); break;
+		}
+		await page.WaitForTimeoutAsync(600);
+
+		// Assert
+
+		(await CallsAsync(page)).GetArrayLength().Should().Be(0);
+	}
+
+	[Theory]
+	[InlineData("pan")]
+	[InlineData("hold")]
+	[InlineData("pinch")]
+	public async Task ASecondPressBecomingAGestureCancelsBothTapActions(string gesture)
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context, touchInspect: true, nativeActions: true);
+		var cdp = await context.NewCDPSessionAsync(page);
+		await TouchAsync(cdp, "touchStart", Point(300, 400));
+		await TouchAsync(cdp, "touchEnd");
+		await page.WaitForTimeoutAsync(60);
+
+		// Act
+
+		await TouchAsync(cdp, "touchStart", Point(300, 400));
+		if (gesture == "hold")
+		{
+			await page.WaitForTimeoutAsync(500);
+		}
+		if (gesture == "pinch")
+		{
+			await TouchAsync(cdp, "touchStart", Point(300, 400), Point(400, 400, 2));
+			await TouchAsync(cdp, "touchMove", Point(280, 400), Point(440, 400, 2));
+		}
+		else
+		{
+			await TouchAsync(cdp, "touchMove", Point(340, 400));
+		}
+		await TouchAsync(cdp, "touchEnd");
+		await page.WaitForTimeoutAsync(600);
+		var calls = await CallsAsync(page);
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		calls.EnumerateArray().Select(call => call[0].GetString()).Should().NotContain("OnTouchActionAsync");
+		calls.GetArrayLength().Should().BeGreaterThan(0);
+	}
+
+	[Fact]
+	public async Task PreviewMovesTickAnchorsWithDataWithoutScalingTextAndRestoresOnCancel()
+	{
+		// Arrange
+
+		await using var context = await ContextAsync(true);
+		var page = await HarnessAsync(context, touchInspect: false);
+		var cdp = await context.NewCDPSessionAsync(page);
+		await page.EvaluateAsync("""
+			() => document.querySelector('#capture').insertAdjacentHTML('beforeend',
+			'<line class="x-break" x1="300" x2="300" y1="100" y2="500"/><text class="x-break-label" x="300" y="530">40</text><line class="y-break" x1="100" x2="600" y1="300" y2="300"/>')
+			""");
+
+		// Act
+
+		await TouchAsync(cdp, "touchStart", Point(250, 400), Point(450, 400, 2));
+		await TouchAsync(cdp, "touchMove", Point(200, 400), Point(500, 400, 2));
+		var geometry = await page.EvaluateAsync<double[]>("""
+			() => {
+			    const line=document.querySelector('.x-break'), label=document.querySelector('.x-break-label');
+			    const marks=document.querySelector('#target').transform.baseVal.consolidate().matrix;
+			    return [line.transform.baseVal.consolidate().matrix.e, label.transform.baseVal.consolidate().matrix.e,
+			        label.transform.baseVal.consolidate().matrix.a, 300*(marks.a-1)+marks.e,
+			        document.querySelector('.y-break').transform.baseVal.consolidate().matrix.f];
+			}
+			""");
+		await TouchAsync(cdp, "touchCancel");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		geometry[0].Should().BeApproximately(geometry[3], 0.001);
+		geometry[1].Should().BeApproximately(geometry[3], 0.001);
+		geometry[2].Should().Be(1);
+		geometry[4].Should().Be(0);
+		(await page.Locator(".x-break-label").GetAttributeAsync("transform")).Should().BeNull();
+	}
+
 	private async Task<IBrowserContext> ContextAsync(bool touch = false)
 	{
 		Assert.SkipUnless(fixture.Available, fixture.Reason);
@@ -851,7 +1015,7 @@ public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppF
 
 	// touchInspect: null leaves the payload without a touch policy; otherwise the plot owns touch
 	// with one-finger pan and pinch on x, and inspects by touch when true.
-	private static async Task<IPage> HarnessAsync(IBrowserContext context, bool panX = true, bool panY = true, bool tooltip = false, bool? touchInspect = null)
+	private static async Task<IPage> HarnessAsync(IBrowserContext context, bool panX = true, bool panY = true, bool tooltip = false, bool? touchInspect = null, bool nativeActions = false)
 	{
 		var page = await context.NewPageAsync();
 		await page.SetContentAsync("""
@@ -878,7 +1042,7 @@ public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppF
 			    document.querySelector('#viewport').style.touchAction=o.panX?(o.panY?'pinch-zoom':'pan-y pinch-zoom'):(o.panY?'pan-x pinch-zoom':'auto');
 			    window.rejectTouch=false;
 			    if(o.touch!==null){
-			        window.options={...window.options,group:'plot',touch:{navigation:2,inspect:o.touch,ownership:0}};
+			        window.options={...window.options,group:'plot',touch:{navigation:2,inspect:o.touch,ownership:0,tapActivatesPanel:o.nativeActions,doubleTapResetsView:o.nativeActions}};
 			        document.querySelector('#plot').classList.add('ggnet');
 			        document.querySelector('#viewport').style.touchAction='none';
 			    }
@@ -890,7 +1054,7 @@ public class GestureModuleTests(DemoAppFixture fixture) : IClassFixture<DemoAppF
 			    window.initialize=()=>window.module.initialize('panel',document.querySelector('#capture'),document.querySelector('#target'),{invokeMethodAsync:async(...a)=>{window.calls.push(a);if(window.rejectTouch&&a[0].startsWith('OnTouch'))throw new Error('rejected');if(a[0]!=='OnPanEndAsync')return;if(window.panEnd)return window.panEnd(...a.slice(1));const committed=++window.committed;if(!window.holdFrames)window.frame();return committed;}},window.options);
 			    window.initialize();
 			}
-			""", new { source, panX, panY, tooltip, touch = touchInspect });
+			""", new { source, panX, panY, tooltip, touch = touchInspect, nativeActions });
 		return page;
 	}
 

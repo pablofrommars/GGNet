@@ -4,7 +4,7 @@ One rule splits styling: **if it moves layout it's C# (`Style` — font sizes, m
 
 ## Layout — the `Style` record
 
-Passed to the terminal call: `.Style(style)` (plus `axisY: Position.Left|Right`, `legend: Position.Right|Top|…`). Nested option groups: `StylePlot`, `StylePanel`, `StylePanelSpacing`, `StyleAxis`, `StyleAxisText`, `StyleAxisTitle`, `StyleLegend`, `StyleStrip`, `StyleStripText`, `StylePolar`. Reach for it only when layout must change; paint never goes here.
+Passed to the terminal call: `.Style(style)` (plus `axisY: Position.Left|Right`, `legend: Position.Right|Top|…`). Nested option groups: `StyleAxis`, `StyleAxisText`, `StyleAxisTitle`, `StyleCursor`, `StyleLegend`, `StylePanel`, `StylePanelSpacing`, `StylePlot`, `StylePolar`, `StyleStrip`, `StyleStripText`. Reach for it only when layout must change; paint never goes here.
 
 ## Paint — CSS variables
 

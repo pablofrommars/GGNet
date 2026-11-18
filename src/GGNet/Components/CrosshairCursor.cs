@@ -47,14 +47,23 @@ internal sealed class CrosshairCursor : ComponentBase
 		builder.AddAttribute(15, "y2", Num(frame.Bottom));
 		builder.CloseElement();
 
-		builder.OpenElement(16, "text");
-		builder.AddAttribute(18, "class", "crosshair-label pointer-events-none");
-		builder.AddAttribute(19, "x", Num(frame.X));
-		builder.AddAttribute(20, "y", Num(frame.Top + 14.0));
-		builder.AddAttribute(21, "text-anchor", "middle");
-		builder.AddAttribute(22, "font-size", FontSize);
-		builder.AddContent(23, frame.Label);
-		builder.CloseElement();
+		if (frame.ShowLabel)
+		{
+			builder.OpenElement(16, "text");
+			builder.AddAttribute(18, "class", "crosshair-label pointer-events-none");
+			builder.AddAttribute(19, "x", Num(frame.LabelX ?? frame.X));
+			builder.AddAttribute(20, "y", Num(frame.LabelTop ?? (frame.Top + 14.0)));
+			builder.AddAttribute(21, "text-anchor", "middle");
+			builder.AddAttribute(22, "font-size", frame.LabelFontSize is { } size ? Num(size) : FontSize);
+			builder.AddAttribute(31, "dominant-baseline", frame.LabelTop is null ? null : "text-before-edge");
+			builder.AddAttribute(32, "textLength", frame.LabelWidth is { } width ? Num(width) : null);
+			builder.AddAttribute(33, "lengthAdjust", frame.LabelWidth is null ? null : "spacingAndGlyphs");
+			builder.AddAttribute(34, "data-ggnet-label-key", frame.MeasureKey);
+			builder.AddAttribute(35, "visibility", frame.LabelReady ? null : "hidden");
+			builder.AddAttribute(37, "data-ggnet-label-size", frame.MeasureFontSize is { } measureSize ? Num(measureSize) : null);
+			builder.AddContent(36, frame.Label);
+			builder.CloseElement();
+		}
 
 		builder.CloseElement();
 

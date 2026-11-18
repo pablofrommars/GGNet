@@ -42,14 +42,14 @@ The header prints the build identity (`Version+SourceRevisionId`) under the navi
 
 | Section | Exercises |
 |---|---|
-| Overview and detail | Three stacked sub-panels with `onActivate` and a key each, and a separately composed detail chart that adds an equipment-activity panel; both plots stay mounted and overlap, toggled by opacity, scale and `pointer-events`. **Expand** and **Close detail** switch between them and carry the x window and the shared selection; **All** resets the viewport only and **Clear** removes the selection only. A mouse click on temperature also opens the detail; a touch tap pins instead. **Owned inspection**, **ScrollY inspection** and **Navigation only** remount both plots under another touch policy. The readouts show the selected time, each plot's window (Unix seconds), its change count and the last cause. |
+| Overview and detail | Three stacked sub-panels with `onActivate` and a key each, and a separately composed detail chart that adds an equipment-activity panel; both plots stay mounted and overlap, toggled by opacity, scale and `pointer-events`. **Expand** and **Close detail** switch between them and carry the x window and the shared selection; **All** resets the viewport only and **Clear** removes the selection only. The default inspection policy pins on tap. **Native touch actions** remounts with tap-to-activate in overview, tap-to-pin in detail, double-tap reset in both, an in-chart ×, and one measured cursor label at 24 SVG units. **Owned inspection**, **ScrollY inspection** and **Navigation only** remount both plots under another touch policy. The readouts show the selected time, each plot's window (Unix seconds), its change count and the last cause. |
 | Cost of the hidden chart | **Measure refresh** changes the last reading twenty times refreshing only the overview, then twenty times refreshing the hidden detail too, and prints the mean and maximum time per refresh, request to painted frame, and the difference. |
 | Activation without gestures | A plot with no `Interactivity`: a tap on a mark, a grid line or the background activates at once. |
 | Activation against inspection | A plot with crosshair and cursor tooltip: taps inspect and the activation counter stays at zero; the button is the explicit control. |
 
-On the overview and detail charts a mouse click activates about 200 ms after it lands, so that a
-double-click reset is not mistaken for it. A double click slower than that opens the detail and then
-resets; 300 ms avoided this but felt laggy in physical QA. Touch has no double-tap reset.
+Crosshair inspection keeps mouse clicks from activating the overview. Native touch actions delay
+single taps 300 ms for double-tap arbitration; hold, drag and multiple contacts take precedence.
+The default compatibility mode retains the earlier controls and no touch double-tap reset.
 
 ## Time cursor page
 

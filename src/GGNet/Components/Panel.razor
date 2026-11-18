@@ -158,7 +158,7 @@ else
             </g>
         }
 
-        @if (Plot.InspectionEnabled && coord.CarvesAxisBands)
+        @if ((Plot.InspectionEnabled || Plot.StampsInspection) && coord.CarvesAxisBands)
         {
             @* The cursor is an internal component, which Razor markup cannot name. *@
             __builder.OpenComponent<CrosshairCursor>(9000);
@@ -297,6 +297,20 @@ else
 
     private void RenderGridLabel(RenderTreeBuilder __builder, Coords.GridLabel label)
     {
+        if (Plot.Interactivity is not null)
+        {
+            <g clip-path="url(#@(GridClipId(label.Clip)))">
+                @{ RenderGridLabelText(__builder, label); }
+            </g>
+        }
+        else
+        {
+            RenderGridLabelText(__builder, label);
+        }
+    }
+
+    private void RenderGridLabelText(RenderTreeBuilder __builder, Coords.GridLabel label)
+    {
         <text>
             <text
                 class=@label.Class
@@ -304,7 +318,7 @@ else
                 y=@Num(label.Y)
                 text-anchor=@label.Anchor
                 font-size=@label.FontSize
-                clip-path="url(#@(GridClipId(label.Clip)))">
+                clip-path=@(Plot.Interactivity is null ? $"url(#{GridClipId(label.Clip)})" : null)>
                 @label.Text
             </text>
         </text>

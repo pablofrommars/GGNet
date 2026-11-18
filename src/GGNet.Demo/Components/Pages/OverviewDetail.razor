@@ -10,7 +10,10 @@
 
 <p class="mt-2 max-w-prose text-gray-600">
     Tap to pin, drag horizontally to pan, or hold for 400 ms and then scrub.
-    Two fingers pan and pinch. Expand opens the temperature detail and Close
+    Two fingers pan and pinch. Select native actions to tap the overview to expand,
+    double-tap either chart to reset, and close with the in-chart ×. Detail taps pin;
+    hold then drag inspects in either view. Single taps wait 300 ms for a second tap.
+    The compatibility policy below retains the earlier buttons: Expand opens the temperature detail and Close
     returns to the overview; both use the same touch policy. The selected time
     and viewport travel with you. All resets the viewport; Clear removes the selection.
 </p>
@@ -20,13 +23,17 @@
     <span>Showing <b data-qa="state">@(open ? "detail" : "overview")</b></span>
     <span>Activations <b data-qa="activations" class="text-lg">@activations</b></span>
     <span>Last activation <b data-qa="last-activation">@lastActivation</b></span>
+    @if (!nativeActions)
+    {
     <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" data-qa="expand" disabled=@open @onclick=ExpandAsync>Expand</button>
     <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" data-qa="close" disabled=@(!open) @onclick=CloseAsync>Close detail</button>
     <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" data-qa="all" @onclick=AllAsync>All</button>
+    }
     <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" data-qa="clear" @onclick=ClearAsync>Clear</button>
 </div>
 
 <div class="mt-3 flex flex-wrap gap-3 text-sm">
+    <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" data-qa="native-actions" @onclick=SetNativePolicy>Native touch actions</button>
     <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" data-qa="owned" @onclick=@(() => SetPolicy(true, TouchOwnership.Owned))>Owned inspection</button>
     <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" data-qa="scroll-y" @onclick=@(() => SetPolicy(true, TouchOwnership.ScrollY))>ScrollY inspection</button>
     <button class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm hover:bg-gray-100" data-qa="navigation-only" @onclick=@(() => SetPolicy(false, TouchOwnership.Owned))>Navigation only</button>
@@ -54,7 +61,11 @@
         <Plot T="TelemetryReading" TX="Instant" TY="double" @key=@((policyVersion, "overview")) @ref=overview Context=@overviewContext RenderMode=@renderMode Interactivity=@navigate ViewChanged=@OnOverviewViewChanged Inspection=@inspection InspectionChanged=@OnInspectionChanged />
     </div>
     <div data-qa="detail" style=@($"position: absolute; inset: 1rem; {Layer(open)}")>
-        <Plot T="TelemetryReading" TX="Instant" TY="double" @key=@((policyVersion, "detail")) @ref=detail Context=@detailContext RenderMode=@renderMode Interactivity=@navigate ViewChanged=@OnDetailViewChanged Inspection=@inspection InspectionChanged=@OnInspectionChanged />
+        <Plot T="TelemetryReading" TX="Instant" TY="double" @key=@((policyVersion, "detail")) @ref=detail Context=@detailContext RenderMode=@renderMode Interactivity=@detailOptions ViewChanged=@OnDetailViewChanged Inspection=@inspection InspectionChanged=@OnInspectionChanged />
+        @if (nativeActions && open)
+        {
+            <button style="position: absolute; right: 1rem; top: 1rem;" aria-label="Close detail" data-qa="close-native" @onclick=CloseAsync>×</button>
+        }
     </div>
 </div>
 </section>

@@ -99,7 +99,7 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 	private long panCommit;
 	internal long RenderedPanCommit { get; private set; }
 
-	internal bool AcceptTouch(string session, long epoch, long revision, bool navigation)
+	internal bool AcceptTouch(string session, long epoch, long revision, bool? navigation)
 	{
 		if (session != TouchSession || epoch != touchEpoch || revision <= touchRevision || Volatile.Read(ref disposing) != 0)
 		{
@@ -107,11 +107,11 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 		}
 
 		touchRevision = revision;
-		if (navigation)
+		if (navigation == true)
 		{
 			touchNavigationRevision = revision;
 		}
-		else
+		else if (navigation == false)
 		{
 			touchInspectionRevision = revision;
 		}
@@ -243,7 +243,7 @@ public partial class Plot<T, TX, TY> : ComponentBase, IPlot, IPlotRendering, IAs
 
 	internal bool InspectionEnabled => Interactivity is { Crosshair: true } || TouchOptions is { Inspect: true };
 
-	internal bool StampsInspection => TouchOptions is { Inspect: true };
+	internal bool StampsInspection => TouchOptions is { Inspect: true } or { TapActivatesPanel: true } or { DoubleTapResetsView: true };
 
 	internal bool StampsFrames => Interactivity is { Pan: true } || TouchOptions is { Enabled: true };
 

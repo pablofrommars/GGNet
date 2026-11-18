@@ -393,6 +393,165 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 		session.Errors.Should().BeEmpty();
 	}
 
+	[Fact]
+	public async Task NativeOverviewDoubleTapResetsWithoutExpandingOrChangingTheHeldPin()
+	{
+		// Arrange
+
+		await using var session = await OpenAsync();
+		await session.EnableNativeActionsAsync();
+		var (x, y) = await session.PanelCentreAsync("overview", 0);
+		await TouchAsync(session.Cdp, "touchStart", Point(x, y));
+		await session.Page.WaitForTimeoutAsync(500);
+		await TouchAsync(session.Cdp, "touchMove", Point(x + 30, y));
+		await TouchAsync(session.Cdp, "touchEnd");
+		await session.WaitForCommittedSelectionAsync();
+		var selection = await session.TextAsync("selection-time");
+		await SwipeAsync(session.Page, session.Cdp, x, y, -80, 0);
+		await session.WaitForTextAsync("overview-changes", "1");
+		await session.WaitForCommittedSelectionAsync();
+		(x, y) = await session.PanelCentreAsync("overview", 0);
+
+		// Act
+
+		await NativeDoubleTapAsync(session, x, y);
+		await session.WaitForTextAsync("overview-cause", "Reset");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		(await session.TextAsync("overview-window")).Should().Be("none");
+		(await session.TextAsync("activations")).Should().Be("0");
+		(await session.TextAsync("state")).Should().Be("overview");
+		(await session.TextAsync("selection-time")).Should().Be(selection);
+		session.Errors.Should().BeEmpty();
+	}
+
+	[Fact]
+	public async Task NativeExpandDetailPinResetAndInChartCloseRetainInspection()
+	{
+		// Arrange
+
+		await using var session = await OpenAsync();
+		await session.EnableNativeActionsAsync();
+		var (x, y) = await session.PanelCentreAsync("overview", 0);
+
+		// Act
+
+		await TapAsync(session.Page, session.Cdp, x, y);
+		await session.WaitForTextAsync("state", "detail");
+		(x, y) = await session.PanelCentreAsync("detail", 0);
+		await TapAsync(session.Page, session.Cdp, x - 40, y);
+		await session.WaitForCommittedSelectionAsync();
+		var selected = await session.TextAsync("selection-time");
+		await SwipeAsync(session.Page, session.Cdp, x, y, -80, 0);
+		await session.WaitForTextAsync("detail-cause", "Gesture");
+		await session.WaitForCommittedSelectionAsync();
+		(x, y) = await session.PanelCentreAsync("detail", 0);
+		await NativeDoubleTapAsync(session, x + 60, y);
+		await session.WaitForTextAsync("detail-cause", "Reset");
+		var afterReset = await session.TextAsync("selection-time");
+		await session.Page.Locator("[data-qa=close-native]").TapAsync();
+		await session.WaitForTextAsync("state", "overview");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		(await session.TextAsync("activations")).Should().Be("1");
+		(await session.TextAsync("detail-window")).Should().Be("none");
+		afterReset.Should().Be(selected);
+		(await session.TextAsync("selection-time")).Should().Be(selected);
+		(await session.TextAsync("state")).Should().Be("overview");
+		session.Errors.Should().BeEmpty();
+	}
+
+	[Theory]
+	[InlineData(0.01)]
+	[InlineData(0.5)]
+	[InlineData(0.99)]
+	public async Task NativeCursorUsesRenderedTextBoundsAndOneLabelAcrossTheStack(double fraction)
+	{
+		// Arrange
+
+		await using var session = await OpenAsync();
+		await session.EnableNativeActionsAsync();
+		await session.PanelCentreAsync("overview", 0);
+		var box = (await session.Page.Locator("[data-qa=overview] rect.panel").First.BoundingBoxAsync())!;
+		var x = box.X + box.Width * fraction;
+		var y = box.Y + box.Height / 2;
+
+		// Act
+
+		await TouchAsync(session.Cdp, "touchStart", Point(x, y));
+		await session.Page.WaitForTimeoutAsync(500);
+		await TouchAsync(session.Cdp, "touchEnd");
+		await session.Page.WaitForFunctionAsync("""
+			() => {
+			    const label=document.querySelector('[data-qa=overview] .crosshair-label');
+			    return label && getComputedStyle(label).visibility==='visible';
+			}
+			""");
+		var geometry = await session.Page.EvaluateAsync<double[]>("""
+			() => {
+			    const root=document.querySelector('[data-qa=overview]');
+			    const text=root.querySelector('.crosshair-label').getBBox();
+			    const lines=[...root.querySelectorAll('line.crosshair')];
+			    const panels=[...root.querySelectorAll('rect.panel')].map(p=>p.getBBox());
+			    return [root.querySelectorAll('.crosshair-label').length, text.x-panels[0].x,
+			        panels[0].x+panels[0].width-text.x-text.width, text.y-panels[0].y,
+			        Number(lines[0].getAttribute('y1'))-text.y-text.height,
+			        Number(lines[1].getAttribute('y1'))-panels[1].y,
+			        Number(lines[2].getAttribute('y1'))-panels[2].y,
+			        Number(lines[0].getAttribute('y2'))-Number(lines[1].getAttribute('y1')),
+			        (Number(lines[0].getAttribute('x1'))-panels[0].x)/panels[0].width];
+			}
+			""");
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		geometry[0].Should().Be(1);
+		geometry[1].Should().BeGreaterThanOrEqualTo(3.5);
+		geometry[2].Should().BeGreaterThanOrEqualTo(3.5);
+		geometry[3].Should().BeGreaterThanOrEqualTo(3.5);
+		geometry[4].Should().BeApproximately(4, 0.5);
+		// getBBox rounds geometry while the SVG attributes retain serialized double precision.
+		geometry[5].Should().BeApproximately(0, 0.0001);
+		geometry[6].Should().BeApproximately(0, 0.0001);
+		geometry[7].Should().BeApproximately(0, 0.01);
+		geometry[8].Should().BeApproximately(fraction, 0.003);
+		session.Errors.Should().BeEmpty();
+	}
+
+	private static async Task NativeDoubleTapAsync(Session session, double x, double y)
+	{
+		await session.Page.EvaluateAsync("""
+			() => {
+			    window.nativeTapTrace = [];
+			    window.nativeTapTraceAbort = new AbortController();
+			    for (const type of ['pointerdown', 'pointerup', 'pointercancel', 'blur']) {
+			        window.addEventListener(type, event => {
+			            const panel = event.target.closest?.('[data-ggnet-frame]');
+			            window.nativeTapTrace.push({type, pointer: event.pointerType,
+			                target: event.target === window ? 'window' : event.target.tagName,
+			                time: performance.now(), x: event.clientX, y: event.clientY,
+			                frame: panel?.dataset.ggnetFrame,
+			                inspection: panel?.querySelector('[data-ggnet-inspection]')?.dataset.ggnetInspection,
+			                feedback: panel?.closest('.ggnet')?.dataset.ggnetInteraction});
+			        }, {capture: true, signal: window.nativeTapTraceAbort.signal});
+			    }
+			}
+			""");
+		await TouchAsync(session.Cdp, "touchStart", Point(x, y));
+		await TouchAsync(session.Cdp, "touchEnd");
+		await session.Page.WaitForTimeoutAsync(80);
+		await TouchAsync(session.Cdp, "touchStart", Point(x, y));
+		await TouchAsync(session.Cdp, "touchEnd");
+		await session.Page.WaitForTimeoutAsync(600);
+		var trace = await session.Page.EvaluateAsync<string>("() => { window.nativeTapTraceAbort.abort(); return JSON.stringify(window.nativeTapTrace); }");
+		TestContext.Current.TestOutputHelper?.WriteLine("Native double-tap pointer trace: " + trace);
+	}
+
 	private async Task<Session> OpenAsync()
 	{
 		Assert.SkipUnless(fixture.Available, fixture.Reason);
@@ -422,6 +581,40 @@ public class OverviewDetailTests(DemoAppFixture fixture) : IClassFixture<DemoApp
 	private sealed record Session(IBrowserContext Context, IPage Page, ICDPSession Cdp, IAsyncDisposable ServerOutput) : IAsyncDisposable
 	{
 		public List<string> Errors { get; } = [];
+
+		public async Task WaitForCommittedSelectionAsync()
+		{
+			await Page.WaitForFunctionAsync("""
+				() => {
+				    const host = document.querySelector('.overview-detail-demo');
+				    const selection = host.querySelector('[data-qa=selection-time]');
+				    const cursors = [...host.querySelectorAll('[data-ggnet-inspection]')];
+				    return /^\d+$/.test(selection.innerText)
+				        && !host.querySelector('[data-ggnet-interaction]')
+				        && cursors.length === 5 && cursors.every(cursor =>
+				            cursor.hasAttribute('data-ggnet-committed')
+				            && cursor.dataset.ggnetCommitted === cursor.dataset.ggnetSelection);
+				}
+				""");
+		}
+
+		public async Task EnableNativeActionsAsync()
+		{
+			var previous = await Page.Locator("[data-qa=overview] [data-ggnet-frame], [data-qa=detail] [data-ggnet-frame]")
+				.EvaluateAllAsync<string[]>("panels => panels.map(panel => panel.dataset.ggnetFrame.split(':')[0])");
+
+			await Page.Locator("[data-qa=native-actions]").ClickAsync();
+			await Page.WaitForFunctionAsync("""
+				previous => {
+				    const panels = [...document.querySelectorAll('[data-qa=overview] [data-ggnet-frame], [data-qa=detail] [data-ggnet-frame]')];
+				    return panels.length === 5 && panels.every(panel => {
+				        const stamp = panel.dataset.ggnetFrame;
+				        return stamp && !previous.includes(stamp.split(':')[0])
+				            && panel.querySelector('[data-ggnet-marks-frame]')?.dataset.ggnetMarksFrame === stamp;
+				    });
+				}
+				""", previous);
+		}
 
 		public async Task<(double x, double y)> PanelCentreAsync(string chart, int panel)
 		{

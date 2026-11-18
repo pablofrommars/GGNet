@@ -95,6 +95,8 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 	[DynamicDependency(nameof(OnCursorRestoreAsync))]
 	[DynamicDependency(nameof(OnTouchNavigateAsync))]
 	[DynamicDependency(nameof(OnTouchInspectAsync))]
+	[DynamicDependency(nameof(OnTouchActionAsync))]
+	[DynamicDependency(nameof(OnCursorLabelMeasuredAsync))]
 	public Panel()
 	{
 		renderTitle = RenderTitle;
@@ -495,7 +497,58 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 			}
 		}
 
-		return new(x, top, bottom, xscale.Label(value), pinned, visible, markers, CurrentTouchView);
+		var frame = new CursorFrame(x, top, bottom, xscale.Label(value), pinned, visible, markers, CurrentTouchView);
+		if (Plot.Style.Cursor is not { } style)
+		{
+			return frame;
+		}
+
+		if (style.FirstPanelOnly && SharesCursor && Plot.Context.Panels.Any(panel => panel.Coord.col == Data.Coord.col && panel.Coord.row < Data.Coord.row))
+		{
+			return frame with { ShowLabel = false };
+		}
+
+		var padding = double.IsFinite(style.Padding) ? Math.Max(0, style.Padding) : 4;
+		var gap = double.IsFinite(style.Gap) ? Math.Max(0, style.Gap) : 4;
+		var size = (style.FontSize ?? Plot.Style.Axis.Text.X.FontSize).Height();
+		size = double.IsFinite(size) && size > 0 ? size : 12;
+		var measureKey = string.Create(CultureInfo.InvariantCulture, $"{size:R}:{frame.Label}");
+		var measured = cursorLabelMetrics is { } metrics && metrics.key == measureKey;
+		var width = measured ? cursorLabelMetrics!.Value.width : frame.Label.Width(new Size { Value = size, Units = Units.PX });
+		var height = measured ? cursorLabelMetrics!.Value.height : size * 1.25;
+		var verticalFit = Math.Min(1, Math.Max(1, Area.Height - 2 * padding - gap) / height);
+		width *= verticalFit;
+		height *= verticalFit;
+		var available = Math.Max(1, Area.Width - 2 * padding);
+		var fittedWidth = Math.Min(width, available);
+		var center = Area.X + Area.Width / 2;
+		var halfTravel = Math.Max(0, (Area.Width - fittedWidth) / 2 - padding);
+		return frame with
+		{
+			Top = Math.Min(bottom, top + padding + height + gap),
+			LabelX = Math.Clamp(x, center - halfTravel, center + halfTravel),
+			LabelTop = top + padding,
+			LabelWidth = measured && width > available ? available : null,
+			LabelFontSize = size * verticalFit,
+			MeasureFontSize = size,
+			MeasureKey = measureKey,
+			LabelReady = measured
+		};
+	}
+
+	private (string key, double width, double height)? cursorLabelMetrics;
+
+	[JSInvokable]
+	public Task OnCursorLabelMeasuredAsync(string key, double width, double height)
+	{
+		if (Volatile.Read(ref disposing) == 0 && double.IsFinite(width) && width >= 0
+			&& double.IsFinite(height) && height > 0 && CursorGeometry().MeasureKey == key)
+		{
+			cursorLabelMetrics = (key, width, height);
+			RefreshCursor();
+		}
+
+		return Task.CompletedTask;
 	}
 
 	private ElementReference captureRef;
@@ -596,6 +649,25 @@ public partial class Panel<T, TX, TY> : ComponentBase, ICoord, IPanel, IAsyncDis
 		}
 
 		await Plot.CommitViewAsync(ViewChangeCause.Gesture, RenderTarget.Render, CancellationToken.None, touch: true);
+	}
+
+	[JSInvokable]
+	public Task OnTouchActionAsync(string session, long epoch, long revision, bool reset)
+	{
+		if (Volatile.Read(ref disposing) != 0 || Plot.TouchOptions is not { } options
+			|| (reset ? !options.DoubleTapResetsView : !options.TapActivatesPanel)
+			|| !Plot.AcceptTouch(session, epoch, revision, navigation: null))
+		{
+			return Task.CompletedTask;
+		}
+
+		if (!reset)
+		{
+			return Data.Activate?.Invoke() ?? Task.CompletedTask;
+		}
+
+		Plot.Context.ResetView();
+		return Plot.CommitViewAsync(ViewChangeCause.Reset, RenderTarget.Render, CancellationToken.None);
 	}
 
 	[JSInvokable]

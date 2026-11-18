@@ -5,6 +5,9 @@ const ON_CURSOR_LEAVE = 'OnCursorLeaveAsync';
 const ON_CURSOR_RESTORE = 'OnCursorRestoreAsync';
 const ON_TOUCH_NAVIGATE = 'OnTouchNavigateAsync';
 const ON_TOUCH_INSPECT = 'OnTouchInspectAsync';
+const ON_TOUCH_ACTION = 'OnTouchActionAsync';
+const DOUBLE_TAP_MS = 300;
+const DOUBLE_TAP_DISTANCE = 24;
 const TOOLTIP_OFFSET = 12;
 const EDGE_MARGIN = 4;
 // Screen pixels a pointer must travel before a press becomes a pan. Below it
@@ -62,6 +65,10 @@ class PanelInteractivity {
     #cursorObserved = null;
     #touchClickBlockedUntil = 0;
     #touchCoordinator = null;
+    #labelObserver = null;
+    #labelResizeObserver = null;
+    #labelKey = null;
+    #contextPreview = null;
 
     constructor(capture, target, dotNetRef, options) {
         this.#capture = capture;
@@ -79,6 +86,13 @@ class PanelInteractivity {
         // Held, because a disposed panel is already detached from the root
         // whose feedback it must still take off.
         this.#root = this.#capture.closest('.ggnet');
+        this.#labelObserver = new MutationObserver(() => this.#measureLabel());
+        this.#labelObserver.observe(this.#capture, { subtree: true, childList: true, attributes: true,
+            attributeFilter: ['data-ggnet-label-key'] });
+        this.#labelResizeObserver = new ResizeObserver(() => { this.#labelKey = null; this.#measureLabel(); });
+        this.#labelResizeObserver.observe(this.#root ?? this.#capture.ownerSVGElement);
+        this.#measureLabel();
+        document.fonts?.addEventListener('loadingdone', () => { this.#labelKey = null; this.#measureLabel(); }, options);
         if (this.touchEnabled) {
             const key = this.#options.group ?? this;
             let coordinator = touchGroups.get(key);
@@ -1197,11 +1211,15 @@ class PanelInteractivity {
         this.#panPreview = true;
         this.#marks.setAttribute('transform', transform);
         this.#panShift = dx;
+        this.#previewContext(1, dx, dy);
 
         // The cursor is rendered ahead of the marks, in a frame of its own:
         // it is placed again when the marks' frame follows.
-        if (!this.#panObserver && this.#options.cursor) {
-            this.#panObserver = new MutationObserver(() => this.#shiftCursor());
+        if (!this.#panObserver) {
+            this.#panObserver = new MutationObserver(() => {
+                this.#shiftCursor();
+                if (this.#panPreview && this.#contextPreview) this.#previewContext(...this.#contextPreview);
+            });
             this.#panObserver.observe(this.#capture, { subtree: true, childList: true, attributes: true,
                 attributeFilter: ['data-ggnet-frame', 'data-ggnet-marks-frame', 'data-ggnet-view'] });
         }
@@ -1213,6 +1231,7 @@ class PanelInteractivity {
     #clearPan() {
         this.#panPreview = false;
         this.#marks.removeAttribute('transform');
+        this.#clearContext();
         this.#panObserver?.disconnect();
         this.#panObserver = null;
         if (this.#panShift !== null) {
@@ -1262,10 +1281,16 @@ class PanelInteractivity {
         }
     }
 
-    get touchEnabled() { return !!this.#options.touch?.inspect || this.#options.touch?.navigation > 0; }
+    get touchEnabled() { return !!this.#options.touch?.inspect || this.#options.touch?.navigation > 0
+        || !!this.#options.touch?.tapActivatesPanel || !!this.#options.touch?.doubleTapResetsView; }
     get touchOptions() { return this.#options.touch; }
     get touchRoot() { return this.#capture.closest('.ggnet'); }
     get touchCapture() { return this.#capture; }
+    get touchAvailable() {
+        const style = getComputedStyle(this.#capture);
+        return this.#capture.isConnected && style.pointerEvents !== 'none' && style.visibility !== 'hidden'
+            && this.#capture.getClientRects().length > 0;
+    }
     touchContains(target) { return target instanceof Node && this.#capture.contains(target); }
     touchPoint(e, clamp = false) { return this.#cursorPoint(e, clamp); }
     touchMatrix() { return this.#matrix()?.matrix.toString(); }
@@ -1285,6 +1310,34 @@ class PanelInteractivity {
     touchSendInspection(message) {
         return this.#dotNetRef.invokeMethodAsync(ON_TOUCH_INSPECT, message.session, message.epoch,
             message.revision, message.mapped ?? 0, message.pinned, message.restore);
+    }
+    touchSendAction(message) {
+        return this.#dotNetRef.invokeMethodAsync(ON_TOUCH_ACTION, message.session, message.epoch, message.revision, message.reset);
+    }
+    async #measureLabel() {
+        const label = this.#capture.querySelector('[data-ggnet-label-key]');
+        const key = label?.dataset.ggnetLabelKey;
+        if (!key || key === this.#labelKey) return;
+        this.#labelKey = key;
+        await document.fonts?.ready;
+        if (!label.isConnected || this.#abort.signal.aborted || label.dataset.ggnetLabelKey !== key) return;
+        const size = label.getAttribute('font-size');
+        const length = label.getAttribute('textLength');
+        label.removeAttribute('textLength');
+        label.setAttribute('font-size', label.dataset.ggnetLabelSize);
+        let box;
+        try {
+            box = label.getBBox();
+        } finally {
+            label.setAttribute('font-size', size);
+            if (length !== null) label.setAttribute('textLength', length);
+        }
+        if (!(box.height > 0)) { this.#labelKey = null; return; }
+        try {
+            await this.#dotNetRef.invokeMethodAsync('OnCursorLabelMeasuredAsync', key, box.width, box.height);
+        } catch {
+            this.#labelKey = null;
+        }
     }
     touchPaintInspection() {
         const pending = this.#touchCoordinator?.pendingInspection;
@@ -1331,14 +1384,48 @@ class PanelInteractivity {
         const rendered = this.touchView();
         const area = this.#area();
         if (!view || !rendered || !area) {
-            if (!this.#panPreview) this.#marks.removeAttribute('transform');
+            if (!this.#panPreview) {
+                this.#marks.removeAttribute('transform');
+                this.#clearContext();
+            }
             this.#placeCursor(this.#cursorState());
             return;
         }
         const scale = (rendered.max - rendered.min) / (view.max - view.min);
         const offset = (rendered.min - view.min) / (view.max - view.min);
-        this.#marks.setAttribute('transform', `translate(${area.x * (1 - scale) + offset * area.width}, 0) scale(${scale}, 1)`);
+        const dx = area.x * (1 - scale) + offset * area.width;
+        this.#marks.setAttribute('transform', `translate(${dx}, 0) scale(${scale}, 1)`);
+        this.#previewContext(scale, dx, 0);
         this.#placeCursor(this.#cursorState());
+    }
+    #previewContext(scale, dx, dy) {
+        this.#contextPreview = [scale, dx, dy];
+        const area = this.#area();
+        if (!area || !this.touchView()) {
+            this.#clearContext();
+            this.#contextPreview = [scale, dx, dy];
+            return;
+        }
+        for (const element of this.#capture.querySelectorAll('.x-break, .x-minor-break, .x-break-label, .x-break-title, .y-break, .y-minor-break, .y-break-label')) {
+            const xAxis = element.classList[0].startsWith('x-');
+            const position = Number(element.getAttribute(xAxis ? (element.tagName === 'line' ? 'x1' : 'x') : (element.tagName === 'line' ? 'y1' : 'y')));
+            const delta = xAxis ? position * (scale - 1) + dx : dy;
+            const moved = position + delta;
+            const min = xAxis ? area.x : area.y;
+            const max = min + (xAxis ? area.width : area.height);
+            element.setAttribute('transform', xAxis ? `translate(${delta}, 0)` : `translate(0, ${delta})`);
+            element.style.visibility = moved < min || moved > max ? 'hidden' : '';
+        }
+        this.#capture.setAttribute('data-ggnet-context-preview', '');
+    }
+    #clearContext() {
+        this.#contextPreview = null;
+        if (!this.#capture.hasAttribute('data-ggnet-context-preview')) return;
+        for (const element of this.#capture.querySelectorAll('.x-break, .x-minor-break, .x-break-label, .x-break-title, .y-break, .y-minor-break, .y-break-label')) {
+            element.removeAttribute('transform');
+            element.style.removeProperty('visibility');
+        }
+        this.#capture.removeAttribute('data-ggnet-context-preview');
     }
     touchPan(navigation, e) {
         const point = new DOMPoint(e.clientX, e.clientY).matrixTransform(navigation.inverse);
@@ -1349,6 +1436,8 @@ class PanelInteractivity {
     // The pan is dropped first: it repaints the cursor and the root's
     // feedback, which need the cursor state and the coordinator still in place.
     dispose() {
+        this.#labelObserver?.disconnect();
+        this.#labelResizeObserver?.disconnect();
         this.#unsettle();
         this.#cancelPan();
         this.#touchCoordinator?.remove(this);
@@ -1374,12 +1463,13 @@ class TouchCoordinator {
         this.panels = new Set();
         this.contacts = new Map();
         this.gesture = null;
+        this.pendingTap = null;
         this.pendingView = null;
         this.navigationView = null;
         this.pendingInspection = null;
         this.commands = [];
         this.inFlight = null;
-        this.watchdogs = { navigate: 0, inspect: 0 };
+        this.watchdogs = { navigate: 0, inspect: 0, action: 0 };
         this.acknowledged = { navigate: 0, inspect: 0 };
         this.committedPin = undefined;
         this.revision = 0;
@@ -1398,7 +1488,12 @@ class TouchCoordinator {
         }, options);
         for (const type of ['resize', 'orientationchange']) window.addEventListener(type, () => this.cancel(), options);
         window.visualViewport?.addEventListener('resize', () => this.cancel(), options);
-        window.addEventListener('blur', () => { this.cancel(); this.contacts.clear(); this.draining = false; }, options);
+        window.addEventListener('blur', e => {
+            if (e.target !== window) return;
+            this.cancel();
+            this.contacts.clear();
+            this.draining = false;
+        }, options);
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) { this.cancel(); this.contacts.clear(); this.draining = false; }
         }, options);
@@ -1488,14 +1583,14 @@ class TouchCoordinator {
         return mapped == null ? null : { mapped };
     }
 
-    inspect(panel, at, pinned) {
+    inspect(panel, at, pinned, capturedView = null) {
         if (this.unavailable) return;
-        const view = this.pendingView ?? this.effectiveView(panel);
+        const view = capturedView ?? this.pendingView ?? this.effectiveView(panel);
         if (!view) return;
         const mapped = view.min + at.fraction * (view.max - view.min);
         this.revision = Math.max(this.revision, view.revision);
         const message = { kind: 'inspect', panel, session: view.session, epoch: view.epoch,
-            revision: ++this.revision, mapped, pinned, restore: false };
+            revision: ++this.revision, mapped, pinned, restore: false, tap: capturedView !== null };
         if (pinned) this.committedPin = mapped;
         this.pendingInspection = message;
         this.paintNavigation();
@@ -1528,8 +1623,20 @@ class TouchCoordinator {
     pump() {
         if (this.inFlight || this.unavailable || !this.commands.length) return;
         const message = this.commands.shift();
+        if ((message.kind === 'action' || message.tap) && !message.panel.touchAvailable) {
+            if (this.pendingInspection === message) {
+                this.pendingInspection = null;
+                this.committedPin = undefined;
+                this.paintNavigation();
+                this.feedback();
+            }
+            this.pump();
+            this.finishWatchdog();
+            return;
+        }
         this.inFlight = message.kind;
-        const call = message.kind === 'navigate' ? message.panel.touchCommit(message) : message.panel.touchSendInspection(message);
+        const call = message.kind === 'navigate' ? message.panel.touchCommit(message)
+            : message.kind === 'action' ? message.panel.touchSendAction(message) : message.panel.touchSendInspection(message);
         call.catch(() => this.failNavigation()).finally(() => {
             this.inFlight = null;
             this.pump();
@@ -1550,12 +1657,12 @@ class TouchCoordinator {
     }
 
     outstanding(kind) {
-        return !!(kind === 'navigate' ? this.pendingView : this.pendingInspection)
+        return !!(kind === 'navigate' ? this.pendingView : kind === 'inspect' ? this.pendingInspection : null)
             || this.inFlight === kind || this.commands.some(command => command.kind === kind);
     }
 
     finishWatchdog() {
-        for (const kind of ['navigate', 'inspect']) {
+        for (const kind of ['navigate', 'inspect', 'action']) {
             if (!this.outstanding(kind)) this.clearWatchdog(kind);
         }
     }
@@ -1572,7 +1679,7 @@ class TouchCoordinator {
 
     reconcileNavigation() {
         if (this.unavailable) return;
-        const intended = this.navigationView ?? this.pendingView ?? this.pendingInspection;
+        const intended = this.navigationView ?? this.pendingView ?? this.pendingInspection ?? this.pendingTap?.view ?? this.gesture?.view;
         const frames = [...this.panels].map(panel => panel.touchView());
         const inspections = [...this.panels].map(panel => panel.touchInspection());
         this.acknowledge('navigate', frames);
@@ -1634,12 +1741,14 @@ class TouchCoordinator {
         this.committedPin = undefined;
         this.clearWatchdog('navigate');
         this.clearWatchdog('inspect');
+        this.clearWatchdog('action');
         this.cancel();
         this.paintNavigation();
         this.feedback();
     }
 
     remove(panel) {
+        if (this.pendingTap?.panel === panel) this.clearTap();
         if (this.gesture?.panel === panel) this.cancel();
         this.observers.get(panel)?.disconnect();
         this.observers.delete(panel);
@@ -1653,6 +1762,7 @@ class TouchCoordinator {
             panel.touchCapture.querySelector('[data-ggnet-provisional]')?.remove();
             this.clearWatchdog('navigate');
             this.clearWatchdog('inspect');
+            this.clearWatchdog('action');
             this.abort.abort();
             touchGroups.delete(this.key);
 
@@ -1668,14 +1778,17 @@ class TouchCoordinator {
 
     down(e) {
         if (e.pointerType !== 'touch') {
+            this.clearTap();
             if (e.pointerType === 'mouse' || e.pointerType === 'pen') this.blockClickUntil = 0;
             return;
         }
         const panel = [...this.panels].find(p => p.touchContains(e.target) && p.touchPoint(e));
+        if (!panel) this.clearTap();
         this.contacts.set(e.pointerId, { x: e.clientX, y: e.clientY, panel });
         if (this.draining || this.unavailable) return;
         const g = this.gesture;
         if (g) {
+            this.clearTap();
             clearTimeout(g.timer);
             if (this.contacts.size !== 2 || !panel || !g.panel.touchOptions.navigation) {
                 this.cancel();
@@ -1694,10 +1807,15 @@ class TouchCoordinator {
             return;
         }
         if (this.contacts.size !== 1 || !panel || !e.isPrimary) return;
+        const tap = this.pendingTap;
+        const second = tap?.panel === panel && performance.now() - tap.time <= DOUBLE_TAP_MS
+            && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) <= DOUBLE_TAP_DISTANCE;
+        this.clearTap();
         this.blockClickUntil = 0;
         const gesture = {
             panel, id: e.pointerId, start: { x: e.clientX, y: e.clientY },
-            last: e, state: 'pending', previous: panel.touchSnapshot(), matrix: panel.touchMatrix(), captures: new Set()
+            last: e, state: 'pending', previous: panel.touchSnapshot(), matrix: panel.touchMatrix(), captures: new Set(),
+            view: this.pendingView ?? this.effectiveView(panel), second
         };
         this.gesture = gesture;
         if (panel.touchOptions.inspect) gesture.timer = setTimeout(() => {
@@ -1716,7 +1834,7 @@ class TouchCoordinator {
     watch(g) {
         g.frame = requestAnimationFrame(() => {
             if (this.gesture !== g) return;
-            if (!g.panel.touchCapture.isConnected || g.matrix !== g.panel.touchMatrix()) { this.cancel(); return; }
+            if (!g.panel.touchAvailable || g.matrix !== g.panel.touchMatrix()) { this.cancel(); return; }
             this.watch(g);
         });
     }
@@ -1774,11 +1892,13 @@ class TouchCoordinator {
         if (g && this.contacts.has(e.pointerId)) {
             if (!commit) this.cancel();
             else {
-                if (g.state === 'pan' || g.state === 'scrub') this.move(e);
+                this.move(e);
                 if (this.gesture === g) {
                     this.finish(g);
                     if (g.state === 'pan' || g.state === 'navigate') {
                         g.panel.touchEnd(g.navigation, true);
+                    } else if (g.state === 'pending') {
+                        this.tap(g, e);
                     } else if (g.panel.touchOptions.inspect) {
                         const at = g.panel.touchPoint(e, g.state === 'scrub');
                         if (at) g.panel.touchPin(at);
@@ -1803,11 +1923,45 @@ class TouchCoordinator {
     }
 
     cancel() {
+        this.clearTap();
         const g = this.gesture;
         if (!g) return;
         this.finish(g);
         if (g.state === 'scrub') g.panel.touchRestore(g.previous);
         if (g.navigation) g.panel.touchEnd(g.navigation, false);
+    }
+
+    clearTap() {
+        clearTimeout(this.pendingTap?.timer);
+        this.pendingTap = null;
+    }
+
+    action(panel, view, reset) {
+        if (!view || this.unavailable || !panel.touchAvailable) return;
+        this.revision = Math.max(this.revision, view.revision);
+        this.enqueue({ kind: 'action', panel, ...view, revision: ++this.revision, reset });
+    }
+
+    tap(g, e) {
+        const at = g.panel.touchPoint(e);
+        if (!at || !g.view) return;
+        if (g.second && g.panel.touchOptions.doubleTapResetsView) {
+            this.action(g.panel, g.view, true);
+            return;
+        }
+        const run = () => {
+            if (!g.panel.touchAvailable || g.matrix !== g.panel.touchMatrix()) return;
+            if (g.panel.touchOptions.tapActivatesPanel) this.action(g.panel, g.view, false);
+            else if (g.panel.touchOptions.inspect) this.inspect(g.panel, at, true, g.view);
+        };
+        if (!g.panel.touchOptions.doubleTapResetsView) { run(); return; }
+        const pending = { panel: g.panel, view: g.view, time: performance.now(), x: e.clientX, y: e.clientY };
+        pending.timer = setTimeout(() => {
+            if (this.pendingTap !== pending) return;
+            this.pendingTap = null;
+            run();
+        }, DOUBLE_TAP_MS);
+        this.pendingTap = pending;
     }
 }
 

@@ -233,4 +233,85 @@ public class PanelActivationTests : BunitContext
 		activations.Should().BeEmpty();
 		cut.FindAll("[data-ggnet-activate]").Should().BeEmpty();
 	}
+	[Theory]
+	[InlineData(false)]
+	[InlineData(true)]
+	public async Task NativeActionsUseThePanelCallbackAndResetRetainsThePin(bool reset)
+	{
+		// Arrange
+
+		var context = Single();
+		var cut = Render(context, new() { Crosshair = true, Touch = new() { Inspect = true, TapActivatesPanel = true, DoubleTapResetsView = true } });
+		await cut.InvokeAsync(() => cut.Instance.ZoomToXAsync(2, 3));
+		cut.Render(p => p.Add(plot => plot.Inspection, new Inspection<double>(2.5)));
+		var panel = cut.FindComponent<Panel<P, double, double>>().Instance;
+		var stamp = cut.Find("[data-ggnet-inspection]").GetAttribute("data-ggnet-inspection")!.Split(' ');
+		var epoch = long.Parse(stamp[1], System.Globalization.CultureInfo.InvariantCulture);
+
+		// Act
+
+		await cut.InvokeAsync(() => panel.OnTouchActionAsync(stamp[0], epoch, 1, reset));
+		await cut.InvokeAsync(() => panel.OnTouchActionAsync(stamp[0], epoch, 1, reset));
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		activations.Should().HaveCount(reset ? 0 : 1);
+		cut.Instance.Readings!.Inspection.Should().Be(new Inspection<double>(2.5));
+		context.XView.Should().Be(reset ? null : (2.0, 3.0));
+		cut.FindAll("[data-ggnet-activate]").Should().BeEmpty("native touch does not dispatch mouse or mark clicks");
+	}
+
+	[Theory]
+	[InlineData("clear")]
+	[InlineData("view")]
+	[InlineData("context")]
+	[InlineData("dispose")]
+	public async Task HostChangesRejectStaleNativeActions(string command)
+	{
+		// Arrange
+
+		var cut = Render(Single(), new() { Crosshair = true, Touch = new() { TapActivatesPanel = true, DoubleTapResetsView = true } });
+		var panel = cut.FindComponent<Panel<P, double, double>>().Instance;
+		var stamp = cut.Find("[data-ggnet-inspection]").GetAttribute("data-ggnet-inspection")!.Split(' ');
+		var epoch = long.Parse(stamp[1], System.Globalization.CultureInfo.InvariantCulture);
+		var session = stamp[0];
+
+		// Act
+
+		switch (command)
+		{
+			case "clear": await cut.InvokeAsync(cut.Instance.ClearInspectionAsync); break;
+			case "view": await cut.InvokeAsync(() => cut.Instance.ZoomToXAsync(2, 3)); break;
+			case "context": cut.Render(p => p.Add(plot => plot.Context, Single())); break;
+			case "dispose": await cut.Instance.DisposeAsync(); break;
+		}
+		await cut.InvokeAsync(() => panel.OnTouchActionAsync(session, epoch, 1, false));
+
+		// Assert
+
+		activations.Should().BeEmpty();
+	}
+
+	[Fact]
+	public async Task ActionOnlyPolicyAcknowledgesClearAndAcceptsTheNextTap()
+	{
+		// Arrange
+
+		var cut = Render(Single(), new() { Touch = new() { TapActivatesPanel = true } });
+		var panel = cut.FindComponent<Panel<P, double, double>>().Instance;
+		await cut.InvokeAsync(cut.Instance.ClearInspectionAsync);
+		var stamp = cut.Find("[data-ggnet-inspection]").GetAttribute("data-ggnet-inspection")!.Split(' ');
+
+		// Act
+
+		await cut.InvokeAsync(() => panel.OnTouchActionAsync(stamp[0], long.Parse(stamp[1], System.Globalization.CultureInfo.InvariantCulture), 1, false));
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		activations.Should().ContainSingle();
+		cut.FindAll("[data-ggnet-cursor]").Should().BeEmpty();
+	}
+
 }

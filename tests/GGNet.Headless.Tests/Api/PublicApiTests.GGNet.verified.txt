@@ -65,6 +65,7 @@ GGNet.Style
 GGNet.Style+StyleAxis
 GGNet.Style+StyleAxisText
 GGNet.Style+StyleAxisTitle
+GGNet.Style+StyleCursor
 GGNet.Style+StyleLegend
 GGNet.Style+StylePanel
 GGNet.Style+StylePanelSpacing

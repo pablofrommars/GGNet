@@ -408,4 +408,77 @@ public class CrosshairTests : BunitContext
 		module.Invocations.Single(i => i.Identifier == "initialize").Arguments[^1]
 			.Should().BeEquivalentTo(new { Cursor = "local", CursorContinuous = false });
 	}
+	[Theory]
+	[InlineData(1, 0.0)]
+	[InlineData(2, 0.5)]
+	[InlineData(3, 1.0)]
+	public async Task MeasuredLabelsClearTheLineAndLowerPanelsKeepTheirWholeLine(int count, double fraction)
+	{
+		// Arrange
+
+		var context = PlotContext.Build(data, point => point.X, point => point.Y);
+		for (var i = 0; i < count; i++)
+		{
+			context.Panel(panel => panel.Geom_Line());
+		}
+		context.Style(Style.Default(init: style =>
+		{
+			style.Cursor = new() { FirstPanelOnly = true, FontSize = 2, Gap = 5 };
+			style.Panel.Spacing.Y = 0;
+		}));
+		var cut = Mount(context);
+		var panels = cut.FindComponents<Panel<P, double, double>>();
+		await cut.InvokeAsync(() => panels[0].Instance.OnCursorAsync(At(panels[0], fraction), true));
+		var key = cut.Find("[data-ggnet-label-key]").GetAttribute("data-ggnet-label-key")!;
+
+		// Act
+
+		await cut.InvokeAsync(() => panels[0].Instance.OnCursorLabelMeasuredAsync(key, 160, 39));
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		var label = cut.FindAll("text.crosshair-label").Should().ContainSingle().Subject;
+		Number(label, "font-size").Should().Be(32);
+		Number(panels[0].Find("line.crosshair"), "y1").Should().Be(Number(label, "y") + 39 + 5);
+		var (left, width) = Area(panels[0]);
+		Number(label, "x").Should().BeInRange(left + 84, left + width - 84);
+		Fraction(panels[0]).Should().BeApproximately(fraction, 0.00001);
+		foreach (var lower in panels.Skip(1))
+		{
+			Number(lower.Find("line.crosshair"), "y1").Should().Be(Number(lower.Find("rect.panel"), "y"));
+		}
+	}
+
+	[Fact]
+	public async Task ResizedLabelFitsThePanelAndRejectsOldTextMeasurements()
+	{
+		// Arrange
+
+		var context = PointPlot();
+		context.Style!.Cursor = new() { FontSize = 3, Padding = 4, Gap = 4 };
+		var cut = Mount(context);
+		var panel = cut.FindComponent<Panel<P, double, double>>();
+		await cut.InvokeAsync(() => panel.Instance.OnCursorAsync(At(panel, 0.5), true));
+		var oldKey = cut.Find("[data-ggnet-label-key]").GetAttribute("data-ggnet-label-key")!;
+		await cut.InvokeAsync(() => panel.Instance.OnCursorAsync(At(panel, 0.75), true));
+		var key = cut.Find("[data-ggnet-label-key]").GetAttribute("data-ggnet-label-key")!;
+
+		// Act
+
+		await cut.InvokeAsync(() => panel.Instance.OnCursorLabelMeasuredAsync(key, 500, 60));
+		await cut.InvokeAsync(() => panel.Instance.OnCursorLabelMeasuredAsync(oldKey, 1, 1));
+		cut.Render(parameters => parameters.Add(plot => plot.Width, 240).Add(plot => plot.Height, 180));
+
+		// Assert
+
+		using var _ = new AssertionScope();
+		var label = cut.Find("text.crosshair-label");
+		var (left, width) = Area(panel);
+		Number(label, "textLength").Should().BeApproximately(width - 8, 0.001);
+		Number(label, "x").Should().BeApproximately(left + width / 2, 0.001);
+		Number(panel.Find("line.crosshair"), "y1").Should().BeApproximately(Number(label, "y") + 64, 0.001);
+		Fraction(panel).Should().BeApproximately(0.75, 0.00001);
+	}
+
 }

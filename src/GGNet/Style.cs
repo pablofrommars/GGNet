@@ -16,6 +16,9 @@ public sealed partial class Style(Position axisY, Position legend)
 
 	public StylePolar Polar { get; set; } = new();
 
+	/// <summary>Optional measured, bounded cursor label layout. Null retains the legacy per-panel labels.</summary>
+	public StyleCursor? Cursor { get; set; }
+
 	public static Style Default(Position axisY = Left, Position legend = Right, Action<Style>? init = null)
 	{
 		Style style = new(axisY, legend);

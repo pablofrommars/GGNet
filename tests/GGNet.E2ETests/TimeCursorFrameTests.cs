@@ -190,7 +190,7 @@ public partial class TimeCursorTests
 			    const root = document.querySelector('[data-qa=cursor] .ggnet');
 			    return [root.getAttribute('data-ggnet-interaction') ?? 'none', root.hasAttribute('data-ggnet-navigation') ? 'navigation' : 'none',
 			        ...['[data-qa=cursor] .x-break-label', '[data-qa=cursor] .crosshair-label', '[data-qa=cursor] .crosshair-marker', '[data-qa=cursor-time]']
-			            .map(selector => document.querySelector(selector))
+			            .map((selector, i) => { const elements = [...document.querySelectorAll(selector)]; return elements[i === 0 ? Math.floor(elements.length / 2) : 0]; })
 			            .map(element => element ? getComputedStyle(element).visibility : 'absent')];
 			}
 			""");
@@ -231,8 +231,8 @@ public partial class TimeCursorTests
 
 		using var _ = new AssertionScope();
 		idle.Should().Equal("none", "none", "visible", "visible", "visible", "visible");
-		dragging.Should().Equal("navigating", "navigation", "hidden", "hidden", "hidden", "hidden");
-		held.Should().Equal("pending", "navigation", "hidden", "hidden", "hidden", "hidden");
+		dragging.Should().Equal("navigating", "navigation", "visible", "hidden", "hidden", "hidden");
+		held.Should().Equal("pending", "navigation", "visible", "hidden", "hidden", "hidden");
 		carried.Should().HaveCount(4).And.OnlyContain(cursor => cursor.Visible && cursor.Pinned);
 		carried.Select(cursor => cursor.X).Should().Equal(pinned.Select(cursor => cursor.X - 80), (actual, expected) => Math.Abs(actual - expected) < 1.5);
 		settled.Should().Equal("none", "none", "visible", "visible", "visible", "visible");
@@ -348,7 +348,7 @@ public partial class TimeCursorTests
 
 		using var _ = new AssertionScope();
 		idle.Should().Equal("unavailable", "none", "visible", "visible", "visible", "visible");
-		dragging.Take(5).Should().Equal("unavailable", "navigation", "hidden", "hidden", "hidden");
+		dragging.Take(5).Should().Equal("unavailable", "navigation", "visible", "hidden", "hidden");
 		settled.Should().Equal("unavailable", "none", "visible", "visible", "visible", "visible");
 		session.Errors.Should().BeEmpty();
 	}
@@ -378,7 +378,7 @@ public partial class TimeCursorTests
 		// Assert
 
 		using var _ = new AssertionScope();
-		held.Take(3).Should().Equal("pending", "navigation", "hidden");
+		held.Take(3).Should().Equal("pending", "navigation", "visible");
 		dropped.Take(3).Should().Equal("none", "none", "visible");
 		previews.Should().OnlyContain(transform => transform == string.Empty);
 		session.Errors.Should().BeEmpty();
@@ -651,7 +651,7 @@ public partial class TimeCursorTests
 		var held = await FramesAsync(session.Page);
 		var previews = await session.PreviewsAsync("cursor");
 		var pending = await session.Page.Locator("[data-qa=cursor] .ggnet").GetAttributeAsync("data-ggnet-interaction");
-		var ticksHidden = await session.Page.Locator("[data-qa=cursor] .x-break-label").First.EvaluateAsync<bool>("element => getComputedStyle(element).visibility === 'hidden'");
+		var ticksVisible = await session.Page.Locator("[data-qa=cursor] .x-break-label").EvaluateAllAsync<bool>("elements => elements.some(element => getComputedStyle(element).visibility === 'visible')");
 		frames.Release();
 		await session.WaitForTextAsync("view-changes", "1");
 		await session.Page.WaitForFunctionAsync("""
@@ -668,7 +668,7 @@ public partial class TimeCursorTests
 		before.Should().HaveCount(4);
 		held.Should().BeEquivalentTo(before, options => options.WithStrictOrdering());
 		pending.Should().Be("pending");
-		ticksHidden.Should().BeTrue();
+		ticksVisible.Should().BeTrue("existing ticks follow the preview while new ticks wait for the frame");
 		previews.Should().HaveCount(4).And.OnlyContain(transform => transform.Length > 0);
 		(await session.PreviewsAsync("cursor")).Should().OnlyContain(transform => transform == string.Empty);
 		after.Should().HaveCount(4);

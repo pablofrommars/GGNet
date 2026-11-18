@@ -10,6 +10,8 @@ public partial class OverviewDetail
 
 	private InteractivityOptions navigate = new() { Pan = true, Crosshair = true, Touch = new() { Inspect = true, Navigation = TouchNavigation.PanAndPinchX } };
 	private int policyVersion;
+	private bool nativeActions;
+	private InteractivityOptions detailOptions => nativeActions ? navigate with { Touch = navigate.Touch! with { TapActivatesPanel = false } } : navigate;
 	private Inspection<Instant>? inspection;
 
 	private readonly InteractivityOptions inspect = new() { Crosshair = true, CursorTooltip = true };
@@ -231,12 +233,38 @@ public partial class OverviewDetail
 
 	private void SetPolicy(bool inspecting, TouchOwnership ownership)
 	{
+		nativeActions = false;
+		overviewContext.Style!.Cursor = null;
+		detailContext.Style!.Cursor = null;
 		navigate = new()
 		{
 			Pan = true,
 			Crosshair = inspecting,
 			Touch = new() { Inspect = inspecting, Navigation = TouchNavigation.PanAndPinchX, Ownership = ownership }
 		};
+		policyVersion++;
+	}
+
+	private void SetNativePolicy()
+	{
+		nativeActions = true;
+		navigate = new()
+		{
+			Pan = true,
+			Crosshair = true,
+			Touch = new()
+			{
+				Inspect = true,
+				Navigation = TouchNavigation.PanAndPinchX,
+				TapActivatesPanel = true,
+				DoubleTapResetsView = true
+			}
+		};
+		foreach (var context in new[] { overviewContext, detailContext })
+		{
+			context.Style!.Cursor = new() { FirstPanelOnly = true, FontSize = 1.5 };
+			context.Style.Panel.Spacing.Y = 0;
+		}
 		policyVersion++;
 	}
 
